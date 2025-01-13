@@ -5,6 +5,7 @@
 xcuserdata
 !src/**/build/
 local.properties
+config.properties
 .idea
 .fleet
 .DS_Store
@@ -18,3 +19,4 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 composeApp/main/resources/koin.properties
+

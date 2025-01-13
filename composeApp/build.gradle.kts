@@ -1,6 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,6 +11,7 @@ plugins {
     kotlin("plugin.serialization") version libs.versions.kotlin.get()
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.buildConfig)
 }
 
 kotlin {
@@ -37,7 +39,6 @@ kotlin {
     
     sourceSets {
         val desktopMain by getting
-
         commonMain.dependencies {
             implementation(libs.napier)
 
@@ -159,3 +160,16 @@ dependencies {
 room {
     schemaDirectory("$projectDir/schemas")
 }
+
+buildConfig {
+    val properties = Properties()
+    packageName = "com.davanok.dvnkdnd"
+    project.rootProject.file("config.properties").inputStream().use {
+        properties.load(it)
+    }
+    properties.forEach { property ->
+        buildConfigField(property.key.toString(), property.value.toString())
+    }
+
+}
+
