@@ -1,7 +1,8 @@
 package com.davanok.dvnkdnd.data.repositories
 
-import com.davanok.dvnkdnd.database.entities.character.Character
+import com.davanok.dvnkdnd.database.entities.character.CharacterMin
+import kotlinx.coroutines.flow.Flow
 
 interface CharactersListRepository {
-    suspend fun getCharactersList(): List<Character>
+    fun getCharactersFlow(): Flow<List<CharacterMin>>
 }

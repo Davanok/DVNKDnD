@@ -5,11 +5,21 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.entities.ListSpellAdapter
-import com.davanok.dvnkdnd.database.entities.items.DnDItem
+import com.davanok.dvnkdnd.database.entities.character.Character
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBackground
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDRace
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubRace
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubclass
 
 @Database(
     entities = [
-        DnDItem::class
+        Character::class,
+        DnDRace::class,
+        DnDSubRace::class,
+        DnDClass::class,
+        DnDSubclass::class,
+        DnDBackground::class
     ],
     version = 1
 )

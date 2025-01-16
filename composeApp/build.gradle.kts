@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
@@ -16,12 +15,11 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_19)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -34,9 +32,9 @@ kotlin {
             linkerOpts.add("-lsqlite3")
         }
     }
-    
+
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
         commonMain.dependencies {
@@ -64,8 +62,15 @@ kotlin {
             implementation(libs.filekit.core)
             implementation(libs.filekit.compose)
 
+//            implementation(libs.androidx.compose.material3.adaptive)
+//            implementation(libs.androidx.compose.material3.adaptive.layout)
+//            implementation(libs.androidx.compose.material3.adaptive.navigation)
+
             implementation(compose.material3AdaptiveNavigationSuite)
             implementation(libs.window.size)
+
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -86,7 +91,6 @@ kotlin {
         }
         desktopMain.dependencies {
             implementation(libs.ktor.okhttp)
-
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }

@@ -6,7 +6,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.davanok.dvnkdnd.ui.pages.home.CharactersListScreen
+import androidx.navigation.navigation
+import androidx.navigation.toRoute
+import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
+import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 
 @Composable
 fun NavigationHost(
@@ -16,8 +19,17 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.Home
+        startDestination = Route.Main.CharactersList
     ) {
-        composable<Route.Home> { CharactersListScreen() }
+        composable<Route.Main.CharactersList> {
+            CharactersListScreen(
+                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
+            )
+        }
+
+        composable<Route.CharacterFull> { backStackEntry ->
+            val route: Route.CharacterFull = backStackEntry.toRoute()
+            CharacterFullScreen(route.characterId)
+        }
     }
 }

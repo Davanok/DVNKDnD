@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--main destinations-->
     <string name="home">Home</string>
+    <string name="items">Items</string>
+    <string name="browse">Browse</string>
+    <string name="profile">Profile</string>
+
+    <!--characters list screen-->
+    <string name="loading_characters_error">Error while loading characters</string>
+    <string name="no_characters_yet">You haven't added any characters yet. Create your first one now!</string>
 </resources>
