@@ -64,7 +64,7 @@ fun CharactersListScreen(
 }
 
 @Composable
-fun FirstPaneContent(
+private fun FirstPaneContent(
     isLoading: Boolean,
     characters: List<CharacterMin>,
     onClick: (CharacterMin) -> Unit,
@@ -127,7 +127,7 @@ private fun CharactersList(
 }
 
 @Composable
-fun CharacterCard(
+private fun CharacterCard(
     character: CharacterMin,
     onClick: (CharacterMin) -> Unit,
     modifier: Modifier = Modifier

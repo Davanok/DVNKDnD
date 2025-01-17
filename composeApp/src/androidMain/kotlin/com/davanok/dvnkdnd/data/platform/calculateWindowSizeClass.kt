@@ -1,11 +1,20 @@
 package com.davanok.dvnkdnd.data.platform
 
-import android.app.Activity
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.toComposeRect
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.window.layout.WindowMetricsCalculator
+import com.davanok.dvnkdnd.data.types.ui.WindowSizeClass
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-actual fun calculateWindowSizeClass() = calculateWindowSizeClass(LocalContext.current as Activity)
+actual fun calculateWindowSizeClass(): WindowSizeClass {
+    LocalConfiguration.current
+    val density = LocalDensity.current
+    val metrics = WindowMetricsCalculator
+        .getOrCreate()
+        .computeCurrentWindowMetrics(LocalActivity.current!!)
+    val size = with(density) { metrics.bounds.toComposeRect().size.toDpSize() }
+    return WindowSizeClass.calculateFromSize(size)
+}

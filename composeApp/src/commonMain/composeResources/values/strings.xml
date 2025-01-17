@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">DVNK DND</string>
+
+    <!--navigation-->
+    <string name="close_drawer">Close drawer</string>
+    <string name="open_drawer">Open drawer</string>
+    <string name="new">New</string>
     <!--main destinations-->
     <string name="home">Home</string>
     <string name="items">Items</string>

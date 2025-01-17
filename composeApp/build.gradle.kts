@@ -67,7 +67,7 @@ kotlin {
 //            implementation(libs.androidx.compose.material3.adaptive.navigation)
 
             implementation(compose.material3AdaptiveNavigationSuite)
-            implementation(libs.window.size)
+//            implementation(libs.window.size)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network)

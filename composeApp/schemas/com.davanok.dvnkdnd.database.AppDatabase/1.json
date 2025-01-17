@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9856f6bbb66a2a37f27c31f9696ee978",
+    "identityHash": "6635dee7b7a824cbfac336acbc51f946",
     "entities": [
       {
-        "tableName": "items",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `pinned` INTEGER NOT NULL, `cost` INTEGER, `weight` INTEGER, `count` INTEGER NOT NULL, `image` TEXT, `source` TEXT)",
+        "tableName": "characters",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `race` INTEGER, `subRace` INTEGER, `cls` INTEGER, `subCls` INTEGER, `background` INTEGER, `level` INTEGER NOT NULL, `proficiencyBonus` INTEGER NOT NULL, `image` TEXT, `source` TEXT, FOREIGN KEY(`race`) REFERENCES `races`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`race`) REFERENCES `sub_races`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`cls`) REFERENCES `classes`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`subCls`) REFERENCES `subclasses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`background`) REFERENCES `backgrounds`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -23,27 +23,43 @@
           {
             "fieldPath": "description",
             "columnName": "description",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
-            "fieldPath": "pinned",
-            "columnName": "pinned",
+            "fieldPath": "race",
+            "columnName": "race",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "subRace",
+            "columnName": "subRace",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "cls",
+            "columnName": "cls",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "subCls",
+            "columnName": "subCls",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "background",
+            "columnName": "background",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "level",
+            "columnName": "level",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "cost",
-            "columnName": "cost",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "weight",
-            "columnName": "weight",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "count",
-            "columnName": "count",
+            "fieldPath": "proficiencyBonus",
+            "columnName": "proficiencyBonus",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -63,12 +79,371 @@
           "columnNames": [
             "id"
           ]
+        },
+        "indices": [
+          {
+            "name": "index_characters_race",
+            "unique": false,
+            "columnNames": [
+              "race"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_characters_race` ON `${TABLE_NAME}` (`race`)"
+          },
+          {
+            "name": "index_characters_subRace",
+            "unique": false,
+            "columnNames": [
+              "subRace"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_characters_subRace` ON `${TABLE_NAME}` (`subRace`)"
+          },
+          {
+            "name": "index_characters_cls",
+            "unique": false,
+            "columnNames": [
+              "cls"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_characters_cls` ON `${TABLE_NAME}` (`cls`)"
+          },
+          {
+            "name": "index_characters_subCls",
+            "unique": false,
+            "columnNames": [
+              "subCls"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_characters_subCls` ON `${TABLE_NAME}` (`subCls`)"
+          },
+          {
+            "name": "index_characters_background",
+            "unique": false,
+            "columnNames": [
+              "background"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_characters_background` ON `${TABLE_NAME}` (`background`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "races",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "race"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "sub_races",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "race"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "classes",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cls"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "subclasses",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "subCls"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "backgrounds",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "background"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "races",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `speed` INTEGER NOT NULL, `source` TEXT NOT NULL, `modifierSelectLimit` INTEGER, `skillsSelectLimit` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "speed",
+            "columnName": "speed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modifierSelectLimit",
+            "columnName": "modifierSelectLimit",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "skillsSelectLimit",
+            "columnName": "skillsSelectLimit",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "sub_races",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `speed` INTEGER NOT NULL, `source` TEXT NOT NULL, `modifierSelectLimit` INTEGER, `skillsSelectLimit` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "speed",
+            "columnName": "speed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modifierSelectLimit",
+            "columnName": "modifierSelectLimit",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "skillsSelectLimit",
+            "columnName": "skillsSelectLimit",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "classes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `source` TEXT, `skillsSelectLimit` INTEGER, `proficienciesSelectLimit` INTEGER, `hitDice` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "skillsSelectLimit",
+            "columnName": "skillsSelectLimit",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "proficienciesSelectLimit",
+            "columnName": "proficienciesSelectLimit",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "hitDice",
+            "columnName": "hitDice",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "subclasses",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `classId` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `source` TEXT, FOREIGN KEY(`classId`) REFERENCES `classes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "classId",
+            "columnName": "classId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_subclasses_classId",
+            "unique": false,
+            "columnNames": [
+              "classId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_subclasses_classId` ON `${TABLE_NAME}` (`classId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "classes",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "classId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "backgrounds",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `source` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
         }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9856f6bbb66a2a37f27c31f9696ee978')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6635dee7b7a824cbfac336acbc51f946')"
     ]
   }
 }

@@ -26,6 +26,26 @@ fun NavigationHost(
                 navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
             )
         }
+        composable<Route.Main.Items> {
+            CharactersListScreen(
+                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
+            )
+        }
+        composable<Route.Main.Browse> {
+            CharactersListScreen(
+                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
+            )
+        }
+        composable<Route.Main.Profile> {
+            CharactersListScreen(
+                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
+            )
+        }
+        composable<Route.Main.New> {
+            CharactersListScreen(
+                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
+            )
+        }
 
         composable<Route.CharacterFull> { backStackEntry ->
             val route: Route.CharacterFull = backStackEntry.toRoute()
