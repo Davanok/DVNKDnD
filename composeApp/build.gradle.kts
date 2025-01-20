@@ -171,6 +171,8 @@ buildConfig {
     project.rootProject.file("config.properties").inputStream().use {
         properties.load(it)
     }
+    buildConfigField("packageName", packageName)
+    buildConfigField("bundleId", "com.davanok.dvnkdnd.DVNKDnD")
     properties.forEach { property ->
         buildConfigField(property.key.toString(), property.value.toString())
     }

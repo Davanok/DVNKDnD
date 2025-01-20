@@ -10,6 +10,7 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
+import com.davanok.dvnkdnd.ui.pages.newCharacter.NewCharacterScreen
 
 @Composable
 fun NavigationHost(
@@ -27,9 +28,7 @@ fun NavigationHost(
             )
         }
         composable<Route.Main.Items> {
-            CharactersListScreen(
-                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
-            )
+            NewCharacterScreen()
         }
         composable<Route.Main.Browse> {
             CharactersListScreen(
