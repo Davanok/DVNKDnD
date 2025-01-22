@@ -4,6 +4,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
@@ -53,6 +54,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.data.platform.BackHandler
+import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
+import com.davanok.dvnkdnd.data.types.ui.WindowHeightSizeClass
+import com.davanok.dvnkdnd.data.types.ui.WindowWidthSizeClass
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.close_drawer
@@ -61,6 +65,7 @@ import dvnkdnd.composeapp.generated.resources.open_drawer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.runtime.getValue
 
 @Composable
 fun rememberStateOfFAB(
@@ -138,7 +143,7 @@ data class AdaptiveNavItem(
 )
 
 
-class AdaptiveNavItemScope {
+class AdaptiveNavItemScope() {
     val items = mutableVectorOf<AdaptiveNavItem>()
     fun NavItem(
         selected: Boolean,
@@ -172,14 +177,15 @@ class AdaptiveNavItemScope {
 
 @Composable
 fun AdaptiveNavigationWrapper(
+    layoutType: NavigationSuiteType = calculateNavSuiteType(),
     navigationItems: AdaptiveNavItemScope.() -> Unit,
     floatingActionButton: (AdaptiveFloatingActionButtonScope.() -> Unit)? = null,
     modifier: Modifier = Modifier,
     containerColor: Color = NavigationSuiteScaffoldDefaults.containerColor,
     contentColor: Color = NavigationSuiteScaffoldDefaults.contentColor,
-    content: @Composable (NavigationSuiteType) -> Unit
+    content: @Composable () -> Unit
 ) {
-    val layoutType = calculateNavSuiteType()
+    val windowSizeClass = calculateWindowSizeClass()
     val coroutineScope = rememberCoroutineScope()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -226,20 +232,30 @@ fun AdaptiveNavigationWrapper(
                     )
                 }
             ) {
+                val paddingValues by remember(windowSizeClass, layoutType) {
+                    derivedStateOf {
+                        val size = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact || windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact) 16.dp
+                        else 24.dp
+                        if (layoutType == NavigationSuiteType.NavigationBar) PaddingValues(horizontal = size)
+                        else PaddingValues(end = size)
+                    }
+                }
                 Box(
-                    Modifier.consumeWindowInsets(
-                        when (layoutType) {
-                            NavigationSuiteType.NavigationBar ->
-                                NavigationBarDefaults.windowInsets
-                            NavigationSuiteType.NavigationRail ->
-                                NavigationRailDefaults.windowInsets
-                            NavigationSuiteType.NavigationDrawer ->
-                                DrawerDefaults.windowInsets
-                            else -> WindowInsets(0, 0, 0, 0)
-                        }
-                    )
+                    Modifier
+                        .consumeWindowInsets(
+                            when (layoutType) {
+                                NavigationSuiteType.NavigationBar ->
+                                    NavigationBarDefaults.windowInsets
+                                NavigationSuiteType.NavigationRail ->
+                                    NavigationRailDefaults.windowInsets
+                                NavigationSuiteType.NavigationDrawer ->
+                                    DrawerDefaults.windowInsets
+                                else -> WindowInsets(0, 0, 0, 0)
+                            }
+                        )
+                        .padding(paddingValues)
                 ) {
-                    content(layoutType)
+                    content()
                 }
             }
         }

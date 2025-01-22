@@ -22,14 +22,14 @@ fun AdaptiveLayout(
     when (windowSizeClass.widthSizeClass) {
         WindowWidthSizeClass.Compact ->
             Box(
-                modifier = modifier.padding(horizontal = 16.dp)
+                modifier = modifier
             ) {
                 firstPane(false)
             }
 
         else -> {
             Row(
-                modifier = modifier.padding(horizontal = 24.dp)
+                modifier = modifier
             ) {
                 Box(modifier = Modifier.weight(1f)) { firstPane(true) }
                 Spacer(modifier = Modifier.width(24.dp))

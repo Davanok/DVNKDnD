@@ -18,6 +18,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -69,11 +70,11 @@ private fun FirstPaneContent(
     characters: List<CharacterMin>,
     onClick: (CharacterMin) -> Unit,
     modifier: Modifier = Modifier
-){
+) {
     if (isLoading) Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
-    ){ CircularProgressIndicator() }
+    ) { CircularProgressIndicator() }
     else if (characters.isEmpty()) EmptyScreen(modifier)
     else CharactersList(
         characters,
@@ -145,7 +146,7 @@ private fun CharacterCard(
             ) {
                 Text(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    text=character.name.first().uppercase()
+                    text = character.name.first().uppercase()
                 )
             }
             else AsyncImage(

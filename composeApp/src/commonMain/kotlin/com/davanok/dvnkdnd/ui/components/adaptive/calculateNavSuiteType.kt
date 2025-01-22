@@ -14,10 +14,11 @@ fun calculateNavSuiteType(
     return with(windowSizeClass) {
         when {
             heightSizeClass == WindowHeightSizeClass.Compact || widthSizeClass == WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
-            widthSizeClass == WindowWidthSizeClass.Medium -> NavigationSuiteType.NavigationRail
-            widthSizeClass == WindowWidthSizeClass.Expanded -> NavigationSuiteType.NavigationRail
-            widthSizeClass == WindowWidthSizeClass.Large -> NavigationSuiteType.NavigationDrawer
-            else -> NavigationSuiteType.NavigationBar
+//            widthSizeClass == WindowWidthSizeClass.Medium -> NavigationSuiteType.NavigationRail
+//            widthSizeClass == WindowWidthSizeClass.Expanded -> NavigationSuiteType.NavigationRail
+//            widthSizeClass == WindowWidthSizeClass.Large -> NavigationSuiteType.NavigationDrawer
+//            else -> NavigationSuiteType.NavigationBar
+            else -> NavigationSuiteType.NavigationRail
         }
     }
 }

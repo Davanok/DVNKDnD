@@ -12,6 +12,15 @@
     <string name="browse">Browse</string>
     <string name="profile">Profile</string>
 
+    <!--entities-->
+    <string name="character">Character</string>
+    <string name="item">Item</string>
+    <string name="spell">Spell</string>
+    <string name="cls">Class</string>
+    <string name="race">Race</string>
+    <string name="background">Background</string>
+    <string name="ability">Ability</string>
+
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
     <string name="no_characters_yet">You haven't added any characters yet. Create your first one now!</string>
