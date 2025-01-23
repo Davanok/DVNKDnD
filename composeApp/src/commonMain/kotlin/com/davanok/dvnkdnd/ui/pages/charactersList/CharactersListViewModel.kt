@@ -27,7 +27,7 @@ data class CharactersListUiState(
 )
 
 class CharactersListViewModel(
-    private val repository: CharactersListRepository
+    repository: CharactersListRepository
 ) : ViewModel() {
 
     private val _currentCharacter = MutableStateFlow<CharacterMin?>(null)
@@ -48,12 +48,11 @@ class CharactersListViewModel(
                 currentCharacter = currentCharacter
             )
         }
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = WhileUiSubscribed,
-            initialValue = CharactersListUiState(isLoading = true)
-        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = WhileUiSubscribed,
+        initialValue = CharactersListUiState(isLoading = true)
+    )
 
     fun selectCharacter(character: CharacterMin) = viewModelScope.launch {
         _currentCharacter.value = character

@@ -17,9 +17,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,9 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterMin
+import com.davanok.dvnkdnd.ui.components.EmptyImage
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveLayout
+import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveNavigationInfo
+import com.davanok.dvnkdnd.ui.navigation.FABScaffold
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.no_characters_yet
+import dvnkdnd.composeapp.generated.resources.image
 import dvnkdnd.composeapp.generated.resources.sentiment_dissatisfied
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -41,6 +44,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun CharactersListScreen(
+    onFABClick: () -> Unit,
     navigateToCharacter: (CharacterMin) -> Unit,
     viewModel: CharactersListViewModel = koinInject()
 ) {
@@ -48,15 +52,19 @@ fun CharactersListScreen(
     AdaptiveLayout(
         modifier = Modifier.fillMaxSize(),
         firstPane = { twoPane ->
-            FirstPaneContent(
-                modifier = Modifier.fillMaxSize(),
-                isLoading = uiState.isLoading,
-                characters = uiState.characters,
-                onClick = { character ->
-                    if (twoPane) viewModel.selectCharacter(character)
-                    else navigateToCharacter(character)
-                }
-            )
+            FABScaffold(
+                onClick = onFABClick
+            ) {
+                FirstPaneContent(
+                    modifier = Modifier.fillMaxSize(),
+                    isLoading = uiState.isLoading,
+                    characters = uiState.characters,
+                    onClick = { character ->
+                        if (twoPane) viewModel.selectCharacter(character)
+                        else navigateToCharacter(character)
+                    }
+                )
+            }
         },
         secondPane = {
             CharacterShortInfo()
@@ -137,21 +145,15 @@ private fun CharacterCard(
         modifier = modifier.clickable { onClick(character) },
         headlineContent = { Text(character.name) },
         leadingContent = {
-            if (character.image == null) Box(
-                modifier = Modifier
+            if (character.image == null) EmptyImage(
+                modifier = modifier
                     .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    text = character.name.first().uppercase()
-                )
-            }
+                    .clip(CircleShape),
+                text = character.name
+            )
             else AsyncImage(
-                "",
-                contentDescription = null
+                character.image,
+                contentDescription = stringResource(Res.string.image)
             )
         }
     )

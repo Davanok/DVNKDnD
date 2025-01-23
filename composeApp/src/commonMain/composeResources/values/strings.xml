@@ -24,4 +24,13 @@
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
     <string name="no_characters_yet">You haven't added any characters yet. Create your first one now!</string>
+
+    <!--new entity screen-->
+    <string name="custom">Custom</string>
+    <string name="homebrew">Homebrew</string>
+
+    <!--new character screen-->
+    <string name="image">Image</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
 </resources>

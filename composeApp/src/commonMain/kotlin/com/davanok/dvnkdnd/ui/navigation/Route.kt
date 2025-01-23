@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.ui.navigation
 
-import com.davanok.dvnkdnd.ui.navigation.Route
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,13 +13,18 @@ sealed interface Route {
     }
     @Serializable
     data object New : Route {
+        @Serializable data object Navigator : Route
+        // main
         @Serializable data object Character : Route
         @Serializable data object Item : Route
+        // custom
         @Serializable data object Spell : Route
+        @Serializable data object Ability : Route
+        @Serializable data object Feature : Route
+        // homebrew
         @Serializable data object Class : Route
         @Serializable data object Race : Route
         @Serializable data object Background : Route
-        @Serializable data object Ability : Route
     }
 
     @Serializable

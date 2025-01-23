@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,7 +11,6 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
-import com.davanok.dvnkdnd.ui.pages.newCharacter.NewCharacterScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
 
 @Composable
@@ -21,31 +21,11 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.Main.CharactersList
+        startDestination = Route.Main
     ) {
-        composable<Route.Main.CharactersList> {
-            CharactersListScreen(
-                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
-            )
-        }
-        composable<Route.Main.Items> {
-            NewCharacterScreen()
-        }
-        composable<Route.Main.Browse> {
-            CharactersListScreen(
-                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
-            )
-        }
-        composable<Route.Main.Profile> {
-            CharactersListScreen(
-                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
-            )
-        }
-        composable<Route.New> {
-            NewEntityScreen(
-                onNavigate = { route -> navController.navigate(route) }
-            )
-        }
+        mainDestinations(navController)
+
+        newEntityDestinations(navController)
 
         composable<Route.CharacterFull> { backStackEntry ->
             val route: Route.CharacterFull = backStackEntry.toRoute()
@@ -53,3 +33,37 @@ fun NavigationHost(
         }
     }
 }
+
+
+private fun NavGraphBuilder.mainDestinations(navController: NavHostController) =
+    navigation<Route.Main>(
+        startDestination = Route.Main.CharactersList
+    ) {
+        composable<Route.Main.CharactersList> {
+            CharactersListScreen(
+                onFABClick = { navController.navigate(Route.New) },
+                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
+            )
+        }
+        composable<Route.Main.Items> {
+
+        }
+        composable<Route.Main.Browse> {
+
+        }
+        composable<Route.Main.Profile> {
+
+        }
+    }
+
+private fun NavGraphBuilder.newEntityDestinations(navController: NavHostController) =
+    navigation<Route.New>(
+        startDestination = Route.New.Navigator
+    ) {
+        composable<Route.New.Navigator> {
+            NewEntityScreen(
+                onNavigate = { route -> navController.navigate(route) }
+            )
+        }
+
+    }

@@ -4,7 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CardDefaults
@@ -35,6 +37,8 @@ import dvnkdnd.composeapp.generated.resources.tiefling
 import dvnkdnd.composeapp.generated.resources.fireball
 import dvnkdnd.composeapp.generated.resources.urchin
 import dvnkdnd.composeapp.generated.resources.fantasy
+import dvnkdnd.composeapp.generated.resources.custom
+import dvnkdnd.composeapp.generated.resources.homebrew
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
@@ -49,10 +53,16 @@ private enum class NewEntityNavigationItems(
     Character(Res.string.character, Res.drawable.fighter, Route.New.Character),
     Item(Res.string.item, Res.drawable.sword, Route.New.Item),
     Spell(Res.string.spell, Res.drawable.fireball, Route.New.Spell),
+    Ability(Res.string.ability, Res.drawable.fantasy, Route.New.Ability),
     Class(Res.string.cls, Res.drawable.rogue, Route.New.Class),
     Race(Res.string.race, Res.drawable.tiefling, Route.New.Race),
-    Background(Res.string.background, Res.drawable.urchin, Route.New.Background),
-    Ability(Res.string.ability, Res.drawable.fantasy, Route.New.Ability)
+    Background(Res.string.background, Res.drawable.urchin, Route.New.Background);
+
+    companion object {
+        val main = listOf(Character, Item)
+        val custom = listOf(Spell, Ability)
+        val homebrew = listOf(Class, Race, Background)
+    }
 }
 
 @Composable
@@ -84,7 +94,47 @@ fun NewEntityScreen(
             // text width + grid item padding * 2 + card text padding * 2
     ) {
         items(
-            items = NewEntityNavigationItems.entries,
+            items = NewEntityNavigationItems.main,
+            key = { it.ordinal }
+        ) { item ->
+            LazyGridItem(
+                modifier = Modifier
+                    .padding(4.dp),
+                item = item,
+                onClick = { onNavigate(it.route) }
+            )
+        }
+        item(
+            key = "custom",
+            span = { GridItemSpan(maxLineSpan) }
+        ) {
+            HeaderItem(
+                modifier = Modifier.padding(4.dp),
+                text = Res.string.custom
+            )
+        }
+        items(
+            items = NewEntityNavigationItems.custom,
+            key = { it.ordinal }
+        ) { item ->
+            LazyGridItem(
+                modifier = Modifier
+                    .padding(4.dp),
+                item = item,
+                onClick = { onNavigate(it.route) }
+            )
+        }
+        item(
+            key = "homebrew",
+            span = { GridItemSpan(maxLineSpan) }
+        ) {
+            HeaderItem(
+                modifier = Modifier.padding(4.dp),
+                text = Res.string.homebrew
+            )
+        }
+        items(
+            items = NewEntityNavigationItems.homebrew,
             key = { it.ordinal }
         ) { item ->
             LazyGridItem(
@@ -121,4 +171,16 @@ private fun LazyGridItem(
             style = MaterialTheme.typography.headlineMedium
         )
     }
+}
+
+@Composable
+private fun HeaderItem(
+    text: StringResource,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        modifier = modifier,
+        text = stringResource(text),
+        style = MaterialTheme.typography.headlineMedium
+    )
 }

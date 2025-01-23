@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerDefaults
@@ -42,8 +43,10 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collection.mutableVectorOf
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,126 +69,21 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.runtime.getValue
-
-@Composable
-fun rememberStateOfFAB(
-    content: AdaptiveFloatingActionButtonScope.() -> Unit
-): State<AdaptiveFloatingActionButtonScope> {
-    val latestContent = rememberUpdatedState(content)
-    return remember {
-        derivedStateOf { AdaptiveFloatingActionButtonScope().apply(latestContent.value) }
-    }
-}
-
-data class AdaptiveFloatingActionButton(
-    val onClick: () -> Unit,
-    val modifier: Modifier = Modifier,
-    val shape: Shape?,
-    val containerColor: Color?,
-    val contentColor: Color?,
-    val elevation: FloatingActionButtonElevation?,
-    val interactionSource: MutableInteractionSource? = null,
-    val icon: @Composable () -> Unit,
-    val text: @Composable RowScope.() -> Unit
-)
-
-
-class AdaptiveFloatingActionButtonScope {
-    val items = mutableVectorOf<AdaptiveFloatingActionButton>()
-    fun FloatingActionButton(
-        onClick: () -> Unit,
-        modifier: Modifier = Modifier,
-        shape: Shape? = null,
-        containerColor: Color? = null,
-        contentColor: Color? = null,
-        elevation: FloatingActionButtonElevation? = null,
-        interactionSource: MutableInteractionSource? = null,
-        icon: @Composable () -> Unit,
-        text: @Composable RowScope.() -> Unit
-    ) {
-        items.add(
-            AdaptiveFloatingActionButton(
-                onClick,
-                modifier,
-                shape,
-                containerColor,
-                contentColor,
-                elevation,
-                interactionSource,
-                icon,
-                text
-            )
-        )
-    }
-}
-
-@Composable
-fun rememberStateOfItems(
-    content: AdaptiveNavItemScope.() -> Unit
-): State<AdaptiveNavItemScope> {
-    val latestContent = rememberUpdatedState(content)
-    return remember {
-        derivedStateOf { AdaptiveNavItemScope().apply(latestContent.value) }
-    }
-}
-
-data class AdaptiveNavItem(
-    val selected: Boolean,
-    val onClick: () -> Unit,
-    val icon: @Composable () -> Unit,
-    val modifier: Modifier = Modifier,
-    val enabled: Boolean = true,
-    val label: @Composable (() -> Unit),
-    val alwaysShowLabel: Boolean = true,
-    val badge: (@Composable () -> Unit)? = null,
-    val colors: NavigationSuiteItemColors? = null,
-    val interactionSource: MutableInteractionSource? = null
-)
-
-
-class AdaptiveNavItemScope() {
-    val items = mutableVectorOf<AdaptiveNavItem>()
-    fun NavItem(
-        selected: Boolean,
-        onClick: () -> Unit,
-        icon: @Composable () -> Unit,
-        modifier: Modifier = Modifier,
-        enabled: Boolean = true,
-        label: @Composable (() -> Unit),
-        alwaysShowLabel: Boolean = true,
-        badge: (@Composable () -> Unit)? = null,
-        colors: NavigationSuiteItemColors? = null,
-        interactionSource: MutableInteractionSource? = null
-    ) {
-        items.add(
-            AdaptiveNavItem(
-                selected,
-                onClick,
-                icon,
-                modifier,
-                enabled,
-                label,
-                alwaysShowLabel,
-                badge,
-                colors,
-                interactionSource
-            )
-        )
-    }
-}
+import androidx.compose.runtime.staticCompositionLocalOf
+import com.davanok.dvnkdnd.data.types.ui.WindowSizeClass
 
 
 @Composable
 fun AdaptiveNavigationWrapper(
-    layoutType: NavigationSuiteType = calculateNavSuiteType(),
+    windowSizeClass: WindowSizeClass = calculateWindowSizeClass(),
+    layoutType: NavigationSuiteType = calculateNavSuiteType(windowSizeClass),
     navigationItems: AdaptiveNavItemScope.() -> Unit,
     floatingActionButton: (AdaptiveFloatingActionButtonScope.() -> Unit)? = null,
     modifier: Modifier = Modifier,
-    containerColor: Color = NavigationSuiteScaffoldDefaults.containerColor,
-    contentColor: Color = NavigationSuiteScaffoldDefaults.contentColor,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
+    contentColor: Color = contentColorFor(containerColor),
     content: @Composable () -> Unit
 ) {
-    val windowSizeClass = calculateWindowSizeClass()
     val coroutineScope = rememberCoroutineScope()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -199,6 +97,11 @@ fun AdaptiveNavigationWrapper(
     }
     val scope = rememberStateOfItems(navigationItems)
     val fabScope = if (floatingActionButton == null) null else rememberStateOfFAB(floatingActionButton)
+
+    val adaptiveNavigationInfo = AdaptiveNavigationInfo(
+        layoutType = layoutType,
+        windowSizeClass = windowSizeClass
+    )
 
     Surface(modifier = modifier, color = containerColor, contentColor = contentColor) {
         ModalNavigationDrawer(
@@ -253,13 +156,24 @@ fun AdaptiveNavigationWrapper(
                                 else -> WindowInsets(0, 0, 0, 0)
                             }
                         )
+                        .statusBarsPadding()
                         .padding(paddingValues)
                 ) {
-                    content()
+                    CompositionLocalProvider(LocalAdaptiveNavigationInfo provides adaptiveNavigationInfo) {
+                        content()
+                    }
                 }
             }
         }
     }
+}
+
+data class AdaptiveNavigationInfo(
+    val layoutType: NavigationSuiteType,
+    val windowSizeClass: WindowSizeClass
+)
+val LocalAdaptiveNavigationInfo = staticCompositionLocalOf<AdaptiveNavigationInfo> {
+    error("CompositionLocal ContentType not provided")
 }
 
 @Composable
@@ -487,5 +401,113 @@ fun PermanentNavigationDrawer(
                 interactionSource = item.interactionSource
             )
         }
+    }
+}
+
+
+@Composable
+fun rememberStateOfFAB(
+    content: AdaptiveFloatingActionButtonScope.() -> Unit
+): State<AdaptiveFloatingActionButtonScope> {
+    val latestContent = rememberUpdatedState(content)
+    return remember {
+        derivedStateOf { AdaptiveFloatingActionButtonScope().apply(latestContent.value) }
+    }
+}
+
+data class AdaptiveFloatingActionButton(
+    val onClick: () -> Unit,
+    val modifier: Modifier = Modifier,
+    val shape: Shape?,
+    val containerColor: Color?,
+    val contentColor: Color?,
+    val elevation: FloatingActionButtonElevation?,
+    val interactionSource: MutableInteractionSource? = null,
+    val icon: @Composable () -> Unit,
+    val text: @Composable RowScope.() -> Unit
+)
+
+
+class AdaptiveFloatingActionButtonScope {
+    val items = mutableVectorOf<AdaptiveFloatingActionButton>()
+    fun floatingActionButton(
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier,
+        shape: Shape? = null,
+        containerColor: Color? = null,
+        contentColor: Color? = null,
+        elevation: FloatingActionButtonElevation? = null,
+        interactionSource: MutableInteractionSource? = null,
+        icon: @Composable () -> Unit,
+        text: @Composable RowScope.() -> Unit
+    ) {
+        items.add(
+            AdaptiveFloatingActionButton(
+                onClick,
+                modifier,
+                shape,
+                containerColor,
+                contentColor,
+                elevation,
+                interactionSource,
+                icon,
+                text
+            )
+        )
+    }
+}
+
+@Composable
+fun rememberStateOfItems(
+    content: AdaptiveNavItemScope.() -> Unit
+): State<AdaptiveNavItemScope> {
+    val latestContent = rememberUpdatedState(content)
+    return remember {
+        derivedStateOf { AdaptiveNavItemScope().apply(latestContent.value) }
+    }
+}
+
+data class AdaptiveNavItem(
+    val selected: Boolean,
+    val onClick: () -> Unit,
+    val icon: @Composable () -> Unit,
+    val modifier: Modifier = Modifier,
+    val enabled: Boolean = true,
+    val label: @Composable (() -> Unit),
+    val alwaysShowLabel: Boolean = true,
+    val badge: (@Composable () -> Unit)? = null,
+    val colors: NavigationSuiteItemColors? = null,
+    val interactionSource: MutableInteractionSource? = null
+)
+
+
+class AdaptiveNavItemScope() {
+    val items = mutableVectorOf<AdaptiveNavItem>()
+    fun item(
+        selected: Boolean,
+        onClick: () -> Unit,
+        icon: @Composable () -> Unit,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+        label: @Composable (() -> Unit),
+        alwaysShowLabel: Boolean = true,
+        badge: (@Composable () -> Unit)? = null,
+        colors: NavigationSuiteItemColors? = null,
+        interactionSource: MutableInteractionSource? = null
+    ) {
+        items.add(
+            AdaptiveNavItem(
+                selected,
+                onClick,
+                icon,
+                modifier,
+                enabled,
+                label,
+                alwaysShowLabel,
+                badge,
+                colors,
+                interactionSource
+            )
+        )
     }
 }
