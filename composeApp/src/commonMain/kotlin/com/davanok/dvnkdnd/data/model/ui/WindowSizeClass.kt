@@ -1,10 +1,13 @@
-package com.davanok.dvnkdnd.data.types.ui
+package com.davanok.dvnkdnd.data.model.ui
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlin.jvm.JvmInline
+
+fun WindowSizeClass.isCompact(): Boolean =
+    widthSizeClass == WindowWidthSizeClass.Compact || heightSizeClass == WindowHeightSizeClass.Compact
 
 class WindowSizeClass private constructor(
     val widthSizeClass: WindowWidthSizeClass,

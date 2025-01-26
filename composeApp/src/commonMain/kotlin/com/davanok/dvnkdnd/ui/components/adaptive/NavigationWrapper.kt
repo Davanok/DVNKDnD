@@ -37,7 +37,6 @@ import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItemColors
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldLayout
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.contentColorFor
@@ -46,11 +45,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collection.mutableVectorOf
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,8 +58,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.data.platform.BackHandler
 import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
-import com.davanok.dvnkdnd.data.types.ui.WindowHeightSizeClass
-import com.davanok.dvnkdnd.data.types.ui.WindowWidthSizeClass
+import com.davanok.dvnkdnd.data.model.ui.WindowHeightSizeClass
+import com.davanok.dvnkdnd.data.model.ui.WindowSizeClass
+import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.close_drawer
@@ -68,9 +69,6 @@ import dvnkdnd.composeapp.generated.resources.open_drawer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.staticCompositionLocalOf
-import com.davanok.dvnkdnd.data.types.ui.WindowSizeClass
 
 
 @Composable
@@ -112,6 +110,11 @@ fun AdaptiveNavigationWrapper(
                 ModalNavigationDrawerContent(
                     scope = scope.value,
                     onDrawerClicked = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                    },
+                    onItemClicked = {
                         coroutineScope.launch {
                             drawerState.close()
                         }
@@ -177,9 +180,10 @@ val LocalAdaptiveNavigationInfo = staticCompositionLocalOf<AdaptiveNavigationInf
 }
 
 @Composable
-fun ModalNavigationDrawerContent(
+private fun ModalNavigationDrawerContent(
     scope: AdaptiveNavItemScope,
     onDrawerClicked: () -> Unit,
+    onItemClicked: () -> Unit,
     fabScope: AdaptiveFloatingActionButtonScope?,
     modifier: Modifier = Modifier,
 ) {
@@ -232,7 +236,10 @@ fun ModalNavigationDrawerContent(
             NavigationDrawerItem(
                 label = item.label,
                 selected = item.selected,
-                onClick = item.onClick,
+                onClick = {
+                    item.onClick()
+                    onItemClicked()
+                          },
                 modifier = item.modifier,
                 icon = item.icon,
                 badge = item.badge,
@@ -345,7 +352,7 @@ private fun NavigationRail(
 }
 
 @Composable
-fun PermanentNavigationDrawer(
+private fun PermanentNavigationDrawer(
     scope: AdaptiveNavItemScope,
     fabScope: AdaptiveFloatingActionButtonScope? = null,
     modifier: Modifier = Modifier,
@@ -406,7 +413,7 @@ fun PermanentNavigationDrawer(
 
 
 @Composable
-fun rememberStateOfFAB(
+private fun rememberStateOfFAB(
     content: AdaptiveFloatingActionButtonScope.() -> Unit
 ): State<AdaptiveFloatingActionButtonScope> {
     val latestContent = rememberUpdatedState(content)
@@ -458,7 +465,7 @@ class AdaptiveFloatingActionButtonScope {
 }
 
 @Composable
-fun rememberStateOfItems(
+private fun rememberStateOfItems(
     content: AdaptiveNavItemScope.() -> Unit
 ): State<AdaptiveNavItemScope> {
     val latestContent = rememberUpdatedState(content)

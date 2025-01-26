@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.toComposeRect
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.window.layout.WindowMetricsCalculator
-import com.davanok.dvnkdnd.data.types.ui.WindowSizeClass
+import com.davanok.dvnkdnd.data.model.ui.WindowSizeClass
 
 @Composable
 actual fun calculateWindowSizeClass(): WindowSizeClass {

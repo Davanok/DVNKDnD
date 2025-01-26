@@ -5,8 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.davanok.dvnkdnd.data.types.dnd_enums.Dices
-import com.davanok.dvnkdnd.data.types.dnd_enums.Skills
+import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.database.ListIntAdapter
 import com.davanok.dvnkdnd.database.entities.Proficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat

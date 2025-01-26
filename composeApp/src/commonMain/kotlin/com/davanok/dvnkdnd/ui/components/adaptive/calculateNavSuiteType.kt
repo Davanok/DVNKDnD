@@ -3,9 +3,9 @@ package com.davanok.dvnkdnd.ui.components.adaptive
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
-import com.davanok.dvnkdnd.data.types.ui.WindowHeightSizeClass
-import com.davanok.dvnkdnd.data.types.ui.WindowSizeClass
-import com.davanok.dvnkdnd.data.types.ui.WindowWidthSizeClass
+import com.davanok.dvnkdnd.data.model.ui.WindowHeightSizeClass
+import com.davanok.dvnkdnd.data.model.ui.WindowSizeClass
+import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
 
 @Composable
 fun calculateNavSuiteType(

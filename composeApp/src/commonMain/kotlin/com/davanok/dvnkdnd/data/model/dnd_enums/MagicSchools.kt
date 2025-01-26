@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.types.dnd_enums
+package com.davanok.dvnkdnd.data.model.dnd_enums
 
 enum class MagicSchools {
     ABJURATION,
@@ -8,5 +8,6 @@ enum class MagicSchools {
     EVOCATION,
     ILLUSION,
     NECROMANCY,
-    TRANSMUTATION
+    TRANSMUTATION,
+    CUSTOM
 }

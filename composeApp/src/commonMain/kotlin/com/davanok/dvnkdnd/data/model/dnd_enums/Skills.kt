@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.types.dnd_enums
+package com.davanok.dvnkdnd.data.model.dnd_enums
 
 enum class Skills {
     ATHLETICS, // strength

@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.types.dnd_enums
+package com.davanok.dvnkdnd.data.model.dnd_enums
 
 enum class DamageTypes {
     ACID,
@@ -13,5 +13,6 @@ enum class DamageTypes {
     PSYCHIC,
     RADIANT,
     SLASHING,
-    THUNDER
+    THUNDER,
+    CUSTOM
 }

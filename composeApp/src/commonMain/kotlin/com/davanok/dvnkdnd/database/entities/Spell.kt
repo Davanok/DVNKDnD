@@ -6,12 +6,12 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.davanok.dvnkdnd.data.types.dnd_enums.AreaTypes
-import com.davanok.dvnkdnd.data.types.dnd_enums.DamageTypes
-import com.davanok.dvnkdnd.data.types.dnd_enums.Dices
-import com.davanok.dvnkdnd.data.types.dnd_enums.SpellComponents
-import com.davanok.dvnkdnd.data.types.dnd_enums.MagicSchools
-import com.davanok.dvnkdnd.data.types.dnd_enums.Stats
+import com.davanok.dvnkdnd.data.model.dnd_enums.AreaTypes
+import com.davanok.dvnkdnd.data.model.dnd_enums.DamageTypes
+import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
+import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
+import com.davanok.dvnkdnd.data.model.dnd_enums.MagicSchools
+import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubclass
 

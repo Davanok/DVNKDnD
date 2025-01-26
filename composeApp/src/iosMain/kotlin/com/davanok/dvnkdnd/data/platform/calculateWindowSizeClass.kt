@@ -5,7 +5,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.toSize
-import com.davanok.dvnkdnd.data.types.ui.WindowSizeClass
+import com.davanok.dvnkdnd.data.model.ui.WindowSizeClass
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

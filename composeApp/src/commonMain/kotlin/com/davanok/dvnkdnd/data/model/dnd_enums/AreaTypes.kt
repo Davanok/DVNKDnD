@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.types.dnd_enums
+package com.davanok.dvnkdnd.data.model.dnd_enums
 
 enum class AreaTypes {
     CONE,
@@ -7,5 +7,6 @@ enum class AreaTypes {
     LINE,
     SPHERE,
     SELF,
-    TOUCH
+    TOUCH,
+    CUSTOM
 }

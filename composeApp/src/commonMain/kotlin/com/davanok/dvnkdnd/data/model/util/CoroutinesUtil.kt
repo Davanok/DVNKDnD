@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.types.util
+package com.davanok.dvnkdnd.data.model.util
 
 import kotlinx.coroutines.flow.SharingStarted
 

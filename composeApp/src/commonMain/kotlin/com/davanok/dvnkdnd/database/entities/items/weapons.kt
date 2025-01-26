@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.data.types.dnd_enums.DamageTypes
-import com.davanok.dvnkdnd.data.types.dnd_enums.Dices
+import com.davanok.dvnkdnd.data.model.dnd_enums.DamageTypes
+import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
 import com.davanok.dvnkdnd.database.entities.Proficiency
 
 

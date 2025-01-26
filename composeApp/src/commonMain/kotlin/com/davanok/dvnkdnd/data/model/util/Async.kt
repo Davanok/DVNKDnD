@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.types.util
+package com.davanok.dvnkdnd.data.model.util
 
 import org.jetbrains.compose.resources.StringResource
 

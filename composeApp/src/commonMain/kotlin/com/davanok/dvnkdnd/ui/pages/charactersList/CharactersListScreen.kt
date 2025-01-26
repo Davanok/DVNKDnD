@@ -18,7 +18,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,8 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterMin
 import com.davanok.dvnkdnd.ui.components.EmptyImage
-import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveLayout
-import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveNavigationInfo
+import com.davanok.dvnkdnd.ui.components.adaptive.TwoPane
 import com.davanok.dvnkdnd.ui.navigation.FABScaffold
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.no_characters_yet
@@ -49,7 +47,7 @@ fun CharactersListScreen(
     viewModel: CharactersListViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    AdaptiveLayout(
+    TwoPane(
         modifier = Modifier.fillMaxSize(),
         firstPane = { twoPane ->
             FABScaffold(

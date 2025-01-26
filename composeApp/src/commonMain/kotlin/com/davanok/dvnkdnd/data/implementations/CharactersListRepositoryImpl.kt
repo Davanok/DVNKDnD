@@ -6,7 +6,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterMin
 import kotlinx.coroutines.flow.Flow
 
 class CharactersListRepositoryImpl(
-    private val charactersDao: CharactersDao
+    private val dao: CharactersDao
 ) : CharactersListRepository {
-    override fun getCharactersFlow(): Flow<List<CharacterMin>> = charactersDao.getCharactersFlow()
+    override fun getCharactersFlow(): Flow<List<CharacterMin>> = dao.getCharactersFlow()
 }

@@ -12,6 +12,8 @@ import androidx.navigation.toRoute
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
 
 @Composable
 fun NavigationHost(
@@ -65,5 +67,10 @@ private fun NavGraphBuilder.newEntityDestinations(navController: NavHostControll
                 onNavigate = { route -> navController.navigate(route) }
             )
         }
-
+        composable<Route.New.Character> {
+            NewCharacterScreen()
+        }
+        composable<Route.New.Item> {
+            NewItemScreen()
+        }
     }

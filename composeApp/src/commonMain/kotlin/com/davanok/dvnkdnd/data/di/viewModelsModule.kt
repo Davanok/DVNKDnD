@@ -8,5 +8,5 @@ fun viewModelsModule() = module {
     single<CharactersListViewModel> { CharactersListViewModel(get()) }
 
     //  New character screen
-    single<NewCharacterViewModel> { NewCharacterViewModel() }
+    single<NewCharacterViewModel> { NewCharacterViewModel(get()) }
 }
