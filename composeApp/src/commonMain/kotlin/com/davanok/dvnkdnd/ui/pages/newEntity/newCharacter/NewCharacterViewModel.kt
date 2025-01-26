@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.util.WhileUiSubscribed
 import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
+import io.github.aakira.napier.Napier
 import io.github.vinceglb.filekit.core.PlatformFile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,11 +15,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 
 class NewCharacterViewModel(
-    repository: NewCharacterRepository
+    private val repository: NewCharacterRepository
 ) : ViewModel() {
-    init {
-        download(repository)
-    }
 
     private val _message = MutableStateFlow<StringResource?>(null)
     private val _sheetContent = MutableStateFlow<SheetContent?>(null)
@@ -45,8 +43,14 @@ class NewCharacterViewModel(
     private val _isDownloading = MutableStateFlow(true)
     private val _PHBClasses = MutableStateFlow<List<DnDEntityMin>>(emptyList())
 
-    private fun download(repository: NewCharacterRepository) = viewModelScope.launch {
-        _PHBClasses.value = repository.getClassesMinList("PHB")
+
+    init {
+        download()
+    }
+
+    private fun download() = viewModelScope.launch {
+        val classes = repository.getClassesMinList("PHB")
+        _PHBClasses.value = classes
     }.invokeOnCompletion {
         _isDownloading.value = false
     }
@@ -88,7 +92,7 @@ class NewCharacterViewModel(
     fun setCharacterImage(value: PlatformFile) { _characterImage.value = value }
     fun setCharacterName(value: String) { _characterName.value = value }
     fun setCharacterDescription(value: String) { _characterDescription.value = value }
-    fun setCharacterClass(value: DnDEntityMin) { _characterCls.value = value }
+    fun setCharacterClass(value: DnDEntityMin?) { _characterCls.value = value }
 }
 
 

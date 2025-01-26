@@ -6,6 +6,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.OutlinedTextField
@@ -26,28 +27,27 @@ import androidx.compose.ui.Modifier
 fun SelectableTextField(
     modifier: Modifier = Modifier,
     value: String,
+    onValueChange: (String) -> Unit,
     label: (@Composable () -> Unit)? = null,
     placeholder: (@Composable () -> Unit)? = null,
     dropdownMenuContent: ExposedDropdownMenuScope.() -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
-        modifier = modifier,
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
+            modifier = modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
             value = value,
-            onValueChange = {},
-            readOnly = true,
+            onValueChange = onValueChange,
             label = label,
             placeholder = placeholder,
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
                     expanded = expanded
                 )
-            },
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
+            }
         )
         val content = rememberStateOfContent(dropdownMenuContent)
         ExposedDropdownMenu(
