@@ -32,8 +32,9 @@ import com.davanok.dvnkdnd.ui.components.EmptyImage
 import com.davanok.dvnkdnd.ui.components.adaptive.TwoPane
 import com.davanok.dvnkdnd.ui.navigation.FABScaffold
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.character
+import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.no_characters_yet
-import dvnkdnd.composeapp.generated.resources.image
 import dvnkdnd.composeapp.generated.resources.sentiment_dissatisfied
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -151,7 +152,7 @@ private fun CharacterCard(
             )
             else AsyncImage(
                 character.image,
-                contentDescription = stringResource(Res.string.image)
+                contentDescription = stringResource(Res.string.character_image)
             )
         }
     )

@@ -31,6 +31,7 @@ adaptive = "1.1.0-alpha09"
 window-size = "1.7.3"
 build-config = "5.5.1"
 coil = "3.0.4"
+korim = "5.1.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -93,6 +94,9 @@ androidx-datastore-preferences = { group = "androidx.datastore", name = "datasto
 
 # logging - napier
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
+
+# graphics
+korim = { group = "com.soywiz.korge", name = "korge-core", version.ref = "korim" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

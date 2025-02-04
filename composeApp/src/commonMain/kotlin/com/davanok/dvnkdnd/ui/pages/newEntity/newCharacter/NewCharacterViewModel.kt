@@ -70,7 +70,7 @@ class NewCharacterViewModel(
 
     // Character setters
 
-    private val _characterImage = MutableStateFlow<PlatformFile?>(null)
+    private val _characterImage = MutableStateFlow<ByteArray?>(null)
     private val _characterName = MutableStateFlow("")
     private val _characterDescription = MutableStateFlow("")
     private val _characterCls = MutableStateFlow<DnDEntityMin?>(null)
@@ -79,7 +79,7 @@ class NewCharacterViewModel(
         _characterImage, _characterName, _characterDescription, _characterCls
     ) { (image, name, description, cls) ->
         NewCharacterState(
-            image = image as PlatformFile?,
+            image = image as ByteArray?,
             name = name as String,
             description = description as String,
             cls = cls as DnDEntityMin?
@@ -89,7 +89,7 @@ class NewCharacterViewModel(
         started = WhileUiSubscribed,
         initialValue = NewCharacterState()
     )
-    fun setCharacterImage(value: PlatformFile) { _characterImage.value = value }
+    fun setCharacterImage(value: ByteArray?) { _characterImage.value = value }
     fun setCharacterName(value: String) { _characterName.value = value }
     fun setCharacterDescription(value: String) { _characterDescription.value = value }
     fun setCharacterClass(value: DnDEntityMin?) { _characterCls.value = value }
@@ -112,7 +112,7 @@ data class DownloadableValuesState(
 )
 
 data class NewCharacterState(
-    val image: PlatformFile? = null,
+    val image: ByteArray? = null,
     val name: String = "",
     val description: String = "",
     val cls: DnDEntityMin? = null,

@@ -21,6 +21,19 @@
     <string name="background">Background</string>
     <string name="ability">Ability</string>
 
+    <!--images-->
+    <string name="select_image">Select image</string>
+    <string name="drop_image">Drop image</string>
+    <string name="rotate_left">Rotate left</string>
+    <string name="rotate_right">Rotate right</string>
+    <string name="discard_changes">Discard changes</string>
+    <string name="finish">Finish</string>
+    <string name="zoom_in">Zoom in</string>
+    <string name="zoom_out">Zoom out</string>
+
+    <!--common-->
+    <string name="cancel">Cancel</string>
+
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
     <string name="no_characters_yet">You haven't added any characters yet. Create your first one now!</string>
@@ -30,7 +43,7 @@
     <string name="homebrew">Homebrew</string>
 
     <!--new character screen-->
-    <string name="image">Image</string>
+    <string name="character_image">Character image</string>
     <string name="name">Name</string>
     <string name="description">Description</string>
 </resources>

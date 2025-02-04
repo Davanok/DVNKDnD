@@ -1,32 +1,59 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.data.model.DnDEntityMin
-import com.davanok.dvnkdnd.ui.components.SelectableTextField
+import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
+import com.davanok.dvnkdnd.ui.components.FiniteTextField
+import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
+import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveNavigationInfo
+import com.davanok.dvnkdnd.ui.components.image.toByteArray
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.cls
+import dvnkdnd.composeapp.generated.resources.add_photo_alternate
+import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.description
+import dvnkdnd.composeapp.generated.resources.drop_image
 import dvnkdnd.composeapp.generated.resources.name
-import io.github.aakira.napier.Napier
+import dvnkdnd.composeapp.generated.resources.select_image
+import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.core.FileKitPlatformSettings
+import io.github.vinceglb.filekit.core.PickerType
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import kotlin.text.startsWith
 
 @Composable
 fun NewCharacterScreen(
@@ -35,6 +62,7 @@ fun NewCharacterScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     CreateCharacterContent(
+        modifier = Modifier.fillMaxSize(),
         viewModel = viewModel
     )
 
@@ -55,42 +83,150 @@ private fun CreateCharacterContent(
     viewModel: NewCharacterViewModel,
     modifier: Modifier = Modifier
 ) {
+    val adaptiveInfo = LocalAdaptiveNavigationInfo.current
     val state by viewModel.newCharacterState.collectAsStateWithLifecycle()
-    val entities by viewModel.downloadableState.collectAsState()
-    Column(
+    val entities by viewModel.downloadableState.collectAsStateWithLifecycle()
+
+    if (adaptiveInfo.windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) Column (
         modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
-//        AsyncImage(
-//            modifier  = Modifier
-//                .fillMaxWidth()
-//                .aspectRatio(1f)
-//                .clip(RoundedCornerShape(12.dp)),
-//            model = state.image,
-//            contentDescription = stringResource(Res.string.image)
-//        )
-        OutlinedTextField(
+        ImageContent(
             modifier = Modifier
-                .fillMaxWidth(),
-            value = state.name,
-            onValueChange = viewModel::setCharacterName,
-            label = { Text(text = stringResource(Res.string.name)) },
-            singleLine = true
+                .fillMaxWidth()
+                .aspectRatio(1f),
+            image = state.image,
+            onImageChange = viewModel::setCharacterImage
         )
-        OutlinedTextField(
+        Spacer(modifier = Modifier.width(24.dp))
+        Content(
+            state = state,
+            entities = entities,
+            onNameChange = viewModel::setCharacterName,
+            onDescriptionChange = viewModel::setCharacterDescription,
+            onClassChange = viewModel::setCharacterClass
+        )
+    }
+    else Row (
+        modifier = modifier
+    ) {
+        ImageContent(
             modifier = Modifier
-                .fillMaxWidth(),
-            value = state.description,
-            onValueChange = viewModel::setCharacterDescription,
-            label = { Text(text = stringResource(Res.string.description)) },
-            singleLine = true
+                .weight(.5f)
+                .aspectRatio(1f),
+            image = state.image,
+            onImageChange = viewModel::setCharacterImage
         )
-        FiniteTextField(
-            modifier = Modifier.fillMaxWidth(),
-            entities = entities.classes,
-            toString = { it.name },
-            onSelected = viewModel::setCharacterClass
+        Column (
+            modifier = Modifier
+                .weight(.5f)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Content(
+                state = state,
+                entities = entities,
+                onNameChange = viewModel::setCharacterName,
+                onDescriptionChange = viewModel::setCharacterDescription,
+                onClassChange = viewModel::setCharacterClass
+            )
+        }
+    }
+}
+
+@Composable
+private fun Content(
+    state: NewCharacterState,
+    entities: DownloadableValuesState,
+    onNameChange: (String) -> Unit,
+    onDescriptionChange: (String) -> Unit,
+    onClassChange: (DnDEntityMin?) -> Unit,
+) {
+    OutlinedTextField(
+        modifier = Modifier
+            .fillMaxWidth(),
+        value = state.name,
+        onValueChange = onNameChange,
+        label = { Text(text = stringResource(Res.string.name)) },
+        singleLine = true
+    )
+    OutlinedTextField(
+        modifier = Modifier
+            .fillMaxWidth(),
+        value = state.description,
+        onValueChange = onDescriptionChange,
+        label = { Text(text = stringResource(Res.string.description)) },
+        singleLine = true
+    )
+    FiniteTextField(
+        modifier = Modifier.fillMaxWidth(),
+        entities = entities.classes,
+        toString = { it.name },
+        onSelected = onClassChange
+    )
+}
+
+@Composable
+private fun ImageContent(
+    image: ByteArray?,
+    onImageChange: (ByteArray?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scope = rememberCoroutineScope()
+
+    var pickedImage by remember { mutableStateOf<ByteArray?>(null) }
+    val imagePicker = rememberFilePickerLauncher(
+        type = PickerType.Image
+    ) { image ->
+        scope.launch { pickedImage = image?.toByteArray() }
+    }
+
+    pickedImage?.let {
+        ImageCropDialog(
+            bytes = it,
+            boxSize = 300.dp,
+            onResult = { image ->
+                pickedImage = null
+                onImageChange(image)
+            }
         )
+    }
+
+    Box(
+        modifier = modifier
+    ) {
+        AsyncImage(
+            modifier = Modifier
+                .clip(RoundedCornerShape(24.dp))
+                .fillMaxSize(),
+            model = image,
+            contentDescription = stringResource(Res.string.character_image)
+        )
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primaryContainer)
+        ) {
+            IconButton(
+                onClick = {
+                    imagePicker.launch()
+                }
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.add_photo_alternate),
+                    contentDescription = stringResource(Res.string.select_image)
+                )
+            }
+            IconButton(
+                onClick = { onImageChange(null) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(Res.string.drop_image)
+                )
+            }
+        }
     }
 }
 
@@ -107,54 +243,6 @@ private fun ModalSheetContent(
         }
     ) {
         Text("coming soon")
-    }
-}
-
-@Composable
-private fun <T> FiniteTextField(
-    entities: List<T>,
-    toString: (T) -> String,
-    onSelected: (T?) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var text by remember { mutableStateOf("") }
-    val entitiesMap = remember(entities) {
-        entities.associateWith(toString)
-    }
-    val filteredItems by remember(entities, text) {
-        derivedStateOf {
-            entitiesMap.filterValues { it.startsWith(text, ignoreCase = true) }
-        }
-    }
-    var prevSelected by remember { mutableStateOf<T?>(null) }
-
-    SelectableTextField(
-        modifier = modifier,
-        value = text,
-        onValueChange = { newText ->
-            text = newText
-            val match = entitiesMap.entries
-                .firstOrNull { it.value.equals(newText, ignoreCase = true) }
-                ?.key
-            if (match != prevSelected) {
-                prevSelected = match
-                onSelected(match)
-            }
-        },
-        label = { Text(text = stringResource(Res.string.cls)) }
-    ) {
-        filteredItems.forEach { (key, value) ->
-            item(
-                text = { Text(value) },
-                onClick = {
-                    text = value
-                    if (prevSelected != key) {
-                        prevSelected = key
-                        onSelected(key)
-                    }
-                }
-            )
-        }
     }
 }
 
