@@ -16,5 +16,4 @@ actual fun calculateWindowSizeClass(): WindowSizeClass {
         .getOrCreate()
         .computeCurrentWindowMetrics(LocalActivity.current!!)
     val size = with(density) { metrics.bounds.toComposeRect().size.toDpSize() }
-    return WindowSizeClass.calculateFromSize(size)
-}
+    return WindowSizeClass.calculateFromSize(size)}

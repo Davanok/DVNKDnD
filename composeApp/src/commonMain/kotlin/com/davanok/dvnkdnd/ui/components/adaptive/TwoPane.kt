@@ -16,7 +16,7 @@ fun TwoPane(
     firstPane: @Composable BoxScope.(twoPane: Boolean) -> Unit,
     secondPane: @Composable BoxScope.() -> Unit,
 ) {
-    val info = LocalAdaptiveNavigationInfo.current
+    val info = LocalAdaptiveInfo.current
     val windowSizeClass = info.windowSizeClass
 
     if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact)

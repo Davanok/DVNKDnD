@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CharactersDao {
-    @Query("SELECT id, name, level, image FROM characters")
+    @Query("SELECT id, name, level FROM characters")
     fun getCharactersFlow(): Flow<List<CharacterMin>>
 }

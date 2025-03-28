@@ -9,7 +9,7 @@ import kotlin.jvm.JvmInline
 fun WindowSizeClass.isCompact(): Boolean =
     widthSizeClass == WindowWidthSizeClass.Compact || heightSizeClass == WindowHeightSizeClass.Compact
 
-class WindowSizeClass private constructor(
+class WindowSizeClass(
     val widthSizeClass: WindowWidthSizeClass,
     val heightSizeClass: WindowHeightSizeClass
 ) {

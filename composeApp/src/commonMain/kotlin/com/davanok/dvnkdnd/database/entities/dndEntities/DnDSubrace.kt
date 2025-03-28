@@ -7,9 +7,15 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 
-@Entity(tableName = "sub_races")
-data class DnDSubRace(
+@Entity(
+    tableName = "subraces",
+    foreignKeys = [
+        ForeignKey(DnDRace::class, ["id"], ["raceId"], onDelete = ForeignKey.CASCADE),
+    ]
+)
+data class DnDSubrace(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(index = true) val raceId: Long,
     val name: String,
     val description: String,
     val speed: Int,
@@ -19,27 +25,27 @@ data class DnDSubRace(
 )
 
 @Entity(
-    tableName = "sub_race_modifiers",
+    tableName = "subrace_modifiers",
     foreignKeys = [
-        ForeignKey(DnDSubRace::class, ["id"], ["subRaceId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDSubrace::class, ["id"], ["subraceId"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class SubRaceModifier(
+data class SubraceModifier(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val subRaceId: Long,
+    @ColumnInfo(index = true) val subraceId: Long,
     val selectable: Boolean,
     val stat: Stats,
     val modifier: Int
 )
 @Entity(
-    tableName = "sub_race_skills",
+    tableName = "subrace_skills",
     foreignKeys = [
-        ForeignKey(DnDSubRace::class, ["id"], ["subRaceId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDSubrace::class, ["id"], ["subraceId"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class SubRaceSkill(
+data class SubraceSkill(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val subRaceId: Long,
+    @ColumnInfo(index = true) val subraceId: Long,
     val selectable: Boolean,
     val skill: Skills
 )

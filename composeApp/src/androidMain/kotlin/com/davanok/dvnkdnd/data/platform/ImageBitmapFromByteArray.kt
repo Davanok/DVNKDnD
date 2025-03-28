@@ -11,6 +11,6 @@ actual fun ImageBitmap.Companion.fromByteArray(bytes: ByteArray): ImageBitmap =
     BitmapFactory.decodeByteArray(bytes, 0, bytes.size).asImageBitmap()
 actual fun ImageBitmap.toByteArray(): ByteArray =
     ByteArrayOutputStream().use {
-        asAndroidBitmap().compress(Bitmap.CompressFormat.JPEG, 100, it)
+        asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, it)
         it.toByteArray()
     }

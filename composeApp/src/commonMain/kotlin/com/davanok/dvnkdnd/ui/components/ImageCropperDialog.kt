@@ -96,7 +96,7 @@ private fun globalOffsetChange(offset: Offset, rotation: Float): Offset = when(r
     270f -> Offset(offset.y, -offset.x)
     else -> offset
 }
-fun changeOffsetWhenScale(zoomChange: Float, imageRealSize: Size, boxSizePx: Float, offset: Offset): Offset {
+private fun changeOffsetWhenScale(zoomChange: Float, imageRealSize: Size, boxSizePx: Float, offset: Offset): Offset {
     val oneMinusSizeChange = (1 - zoomChange)
     val offsetX2 = offset * 2f
 
@@ -171,14 +171,14 @@ fun ImageCropDialog(
             Image(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .transformable(state = state)
                     .graphicsLayer {
                         scaleX = scale
                         scaleY = scale
                         rotationZ = rotation
                         translationX = offset.x
                         translationY = offset.y
-                    },
+                    }
+                    .transformable(state = state),
                 bitmap = imageBitmap,
                 contentDescription = stringResource(Res.string.character_image)
             )
@@ -187,7 +187,7 @@ fun ImageCropDialog(
                 modifier = Modifier
                     .background(
                         Color.Gray.copy(alpha = .5f),
-                        RoundedCornerShape(16.dp)
+                        MaterialTheme.shapes.large
                     )
                     .size(boxSize)
                     .align(Alignment.Center)

@@ -4,17 +4,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
@@ -26,13 +23,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,7 +43,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collection.mutableVectorOf
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -56,11 +52,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import com.davanok.dvnkdnd.data.model.ui.WindowSizeClass
 import com.davanok.dvnkdnd.data.platform.BackHandler
 import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
-import com.davanok.dvnkdnd.data.model.ui.WindowHeightSizeClass
-import com.davanok.dvnkdnd.data.model.ui.WindowSizeClass
-import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.close_drawer
@@ -123,46 +117,25 @@ fun AdaptiveNavigationWrapper(
                 )
             },
         ) {
-            NavigationSuiteScaffoldLayout(
-                layoutType = layoutType,
-                navigationSuite = {
-                    AdaptiveNavigationSuite(
-                        layoutType,
-                        scope.value,
-                        onDrawerClicked = {
-                            coroutineScope.launch {
-                                drawerState.open()
-                            }
-                        },
-                        fabScope = fabScope?.value
-                    )
-                }
+            Box(
+                modifier = Modifier.safeDrawingPadding().imePadding()
             ) {
-                val paddingValues by remember(windowSizeClass, layoutType) {
-                    derivedStateOf {
-                        val size = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact || windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact) 16.dp
-                        else 24.dp
-                        if (layoutType == NavigationSuiteType.NavigationBar) PaddingValues(horizontal = size)
-                        else PaddingValues(end = size)
-                    }
-                }
-                Box(
-                    Modifier
-                        .consumeWindowInsets(
-                            when (layoutType) {
-                                NavigationSuiteType.NavigationBar ->
-                                    NavigationBarDefaults.windowInsets
-                                NavigationSuiteType.NavigationRail ->
-                                    NavigationRailDefaults.windowInsets
-                                NavigationSuiteType.NavigationDrawer ->
-                                    DrawerDefaults.windowInsets
-                                else -> WindowInsets(0, 0, 0, 0)
-                            }
+                NavigationSuiteScaffoldLayout(
+                    layoutType = layoutType,
+                    navigationSuite = {
+                        AdaptiveNavigationSuite(
+                            layoutType,
+                            scope.value,
+                            onDrawerClicked = {
+                                coroutineScope.launch {
+                                    drawerState.open()
+                                }
+                            },
+                            fabScope = fabScope?.value
                         )
-                        .statusBarsPadding()
-                        .padding(paddingValues)
+                    }
                 ) {
-                    CompositionLocalProvider(LocalAdaptiveNavigationInfo provides adaptiveNavigationInfo) {
+                    CompositionLocalProvider(LocalAdaptiveInfo provides adaptiveNavigationInfo) {
                         content()
                     }
                 }
@@ -175,7 +148,7 @@ data class AdaptiveNavigationInfo(
     val layoutType: NavigationSuiteType,
     val windowSizeClass: WindowSizeClass
 )
-val LocalAdaptiveNavigationInfo = staticCompositionLocalOf<AdaptiveNavigationInfo> {
+val LocalAdaptiveInfo = staticCompositionLocalOf<AdaptiveNavigationInfo> {
     error("CompositionLocal ContentType not provided")
 }
 
@@ -249,7 +222,6 @@ private fun ModalNavigationDrawerContent(
         }
     }
 }
-
 @Composable
 private fun AdaptiveNavigationSuite(
     layoutType: NavigationSuiteType,
@@ -292,6 +264,7 @@ private fun NavigationBar(
                 onClick = item.onClick,
                 modifier = item.modifier,
                 icon = item.icon,
+                colors = item.colors?.navigationBarItemColors?: NavigationBarItemDefaults.colors(),
                 interactionSource = item.interactionSource
             )
         }
@@ -345,6 +318,7 @@ private fun NavigationRail(
                 onClick = item.onClick,
                 modifier = item.modifier,
                 icon = item.icon,
+                colors = item.colors?.navigationRailItemColors?: NavigationRailItemDefaults.colors(),
                 interactionSource = item.interactionSource
             )
         }

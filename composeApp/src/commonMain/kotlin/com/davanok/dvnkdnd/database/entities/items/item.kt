@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
+import com.davanok.dvnkdnd.database.entities.DatabaseImage
 import com.davanok.dvnkdnd.database.entities.Proficiency
 
 
@@ -20,7 +21,6 @@ data class DnDItem(
     val cost: Int?, // in copper pieces
     val weight: Int?,
     val count: Int,
-    val image: String?,
     val source: String?
 )
 
@@ -59,4 +59,17 @@ data class ItemSkill(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(index = true) val itemId: Long,
     val skill: Skills
+)
+
+@Entity(
+    tableName = "item_images",
+    foreignKeys = [
+        ForeignKey(DnDItem::class, ["id"], ["itemId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DatabaseImage::class, ["id"], ["imageId"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class ItemImage(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(index = true) val itemId: Long,
+    @ColumnInfo(index = true) val imageId: Long
 )

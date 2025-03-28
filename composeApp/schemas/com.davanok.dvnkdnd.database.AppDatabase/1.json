@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6635dee7b7a824cbfac336acbc51f946",
+    "identityHash": "2c49bd727e83a5fe853f18b4ca2e3605",
     "entities": [
       {
         "tableName": "characters",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `race` INTEGER, `subRace` INTEGER, `cls` INTEGER, `subCls` INTEGER, `background` INTEGER, `level` INTEGER NOT NULL, `proficiencyBonus` INTEGER NOT NULL, `image` TEXT, `source` TEXT, FOREIGN KEY(`race`) REFERENCES `races`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`race`) REFERENCES `sub_races`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`cls`) REFERENCES `classes`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`subCls`) REFERENCES `subclasses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`background`) REFERENCES `backgrounds`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `race` INTEGER, `subRace` INTEGER, `cls` INTEGER, `subCls` INTEGER, `background` INTEGER, `level` INTEGER NOT NULL, `proficiencyBonus` INTEGER NOT NULL, `source` TEXT, FOREIGN KEY(`race`) REFERENCES `races`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`race`) REFERENCES `subraces`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`cls`) REFERENCES `classes`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`subCls`) REFERENCES `subclasses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`background`) REFERENCES `backgrounds`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -62,11 +62,6 @@
             "columnName": "proficiencyBonus",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "image",
-            "columnName": "image",
-            "affinity": "TEXT"
           },
           {
             "fieldPath": "source",
@@ -140,7 +135,7 @@
             ]
           },
           {
-            "table": "sub_races",
+            "table": "subraces",
             "onDelete": "SET NULL",
             "onUpdate": "NO ACTION",
             "columns": [
@@ -238,12 +233,18 @@
         }
       },
       {
-        "tableName": "sub_races",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `speed` INTEGER NOT NULL, `source` TEXT NOT NULL, `modifierSelectLimit` INTEGER, `skillsSelectLimit` INTEGER)",
+        "tableName": "subraces",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `raceId` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `speed` INTEGER NOT NULL, `source` TEXT NOT NULL, `modifierSelectLimit` INTEGER, `skillsSelectLimit` INTEGER, FOREIGN KEY(`raceId`) REFERENCES `races`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "raceId",
+            "columnName": "raceId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -287,7 +288,31 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_subraces_raceId",
+            "unique": false,
+            "columnNames": [
+              "raceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_subraces_raceId` ON `${TABLE_NAME}` (`raceId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "races",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "raceId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "classes",
@@ -443,7 +468,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6635dee7b7a824cbfac336acbc51f946')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2c49bd727e83a5fe853f18b4ca2e3605')"
     ]
   }
 }

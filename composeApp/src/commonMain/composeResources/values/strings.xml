@@ -23,6 +23,7 @@
 
     <!--images-->
     <string name="select_image">Select image</string>
+    <string name="add_image">Add image</string>
     <string name="drop_image">Drop image</string>
     <string name="rotate_left">Rotate left</string>
     <string name="rotate_right">Rotate right</string>
@@ -33,12 +34,14 @@
 
     <!--common-->
     <string name="cancel">Cancel</string>
+    <string name="more">More</string>
 
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
     <string name="no_characters_yet">You haven't added any characters yet. Create your first one now!</string>
 
     <!--new entity screen-->
+    <string name="main">Main</string>
     <string name="custom">Custom</string>
     <string name="homebrew">Homebrew</string>
 
@@ -46,4 +49,9 @@
     <string name="character_image">Character image</string>
     <string name="name">Name</string>
     <string name="description">Description</string>
+    <string name="no_character_images_yet">No character images yet</string>
+    <string name="set_image_to_main">Set image as main</string>
+
+    <!--side sheet-->
+    <string name="close_side_sheet">Close side sheet</string>
 </resources>

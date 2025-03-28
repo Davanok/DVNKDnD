@@ -83,6 +83,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
         androidMain.dependencies {
+            implementation(libs.androidx.window)
+
             implementation(libs.koin.android)
             implementation(libs.ktor.okhttp)
 
@@ -171,8 +173,8 @@ buildConfig {
     project.rootProject.file("config.properties").inputStream().use {
         properties.load(it)
     }
-    buildConfigField("packageName", packageName)
-    buildConfigField("bundleId", "com.davanok.dvnkdnd.DVNKDnD")
+    buildConfigField("PACKAGE_NAME", packageName)
+    buildConfigField("BUNDLE_ID", "com.davanok.dvnkdnd.DVNKDnD")
     properties.forEach { property ->
         buildConfigField(property.key.toString(), property.value.toString())
     }

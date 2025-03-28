@@ -1,17 +1,14 @@
 package com.davanok.dvnkdnd.ui.navigation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveNavigationInfo
+import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveInfo
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.draw
 import dvnkdnd.composeapp.generated.resources.new
@@ -24,7 +21,7 @@ fun FABScaffold(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    val layoutInfo = LocalAdaptiveNavigationInfo.current
+    val layoutInfo = LocalAdaptiveInfo.current
     val showFAB = layoutInfo.layoutType == NavigationSuiteType.NavigationBar
 
     if (showFAB)

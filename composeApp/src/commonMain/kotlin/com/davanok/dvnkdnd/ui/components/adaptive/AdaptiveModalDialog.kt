@@ -14,7 +14,10 @@ import androidx.compose.ui.Modifier
 import com.davanok.dvnkdnd.data.model.ui.isCompact
 import com.davanok.dvnkdnd.ui.components.sideSheet.ModalSideSheet
 import com.davanok.dvnkdnd.ui.components.sideSheet.rememberModalSideSheetState
+import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.close_side_sheet
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,7 +28,7 @@ fun AdaptiveModalSheet(
     header: @Composable () -> Unit = { }, // TODO: implement
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val adaptiveInfo = LocalAdaptiveNavigationInfo.current
+    val adaptiveInfo = LocalAdaptiveInfo.current
 
     if (adaptiveInfo.windowSizeClass.isCompact()) {
         ModalBottomSheet(
@@ -50,7 +53,7 @@ fun AdaptiveModalSheet(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = ""
+                                contentDescription = stringResource(Res.string.close_side_sheet)
                             )
                         }
                     }
