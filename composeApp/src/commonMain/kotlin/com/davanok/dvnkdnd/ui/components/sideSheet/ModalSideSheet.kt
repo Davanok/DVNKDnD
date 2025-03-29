@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -79,7 +80,6 @@ fun ModalSideSheet(
     scrimColor: Color = SideSheetDefaults.ScrimColor,
     contentWindowInsets: @Composable () -> WindowInsets = { SideSheetDefaults.windowInsets },
     properties: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties,
-    header: @Composable (() -> Unit),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -99,14 +99,14 @@ fun ModalSideSheet(
 
     val predictiveBackProgress = remember { Animatable(initialValue = 0f) }
 
-    ModalBottomSheetDialog(
+    ModalSideSheetDialog(
         properties = properties,
         onDismissRequest = {
             scope.launch { sheetState.hide() }.invokeOnCompletion { onDismissRequest() }
         },
         predictiveBackProgress = predictiveBackProgress,
     ) {
-        Box(modifier = Modifier.fillMaxSize().imePadding().semantics { isTraversalGroup = true }) {
+        Box(modifier = Modifier.fillMaxSize().semantics { isTraversalGroup = true }) {
             Scrim(
                 color = scrimColor,
                 onDismissRequest = animateToDismiss,
@@ -122,7 +122,6 @@ fun ModalSideSheet(
                 containerColor,
                 contentColor,
                 tonalElevation,
-                header,
                 contentWindowInsets,
                 content
             )
@@ -278,17 +277,19 @@ class SheetState(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun ModalBottomSheetDialog(
+fun ModalSideSheetDialog(
     onDismissRequest: () -> Unit,
     properties: ModalBottomSheetProperties,
     predictiveBackProgress: Animatable<Float, AnimationVector1D>,
     content: @Composable () -> Unit
 ) {
     Dialog(
-        onDismissRequest = onDismissRequest, properties = DialogProperties(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(
             dismissOnBackPress = properties.shouldDismissOnBackPress,
             usePlatformDefaultWidth = false,
-        ), content = content
+        ),
+        content = content
     )
 }
 
@@ -354,7 +355,6 @@ fun BoxScope.ModalSideSheetContent(
     containerColor: Color = SideSheetDefaults.ContainerColor,
     contentColor: Color = contentColorFor(containerColor),
     tonalElevation: Dp = SideSheetDefaults.Elevation,
-    header: @Composable (() -> Unit),
     contentWindowInsets: @Composable () -> WindowInsets = { SideSheetDefaults.windowInsets },
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -406,18 +406,23 @@ fun BoxScope.ModalSideSheetContent(
         contentColor = contentColor,
         tonalElevation = tonalElevation,
     ) {
-        Column(Modifier.fillMaxWidth().windowInsetsPadding(contentWindowInsets()).graphicsLayer {
-            val progress = predictiveBackProgress.value
-            val predictiveBackScaleX = calculatePredictiveBackScaleX(progress)
-            val predictiveBackScaleY = calculatePredictiveBackScaleY(progress)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(contentWindowInsets())
+                .graphicsLayer {
+                    val progress = predictiveBackProgress.value
+                    val predictiveBackScaleX = calculatePredictiveBackScaleX(progress)
+                    val predictiveBackScaleY = calculatePredictiveBackScaleY(progress)
 
-            // Preserve the original aspect ratio and alignment of the child content.
-            scaleX =
-                if (predictiveBackScaleX != 0f) predictiveBackScaleY / predictiveBackScaleX
-                else 1f
-            transformOrigin = PredictiveBackChildTransformOrigin
-        }) {
-            header()
+                    // Preserve the original aspect ratio and alignment of the child content.
+                    scaleX =
+                        if (predictiveBackScaleX != 0f) predictiveBackScaleY / predictiveBackScaleX
+                        else 1f
+                    transformOrigin = PredictiveBackChildTransformOrigin
+                }
+                .padding(start = 24.dp, end = 24.dp, top = 24.dp)
+        ) {
             content()
         }
     }

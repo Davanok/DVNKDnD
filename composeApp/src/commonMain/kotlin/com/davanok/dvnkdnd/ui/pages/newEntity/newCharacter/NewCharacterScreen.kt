@@ -54,11 +54,15 @@ import com.davanok.dvnkdnd.ui.components.image.toByteArray
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.character_image
+import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.description
 import dvnkdnd.composeapp.generated.resources.drop_image
 import dvnkdnd.composeapp.generated.resources.name
 import dvnkdnd.composeapp.generated.resources.no_character_images_yet
+import dvnkdnd.composeapp.generated.resources.race
 import dvnkdnd.composeapp.generated.resources.set_image_to_main
+import dvnkdnd.composeapp.generated.resources.sub_class
+import dvnkdnd.composeapp.generated.resources.sub_race
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerType
 import kotlinx.coroutines.launch
@@ -165,35 +169,39 @@ private fun Content(
         entities = entities.classes,
         toString = { it.name },
         onSelected = onClassChange,
-        onNeedMore = { onOpenExtendedSearch(ExtendedListContent.CLASS, it) }
+        onNeedMore = { onOpenExtendedSearch(ExtendedListContent.CLASS, it) },
+        label = { Text(text = stringResource(Res.string.cls)) }
     )
     if (!entities.subClasses.isNullOrEmpty())
         FiniteTextField(
             modifier = textFieldModifier,
             entities = entities.subClasses,
             toString = { it.name },
-            onSelected = onSubClassSelected
+            onSelected = onSubClassSelected,
+            label = { Text(text = stringResource(Res.string.sub_class)) }
         )
     FiniteTextField(
         modifier = textFieldModifier,
         entities = entities.races,
         toString = { it.name },
         onSelected = onRaceSelected,
-        onNeedMore = { onOpenExtendedSearch(ExtendedListContent.CLASS, it) }
+        onNeedMore = { onOpenExtendedSearch(ExtendedListContent.RACE, it) },
+        label = { Text(text = stringResource(Res.string.race)) }
     )
     if (!entities.subRaces.isNullOrEmpty())
         FiniteTextField(
             modifier = textFieldModifier,
             entities = entities.subRaces,
             toString = { it.name },
-            onSelected = onSubRaceSelected
+            onSelected = onSubRaceSelected,
+            label = { Text(text = stringResource(Res.string.sub_race)) }
         )
     FiniteTextField(
         modifier = textFieldModifier,
         entities = entities.backgrounds,
         toString = { it.name },
         onSelected = onBackgroundSelected,
-        onNeedMore = { onOpenExtendedSearch(ExtendedListContent.CLASS, it) }
+        onNeedMore = { onOpenExtendedSearch(ExtendedListContent.BACKGROUND, it) }
     )
 }
 
@@ -358,7 +366,7 @@ private fun ModalSheetContent(
 ) {
     AdaptiveModalSheet(
         onDismissRequest = { onDismiss(null) },
-        header = {
+        title = {
             Text("SELECT ${extendedListContent.name}")
         }
     ) {

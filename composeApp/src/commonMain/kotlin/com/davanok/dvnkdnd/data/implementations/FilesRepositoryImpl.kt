@@ -18,7 +18,7 @@ class FilesRepositoryImpl(
 
     override suspend fun write(bytes: ByteArray, path: Path) {
         val parent = path.parent
-        if (parent != null && !fs.exists(parent)) fs.createDirectory(parent)
+        if (parent != null && !fs.exists(parent)) fs.createDirectories(parent)
         fs.write(path) {
             write(bytes)
         }

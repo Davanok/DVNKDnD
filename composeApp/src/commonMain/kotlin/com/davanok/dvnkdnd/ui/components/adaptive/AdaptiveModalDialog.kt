@@ -7,7 +7,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -25,9 +27,10 @@ import org.jetbrains.compose.resources.stringResource
 fun AdaptiveModalSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    header: @Composable () -> Unit = { }, // TODO: implement
+    title: @Composable () -> Unit = { },
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val adaptiveInfo = LocalAdaptiveInfo.current
 
     if (adaptiveInfo.windowSizeClass.isCompact()) {
@@ -39,14 +42,13 @@ fun AdaptiveModalSheet(
     }
     else {
         val state = rememberModalSideSheetState()
-        val scope = rememberCoroutineScope()
         ModalSideSheet(
             sheetState = state,
             modifier = modifier,
             onDismissRequest = onDismissRequest,
-            header = {
+            content = {
                 TopAppBar(
-                    title = header,
+                    title = title,
                     actions = {
                         IconButton(
                             onClick = { scope.launch { state.hide() }.invokeOnCompletion { onDismissRequest() } }
@@ -58,8 +60,8 @@ fun AdaptiveModalSheet(
                         }
                     }
                 )
-            },
-            content = content
+                content()
+            }
         )
     }
 }

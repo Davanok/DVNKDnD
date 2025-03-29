@@ -17,7 +17,9 @@
     <string name="item">Item</string>
     <string name="spell">Spell</string>
     <string name="cls">Class</string>
+    <string name="sub_class">Sub class</string>
     <string name="race">Race</string>
+    <string name="sub_race">Sub race</string>
     <string name="background">Background</string>
     <string name="ability">Ability</string>
 

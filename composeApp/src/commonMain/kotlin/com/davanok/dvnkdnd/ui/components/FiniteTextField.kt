@@ -27,7 +27,8 @@ fun <T> FiniteTextField(
     toString: (T) -> String,
     onSelected: (T?) -> Unit,
     modifier: Modifier = Modifier,
-    onNeedMore: ((String) -> Unit)? = null
+    onNeedMore: ((String) -> Unit)? = null,
+    label: @Composable (() -> Unit)? = null
 ) {
     var text by remember { mutableStateOf("") }
     val entitiesMap = remember(entities) {
@@ -53,7 +54,7 @@ fun <T> FiniteTextField(
                 onSelected(match)
             }
         },
-        label = { Text(text = stringResource(Res.string.cls)) }
+        label = label
     ) {
         filteredItems.forEach { (key, value) ->
             item(
