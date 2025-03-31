@@ -1,6 +1,6 @@
 package com.davanok.dvnkdnd.data.implementations
 
-import com.davanok.dvnkdnd.data.model.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
 import com.davanok.dvnkdnd.database.daos.NewCharacterDao
 

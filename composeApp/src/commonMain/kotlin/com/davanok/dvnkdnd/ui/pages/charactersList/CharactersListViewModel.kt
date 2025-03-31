@@ -2,10 +2,10 @@ package com.davanok.dvnkdnd.ui.pages.charactersList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.data.repositories.CharactersListRepository
 import com.davanok.dvnkdnd.data.model.util.Async
 import com.davanok.dvnkdnd.data.model.util.WhileUiSubscribed
-import com.davanok.dvnkdnd.database.entities.character.CharacterMin
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.loading_characters_error
 import kotlinx.coroutines.flow.Flow

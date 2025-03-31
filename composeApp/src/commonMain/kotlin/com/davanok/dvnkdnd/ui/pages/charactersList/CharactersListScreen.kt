@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.davanok.dvnkdnd.database.entities.character.CharacterMin
+import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.ui.components.EmptyImage
 import com.davanok.dvnkdnd.ui.components.adaptive.TwoPane
 import com.davanok.dvnkdnd.ui.navigation.FABScaffold

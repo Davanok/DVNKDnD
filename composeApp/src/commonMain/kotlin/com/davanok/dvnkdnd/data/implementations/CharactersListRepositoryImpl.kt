@@ -1,8 +1,8 @@
 package com.davanok.dvnkdnd.data.implementations
 
+import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.data.repositories.CharactersListRepository
 import com.davanok.dvnkdnd.database.daos.CharactersDao
-import com.davanok.dvnkdnd.database.entities.character.CharacterMin
 import kotlinx.coroutines.flow.Flow
 
 class CharactersListRepositoryImpl(

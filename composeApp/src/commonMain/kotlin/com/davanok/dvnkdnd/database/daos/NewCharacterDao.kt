@@ -2,7 +2,7 @@ package com.davanok.dvnkdnd.database.daos
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.davanok.dvnkdnd.data.model.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 
 @Dao
 interface NewCharacterDao {

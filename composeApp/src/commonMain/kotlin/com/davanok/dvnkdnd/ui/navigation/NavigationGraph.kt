@@ -9,11 +9,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
+import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
 import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
+
 
 @Composable
 fun NavigationHost(
@@ -28,6 +31,8 @@ fun NavigationHost(
         mainDestinations(navController)
 
         newEntityDestinations(navController)
+
+        entityInfoDestinations(navController)
 
         composable<Route.CharacterFull> { backStackEntry ->
             val route: Route.CharacterFull = backStackEntry.toRoute()
@@ -68,9 +73,27 @@ private fun NavGraphBuilder.newEntityDestinations(navController: NavHostControll
             )
         }
         composable<Route.New.Character> {
-            NewCharacterScreen()
+            NewCharacterScreen(
+                navigateToEntityInfo = { type, entity ->
+                    navController.navigate(Route.EntityInfo(type.name, entity.id)) {
+                        popUpTo(Route.New.Character)
+                    }
+                }
+            )
         }
         composable<Route.New.Item> {
             NewItemScreen()
         }
     }
+
+
+private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostController) {
+    composable<Route.EntityInfo> { backStack ->
+        val info: Route.EntityInfo = backStack.toRoute()
+        DnDEntityInfo(
+            DnDEntityTypes.valueOf(info.entityType),
+            info.entityId,
+            navigateBack = { navController.navigateUp() }
+        )
+    }
+}

@@ -3,7 +3,8 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
 import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityMedium
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.dnd_enums.MainSources
 import com.davanok.dvnkdnd.data.model.util.WhileUiSubscribed
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
@@ -26,26 +27,41 @@ class NewCharacterViewModel(
 ) : ViewModel() {
 
     private val _message = MutableStateFlow<StringResource?>(null)
-    private val _extendedListContent = MutableStateFlow<Pair<ExtendedListContent, String?>?>(null)
+    private val _searchSheetContent = MutableStateFlow<SearchSheetContent>(SearchSheetContent.NONE)
 
     val uiState: StateFlow<NewCharacterUiState> = combine(
-        _message, _extendedListContent
+        _message, _searchSheetContent
     ) { message, sheetContent ->
         NewCharacterUiState(
             isLoading = false,
             message = message,
-            extendedListContent = sheetContent
+            showSearchSheet = sheetContent != SearchSheetContent.NONE
         )
     }.stateIn(
         scope = viewModelScope,
         started = WhileUiSubscribed,
         initialValue = NewCharacterUiState(isLoading = true)
     )
-    fun hideSheet() {
-        _extendedListContent.value = null
+    fun hideSearchSheet(selectedEntity: DnDEntityMin?, selectedSubEntity: DnDEntityMin?) {
+        _searchSheetContent.value.let {
+            when (it) {
+                SearchSheetContent.NONE -> {}
+                SearchSheetContent.CLASS -> {
+                    setCharacterClass(selectedEntity)
+                    setCharacterSubClass(selectedSubEntity)
+                }
+                SearchSheetContent.RACE -> {
+                    setCharacterRace(selectedEntity)
+                    setCharacterSubRace(selectedSubEntity)
+                }
+                SearchSheetContent.BACKGROUND -> setCharacterBackground(selectedEntity)
+            }
+        }
+        _searchSheetContent.value = SearchSheetContent.NONE
     }
-    fun openSheet(content: ExtendedListContent, query: String?) {
-        _extendedListContent.value = Pair(content, query)
+    fun openSearchSheet(content: SearchSheetContent, query: String) {
+        _searchSheetContent.value = content
+        setSearchQuery(query)
     }
 
     // Character setters
@@ -170,17 +186,49 @@ class NewCharacterViewModel(
         started = WhileUiSubscribed,
         initialValue = DownloadableValuesState(isLoading = true)
     )
+
+    // Search content
+
+    private val _searchQuery = MutableStateFlow("")
+    private val _searchEntities = MutableStateFlow(emptyMap<String, List<DnDEntityMedium>>())
+    private val _filteredSearchEntities = MutableStateFlow(emptyMap<String, List<DnDEntityMedium>>())
+
+    fun setSearchQuery(value: String) {
+        _searchQuery.value = value
+
+        if (value.isEmpty())
+            _filteredSearchEntities.value = _searchEntities.value
+        else
+            _filteredSearchEntities.value = _searchEntities.value.mapValues { (_, list) ->
+                list.fastFilter { it.name.startsWith(value, ignoreCase = true) }
+            }.filterValues { it.isNotEmpty() }
+
+    }
+
+    val searchSheetState: StateFlow<SearchSheetUiState> = combine(
+        _searchSheetContent, _searchQuery, _filteredSearchEntities
+    ) { content, query, groups ->
+        SearchSheetUiState(
+            query = query,
+            searchType = content,
+            entitiesGroups = groups
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = WhileUiSubscribed,
+        initialValue = SearchSheetUiState(isLoading = true)
+    )
 }
 
 
-enum class ExtendedListContent {
-    CLASS, RACE, BACKGROUND
+enum class SearchSheetContent {
+    NONE, CLASS, RACE, BACKGROUND
 }
 
 data class NewCharacterUiState(
     val isLoading: Boolean = false,
     val message: StringResource? = null,
-    val extendedListContent: Pair<ExtendedListContent, String?>? = null
+    val showSearchSheet: Boolean = false
 )
 
 data class DownloadableValuesState(
@@ -202,4 +250,11 @@ data class NewCharacterState(
     val race: DnDEntityMin? = null,
     val subRace: DnDEntityMin? = null,
     val background: DnDEntityMin? = null
+)
+
+data class SearchSheetUiState(
+    val isLoading: Boolean = false,
+    val searchType: SearchSheetContent = SearchSheetContent.NONE,
+    val query: String = "",
+    val entitiesGroups: Map<String, List<DnDEntityMedium>> = emptyMap()
 )

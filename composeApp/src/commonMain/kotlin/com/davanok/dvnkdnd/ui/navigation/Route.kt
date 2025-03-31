@@ -29,4 +29,7 @@ sealed interface Route {
 
     @Serializable
     data class CharacterFull(val characterId: Long) : Route
+
+    @Serializable
+    data class EntityInfo(val entityType: String, val entityId: Long) : Route
 }

@@ -38,7 +38,7 @@ data class ClassSkill(
         ForeignKey(DnDClass::class, ["id"], ["classId"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class ClassSavingThrows(
+data class ClassSavingThrow(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(index = true) val classId: Long,
     val stat: Stats

@@ -37,6 +37,9 @@
     <!--common-->
     <string name="cancel">Cancel</string>
     <string name="more">More</string>
+    <string name="loading">Loading</string>
+    <string name="error">Error</string>
+    <string name="back">Back</string>
 
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
@@ -53,7 +56,13 @@
     <string name="description">Description</string>
     <string name="no_character_images_yet">No character images yet</string>
     <string name="set_image_to_main">Set image as main</string>
+    <string name="show_info_about">Show info about %1$s</string>
+    <string name="search_in_web">Search in web</string>
+    <string name="confirm">Confirm</string>
 
     <!--side sheet-->
     <string name="close_side_sheet">Close side sheet</string>
+
+    <!--entity info screen-->
+    <string name="error_when_loading_entity">Error when loading entity</string>
 </resources>

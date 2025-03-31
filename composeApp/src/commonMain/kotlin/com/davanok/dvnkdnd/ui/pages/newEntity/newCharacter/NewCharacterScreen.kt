@@ -46,10 +46,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.davanok.dvnkdnd.data.model.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
-import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.image.toByteArray
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
@@ -73,6 +73,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun NewCharacterScreen(
+    navigateToEntityInfo: (DnDEntityTypes, DnDEntityMin) -> Unit,
     viewModel: NewCharacterViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -84,17 +85,12 @@ fun NewCharacterScreen(
         viewModel = viewModel
     )
 
-    uiState.extendedListContent?.let { (content, query) ->
-        ModalSheetContent(
-            onDismiss = {
-                viewModel.hideSheet()
-                // TODO: set custom entity
-            },
-            viewModel = viewModel,
-            extendedListContent = content,
-            query = query
+    if (uiState.showSearchSheet)
+        SearchSheet(
+            onDismiss = viewModel::hideSearchSheet,
+            onGetEntityInfo = navigateToEntityInfo,
+            viewModel = viewModel
         )
-    }
 }
 
 @Composable
@@ -130,7 +126,7 @@ private fun CreateCharacterContent(
             onRaceSelected = viewModel::setCharacterRace,
             onSubRaceSelected = viewModel::setCharacterSubRace,
             onBackgroundSelected = viewModel::setCharacterBackground,
-            onOpenExtendedSearch = viewModel::openSheet
+            onOpenExtendedSearch = viewModel::openSearchSheet
         )
     }
 }
@@ -146,7 +142,7 @@ private fun Content(
     onRaceSelected: (DnDEntityMin?) -> Unit,
     onSubRaceSelected: (DnDEntityMin?) -> Unit,
     onBackgroundSelected: (DnDEntityMin?) -> Unit,
-    onOpenExtendedSearch: (ExtendedListContent, String) -> Unit
+    onOpenExtendedSearch: (SearchSheetContent, String) -> Unit
 ) {
     val textFieldModifier = Modifier
         .widthIn(488.dp)
@@ -169,7 +165,7 @@ private fun Content(
         entities = entities.classes,
         toString = { it.name },
         onSelected = onClassChange,
-        onNeedMore = { onOpenExtendedSearch(ExtendedListContent.CLASS, it) },
+        onNeedMore = { onOpenExtendedSearch(SearchSheetContent.CLASS, it) },
         label = { Text(text = stringResource(Res.string.cls)) }
     )
     if (!entities.subClasses.isNullOrEmpty())
@@ -185,7 +181,7 @@ private fun Content(
         entities = entities.races,
         toString = { it.name },
         onSelected = onRaceSelected,
-        onNeedMore = { onOpenExtendedSearch(ExtendedListContent.RACE, it) },
+        onNeedMore = { onOpenExtendedSearch(SearchSheetContent.RACE, it) },
         label = { Text(text = stringResource(Res.string.race)) }
     )
     if (!entities.subRaces.isNullOrEmpty())
@@ -201,7 +197,7 @@ private fun Content(
         entities = entities.backgrounds,
         toString = { it.name },
         onSelected = onBackgroundSelected,
-        onNeedMore = { onOpenExtendedSearch(ExtendedListContent.BACKGROUND, it) }
+        onNeedMore = { onOpenExtendedSearch(SearchSheetContent.BACKGROUND, it) }
     )
 }
 
@@ -357,21 +353,6 @@ private fun ImagesList(
     }
 }
 
-@Composable
-private fun ModalSheetContent(
-    extendedListContent: ExtendedListContent,
-    query: String?,
-    onDismiss: (DnDEntityMin?) -> Unit,
-    viewModel: NewCharacterViewModel, // TODO: replace to BrowseViewModel
-) {
-    AdaptiveModalSheet(
-        onDismissRequest = { onDismiss(null) },
-        title = {
-            Text("SELECT ${extendedListContent.name}")
-        }
-    ) {
-        Text("coming soon")
-    }
-}
+
 
 
