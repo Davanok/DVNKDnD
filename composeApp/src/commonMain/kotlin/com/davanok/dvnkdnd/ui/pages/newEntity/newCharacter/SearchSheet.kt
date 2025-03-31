@@ -3,7 +3,9 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityMedium
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
@@ -42,7 +46,7 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.collections.component1
 import kotlin.collections.component2
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchSheet(
     onDismiss: (DnDEntityMin?, DnDEntityMin?) -> Unit,
@@ -50,7 +54,7 @@ fun SearchSheet(
     viewModel: NewCharacterViewModel
 ) {
     val uiState by viewModel.searchSheetState.collectAsStateWithLifecycle()
-    var selectedEntity by remember { mutableStateOf(Pair<DnDEntityMedium?, DnDEntityMin?>(null, null)) }
+    var selectedEntity by remember { mutableStateOf(Pair<DnDEntityWithSubEntities?, DnDEntityMin?>(null, null)) }
     AdaptiveModalSheet(
         onDismissRequest = { onDismiss(null, null) },
         title = {
@@ -62,93 +66,97 @@ fun SearchSheet(
             value = uiState.query,
             onValueChange = viewModel::setSearchQuery
         )
-        if (uiState.isLoading) CircularProgressIndicator()
-        else {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                uiState.entitiesGroups.forEach { (groupName, entities) ->
-                    stickyHeader {
-                        Text(
-                            text = groupName,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                    items(
-                        items = entities,
-                        key = { it.id }
-                    ) { entity ->
-                        var showSubEntitiesList by remember { mutableStateOf(false) }
-                        ListItem(
-                            modifier = Modifier
-                                .clickable {
-                                    if (entity.subEntities.isEmpty()) selectedEntity = Pair(entity, null)
-                                    else showSubEntitiesList = !showSubEntitiesList
-                                }
-                                .fillMaxWidth(),
-                            headlineContent = {
-                                Text(
-                                    modifier = Modifier.weight(1f),
-                                    text = entity.name
-                                )
-                            },
-                            trailingContent = {
-                                IconButton (
-                                    onClick = { onGetEntityInfo(
-                                        when (uiState.searchType) {
-                                            SearchSheetContent.CLASS -> DnDEntityTypes.CLASS
-                                            SearchSheetContent.RACE -> DnDEntityTypes.RACE
-                                            SearchSheetContent.BACKGROUND -> DnDEntityTypes.BACKGROUND
-                                            else -> DnDEntityTypes.NONE
-                                        },
-                                        entity.asDnDEntityMin()
-                                    ) }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Info,
-                                        contentDescription = stringResource(
-                                            Res.string.show_info_about,
-                                            entity.name
-                                        )
+        PullToRefreshBox( // TODO: not finished
+            isRefreshing = uiState.isLoading,
+            onRefresh = { viewModel.loadSearchEntities() }
+        ) {
+            Column (modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                ) {
+                    uiState.entitiesGroups.forEach { (groupName, entities) ->
+                        stickyHeader {
+                            Text(
+                                text = groupName,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                        items(
+                            items = entities,
+                            key = { it.id }
+                        ) { entity ->
+                            var showSubEntitiesList by remember { mutableStateOf(false) }
+                            ListItem(
+                                modifier = Modifier
+                                    .clickable {
+                                        if (entity.subEntities.isEmpty()) selectedEntity = Pair(entity, null)
+                                        else showSubEntitiesList = !showSubEntitiesList
+                                    }
+                                    .fillMaxWidth(),
+                                headlineContent = {
+                                    Text(
+                                        modifier = Modifier.weight(1f),
+                                        text = entity.name
                                     )
-                                }
-                            },
-                            supportingContent = if (showSubEntitiesList) {
-                                {
-                                    Row(
-                                        modifier = Modifier
-                                            .horizontalScroll(rememberScrollState())
+                                },
+                                trailingContent = {
+                                    IconButton (
+                                        onClick = { onGetEntityInfo(
+                                            when (uiState.searchType) {
+                                                DnDEntityTypes.CLASS -> DnDEntityTypes.CLASS
+                                                DnDEntityTypes.RACE -> DnDEntityTypes.RACE
+                                                DnDEntityTypes.BACKGROUND -> DnDEntityTypes.BACKGROUND
+                                                else -> DnDEntityTypes.NONE
+                                            },
+                                            entity.asDnDEntityMin()
+                                        ) }
                                     ) {
-                                        entity.subEntities.forEach { subEntity ->
-                                            SuggestionChip(
-                                                onClick = { selectedEntity = Pair(entity, subEntity) },
-                                                label = {
-                                                    Text(text = subEntity.name)
-                                                }
+                                        Icon(
+                                            imageVector = Icons.Default.Info,
+                                            contentDescription = stringResource(
+                                                Res.string.show_info_about,
+                                                entity.name
                                             )
+                                        )
+                                    }
+                                },
+                                supportingContent = if (showSubEntitiesList) {
+                                    {
+                                        Row(
+                                            modifier = Modifier
+                                                .horizontalScroll(rememberScrollState())
+                                        ) {
+                                            entity.subEntities.forEach { subEntity ->
+                                                SuggestionChip(
+                                                    onClick = { selectedEntity = Pair(entity, subEntity) },
+                                                    label = {
+                                                        Text(text = subEntity.name)
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
-                                }
-                            } else null
-                        )
+                                } else null
+                            )
+                        }
                     }
                 }
-            }
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            Row (
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(vertical = 24.dp)
-            ) {
-                Button(
-                    onClick = { onDismiss(selectedEntity.first!!.asDnDEntityMin(), selectedEntity.second) },
-                    enabled = selectedEntity.let { (entity, subEntity) ->
-                        if (entity == null) false
-                        else if (entity.subEntities.isEmpty()) true
-                        else subEntity != null
-                    }
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Row (
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(vertical = 24.dp)
                 ) {
-                    Text(text = stringResource(Res.string.confirm))
+                    Button(
+                        onClick = { onDismiss(selectedEntity.first!!.asDnDEntityMin(), selectedEntity.second) },
+                        enabled = selectedEntity.let { (entity, subEntity) ->
+                            if (entity == null) false
+                            else if (entity.subEntities.isEmpty()) true
+                            else subEntity != null
+                        }
+                    ) {
+                        Text(text = stringResource(Res.string.confirm))
+                    }
                 }
             }
         }

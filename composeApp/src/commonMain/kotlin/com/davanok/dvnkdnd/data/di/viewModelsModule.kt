@@ -8,7 +8,7 @@ import org.koin.dsl.module
 fun viewModelsModule() = module {
     single<CharactersListViewModel> { CharactersListViewModel(get()) }
 
-    single<NewCharacterViewModel> { NewCharacterViewModel(get(), get()) }
+    single<NewCharacterViewModel> { NewCharacterViewModel(get(), get(), get()) }
 
     single<DnDEntityInfoViewModel> { DnDEntityInfoViewModel(get()) }
 }

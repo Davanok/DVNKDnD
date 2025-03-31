@@ -55,6 +55,8 @@ kotlin {
             implementation(libs.supabase.postgrest)
             implementation(libs.supabase.storage)
 
+            implementation(libs.slf4j)
+
             implementation(libs.serialization.json)
 
             implementation(libs.ktor.core)
@@ -84,10 +86,9 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.androidx.window)
+//            implementation(libs.koin.android)
 
-            implementation(libs.koin.android)
             implementation(libs.ktor.okhttp)
-
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
         }

@@ -3,10 +3,12 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
 import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityMedium
+import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.dnd_enums.MainSources
 import com.davanok.dvnkdnd.data.model.util.WhileUiSubscribed
+import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
 import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,19 +25,20 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class NewCharacterViewModel(
     private val repository: NewCharacterRepository,
-    private val filesRepository: FilesRepository
+    private val filesRepository: FilesRepository,
+    private val browseRepository: BrowseRepository
 ) : ViewModel() {
 
     private val _message = MutableStateFlow<StringResource?>(null)
-    private val _searchSheetContent = MutableStateFlow<SearchSheetContent>(SearchSheetContent.NONE)
+    private val _dndEntityTypes = MutableStateFlow<DnDEntityTypes>(DnDEntityTypes.NONE)
 
     val uiState: StateFlow<NewCharacterUiState> = combine(
-        _message, _searchSheetContent
+        _message, _dndEntityTypes
     ) { message, sheetContent ->
         NewCharacterUiState(
             isLoading = false,
             message = message,
-            showSearchSheet = sheetContent != SearchSheetContent.NONE
+            showSearchSheet = sheetContent != DnDEntityTypes.NONE
         )
     }.stateIn(
         scope = viewModelScope,
@@ -43,25 +46,33 @@ class NewCharacterViewModel(
         initialValue = NewCharacterUiState(isLoading = true)
     )
     fun hideSearchSheet(selectedEntity: DnDEntityMin?, selectedSubEntity: DnDEntityMin?) {
-        _searchSheetContent.value.let {
+        _dndEntityTypes.value.let {
             when (it) {
-                SearchSheetContent.NONE -> {}
-                SearchSheetContent.CLASS -> {
+                DnDEntityTypes.NONE -> {}
+                DnDEntityTypes.CLASS -> {
                     setCharacterClass(selectedEntity)
                     setCharacterSubClass(selectedSubEntity)
                 }
-                SearchSheetContent.RACE -> {
+                DnDEntityTypes.RACE -> {
                     setCharacterRace(selectedEntity)
                     setCharacterSubRace(selectedSubEntity)
                 }
-                SearchSheetContent.BACKGROUND -> setCharacterBackground(selectedEntity)
+                DnDEntityTypes.BACKGROUND -> setCharacterBackground(selectedEntity)
             }
         }
-        _searchSheetContent.value = SearchSheetContent.NONE
+        _dndEntityTypes.value = DnDEntityTypes.NONE
     }
-    fun openSearchSheet(content: SearchSheetContent, query: String) {
-        _searchSheetContent.value = content
+    fun openSearchSheet(content: DnDEntityTypes, query: String) {
+        _dndEntityTypes.value = content
         setSearchQuery(query)
+
+        val needLoad = when(content) {
+            DnDEntityTypes.CLASS -> _searchClassEntities.value.isEmpty()
+            DnDEntityTypes.RACE -> _searchRaceEntities.value.isEmpty()
+            DnDEntityTypes.BACKGROUND -> _searchBackgroundEntities.value.isEmpty()
+            else -> false
+        }
+        if (needLoad) loadSearchEntities()
     }
 
     // Character setters
@@ -190,23 +201,43 @@ class NewCharacterViewModel(
     // Search content
 
     private val _searchQuery = MutableStateFlow("")
-    private val _searchEntities = MutableStateFlow(emptyMap<String, List<DnDEntityMedium>>())
-    private val _filteredSearchEntities = MutableStateFlow(emptyMap<String, List<DnDEntityMedium>>())
+    private val _searchClassEntities = MutableStateFlow(emptyMap<String, List<DnDEntityWithSubEntities>>())
+    private val _searchRaceEntities = MutableStateFlow(emptyMap<String, List<DnDEntityWithSubEntities>>())
+    private val _searchBackgroundEntities = MutableStateFlow(emptyMap<String, List<DnDEntityWithSubEntities>>())
+    private val _filteredSearchEntities = MutableStateFlow(emptyMap<String, List<DnDEntityWithSubEntities>>())
+    
+    fun loadSearchEntities() = viewModelScope.launch {
+        val getEntities: suspend () -> Map<String, List<DnDEntityWithSubEntities>> = {
+            browseRepository.loadEntities(_dndEntityTypes.value).groupBy { it.source }
+        }
+
+        when (_dndEntityTypes.value) {
+            DnDEntityTypes.CLASS -> _searchClassEntities.value = getEntities()
+            DnDEntityTypes.RACE -> _searchRaceEntities.value = getEntities()
+            DnDEntityTypes.BACKGROUND -> _searchBackgroundEntities.value = getEntities()
+            else -> {  }
+        }
+    }
 
     fun setSearchQuery(value: String) {
         _searchQuery.value = value
 
+        val entities = when(_dndEntityTypes.value) {
+            DnDEntityTypes.CLASS -> _searchClassEntities.value
+            DnDEntityTypes.RACE -> _searchRaceEntities.value
+            DnDEntityTypes.BACKGROUND -> _searchBackgroundEntities.value
+            else -> emptyMap()
+        }
+
         if (value.isEmpty())
-            _filteredSearchEntities.value = _searchEntities.value
+            _filteredSearchEntities.value = entities
         else
-            _filteredSearchEntities.value = _searchEntities.value.mapValues { (_, list) ->
+            _filteredSearchEntities.value = entities.mapValues { (_, list) ->
                 list.fastFilter { it.name.startsWith(value, ignoreCase = true) }
             }.filterValues { it.isNotEmpty() }
-
     }
-
     val searchSheetState: StateFlow<SearchSheetUiState> = combine(
-        _searchSheetContent, _searchQuery, _filteredSearchEntities
+        _dndEntityTypes, _searchQuery, _filteredSearchEntities
     ) { content, query, groups ->
         SearchSheetUiState(
             query = query,
@@ -218,11 +249,6 @@ class NewCharacterViewModel(
         started = WhileUiSubscribed,
         initialValue = SearchSheetUiState(isLoading = true)
     )
-}
-
-
-enum class SearchSheetContent {
-    NONE, CLASS, RACE, BACKGROUND
 }
 
 data class NewCharacterUiState(
@@ -254,7 +280,7 @@ data class NewCharacterState(
 
 data class SearchSheetUiState(
     val isLoading: Boolean = false,
-    val searchType: SearchSheetContent = SearchSheetContent.NONE,
+    val searchType: DnDEntityTypes = DnDEntityTypes.NONE,
     val query: String = "",
-    val entitiesGroups: Map<String, List<DnDEntityMedium>> = emptyMap()
+    val entitiesGroups: Map<String, List<DnDEntityWithSubEntities>> = emptyMap()
 )

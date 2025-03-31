@@ -142,7 +142,7 @@ private fun Content(
     onRaceSelected: (DnDEntityMin?) -> Unit,
     onSubRaceSelected: (DnDEntityMin?) -> Unit,
     onBackgroundSelected: (DnDEntityMin?) -> Unit,
-    onOpenExtendedSearch: (SearchSheetContent, String) -> Unit
+    onOpenExtendedSearch: (DnDEntityTypes, String) -> Unit
 ) {
     val textFieldModifier = Modifier
         .widthIn(488.dp)
@@ -165,7 +165,7 @@ private fun Content(
         entities = entities.classes,
         toString = { it.name },
         onSelected = onClassChange,
-        onNeedMore = { onOpenExtendedSearch(SearchSheetContent.CLASS, it) },
+        onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.CLASS, it) },
         label = { Text(text = stringResource(Res.string.cls)) }
     )
     if (!entities.subClasses.isNullOrEmpty())
@@ -181,7 +181,7 @@ private fun Content(
         entities = entities.races,
         toString = { it.name },
         onSelected = onRaceSelected,
-        onNeedMore = { onOpenExtendedSearch(SearchSheetContent.RACE, it) },
+        onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.RACE, it) },
         label = { Text(text = stringResource(Res.string.race)) }
     )
     if (!entities.subRaces.isNullOrEmpty())
@@ -197,7 +197,7 @@ private fun Content(
         entities = entities.backgrounds,
         toString = { it.name },
         onSelected = onBackgroundSelected,
-        onNeedMore = { onOpenExtendedSearch(SearchSheetContent.BACKGROUND, it) }
+        onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.BACKGROUND, it) }
     )
 }
 
