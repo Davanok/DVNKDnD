@@ -8,13 +8,16 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.Size
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 
-@Entity(tableName = "races")
+@Entity(
+    tableName = "races",
+    foreignKeys = [
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+    ]
+)
 data class DnDRace(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val name: String,
-    val description: String,
+    @ColumnInfo(index = true) val entityId: Long,
     val speed: Int,
-    val source: String,
     val modifierSelectLimit: Int?,
     val skillsSelectLimit: Int?,
 )
@@ -29,29 +32,4 @@ data class RaceSize(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(index = true) val raceId: Long,
     val size: Size
-)
-@Entity(
-    tableName = "race_modifiers",
-    foreignKeys = [
-        ForeignKey(DnDRace::class, ["id"], ["raceId"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class RaceModifier(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val raceId: Long,
-    val selectable: Boolean,
-    val stat: Stats,
-    val modifier: Int
-)
-@Entity(
-    tableName = "race_skills",
-    foreignKeys = [
-        ForeignKey(DnDRace::class, ["id"], ["raceId"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class RaceSkill(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val raceId: Long,
-    val selectable: Boolean,
-    val skill: Skills
 )

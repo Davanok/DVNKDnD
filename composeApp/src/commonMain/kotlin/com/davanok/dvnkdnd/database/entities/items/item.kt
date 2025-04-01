@@ -8,20 +8,22 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.DatabaseImage
 import com.davanok.dvnkdnd.database.entities.Proficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 
 
 @Entity(
-    tableName = "items"
+    tableName = "items",
+    foreignKeys = [
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+    ]
 )
 data class DnDItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val name: String,
-    val description: String?,
+    @ColumnInfo(index = true) val entityId: Long,
     val pinned: Boolean = false,
     val cost: Int?, // in copper pieces
     val weight: Int?,
-    val count: Int,
-    val source: String?
+    val count: Int
 )
 
 @Entity(
@@ -35,41 +37,4 @@ data class ItemProficiency(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(index = true) val itemId: Long,
     @ColumnInfo(index = true) val proficiencyId: Long
-)
-@Entity(
-    tableName = "item_modifiers",
-    foreignKeys = [
-        ForeignKey(DnDItem::class, ["id"], ["itemId"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class ItemModifier(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val itemId: Long,
-    val stat: Stats?,
-    val skill: Skills?,
-    val modifier: Int
-)
-@Entity(
-    tableName = "item_skills",
-    foreignKeys = [
-        ForeignKey(DnDItem::class, ["id"], ["itemId"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class ItemSkill(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val itemId: Long,
-    val skill: Skills
-)
-
-@Entity(
-    tableName = "item_images",
-    foreignKeys = [
-        ForeignKey(DnDItem::class, ["id"], ["itemId"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DatabaseImage::class, ["id"], ["imageId"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class ItemImage(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val itemId: Long,
-    @ColumnInfo(index = true) val imageId: Long
 )

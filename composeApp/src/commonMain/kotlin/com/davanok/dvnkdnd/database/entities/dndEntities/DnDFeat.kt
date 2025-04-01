@@ -9,14 +9,15 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.Proficiency
 
 @Entity(
-    tableName = "feats"
+    tableName = "feats",
+    foreignKeys = [
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+    ]
 )
 data class DnDFeat(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val name: String,
-    val description: String,
+    @ColumnInfo(index = true) val entityId: Long,
     val repeatable: Boolean,
-    val source: String?,
     val modifiersSelectLimit: Int?,
     val skillsSelectLimit: Int?,
     val proficienciesSelectLimit: Int?

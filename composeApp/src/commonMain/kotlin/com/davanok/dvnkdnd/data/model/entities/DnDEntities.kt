@@ -10,7 +10,7 @@ data class DnDEntityMin(
     val source: String,
 )
 @Serializable
-data class DnDEntityMedium (
+data class DnDEntityWithSubEntities (
     val id: Long,
     val name: String,
     val source: String,
@@ -18,8 +18,6 @@ data class DnDEntityMedium (
 ) {
     fun asDnDEntityMin() = DnDEntityMin(id, name, source)
 }
-
-
 @Serializable
 data class DnDEntityFullInfo(
     val type: DnDEntityTypes,
