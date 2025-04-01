@@ -4,9 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
-import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
-import com.davanok.dvnkdnd.database.entities.DatabaseImage
 import com.davanok.dvnkdnd.database.entities.Proficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 
