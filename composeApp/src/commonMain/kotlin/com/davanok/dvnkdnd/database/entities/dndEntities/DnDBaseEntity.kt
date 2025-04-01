@@ -12,8 +12,18 @@ data class DnDBaseEntity(
     val type: DnDEntityTypes,
     val name: String,
     val description: String,
-    val source: String?,
-    val fullDescription: String?,
+    val source: String?
+)
+@Entity(
+    tableName = "entity_full_descriptions",
+    foreignKeys = [
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class EntityFullDescription(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(index = true) val entityId: Long,
+    val text: String
 )
 
 @Entity(

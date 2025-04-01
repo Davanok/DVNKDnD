@@ -39,6 +39,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiencies
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityFullDescription
 import com.davanok.dvnkdnd.database.entities.dndEntities.RaceModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellSlots
 import com.davanok.dvnkdnd.database.entities.items.Armor
@@ -68,6 +69,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
         CharacterImage::class,
         DnDAbility::class,
         DnDBaseEntity::class,
+        EntityFullDescription::class,
         EntityImages::class,
         DnDClass::class,
         DnDFeat::class,
