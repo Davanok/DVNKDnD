@@ -12,6 +12,7 @@ data class DnDEntityMin(
 @Serializable
 data class DnDEntityWithSubEntities (
     val id: Long,
+    val type: DnDEntityTypes,
     val name: String,
     val source: String,
     val subEntities: List<DnDEntityMin>

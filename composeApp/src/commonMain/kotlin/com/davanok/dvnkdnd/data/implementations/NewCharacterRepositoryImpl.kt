@@ -1,22 +1,16 @@
 package com.davanok.dvnkdnd.data.implementations
 
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
-import com.davanok.dvnkdnd.database.daos.NewCharacterDao
+import com.davanok.dvnkdnd.database.daos.CharactersDao
+import com.davanok.dvnkdnd.database.daos.EntitiesDao
 
 class NewCharacterRepositoryImpl(
-    private val dao: NewCharacterDao
+    private val entitiesDao: EntitiesDao,
+    private val charactersDao: CharactersDao
 ): NewCharacterRepository {
-    override suspend fun getClassesMinList(source: String): List<DnDEntityMin> =
-        dao.getClassesMinList(source)
-    override suspend fun getRacesMinList(source: String): List<DnDEntityMin> =
-        dao.getRacesMinList(source)
-    override suspend fun getBackgroundsMinList(source: String): List<DnDEntityMin> =
-        dao.getBackgroundsMinList(source)
-
-    override suspend fun getSubClassesMinList(clsId: Long, source: String): List<DnDEntityMin> =
-        dao.getSubClassesMinList(clsId, source)
-
-    override suspend fun getSubRacesMinList(raceId: Long, source: String): List<DnDEntityMin> =
-        dao.getSubRacesMinList(raceId, source)
+    override suspend fun getEntitiesMinList(
+        type: DnDEntityTypes,
+        parentId: Long?,
+    ) = entitiesDao.getEntitiesMinList(type, parentId)
 }

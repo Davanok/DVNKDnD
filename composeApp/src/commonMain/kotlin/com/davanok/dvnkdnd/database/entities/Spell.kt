@@ -9,18 +9,20 @@ import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.data.model.dnd_enums.AreaTypes
 import com.davanok.dvnkdnd.data.model.dnd_enums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
-import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dnd_enums.MagicSchools
+import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubclass
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 
 
-class ListSpellAdapter {
+class ListSpellComponentAdapter {
     @TypeConverter
     fun toListConverter(value: String) = value.split(';').map { component ->
         SpellComponents.entries.first { it.toString()[0] == component[0] }
     }
+
     @TypeConverter
     fun toStringConverter(value: List<SpellComponents>) = value.joinToString(";") {
         it.toString().first().toString()
@@ -28,21 +30,25 @@ class ListSpellAdapter {
 }
 
 
-@Entity(tableName = "spells")
+@Entity(
+    tableName = "spells",
+    foreignKeys = [
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+    ]
+)
 data class Spell(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val name: String,
+    @ColumnInfo(index = true) val entityId: Long,
     val school: MagicSchools,
     val level: Int,
     val castingTime: String,
-    @TypeConverters(ListSpellAdapter::class) val components: List<SpellComponents>,
+    @TypeConverters(ListSpellComponentAdapter::class) val components: List<SpellComponents>,
     val ritual: Boolean,
     val materialComponent: String?,
     val duration: String,
     val concentration: Boolean,
-    val description: String,
-    val source: String?
 )
+
 @Entity(
     tableName = "spell_area",
     foreignKeys = [
@@ -69,8 +75,9 @@ data class SpellAttack(
     val damageType: DamageTypes,
     val diceCount: Int,
     val dice: Dices,
-    val modifier: Int
+    val modifier: Int,
 )
+
 @Entity(
     tableName = "spell_attack_level_modifiers",
     foreignKeys = [
@@ -83,8 +90,9 @@ data class SpellAttackLevelModifier(
     val level: Int,
     val diceCount: Int,
     val dice: Dices,
-    val modifier: Int
+    val modifier: Int,
 )
+
 @Entity(
     tableName = "spell_attack_save",
     foreignKeys = [
@@ -95,8 +103,9 @@ data class SpellAttackSave(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(index = true) val attackId: Long,
     val savingThrow: Stats,
-    val halfOnSuccess: Boolean
+    val halfOnSuccess: Boolean,
 )
+
 @Entity(
     tableName = "spell_classes",
     foreignKeys = [
@@ -109,5 +118,5 @@ data class SpellClass(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(index = true) val spellId: Long,
     @ColumnInfo(index = true) val classId: Long,
-    @ColumnInfo(index = true) val subclassId: Long?
+    @ColumnInfo(index = true) val subclassId: Long?,
 )

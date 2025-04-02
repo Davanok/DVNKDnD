@@ -11,6 +11,7 @@ import com.davanok.dvnkdnd.data.model.util.WhileUiSubscribed
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
 import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,10 +31,10 @@ class NewCharacterViewModel(
 ) : ViewModel() {
 
     private val _message = MutableStateFlow<StringResource?>(null)
-    private val _dndEntityTypes = MutableStateFlow<DnDEntityTypes>(DnDEntityTypes.NONE)
+    private val _searchSheetEntityType = MutableStateFlow<DnDEntityTypes>(DnDEntityTypes.NONE)
 
     val uiState: StateFlow<NewCharacterUiState> = combine(
-        _message, _dndEntityTypes
+        _message, _searchSheetEntityType
     ) { message, sheetContent ->
         NewCharacterUiState(
             isLoading = false,
@@ -46,7 +47,7 @@ class NewCharacterViewModel(
         initialValue = NewCharacterUiState(isLoading = true)
     )
     fun hideSearchSheet(selectedEntity: DnDEntityMin?, selectedSubEntity: DnDEntityMin?) {
-        _dndEntityTypes.value.let {
+        _searchSheetEntityType.value.let {
             when (it) {
                 DnDEntityTypes.NONE -> {}
                 DnDEntityTypes.CLASS -> {
@@ -58,12 +59,13 @@ class NewCharacterViewModel(
                     setCharacterSubRace(selectedSubEntity)
                 }
                 DnDEntityTypes.BACKGROUND -> setCharacterBackground(selectedEntity)
+                else -> throw IllegalArgumentException()
             }
         }
-        _dndEntityTypes.value = DnDEntityTypes.NONE
+        _searchSheetEntityType.value = DnDEntityTypes.NONE
     }
     fun openSearchSheet(content: DnDEntityTypes, query: String) {
-        _dndEntityTypes.value = content
+        _searchSheetEntityType.value = content
         setSearchQuery(query)
 
         val needLoad = when(content) {
@@ -154,7 +156,7 @@ class NewCharacterViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _subClasses = _characterCls.flatMapLatest { cls ->
         cls?.let {
-            flowOf(repository.getSubClassesMinList(it.id, MainSources.PHB))
+            flowOf(repository.getEntitiesMinList(DnDEntityTypes.CLASS, it.id))
         } ?: flowOf(null)
     }.stateIn(
         scope = viewModelScope,
@@ -164,7 +166,7 @@ class NewCharacterViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _subRaces = _characterRace.flatMapLatest { race ->
         race?.let {
-            flowOf(repository.getSubRacesMinList(it.id, MainSources.PHB))
+            flowOf(repository.getEntitiesMinList(DnDEntityTypes.RACE, it.id))
         } ?: flowOf(null)
     }.stateIn(
         scope = viewModelScope,
@@ -177,9 +179,9 @@ class NewCharacterViewModel(
     }
 
     private fun loadMainValues() = viewModelScope.launch {
-        _mainClasses.value = repository.getClassesMinList(source = MainSources.PHB)
-        _mainRaces.value = repository.getRacesMinList(source = MainSources.PHB)
-        _mainBackgrounds.value = repository.getBackgroundsMinList(source = MainSources.PHB)
+        _mainClasses.value = repository.getEntitiesMinList(DnDEntityTypes.CLASS)
+        _mainRaces.value = repository.getEntitiesMinList(DnDEntityTypes.RACE)
+        _mainBackgrounds.value = repository.getEntitiesMinList(DnDEntityTypes.BACKGROUND)
     }
 
     val downloadableState: StateFlow<DownloadableValuesState> = combine(
@@ -200,6 +202,7 @@ class NewCharacterViewModel(
 
     // Search content
 
+    private val isUpdatingEntities = MutableStateFlow(false)
     private val _searchQuery = MutableStateFlow("")
     private val _searchClassEntities = MutableStateFlow(emptyMap<String, List<DnDEntityWithSubEntities>>())
     private val _searchRaceEntities = MutableStateFlow(emptyMap<String, List<DnDEntityWithSubEntities>>())
@@ -208,25 +211,42 @@ class NewCharacterViewModel(
     
     fun loadSearchEntities() = viewModelScope.launch {
         val getEntities: suspend () -> Map<String, List<DnDEntityWithSubEntities>> = {
-            browseRepository.loadEntities(_dndEntityTypes.value).groupBy { it.source }
+            isUpdatingEntities.value = true
+            val result = browseRepository
+                .loadEntities(_searchSheetEntityType.value)
+                .groupBy { it.source }
+            isUpdatingEntities.value = false
+            result
         }
 
-        when (_dndEntityTypes.value) {
-            DnDEntityTypes.CLASS -> _searchClassEntities.value = getEntities()
-            DnDEntityTypes.RACE -> _searchRaceEntities.value = getEntities()
-            DnDEntityTypes.BACKGROUND -> _searchBackgroundEntities.value = getEntities()
-            else -> {  }
+        when (_searchSheetEntityType.value) {
+            DnDEntityTypes.CLASS -> {
+                val entities = getEntities()
+                _searchClassEntities.value = entities
+                _filteredSearchEntities.value = entities
+            }
+            DnDEntityTypes.RACE -> {
+                val entities = getEntities()
+                _searchRaceEntities.value = entities
+                _filteredSearchEntities.value = entities
+            }
+            DnDEntityTypes.BACKGROUND -> {
+                val entities = getEntities()
+                _searchBackgroundEntities.value = entities
+                _filteredSearchEntities.value = entities
+            }
+            else -> throw IllegalArgumentException("illegal to load searchEntities not main types")
         }
     }
 
     fun setSearchQuery(value: String) {
         _searchQuery.value = value
 
-        val entities = when(_dndEntityTypes.value) {
+        val entities = when(_searchSheetEntityType.value) {
             DnDEntityTypes.CLASS -> _searchClassEntities.value
             DnDEntityTypes.RACE -> _searchRaceEntities.value
             DnDEntityTypes.BACKGROUND -> _searchBackgroundEntities.value
-            else -> emptyMap()
+            else -> throw IllegalArgumentException("illegal to search entities not main types")
         }
 
         if (value.isEmpty())
@@ -237,12 +257,13 @@ class NewCharacterViewModel(
             }.filterValues { it.isNotEmpty() }
     }
     val searchSheetState: StateFlow<SearchSheetUiState> = combine(
-        _dndEntityTypes, _searchQuery, _filteredSearchEntities
-    ) { content, query, groups ->
+        _searchSheetEntityType, _searchQuery, _filteredSearchEntities, isUpdatingEntities
+    ) { content, query, groups, isLoading ->
         SearchSheetUiState(
             query = query,
             searchType = content,
-            entitiesGroups = groups
+            entitiesGroups = groups,
+            isLoading = isLoading
         )
     }.stateIn(
         scope = viewModelScope,

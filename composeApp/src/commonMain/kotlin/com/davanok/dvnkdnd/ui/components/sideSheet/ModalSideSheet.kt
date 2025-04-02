@@ -421,7 +421,7 @@ fun BoxScope.ModalSideSheetContent(
                         else 1f
                     transformOrigin = PredictiveBackChildTransformOrigin
                 }
-                .padding(start = 24.dp, end = 24.dp, top = 24.dp)
+                .padding(horizontal = 24.dp)
         ) {
             content()
         }

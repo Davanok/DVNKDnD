@@ -22,7 +22,7 @@ data class EntitySkill(
 )
 
 @Entity(
-    tableName = "entity_skills",
+    tableName = "entity_saving_throws",
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
     ]
@@ -33,7 +33,6 @@ data class EntitySavingThrow(
     val selectable: Boolean,
     val stat: Stats
 )
-
 @Entity(
     tableName = "entity_proficiencies",
     foreignKeys = [
@@ -43,7 +42,7 @@ data class EntitySavingThrow(
 )
 data class EntityProficiencies(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val backgroundId: Long,
+    @ColumnInfo(index = true) val entityId: Long,
     @ColumnInfo(index = true) val proficiencyId: Long
 )
 @Entity(
@@ -60,12 +59,12 @@ data class EntityAbility(
     val level: Int
 )
 @Entity(
-    tableName = "race_modifiers",
+    tableName = "entity_modifiers",
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class RaceModifier(
+data class EntityModifier(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(index = true) val entityId: Long,
     val selectable: Boolean,

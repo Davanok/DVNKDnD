@@ -5,24 +5,26 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -34,17 +36,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.confirm
 import dvnkdnd.composeapp.generated.resources.search_in_web
 import dvnkdnd.composeapp.generated.resources.show_info_about
+import dvnkdnd.composeapp.generated.resources.refresh
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.stringResource
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -61,16 +63,27 @@ fun SearchSheet(
             Text(text = stringResource(Res.string.search_in_web))
         }
     ) {
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = uiState.query,
-            onValueChange = viewModel::setSearchQuery
-        )
+        Row {
+            OutlinedTextField(
+                modifier = Modifier.weight(1f),
+                value = uiState.query,
+                onValueChange = viewModel::setSearchQuery
+            )
+            IconButton (
+                onClick = { viewModel.loadSearchEntities() }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = stringResource(Res.string.refresh)
+                )
+            }
+        }
         PullToRefreshBox( // TODO: not finished
             isRefreshing = uiState.isLoading,
             onRefresh = { viewModel.loadSearchEntities() }
         ) {
             Column (modifier = Modifier.fillMaxSize()) {
+                Spacer(modifier = Modifier.height(10.dp))
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
@@ -78,7 +91,7 @@ fun SearchSheet(
                         stickyHeader {
                             Text(
                                 text = groupName,
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleLarge
                             )
                         }
                         items(
@@ -127,7 +140,8 @@ fun SearchSheet(
                                                 .horizontalScroll(rememberScrollState())
                                         ) {
                                             entity.subEntities.forEach { subEntity ->
-                                                SuggestionChip(
+                                                InputChip(
+                                                    selected = selectedEntity.second == subEntity,
                                                     onClick = { selectedEntity = Pair(entity, subEntity) },
                                                     label = {
                                                         Text(text = subEntity.name)

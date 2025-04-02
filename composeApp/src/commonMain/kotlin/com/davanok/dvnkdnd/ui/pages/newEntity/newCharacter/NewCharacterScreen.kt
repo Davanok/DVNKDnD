@@ -53,6 +53,7 @@ import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.image.toByteArray
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
+import dvnkdnd.composeapp.generated.resources.background
 import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.description
@@ -197,7 +198,8 @@ private fun Content(
         entities = entities.backgrounds,
         toString = { it.name },
         onSelected = onBackgroundSelected,
-        onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.BACKGROUND, it) }
+        onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.BACKGROUND, it) },
+        label = { Text(text = stringResource(Res.string.background)) }
     )
 }
 

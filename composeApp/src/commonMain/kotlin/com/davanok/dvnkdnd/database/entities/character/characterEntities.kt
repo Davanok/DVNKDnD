@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.database.ListIntAdapter
-import com.davanok.dvnkdnd.database.entities.DatabaseImage
 import com.davanok.dvnkdnd.database.entities.Proficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityImage
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 
 @Entity(
@@ -83,13 +83,12 @@ data class CharacterFeat(
 @Entity(
     tableName = "character_images",
     foreignKeys = [
-        ForeignKey(DnDItem::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DatabaseImage::class, ["id"], ["imageId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDItem::class, ["id"], ["characterId"], onDelete = ForeignKey.SET_NULL),
     ]
 )
 data class CharacterImage(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val characterId: Long,
-    @ColumnInfo(index = true) val imageId: Long
+    @ColumnInfo(index = true) val characterId: Long?,
+    val path: String
 )
 

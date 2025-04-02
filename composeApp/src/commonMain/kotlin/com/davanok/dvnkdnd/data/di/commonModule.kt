@@ -21,8 +21,9 @@ import org.koin.dsl.module
 
 fun commonModule() = module {
     single<CharactersListRepository> { CharactersListRepositoryImpl(get()) }
-    single<NewCharacterRepository> { NewCharacterRepositoryImpl(get()) }
+    single<NewCharacterRepository> { NewCharacterRepositoryImpl(get(), get()) }
     single<FilesRepository> { (FilesRepositoryImpl(appDataDirectory(), appCacheDirectory())) }
+
     single<SupabaseClient> {
         createSupabaseClient(
             supabaseUrl = BuildConfig.SUPABASE_URL,

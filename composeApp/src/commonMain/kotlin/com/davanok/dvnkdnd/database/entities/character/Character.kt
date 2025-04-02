@@ -4,21 +4,16 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBackground
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDRace
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubrace
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubclass
-import okio.Path
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 
 @Entity(
     tableName = "characters",
     foreignKeys = [
-        ForeignKey(DnDRace::class, ["id"], ["race"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDSubrace::class, ["id"], ["race"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDClass::class, ["id"], ["cls"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDSubclass::class, ["id"], ["subCls"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDBackground::class, ["id"], ["background"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDBaseEntity::class, ["id"], ["race"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDBaseEntity::class, ["id"], ["race"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDBaseEntity::class, ["id"], ["cls"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDBaseEntity::class, ["id"], ["subCls"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDBaseEntity::class, ["id"], ["background"], onDelete = ForeignKey.SET_NULL),
     ]
 )
 data class Character(

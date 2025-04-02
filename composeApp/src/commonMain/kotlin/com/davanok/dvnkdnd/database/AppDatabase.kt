@@ -5,9 +5,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.daos.ClassesDao
-import com.davanok.dvnkdnd.database.daos.NewCharacterDao
+import com.davanok.dvnkdnd.database.daos.EntitiesDao
 import com.davanok.dvnkdnd.database.daos.ProficienciesDao
-import com.davanok.dvnkdnd.database.entities.ListSpellAdapter
+import com.davanok.dvnkdnd.database.entities.ListSpellComponentAdapter
 import com.davanok.dvnkdnd.database.entities.Proficiency
 import com.davanok.dvnkdnd.database.entities.Spell
 import com.davanok.dvnkdnd.database.entities.SpellArea
@@ -25,7 +25,6 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityImages
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.FeatModifier
@@ -40,7 +39,8 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiencies
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityFullDescription
-import com.davanok.dvnkdnd.database.entities.dndEntities.RaceModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityImage
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellSlots
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
@@ -70,7 +70,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
         DnDAbility::class,
         DnDBaseEntity::class,
         EntityFullDescription::class,
-        EntityImages::class,
+        EntityImage::class,
         DnDClass::class,
         DnDFeat::class,
         FeatModifier::class,
@@ -84,7 +84,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
         EntitySavingThrow::class,
         EntityProficiencies::class,
         EntityAbility::class,
-        RaceModifier::class,
+        EntityModifier::class,
         SpellSlots::class,
         Armor::class,
         DnDItem::class,
@@ -93,15 +93,15 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
         Weapon::class,
         WeaponDamage::class,
         WeaponProperties::class
-    ],
-    version = 2
+               ],
+    version = 3
 )
-@TypeConverters(ListIntAdapter::class, ListSpellAdapter::class)
+@TypeConverters(ListIntAdapter::class, ListSpellComponentAdapter::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun getCharactersDao(): CharactersDao
-    abstract fun getNewCharacterDao(): NewCharacterDao
     abstract fun getClassesDao(): ClassesDao
     abstract fun getProficienciesDao(): ProficienciesDao
+    abstract fun getEntitiesDao(): EntitiesDao
 }
 
 

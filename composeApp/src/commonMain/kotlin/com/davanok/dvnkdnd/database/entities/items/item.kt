@@ -19,8 +19,7 @@ data class DnDItem(
     @ColumnInfo(index = true) val entityId: Long,
     val pinned: Boolean = false,
     val cost: Int?, // in copper pieces
-    val weight: Int?,
-    val count: Int
+    val weight: Int?
 )
 
 @Entity(

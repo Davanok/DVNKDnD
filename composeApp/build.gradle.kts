@@ -86,7 +86,7 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.androidx.window)
-//            implementation(libs.koin.android)
+            implementation(libs.koin.android)
 
             implementation(libs.ktor.okhttp)
             implementation(compose.preview)

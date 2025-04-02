@@ -6,14 +6,13 @@ import kotlinx.serialization.Serializable
 enum class DnDEntityTypes {
     NONE,
     CLASS,
+    SUBCLASS,
     RACE,
-    BACKGROUND
-}
+    SUBRACE,
+    BACKGROUND,
+    ABILITY,
+    FEAT,
+    SPELL,
+    ITEM,
 
-fun DnDEntityTypes.tableName(): String =
-    when(this){
-        DnDEntityTypes.CLASS -> "DnDClasses"
-        DnDEntityTypes.RACE -> "DnDClasses"
-        DnDEntityTypes.BACKGROUND -> "DnDClasses"
-        else -> throw IllegalArgumentException("DnDEntityTypes.$name does not have table name")
-    }
+}

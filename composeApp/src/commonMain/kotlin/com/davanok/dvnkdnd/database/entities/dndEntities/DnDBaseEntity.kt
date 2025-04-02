@@ -6,10 +6,16 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 
-@Entity(tableName = "base_entities")
+@Entity(
+    tableName = "base_entities",
+    foreignKeys = [
+        ForeignKey(DnDBaseEntity::class, ["id"], ["parentId"], onDelete = ForeignKey.CASCADE)
+    ]
+)
 data class DnDBaseEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val type: DnDEntityTypes,
+    @ColumnInfo(index = true) val parentId: Long? = null,
+    @ColumnInfo(index = true) val type: DnDEntityTypes,
     val name: String,
     val description: String,
     val source: String?
@@ -32,7 +38,7 @@ data class EntityFullDescription(
         ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.SET_NULL)
     ]
 )
-data class EntityImages(
+data class EntityImage(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(index = true) val entityId: Long?,
     val path: String
