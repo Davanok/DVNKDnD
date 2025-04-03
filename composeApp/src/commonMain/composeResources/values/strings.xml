@@ -21,6 +21,7 @@
     <string name="race">Race</string>
     <string name="sub_race">Sub race</string>
     <string name="background">Background</string>
+    <string name="sub_background">Sub background</string>
     <string name="ability">Ability</string>
 
     <!--images-->

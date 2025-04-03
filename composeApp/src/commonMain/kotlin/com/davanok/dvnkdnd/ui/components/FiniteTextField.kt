@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.more
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.stringResource
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -23,6 +24,7 @@ import kotlin.collections.component2
 
 @Composable
 fun <T> FiniteTextField(
+    value: T? = null,
     entities: List<T>,
     toString: (T) -> String,
     onSelected: (T?) -> Unit,
@@ -39,32 +41,25 @@ fun <T> FiniteTextField(
             entitiesMap.filterValues { it.startsWith(text, ignoreCase = true) }
         }
     }
-    var prevSelected by remember { mutableStateOf<T?>(null) }
 
     SelectableTextField(
         modifier = modifier,
-        value = text,
+        value = if (value == null) text else toString(value),
         onValueChange = { newText ->
             text = newText
             val match = entitiesMap.entries
                 .firstOrNull { it.value.equals(newText, ignoreCase = true) }
                 ?.key
-            if (match != prevSelected) {
-                prevSelected = match
-                onSelected(match)
-            }
+            if (match != value) onSelected(match)
         },
         label = label
     ) {
-        filteredItems.forEach { (key, value) ->
+        filteredItems.forEach { (key, name) ->
             item(
-                text = { Text(value) },
+                text = { Text(name) },
                 onClick = {
-                    text = value
-                    if (prevSelected != key) {
-                        prevSelected = key
-                        onSelected(key)
-                    }
+                    text = name
+                    if (value != key) onSelected(key)
                 }
             )
         }

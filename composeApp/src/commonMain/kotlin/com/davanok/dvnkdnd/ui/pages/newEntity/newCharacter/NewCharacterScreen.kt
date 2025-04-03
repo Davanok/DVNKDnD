@@ -48,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.image.toByteArray
@@ -62,6 +63,7 @@ import dvnkdnd.composeapp.generated.resources.name
 import dvnkdnd.composeapp.generated.resources.no_character_images_yet
 import dvnkdnd.composeapp.generated.resources.race
 import dvnkdnd.composeapp.generated.resources.set_image_to_main
+import dvnkdnd.composeapp.generated.resources.sub_background
 import dvnkdnd.composeapp.generated.resources.sub_class
 import dvnkdnd.composeapp.generated.resources.sub_race
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
@@ -127,6 +129,7 @@ private fun CreateCharacterContent(
             onRaceSelected = viewModel::setCharacterRace,
             onSubRaceSelected = viewModel::setCharacterSubRace,
             onBackgroundSelected = viewModel::setCharacterBackground,
+            onSubBackgroundSelected = viewModel::setCharacterSubBackground,
             onOpenExtendedSearch = viewModel::openSearchSheet
         )
     }
@@ -138,11 +141,12 @@ private fun Content(
     entities: DownloadableValuesState,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    onClassChange: (DnDEntityMin?) -> Unit,
+    onClassChange: (DnDEntityWithSubEntities?) -> Unit,
     onSubClassSelected: (DnDEntityMin?) -> Unit,
-    onRaceSelected: (DnDEntityMin?) -> Unit,
+    onRaceSelected: (DnDEntityWithSubEntities?) -> Unit,
     onSubRaceSelected: (DnDEntityMin?) -> Unit,
-    onBackgroundSelected: (DnDEntityMin?) -> Unit,
+    onBackgroundSelected: (DnDEntityWithSubEntities?) -> Unit,
+    onSubBackgroundSelected: (DnDEntityMin?) -> Unit,
     onOpenExtendedSearch: (DnDEntityTypes, String) -> Unit
 ) {
     val textFieldModifier = Modifier
@@ -161,46 +165,61 @@ private fun Content(
         label = { Text(text = stringResource(Res.string.description)) },
         singleLine = true
     )
+
     FiniteTextField(
         modifier = textFieldModifier,
+        value = state.cls,
         entities = entities.classes,
         toString = { it.name },
         onSelected = onClassChange,
         onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.CLASS, it) },
         label = { Text(text = stringResource(Res.string.cls)) }
     )
-    if (!entities.subClasses.isNullOrEmpty())
+    if (!state.cls?.subEntities.isNullOrEmpty())
         FiniteTextField(
             modifier = textFieldModifier,
-            entities = entities.subClasses,
+            value = state.subCls,
+            entities = state.cls.subEntities,
             toString = { it.name },
             onSelected = onSubClassSelected,
             label = { Text(text = stringResource(Res.string.sub_class)) }
         )
     FiniteTextField(
         modifier = textFieldModifier,
+        value = state.race,
         entities = entities.races,
         toString = { it.name },
         onSelected = onRaceSelected,
         onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.RACE, it) },
         label = { Text(text = stringResource(Res.string.race)) }
     )
-    if (!entities.subRaces.isNullOrEmpty())
+    if (!state.race?.subEntities.isNullOrEmpty())
         FiniteTextField(
             modifier = textFieldModifier,
-            entities = entities.subRaces,
+            value = state.subRace,
+            entities = state.race.subEntities,
             toString = { it.name },
             onSelected = onSubRaceSelected,
             label = { Text(text = stringResource(Res.string.sub_race)) }
         )
     FiniteTextField(
         modifier = textFieldModifier,
+        value = state.background,
         entities = entities.backgrounds,
         toString = { it.name },
         onSelected = onBackgroundSelected,
         onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.BACKGROUND, it) },
         label = { Text(text = stringResource(Res.string.background)) }
     )
+    if (!state.background?.subEntities.isNullOrEmpty())
+        FiniteTextField(
+            modifier = textFieldModifier,
+            value = state.subRace,
+            entities = state.background.subEntities,
+            toString = { it.name },
+            onSelected = onSubBackgroundSelected,
+            label = { Text(text = stringResource(Res.string.sub_background)) }
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

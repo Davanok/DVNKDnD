@@ -18,7 +18,7 @@ data class DnDBaseEntity(
     @ColumnInfo(index = true) val type: DnDEntityTypes,
     val name: String,
     val description: String,
-    val source: String?
+    val source: String
 )
 @Entity(
     tableName = "entity_full_descriptions",

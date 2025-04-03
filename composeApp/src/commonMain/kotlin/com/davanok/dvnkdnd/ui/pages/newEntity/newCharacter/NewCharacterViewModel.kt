@@ -4,20 +4,16 @@ import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
-import com.davanok.dvnkdnd.data.model.dnd_enums.MainSources
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.util.WhileUiSubscribed
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
 import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import okio.Path
@@ -46,18 +42,11 @@ class NewCharacterViewModel(
         started = WhileUiSubscribed,
         initialValue = NewCharacterUiState(isLoading = true)
     )
-    fun hideSearchSheet(selectedEntity: DnDEntityMin?, selectedSubEntity: DnDEntityMin?) {
+    fun hideSearchSheet(selectedEntity: DnDEntityWithSubEntities?, selectedSubEntity: DnDEntityMin?) {
         _searchSheetEntityType.value.let {
             when (it) {
-                DnDEntityTypes.NONE -> {}
-                DnDEntityTypes.CLASS -> {
-                    setCharacterClass(selectedEntity)
-                    setCharacterSubClass(selectedSubEntity)
-                }
-                DnDEntityTypes.RACE -> {
-                    setCharacterRace(selectedEntity)
-                    setCharacterSubRace(selectedSubEntity)
-                }
+                DnDEntityTypes.CLASS -> setCharacterClass(selectedEntity, selectedSubEntity)
+                DnDEntityTypes.RACE -> setCharacterRace(selectedEntity, selectedSubEntity)
                 DnDEntityTypes.BACKGROUND -> setCharacterBackground(selectedEntity)
                 else -> throw IllegalArgumentException()
             }
@@ -83,11 +72,12 @@ class NewCharacterViewModel(
     private val _characterMainImage = MutableStateFlow<Path?>(null)
     private val _characterName = MutableStateFlow("")
     private val _characterDescription = MutableStateFlow("")
-    private val _characterCls = MutableStateFlow<DnDEntityMin?>(null)
+    private val _characterCls = MutableStateFlow<DnDEntityWithSubEntities?>(null)
     private val _characterSubCls = MutableStateFlow<DnDEntityMin?>(null)
-    private val _characterRace = MutableStateFlow<DnDEntityMin?>(null)
+    private val _characterRace = MutableStateFlow<DnDEntityWithSubEntities?>(null)
     private val _characterSubRace = MutableStateFlow<DnDEntityMin?>(null)
-    private val _characterBackground = MutableStateFlow<DnDEntityMin?>(null)
+    private val _characterBackground = MutableStateFlow<DnDEntityWithSubEntities?>(null)
+    private val _characterSubBackground = MutableStateFlow<DnDEntityMin?>(null)
 
     @Suppress("UNCHECKED_CAST")
     val newCharacterState: StateFlow<NewCharacterState> = combine(
@@ -99,18 +89,21 @@ class NewCharacterViewModel(
         _characterSubCls,
         _characterRace,
         _characterSubRace,
-        _characterBackground
+        _characterBackground,
+        _characterSubBackground
     ) { args ->
+        Napier.d { "update new character state" }
         NewCharacterState(
             images = args[0] as List<Path>,
             mainImage = args[1] as Path?,
             name = args[2] as String,
             description = args[3] as String,
-            cls = args[4] as DnDEntityMin?,
+            cls = args[4] as DnDEntityWithSubEntities?,
             subCls = args[5] as DnDEntityMin?,
-            race = args[6] as DnDEntityMin?,
+            race = args[6] as DnDEntityWithSubEntities?,
             subRace = args[7] as DnDEntityMin?,
-            background = args[8] as DnDEntityMin?
+            background = args[8] as DnDEntityWithSubEntities?,
+            subBackground = args[9] as DnDEntityMin?
         )
     }.stateIn(
         scope = viewModelScope,
@@ -135,63 +128,44 @@ class NewCharacterViewModel(
     fun setCharacterMainImage(value: Path?) { _characterMainImage.value = value }
     fun setCharacterName(value: String) { _characterName.value = value }
     fun setCharacterDescription(value: String) { _characterDescription.value = value }
-    fun setCharacterClass(value: DnDEntityMin?) {
+
+    fun setCharacterClass(value: DnDEntityWithSubEntities?, subClass: DnDEntityMin? = null) {
         _characterCls.value = value
-        _characterSubCls.value = null
+        _characterSubCls.value = subClass
     }
     fun setCharacterSubClass(value: DnDEntityMin?) { _characterSubCls.value = value }
-    fun setCharacterRace(value: DnDEntityMin?) {
+
+    fun setCharacterRace(value: DnDEntityWithSubEntities?, subRace: DnDEntityMin? = null) {
         _characterRace.value = value
-        _characterSubRace.value = null
+        _characterSubRace.value = subRace
     }
     fun setCharacterSubRace(value: DnDEntityMin?) { _characterSubRace.value = value }
-    fun setCharacterBackground(value: DnDEntityMin?) { _characterBackground.value = value }
+
+    fun setCharacterBackground(value: DnDEntityWithSubEntities?) { _characterBackground.value = value }
+    fun setCharacterSubBackground(value: DnDEntityMin?) { _characterSubBackground.value = value }
 
     // downloadable items
 
-    private val _mainClasses = MutableStateFlow<List<DnDEntityMin>>(emptyList())
-    private val _mainRaces = MutableStateFlow<List<DnDEntityMin>>(emptyList())
-    private val _mainBackgrounds = MutableStateFlow<List<DnDEntityMin>>(emptyList())
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _subClasses = _characterCls.flatMapLatest { cls ->
-        cls?.let {
-            flowOf(repository.getEntitiesMinList(DnDEntityTypes.CLASS, it.id))
-        } ?: flowOf(null)
-    }.stateIn(
-        scope = viewModelScope,
-        started = WhileUiSubscribed,
-        initialValue = null
-    )
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _subRaces = _characterRace.flatMapLatest { race ->
-        race?.let {
-            flowOf(repository.getEntitiesMinList(DnDEntityTypes.RACE, it.id))
-        } ?: flowOf(null)
-    }.stateIn(
-        scope = viewModelScope,
-        started = WhileUiSubscribed,
-        initialValue = null
-    )
+    private val _mainClasses = MutableStateFlow<List<DnDEntityWithSubEntities>>(emptyList())
+    private val _mainRaces = MutableStateFlow<List<DnDEntityWithSubEntities>>(emptyList())
+    private val _mainBackgrounds = MutableStateFlow<List<DnDEntityWithSubEntities>>(emptyList())
 
     init {
         loadMainValues()
     }
 
     private fun loadMainValues() = viewModelScope.launch {
-        _mainClasses.value = repository.getEntitiesMinList(DnDEntityTypes.CLASS)
-        _mainRaces.value = repository.getEntitiesMinList(DnDEntityTypes.RACE)
-        _mainBackgrounds.value = repository.getEntitiesMinList(DnDEntityTypes.BACKGROUND)
+        _mainClasses.value = repository.getEntitiesWithSubList(DnDEntityTypes.CLASS)
+        _mainRaces.value = repository.getEntitiesWithSubList(DnDEntityTypes.RACE)
+        _mainBackgrounds.value = repository.getEntitiesWithSubList(DnDEntityTypes.BACKGROUND)
     }
 
     val downloadableState: StateFlow<DownloadableValuesState> = combine(
-        _mainClasses, _subClasses, _mainRaces, _subRaces, _mainBackgrounds
-    ) { classes, subClasses, races, subRaces, backgrounds ->
+        _mainClasses, _mainRaces, _mainBackgrounds
+    ) { classes, races, backgrounds ->
         DownloadableValuesState(
             classes = classes,
-            subClasses = subClasses,
             races = races,
-            subRaces = subRaces,
             backgrounds = backgrounds
         )
     }.stateIn(
@@ -223,17 +197,17 @@ class NewCharacterViewModel(
             DnDEntityTypes.CLASS -> {
                 val entities = getEntities()
                 _searchClassEntities.value = entities
-                _filteredSearchEntities.value = entities
+                setSearchQuery(_searchQuery.value)
             }
             DnDEntityTypes.RACE -> {
                 val entities = getEntities()
                 _searchRaceEntities.value = entities
-                _filteredSearchEntities.value = entities
+                setSearchQuery(_searchQuery.value)
             }
             DnDEntityTypes.BACKGROUND -> {
                 val entities = getEntities()
                 _searchBackgroundEntities.value = entities
-                _filteredSearchEntities.value = entities
+                setSearchQuery(_searchQuery.value)
             }
             else -> throw IllegalArgumentException("illegal to load searchEntities not main types")
         }
@@ -280,11 +254,9 @@ data class NewCharacterUiState(
 
 data class DownloadableValuesState(
     val isLoading: Boolean = false,
-    val classes: List<DnDEntityMin> = emptyList(),
-    val subClasses: List<DnDEntityMin>? = null,
-    val races: List<DnDEntityMin> = emptyList(),
-    val subRaces: List<DnDEntityMin>? = null,
-    val backgrounds: List<DnDEntityMin> = emptyList()
+    val classes: List<DnDEntityWithSubEntities> = emptyList(),
+    val races: List<DnDEntityWithSubEntities> = emptyList(),
+    val backgrounds: List<DnDEntityWithSubEntities> = emptyList()
 )
 
 data class NewCharacterState(
@@ -292,11 +264,12 @@ data class NewCharacterState(
     val mainImage: Path? = null,
     val name: String = "",
     val description: String = "",
-    val cls: DnDEntityMin? = null,
+    val cls: DnDEntityWithSubEntities? = null,
     val subCls: DnDEntityMin? = null,
-    val race: DnDEntityMin? = null,
+    val race: DnDEntityWithSubEntities? = null,
     val subRace: DnDEntityMin? = null,
-    val background: DnDEntityMin? = null
+    val background: DnDEntityWithSubEntities? = null,
+    val subBackground: DnDEntityMin? = null,
 )
 
 data class SearchSheetUiState(

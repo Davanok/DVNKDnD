@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DnDEntityMin(
     val id: Long,
+    val type: DnDEntityTypes,
     val name: String,
     val source: String,
 )
@@ -17,7 +18,7 @@ data class DnDEntityWithSubEntities (
     val source: String,
     val subEntities: List<DnDEntityMin>
 ) {
-    fun asDnDEntityMin() = DnDEntityMin(id, name, source)
+    fun asDnDEntityMin() = DnDEntityMin(id, type, name, source)
 }
 @Serializable
 data class DnDEntityFullInfo(
