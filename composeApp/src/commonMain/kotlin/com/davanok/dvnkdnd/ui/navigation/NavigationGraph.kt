@@ -100,7 +100,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         }
         composable<Route.New.Character.Stats> {
             NewCharacterStatsScreen(
-
+                onContinue = { id -> navController.navigate(Route.New.Character.Skills(id))  }
             )
         }
     }

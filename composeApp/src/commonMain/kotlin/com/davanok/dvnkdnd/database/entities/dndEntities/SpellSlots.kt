@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.davanok.dvnkdnd.database.ListIntAdapter
+import com.davanok.dvnkdnd.database.MainAdapters
 
 @Entity(
     tableName = "spell_slots",
@@ -21,5 +21,5 @@ data class SpellSlots(
     val level: Int,
     val preparedSpells: Int?,
     val cantrips: Int,
-    @TypeConverters(ListIntAdapter::class) val spellSlots: List<Int>
+    @TypeConverters(MainAdapters::class) val spellSlots: List<Int>
 )

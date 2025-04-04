@@ -240,6 +240,8 @@ class NewCharacterMainViewModel(
     }
 
     fun createCharacter(onSuccess: (characterId: Long) -> Unit) = viewModelScope.launch {
+        // TODO: save images
+        // TODO: save class / race / background to database
         val newCharacter = newCharacterMain.value
 
         val emptyFields = checkCharacter(newCharacter)

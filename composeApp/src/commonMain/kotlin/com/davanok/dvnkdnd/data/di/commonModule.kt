@@ -2,13 +2,13 @@ package com.davanok.dvnkdnd.data.di
 
 import com.davanok.dvnkdnd.BuildConfig
 import com.davanok.dvnkdnd.data.implementations.BrowseRepositoryImpl
-import com.davanok.dvnkdnd.data.implementations.CharactersListRepositoryImpl
+import com.davanok.dvnkdnd.data.implementations.CharactersRepositoryImpl
 import com.davanok.dvnkdnd.data.implementations.FilesRepositoryImpl
 import com.davanok.dvnkdnd.data.implementations.NewCharacterRepositoryImpl
 import com.davanok.dvnkdnd.data.platform.appCacheDirectory
 import com.davanok.dvnkdnd.data.platform.appDataDirectory
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
-import com.davanok.dvnkdnd.data.repositories.CharactersListRepository
+import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
 import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
 import io.github.jan.supabase.SupabaseClient
@@ -20,7 +20,7 @@ import io.github.jan.supabase.storage.storage
 import org.koin.dsl.module
 
 fun commonModule() = module {
-    single<CharactersListRepository> { CharactersListRepositoryImpl(get()) }
+    single<CharactersRepository> { CharactersRepositoryImpl(get()) }
     single<NewCharacterRepository> { NewCharacterRepositoryImpl(get(), get()) }
     single<FilesRepository> { (FilesRepositoryImpl(appDataDirectory(), appCacheDirectory())) }
 

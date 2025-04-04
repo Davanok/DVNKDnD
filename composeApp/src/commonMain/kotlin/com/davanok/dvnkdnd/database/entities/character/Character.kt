@@ -29,5 +29,6 @@ data class Character(
     @ColumnInfo(index = true) val subBackground: Long?,
     val level: Int = 1,
     val proficiencyBonus: Int = 2,
-    val source: String? = null
+    val source: String? = null,
+    val mainImage: String? = null
 )

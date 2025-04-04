@@ -6,10 +6,9 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
-import com.davanok.dvnkdnd.database.ListIntAdapter
+import com.davanok.dvnkdnd.database.MainAdapters
 import com.davanok.dvnkdnd.database.entities.Proficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityImage
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 
 @Entity(
@@ -53,7 +52,7 @@ data class CharacterHealth(
 data class CharacterSpellSlots(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(index = true) val characterId: Long,
-    @TypeConverters(ListIntAdapter::class) val usedSpells: List<Int>
+    @TypeConverters(MainAdapters::class) val usedSpells: List<Int>
 )
 @Entity(
     tableName = "character_proficiencies",

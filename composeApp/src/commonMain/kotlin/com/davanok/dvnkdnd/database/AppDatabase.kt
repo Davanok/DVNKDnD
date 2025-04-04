@@ -96,7 +96,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
                ],
     version = 1
 )
-@TypeConverters(ListIntAdapter::class, ListSpellComponentAdapter::class)
+@TypeConverters(MainAdapters::class, ListSpellComponentAdapter::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun getCharactersDao(): CharactersDao
     abstract fun getClassesDao(): ClassesDao

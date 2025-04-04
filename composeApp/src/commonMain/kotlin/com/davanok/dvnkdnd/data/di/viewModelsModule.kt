@@ -9,13 +9,9 @@ import org.koin.dsl.module
 
 fun viewModelsModule() = module {
     viewModelOf(::CharactersListViewModel)
-//    single<CharactersListViewModel> { CharactersListViewModel(get()) }
 
     viewModelOf(::NewCharacterMainViewModel)
-//    single<NewCharacterMainViewModel> { NewCharacterMainViewModel(get(), get(), get()) }
     viewModelOf(::NewCharacterStatsViewModel)
-//    single<NewCharacterStatsViewModel> { NewCharacterStatsViewModel() }
 
     viewModelOf(::DnDEntityInfoViewModel)
-//    single<DnDEntityInfoViewModel> { DnDEntityInfoViewModel(get()) }
 }

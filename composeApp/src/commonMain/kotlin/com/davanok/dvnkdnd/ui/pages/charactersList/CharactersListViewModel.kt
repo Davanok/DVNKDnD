@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.ui.pages.charactersList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.CharacterMin
-import com.davanok.dvnkdnd.data.repositories.CharactersListRepository
+import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.model.util.Async
 import com.davanok.dvnkdnd.data.model.util.WhileUiSubscribed
 import dvnkdnd.composeapp.generated.resources.Res
@@ -26,7 +26,7 @@ data class CharactersListUiState(
 )
 
 class CharactersListViewModel(
-    repository: CharactersListRepository
+    repository: CharactersRepository
 ) : ViewModel() {
 
     private val _currentCharacter = MutableStateFlow<CharacterMin?>(null)
