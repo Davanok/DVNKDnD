@@ -30,7 +30,9 @@ fun <T> FiniteTextField(
     onSelected: (T?) -> Unit,
     modifier: Modifier = Modifier,
     onNeedMore: ((String) -> Unit)? = null,
-    label: @Composable (() -> Unit)? = null
+    label: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    supportingText: @Composable (() -> Unit)? = null
 ) {
     var text by remember { mutableStateOf("") }
     val entitiesMap = remember(entities) {
@@ -52,7 +54,9 @@ fun <T> FiniteTextField(
                 ?.key
             if (match != value) onSelected(match)
         },
-        label = label
+        label = label,
+        isError = isError,
+        supportingText = supportingText
     ) {
         filteredItems.forEach { (key, name) ->
             item(
@@ -68,9 +72,7 @@ fun <T> FiniteTextField(
                 text = {
                     Text(stringResource(Res.string.more), color = MaterialTheme.colorScheme.primary)
                        },
-                onClick = {
-                    onNeedMore(text)
-                },
+                onClick = { onNeedMore(text) },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowForward,

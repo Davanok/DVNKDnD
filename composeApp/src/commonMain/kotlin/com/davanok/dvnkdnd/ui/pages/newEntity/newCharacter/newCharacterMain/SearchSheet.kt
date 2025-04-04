@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
+package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -42,7 +42,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
-import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.sideSheet.ModalSideSheet
 import com.davanok.dvnkdnd.ui.components.sideSheet.rememberModalSideSheetState
 import dvnkdnd.composeapp.generated.resources.Res
@@ -59,7 +58,7 @@ import org.jetbrains.compose.resources.stringResource
 fun SearchSheet(
     onDismiss: (DnDEntityWithSubEntities?, DnDEntityMin?) -> Unit,
     onGetEntityInfo: (DnDEntityTypes, DnDEntityMin) -> Unit,
-    viewModel: NewCharacterViewModel
+    viewModel: NewCharacterMainViewModel
 ) {
     val uiState by viewModel.searchSheetState.collectAsStateWithLifecycle()
     var selectedEntity: Pair<DnDEntityWithSubEntities?, DnDEntityMin?> by remember { mutableStateOf(Pair(null, null)) }
@@ -95,7 +94,7 @@ fun SearchSheet(
                 onValueChange = viewModel::setSearchQuery
             )
             IconButton (
-                onClick = { viewModel.loadSearchEntities() }
+                onClick = { viewModel.loadSearchEntities(uiState.searchType) }
             ) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
@@ -105,7 +104,7 @@ fun SearchSheet(
         }
         PullToRefreshBox(
             isRefreshing = uiState.isLoading,
-            onRefresh = { viewModel.loadSearchEntities() }
+            onRefresh = { viewModel.loadSearchEntities(uiState.searchType) }
         ) {
             Column (modifier = Modifier.fillMaxSize()) {
                 Spacer(modifier = Modifier.height(10.dp))

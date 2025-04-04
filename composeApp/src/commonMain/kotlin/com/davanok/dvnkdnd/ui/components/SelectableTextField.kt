@@ -30,7 +30,9 @@ fun SelectableTextField(
     onValueChange: (String) -> Unit,
     label: (@Composable () -> Unit)? = null,
     placeholder: (@Composable () -> Unit)? = null,
-    dropdownMenuContent: ExposedDropdownMenuScope.() -> Unit
+    isError: Boolean = false,
+    supportingText: @Composable (() -> Unit)? = null,
+    dropdownMenuContent: ExposedDropdownMenuScope.() -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
@@ -44,10 +46,10 @@ fun SelectableTextField(
             label = label,
             placeholder = placeholder,
             trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = expanded
-                )
-            }
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            isError = isError,
+            supportingText = supportingText
         )
         val content = rememberStateOfContent(dropdownMenuContent)
         ExposedDropdownMenu(

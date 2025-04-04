@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class DnDEntityTypes {
-    NONE,
     CLASS,
     SUBCLASS,
     RACE,
@@ -14,5 +13,4 @@ enum class DnDEntityTypes {
     FEAT,
     SPELL,
     ITEM,
-
 }

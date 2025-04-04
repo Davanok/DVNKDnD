@@ -14,7 +14,8 @@ import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
 import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
 
 
@@ -63,28 +64,17 @@ private fun NavGraphBuilder.mainDestinations(navController: NavHostController) =
         }
     }
 
-private fun NavGraphBuilder.newEntityDestinations(navController: NavHostController) =
-    navigation<Route.New>(
-        startDestination = Route.New.Navigator
-    ) {
-        composable<Route.New.Navigator> {
-            NewEntityScreen(
-                onNavigate = { route -> navController.navigate(route) }
-            )
-        }
-        composable<Route.New.Character> {
-            NewCharacterScreen(
-                navigateToEntityInfo = { type, entity ->
-                    navController.navigate(Route.EntityInfo(type.name, entity.id)) {
-                        popUpTo(Route.New.Character)
-                    }
-                }
-            )
-        }
-        composable<Route.New.Item> {
-            NewItemScreen()
-        }
+private fun NavGraphBuilder.newEntityDestinations(navController: NavHostController) {
+    composable<Route.New> {
+        NewEntityScreen(
+            onNavigate = { route -> navController.navigate(route) }
+        )
     }
+    composable<Route.New.Item> {
+        NewItemScreen()
+    }
+    characterCreationFlow(navController)
+}
 
 
 private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostController) {
@@ -97,3 +87,20 @@ private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostControl
         )
     }
 }
+
+private fun NavGraphBuilder.characterCreationFlow(navController: NavHostController) =
+    navigation<Route.New.Character>(startDestination = Route.New.Character.Main) {
+        composable<Route.New.Character.Main> {
+            NewCharacterMainScreen(
+                navigateToEntityInfo = { type, entity ->
+                    navController.navigate(Route.EntityInfo(type.name, entity.id))
+                },
+                onContinue = { id -> navController.navigate(Route.New.Character.Stats(id)) }
+            )
+        }
+        composable<Route.New.Character.Stats> {
+            NewCharacterStatsScreen(
+
+            )
+        }
+    }

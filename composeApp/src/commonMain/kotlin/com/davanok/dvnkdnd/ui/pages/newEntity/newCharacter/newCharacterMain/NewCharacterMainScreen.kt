@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
+package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,8 +58,10 @@ import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
 import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.cls
+import dvnkdnd.composeapp.generated.resources.continue_str
 import dvnkdnd.composeapp.generated.resources.description
 import dvnkdnd.composeapp.generated.resources.drop_image
+import dvnkdnd.composeapp.generated.resources.empty_field_error
 import dvnkdnd.composeapp.generated.resources.name
 import dvnkdnd.composeapp.generated.resources.no_character_images_yet
 import dvnkdnd.composeapp.generated.resources.race
@@ -75,19 +78,20 @@ import org.koin.compose.koinInject
 
 
 @Composable
-fun NewCharacterScreen(
+fun NewCharacterMainScreen(
     navigateToEntityInfo: (DnDEntityTypes, DnDEntityMin) -> Unit,
-    viewModel: NewCharacterViewModel = koinInject()
+    onContinue: (characterId: Long) -> Unit,
+    viewModel: NewCharacterMainViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     CreateCharacterContent(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
+        empties = uiState.emptyFields,
+        onCreateCharacter = { viewModel.createCharacter(onContinue) },
         viewModel = viewModel
     )
-
     if (uiState.showSearchSheet)
         SearchSheet(
             onDismiss = viewModel::hideSearchSheet,
@@ -98,10 +102,12 @@ fun NewCharacterScreen(
 
 @Composable
 private fun CreateCharacterContent(
-    viewModel: NewCharacterViewModel,
-    modifier: Modifier = Modifier
+    viewModel: NewCharacterMainViewModel,
+    empties: NewCharacterUiState.EmptyFields,
+    onCreateCharacter: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val state by viewModel.newCharacterState.collectAsStateWithLifecycle()
+    val state by viewModel.newCharacterMain.collectAsStateWithLifecycle()
     val entities by viewModel.downloadableState.collectAsStateWithLifecycle()
 
     Column (
@@ -121,6 +127,7 @@ private fun CreateCharacterContent(
         Spacer(modifier = Modifier.height(24.dp))
         Content(
             state = state,
+            empties = empties,
             entities = entities,
             onNameChange = viewModel::setCharacterName,
             onDescriptionChange = viewModel::setCharacterDescription,
@@ -132,12 +139,22 @@ private fun CreateCharacterContent(
             onSubBackgroundSelected = viewModel::setCharacterSubBackground,
             onOpenExtendedSearch = viewModel::openSearchSheet
         )
+        Button (
+            modifier = Modifier
+                .align(Alignment.End),
+            onClick = onCreateCharacter
+        ) {
+            Text(
+                text = stringResource(Res.string.continue_str)
+            )
+        }
     }
 }
 
 @Composable
 private fun Content(
-    state: NewCharacterState,
+    state: NewCharacterMain,
+    empties: NewCharacterUiState.EmptyFields,
     entities: DownloadableValuesState,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
@@ -151,12 +168,21 @@ private fun Content(
 ) {
     val textFieldModifier = Modifier
         .widthIn(488.dp)
+    val errorText: (error: Boolean) -> @Composable (() -> Unit)? = { error ->
+        if (error) { { Text(
+            text = stringResource(Res.string.empty_field_error),
+            color = MaterialTheme.colorScheme.error
+        ) } }
+        else null
+    }
     OutlinedTextField(
         modifier = textFieldModifier,
         value = state.name,
         onValueChange = onNameChange,
         label = { Text(text = stringResource(Res.string.name)) },
-        singleLine = true
+        singleLine = true,
+        isError = empties.name,
+        supportingText = errorText(empties.name)
     )
     OutlinedTextField(
         modifier = textFieldModifier,
@@ -173,7 +199,9 @@ private fun Content(
         toString = { it.name },
         onSelected = onClassChange,
         onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.CLASS, it) },
-        label = { Text(text = stringResource(Res.string.cls)) }
+        label = { Text(text = stringResource(Res.string.cls)) },
+        isError = empties.cls,
+        supportingText = errorText(empties.cls)
     )
     if (!state.cls?.subEntities.isNullOrEmpty())
         FiniteTextField(
@@ -182,7 +210,9 @@ private fun Content(
             entities = state.cls.subEntities,
             toString = { it.name },
             onSelected = onSubClassSelected,
-            label = { Text(text = stringResource(Res.string.sub_class)) }
+            label = { Text(text = stringResource(Res.string.sub_class)) },
+            isError = empties.subCls,
+            supportingText = errorText(empties.subCls)
         )
     FiniteTextField(
         modifier = textFieldModifier,
@@ -191,7 +221,9 @@ private fun Content(
         toString = { it.name },
         onSelected = onRaceSelected,
         onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.RACE, it) },
-        label = { Text(text = stringResource(Res.string.race)) }
+        label = { Text(text = stringResource(Res.string.race)) },
+        isError = empties.race,
+        supportingText = errorText(empties.race)
     )
     if (!state.race?.subEntities.isNullOrEmpty())
         FiniteTextField(
@@ -200,7 +232,9 @@ private fun Content(
             entities = state.race.subEntities,
             toString = { it.name },
             onSelected = onSubRaceSelected,
-            label = { Text(text = stringResource(Res.string.sub_race)) }
+            label = { Text(text = stringResource(Res.string.sub_race)) },
+            isError = empties.subRace,
+            supportingText = errorText(empties.subRace)
         )
     FiniteTextField(
         modifier = textFieldModifier,
@@ -209,7 +243,9 @@ private fun Content(
         toString = { it.name },
         onSelected = onBackgroundSelected,
         onNeedMore = { onOpenExtendedSearch(DnDEntityTypes.BACKGROUND, it) },
-        label = { Text(text = stringResource(Res.string.background)) }
+        label = { Text(text = stringResource(Res.string.background)) },
+        isError = empties.background,
+        supportingText = errorText(empties.background)
     )
     if (!state.background?.subEntities.isNullOrEmpty())
         FiniteTextField(
@@ -218,7 +254,9 @@ private fun Content(
             entities = state.background.subEntities,
             toString = { it.name },
             onSelected = onSubBackgroundSelected,
-            label = { Text(text = stringResource(Res.string.sub_background)) }
+            label = { Text(text = stringResource(Res.string.sub_background)) },
+            isError = empties.subBackground,
+            supportingText = errorText(empties.subBackground)
         )
 }
 

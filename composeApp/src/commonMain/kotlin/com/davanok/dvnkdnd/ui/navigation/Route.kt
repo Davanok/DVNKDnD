@@ -13,9 +13,11 @@ sealed interface Route {
     }
     @Serializable
     data object New : Route {
-        @Serializable data object Navigator : Route
         // main
-        @Serializable data object Character : Route
+        @Serializable data object Character : Route {
+            @Serializable data object Main : Route
+            @Serializable data class Stats(val characterId: Long) : Route
+        }
         @Serializable data object Item : Route
         // custom
         @Serializable data object Spell : Route
