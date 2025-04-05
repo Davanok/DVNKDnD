@@ -64,9 +64,7 @@ fun CharactersListScreen(
                 )
             }
         },
-        secondPane = {
-            CharacterShortInfo()
-        }
+        secondPane = { CharacterShortInfo(uiState.currentCharacter, viewModel) }
     )
 }
 
@@ -159,7 +157,9 @@ private fun CharacterCard(
 
 @Composable
 private fun CharacterShortInfo(
-//    character: CharacterMin
+    character: CharacterMin?,
+    viewModel: CharactersListViewModel
 ) {
+    // TODO
     Box(modifier = Modifier.fillMaxSize().background(Color.Green))
 }

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CharactersDao {
     @Query("SELECT id, name, level, mainImage FROM characters")
-    fun getCharactersFlow(): Flow<List<CharacterMin>>
+    suspend fun loadCharactersMinList(): List<CharacterMin>
 
     @Insert
     suspend fun insertCharacter(character: Character): Long
