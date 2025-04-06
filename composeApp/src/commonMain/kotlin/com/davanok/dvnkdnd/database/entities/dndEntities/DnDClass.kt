@@ -17,7 +17,7 @@ import kotlin.uuid.Uuid
     ]
 )
 data class DnDClass(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val skillsSelectLimit: Int?,
     val proficienciesSelectLimit: Int?,

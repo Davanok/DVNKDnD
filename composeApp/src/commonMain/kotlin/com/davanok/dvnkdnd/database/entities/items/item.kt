@@ -19,7 +19,7 @@ import kotlin.uuid.Uuid
     ]
 )
 data class DnDItem(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val pinned: Boolean = false,
     val cost: Int?, // in copper pieces
@@ -34,7 +34,7 @@ data class DnDItem(
     ]
 )
 data class ItemProficiency(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val itemId: Uuid,
     @ColumnInfo(index = true) val proficiencyId: Uuid
 )

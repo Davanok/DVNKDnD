@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
     foreignKeys = [ForeignKey(DnDItem::class, ["id"], ["itemId"], onDelete = ForeignKey.CASCADE)]
 )
 data class Weapon(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val itemId: Uuid,
     val atkBonus: Int
 )
@@ -27,7 +27,7 @@ data class Weapon(
     foreignKeys = [ForeignKey(Weapon::class, ["id"], ["weaponId"], onDelete = ForeignKey.CASCADE)]
 )
 data class WeaponDamage(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val weaponId: Uuid,
     val damageType: DamageTypes,
     val diceCount: Int,
@@ -42,7 +42,7 @@ data class WeaponDamage(
     ]
 )
 data class WeaponProperties(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val weaponId: Uuid,
     @ColumnInfo(index = true) val proficiencyId: Uuid
 )

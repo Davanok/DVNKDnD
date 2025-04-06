@@ -11,7 +11,7 @@ import kotlin.uuid.Uuid
 // proficiencies like heavy armor, weapons
 @Entity(tableName = "proficiencies")
 data class Proficiency(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     val name: String,
     val type: ProficiencyTypes,
     val source: String?

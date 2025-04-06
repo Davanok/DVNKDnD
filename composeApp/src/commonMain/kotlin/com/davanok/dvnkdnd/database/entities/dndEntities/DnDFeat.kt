@@ -19,7 +19,7 @@ import kotlin.uuid.Uuid
     ]
 )
 data class DnDFeat(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val repeatable: Boolean,
     val modifiersSelectLimit: Int?,
@@ -34,7 +34,7 @@ data class DnDFeat(
     ]
 )
 data class FeatModifier(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val featId: Uuid,
     val selectable: Boolean, // true, в случаях, когда можно выбрать модификатор
     val stat: Stats?,
@@ -48,7 +48,7 @@ data class FeatModifier(
     ]
 )
 data class FeatSkill(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val featId: Uuid,
     val selectable: Boolean,
     val skill: Skills
@@ -61,7 +61,7 @@ data class FeatSkill(
     ]
 )
 data class FeatProficiency(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val featId: Uuid,
     @ColumnInfo(index = true) val proficiencyId: Uuid,
     val selectable: Boolean

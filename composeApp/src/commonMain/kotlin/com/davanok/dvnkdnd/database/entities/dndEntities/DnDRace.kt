@@ -17,7 +17,7 @@ import kotlin.uuid.Uuid
     ]
 )
 data class DnDRace(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val speed: Int,
     val modifierSelectLimit: Int?,
@@ -31,7 +31,7 @@ data class DnDRace(
     ]
 )
 data class RaceSize(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val raceId: Uuid,
     val size: Size
 )

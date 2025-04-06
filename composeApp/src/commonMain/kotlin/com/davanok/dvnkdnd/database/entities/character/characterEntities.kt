@@ -20,7 +20,7 @@ import kotlin.uuid.Uuid
     foreignKeys = [ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterStats(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val characterId: Uuid,
     val strength: Int,
     val dexterity: Int,
@@ -34,7 +34,7 @@ data class CharacterStats(
     foreignKeys = [ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterSkill(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val characterId: Uuid,
     val skill: Skills
 )
@@ -43,7 +43,7 @@ data class CharacterSkill(
     foreignKeys = [ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterHealth(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val characterId: Uuid,
     val max: Int,
     val current: Int,
@@ -54,7 +54,7 @@ data class CharacterHealth(
     foreignKeys = [ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterSpellSlots(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val characterId: Uuid,
     @TypeConverters(MainAdapters::class) val usedSpells: List<Int>
 )
@@ -66,7 +66,7 @@ data class CharacterSpellSlots(
     ]
 )
 data class CharacterProficiency(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val characterId: Uuid,
     @ColumnInfo(index = true) val proficiencyId: Uuid
 )
@@ -78,7 +78,7 @@ data class CharacterProficiency(
     ]
 )
 data class CharacterFeat(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val characterId: Uuid,
     @ColumnInfo(index = true) val featId: Uuid
 )
@@ -90,7 +90,7 @@ data class CharacterFeat(
     ]
 )
 data class CharacterImage(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val characterId: Uuid?,
     val path: Path
 )

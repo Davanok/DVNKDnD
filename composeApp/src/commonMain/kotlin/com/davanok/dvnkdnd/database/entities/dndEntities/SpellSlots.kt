@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
     ]
 )
 data class SpellSlots(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val classId: Uuid?,
     @ColumnInfo(index = true) val subclassId: Uuid?,
     val level: Int,

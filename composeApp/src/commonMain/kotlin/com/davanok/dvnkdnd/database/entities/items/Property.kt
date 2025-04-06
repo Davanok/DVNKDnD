@@ -10,7 +10,7 @@ import kotlin.uuid.Uuid
 // properties for items like heavy, two-handed, graze
 @Entity(tableName = "properties")
 data class Property(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     val name: String,
     val description: String
 )

@@ -15,13 +15,10 @@ import kotlin.uuid.Uuid
     tableName = "base_entities",
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["parentId"], onDelete = ForeignKey.CASCADE)
-    ],
-    indices = [
-        Index("webId", unique = true)
     ]
 )
 data class DnDBaseEntity(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val parentId: Uuid? = null,
     @ColumnInfo(index = true) val type: DnDEntityTypes,
     val name: String,
@@ -35,7 +32,7 @@ data class DnDBaseEntity(
     ]
 )
 data class EntityFullDescription(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val text: String
 )
@@ -47,7 +44,7 @@ data class EntityFullDescription(
     ]
 )
 data class EntityImage(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid?,
     val path: String
 )

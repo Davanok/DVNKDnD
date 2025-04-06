@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
     ]
 )
 data class DnDSubrace(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val speed: Int,
     val modifierSelectLimit: Int?,

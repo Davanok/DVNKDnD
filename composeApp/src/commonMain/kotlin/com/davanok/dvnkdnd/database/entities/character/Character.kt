@@ -23,7 +23,7 @@ import kotlin.uuid.Uuid
     ]
 )
 data class Character(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     val name: String,
     val description: String,
     @ColumnInfo(index = true) val cls: Uuid?,

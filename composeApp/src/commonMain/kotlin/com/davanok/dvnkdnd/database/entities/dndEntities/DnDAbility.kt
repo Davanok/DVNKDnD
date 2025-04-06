@@ -16,6 +16,6 @@ import kotlin.uuid.Uuid
     ]
 )
 data class DnDAbility(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
 )

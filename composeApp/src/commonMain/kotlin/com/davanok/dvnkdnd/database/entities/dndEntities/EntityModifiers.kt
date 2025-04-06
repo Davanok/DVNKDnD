@@ -19,7 +19,7 @@ import kotlin.uuid.Uuid
     ]
 )
 data class EntitySkill(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val selectable: Boolean,
     val skill: Skills
@@ -32,7 +32,7 @@ data class EntitySkill(
     ]
 )
 data class EntitySavingThrow(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val selectable: Boolean,
     val stat: Stats
@@ -45,7 +45,7 @@ data class EntitySavingThrow(
     ]
 )
 data class EntityProficiencies(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     @ColumnInfo(index = true) val proficiencyId: Uuid
 )
@@ -57,7 +57,7 @@ data class EntityProficiencies(
     ]
 )
 data class EntityAbility(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     @ColumnInfo(index = true) val abilityId: Uuid,
     val level: Int
@@ -69,7 +69,7 @@ data class EntityAbility(
     ]
 )
 data class EntityModifier(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val selectable: Boolean,
     val stat: Stats,

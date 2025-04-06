@@ -40,7 +40,7 @@ class ListSpellComponentAdapter {
     ]
 )
 data class Spell(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val school: MagicSchools,
     val level: Int,
@@ -59,7 +59,7 @@ data class Spell(
     ]
 )
 data class SpellArea(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val spellId: Uuid,
     val range: Int,
     val area: Int,
@@ -73,7 +73,7 @@ data class SpellArea(
     ]
 )
 data class SpellAttack(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val spellId: Uuid,
     val damageType: DamageTypes,
     val diceCount: Int,
@@ -88,7 +88,7 @@ data class SpellAttack(
     ]
 )
 data class SpellAttackLevelModifier(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val attackId: Uuid,
     val level: Int,
     val diceCount: Int,
@@ -103,7 +103,7 @@ data class SpellAttackLevelModifier(
     ]
 )
 data class SpellAttackSave(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val attackId: Uuid,
     val savingThrow: Stats,
     val halfOnSuccess: Boolean,
@@ -118,7 +118,7 @@ data class SpellAttackSave(
     ]
 )
 data class SpellClass(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val spellId: Uuid,
     @ColumnInfo(index = true) val classId: Uuid,
     @ColumnInfo(index = true) val subclassId: Uuid?,

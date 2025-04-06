@@ -15,7 +15,7 @@ import kotlin.uuid.Uuid
     foreignKeys = [ForeignKey(DnDItem::class, ["id"], ["itemId"], onDelete = ForeignKey.CASCADE)]
 )
 data class Armor(
-    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val itemId: Uuid,
     val armorClass: Int,
     val dexMaxModifier: Int,
