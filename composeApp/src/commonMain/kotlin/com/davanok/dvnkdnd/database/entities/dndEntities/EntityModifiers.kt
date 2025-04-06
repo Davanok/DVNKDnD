@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.database.entities.dndEntities
 
 import androidx.room.ColumnInfo
@@ -7,6 +9,8 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.Proficiency
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "entity_skills",
@@ -15,8 +19,8 @@ import com.davanok.dvnkdnd.database.entities.Proficiency
     ]
 )
 data class EntitySkill(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val entityId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val entityId: Uuid,
     val selectable: Boolean,
     val skill: Skills
 )
@@ -28,8 +32,8 @@ data class EntitySkill(
     ]
 )
 data class EntitySavingThrow(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val entityId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val entityId: Uuid,
     val selectable: Boolean,
     val stat: Stats
 )
@@ -41,9 +45,9 @@ data class EntitySavingThrow(
     ]
 )
 data class EntityProficiencies(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val entityId: Long,
-    @ColumnInfo(index = true) val proficiencyId: Long
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val entityId: Uuid,
+    @ColumnInfo(index = true) val proficiencyId: Uuid
 )
 @Entity(
     tableName = "entity_abilities",
@@ -53,9 +57,9 @@ data class EntityProficiencies(
     ]
 )
 data class EntityAbility(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val entityId: Long,
-    @ColumnInfo(index = true) val abilityId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val entityId: Uuid,
+    @ColumnInfo(index = true) val abilityId: Uuid,
     val level: Int
 )
 @Entity(
@@ -65,8 +69,8 @@ data class EntityAbility(
     ]
 )
 data class EntityModifier(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val entityId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val entityId: Uuid,
     val selectable: Boolean,
     val stat: Stats,
     val modifier: Int

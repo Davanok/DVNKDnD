@@ -1,3 +1,5 @@
+@file:kotlin.OptIn(kotlin.uuid.ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.database.entities
 
 import androidx.room.ColumnInfo
@@ -15,6 +17,7 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubclass
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import kotlin.uuid.Uuid
 
 
 class ListSpellComponentAdapter {
@@ -37,8 +40,8 @@ class ListSpellComponentAdapter {
     ]
 )
 data class Spell(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val entityId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val entityId: Uuid,
     val school: MagicSchools,
     val level: Int,
     val castingTime: String,
@@ -56,8 +59,8 @@ data class Spell(
     ]
 )
 data class SpellArea(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val spellId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val spellId: Uuid,
     val range: Int,
     val area: Int,
     val type: AreaTypes,
@@ -70,8 +73,8 @@ data class SpellArea(
     ]
 )
 data class SpellAttack(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val spellId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val spellId: Uuid,
     val damageType: DamageTypes,
     val diceCount: Int,
     val dice: Dices,
@@ -85,8 +88,8 @@ data class SpellAttack(
     ]
 )
 data class SpellAttackLevelModifier(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val attackId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val attackId: Uuid,
     val level: Int,
     val diceCount: Int,
     val dice: Dices,
@@ -100,8 +103,8 @@ data class SpellAttackLevelModifier(
     ]
 )
 data class SpellAttackSave(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val attackId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val attackId: Uuid,
     val savingThrow: Stats,
     val halfOnSuccess: Boolean,
 )
@@ -115,8 +118,8 @@ data class SpellAttackSave(
     ]
 )
 data class SpellClass(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val spellId: Long,
-    @ColumnInfo(index = true) val classId: Long,
-    @ColumnInfo(index = true) val subclassId: Long?,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val spellId: Uuid,
+    @ColumnInfo(index = true) val classId: Uuid,
+    @ColumnInfo(index = true) val subclassId: Uuid?,
 )

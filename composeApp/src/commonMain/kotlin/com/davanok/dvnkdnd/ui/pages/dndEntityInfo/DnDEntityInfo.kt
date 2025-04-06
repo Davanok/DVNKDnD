@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.ui.pages.dndEntityInfo
 
 import androidx.compose.foundation.layout.Box
@@ -27,18 +29,19 @@ import dvnkdnd.composeapp.generated.resources.error_when_loading_entity
 import dvnkdnd.composeapp.generated.resources.loading
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DnDEntityInfo(
-    entityType: DnDEntityTypes,
-    entityId: Long,
+    entityId: Uuid,
     navigateBack: () -> Unit,
-    viewModel: DnDEntityInfoViewModel = koinInject()
+    viewModel: DnDEntityInfoViewModel = koinViewModel()
 ) {
-    LaunchedEffect(entityType, entityId) {
-        viewModel.loadEntityInfo(entityType, entityId)
+    LaunchedEffect(entityId) {
+        viewModel.loadEntityInfo(entityId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold (

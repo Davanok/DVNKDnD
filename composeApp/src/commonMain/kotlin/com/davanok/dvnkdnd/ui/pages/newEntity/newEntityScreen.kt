@@ -58,36 +58,6 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
-private enum class EntityItem(
-    val title: StringResource,
-    val image: DrawableResource,
-    val route: Route
-) {
-    Character(Res.string.character, Res.drawable.fighter, Route.New.Character),
-    Item(Res.string.item, Res.drawable.sword, Route.New.Item),
-    Spell(Res.string.spell, Res.drawable.fireball, Route.New.Spell),
-    Ability(Res.string.ability, Res.drawable.fantasy, Route.New.Ability),
-    Class(Res.string.cls, Res.drawable.rogue, Route.New.Class),
-    Race(Res.string.race, Res.drawable.tiefling, Route.New.Race),
-    Background(Res.string.background, Res.drawable.urchin, Route.New.Background);
-
-    companion object {
-        val main = listOf(Character, Item)
-        val custom = listOf(Spell, Ability)
-        val homebrew = listOf(Class, Race, Background)
-    }
-}
-
-private enum class EntityGroup(
-    val title: StringResource,
-    val items: List<EntityItem>
-) {
-    Main(Res.string.main, EntityItem.main),
-    Custom(Res.string.custom, EntityItem.custom),
-    Homebrew(Res.string.homebrew, EntityItem.homebrew)
-}
-
 @Composable
 fun NewEntityScreen(
     onNavigate: (Route) -> Unit
@@ -167,7 +137,6 @@ fun calculateMaxTextWidth(text: Iterable<StringResource>, style: TextStyle): Dp 
 private fun ExpandedContent(
     onItemClick: (EntityItem) -> Unit
 ) {
-    val density = LocalDensity.current
     var maxSize by remember { mutableStateOf(Int.MIN_VALUE) }
     val textMaxWidth = calculateMaxTextWidth(
         EntityItem.entries.map { it.title },
@@ -214,4 +183,34 @@ private fun ExpandedContent(
             }
         }
     }
+}
+
+
+private enum class EntityItem(
+    val title: StringResource,
+    val image: DrawableResource,
+    val route: Route
+) {
+    Character(Res.string.character, Res.drawable.fighter, Route.New.Character),
+    Item(Res.string.item, Res.drawable.sword, Route.New.Item),
+    Spell(Res.string.spell, Res.drawable.fireball, Route.New.Spell),
+    Ability(Res.string.ability, Res.drawable.fantasy, Route.New.Ability),
+    Class(Res.string.cls, Res.drawable.rogue, Route.New.Class),
+    Race(Res.string.race, Res.drawable.tiefling, Route.New.Race),
+    Background(Res.string.background, Res.drawable.urchin, Route.New.Background);
+
+    companion object {
+        val main = listOf(Character, Item)
+        val custom = listOf(Spell, Ability)
+        val homebrew = listOf(Class, Race, Background)
+    }
+}
+
+private enum class EntityGroup(
+    val title: StringResource,
+    val items: List<EntityItem>
+) {
+    Main(Res.string.main, EntityItem.main),
+    Custom(Res.string.custom, EntityItem.custom),
+    Homebrew(Res.string.homebrew, EntityItem.homebrew)
 }

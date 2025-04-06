@@ -2,9 +2,6 @@ package com.davanok.dvnkdnd.ui.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,18 +26,6 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
-
-private enum class TopLevelRoute(
-    val title: StringResource,
-    val icon: DrawableResource,
-    val route: Route
-) {
-    CharactersList(Res.string.home, Res.drawable.home, Route.Main.CharactersList),
-    Items(Res.string.items, Res.drawable.category, Route.Main.Items),
-    Browse(Res.string.browse, Res.drawable.manage_search, Route.Main.Browse),
-    Profile(Res.string.profile, Res.drawable.person, Route.Main.Profile)
-}
 
 
 @Composable
@@ -92,4 +77,14 @@ fun HostScreen() {
             navController = navController
         )
     }
+}
+private enum class TopLevelRoute(
+    val title: StringResource,
+    val icon: DrawableResource,
+    val route: Route
+) {
+    CharactersList(Res.string.home, Res.drawable.home, Route.Main.CharactersList),
+    Items(Res.string.items, Res.drawable.category, Route.Main.Items),
+    Browse(Res.string.browse, Res.drawable.manage_search, Route.Main.Browse),
+    Profile(Res.string.profile, Res.drawable.person, Route.Main.Profile)
 }

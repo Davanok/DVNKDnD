@@ -1,6 +1,10 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.ui.navigation
 
 import kotlinx.serialization.Serializable
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 sealed interface Route {
@@ -16,8 +20,8 @@ sealed interface Route {
         // main
         @Serializable data object Character : Route {
             @Serializable data object Main : Route
-            @Serializable data class Stats(val characterId: Long) : Route
-            @Serializable data class Skills(val characterId: Long) : Route
+            @Serializable data class Stats(val characterId: Uuid) : Route
+            @Serializable data class Skills(val characterId: Uuid) : Route
         }
         @Serializable data object Item : Route
         // custom
@@ -31,8 +35,8 @@ sealed interface Route {
     }
 
     @Serializable
-    data class CharacterFull(val characterId: Long) : Route
+    data class CharacterFull(val characterId: Uuid) : Route
 
     @Serializable
-    data class EntityInfo(val entityType: String, val entityId: Long) : Route
+    data class EntityInfo(val entityId: Uuid) : Route
 }

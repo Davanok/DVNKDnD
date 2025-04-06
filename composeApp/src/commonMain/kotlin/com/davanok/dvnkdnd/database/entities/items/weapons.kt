@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.database.entities.items
 
 import androidx.room.ColumnInfo
@@ -7,6 +9,8 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
 import com.davanok.dvnkdnd.database.entities.Proficiency
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 @Entity(
@@ -14,8 +18,8 @@ import com.davanok.dvnkdnd.database.entities.Proficiency
     foreignKeys = [ForeignKey(DnDItem::class, ["id"], ["itemId"], onDelete = ForeignKey.CASCADE)]
 )
 data class Weapon(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val itemId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val itemId: Uuid,
     val atkBonus: Int
 )
 @Entity(
@@ -23,8 +27,8 @@ data class Weapon(
     foreignKeys = [ForeignKey(Weapon::class, ["id"], ["weaponId"], onDelete = ForeignKey.CASCADE)]
 )
 data class WeaponDamage(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val weaponId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val weaponId: Uuid,
     val damageType: DamageTypes,
     val diceCount: Int,
     val dice: Dices,
@@ -38,7 +42,7 @@ data class WeaponDamage(
     ]
 )
 data class WeaponProperties(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val weaponId: Long,
-    @ColumnInfo(index = true) val proficiencyId: Long
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val weaponId: Uuid,
+    @ColumnInfo(index = true) val proficiencyId: Uuid
 )

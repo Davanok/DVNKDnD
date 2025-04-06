@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.database.entities.dndEntities
 
 import androidx.room.ColumnInfo
@@ -7,6 +9,8 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.Proficiency
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "feats",
@@ -15,8 +19,8 @@ import com.davanok.dvnkdnd.database.entities.Proficiency
     ]
 )
 data class DnDFeat(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val entityId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val entityId: Uuid,
     val repeatable: Boolean,
     val modifiersSelectLimit: Int?,
     val skillsSelectLimit: Int?,
@@ -30,8 +34,8 @@ data class DnDFeat(
     ]
 )
 data class FeatModifier(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val featId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val featId: Uuid,
     val selectable: Boolean, // true, в случаях, когда можно выбрать модификатор
     val stat: Stats?,
     val skill: Skills?,
@@ -44,8 +48,8 @@ data class FeatModifier(
     ]
 )
 data class FeatSkill(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val featId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val featId: Uuid,
     val selectable: Boolean,
     val skill: Skills
 )
@@ -57,8 +61,8 @@ data class FeatSkill(
     ]
 )
 data class FeatProficiency(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val featId: Long,
-    @ColumnInfo(index = true) val proficiencyId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val featId: Uuid,
+    @ColumnInfo(index = true) val proficiencyId: Uuid,
     val selectable: Boolean
 )

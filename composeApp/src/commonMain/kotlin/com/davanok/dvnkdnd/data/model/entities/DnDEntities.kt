@@ -1,18 +1,22 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.data.model.entities
 
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import kotlinx.serialization.Serializable
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 data class DnDEntityMin(
-    val id: Long,
+    val id: Uuid,
     val type: DnDEntityTypes,
     val name: String,
     val source: String,
 )
 @Serializable
 data class DnDEntityWithSubEntities (
-    val id: Long,
+    val id: Uuid,
     val type: DnDEntityTypes,
     val name: String,
     val source: String,
@@ -23,7 +27,7 @@ data class DnDEntityWithSubEntities (
 @Serializable
 data class DnDEntityFullInfo(
     val type: DnDEntityTypes,
-    val id: Long,
+    val id: Uuid,
     val name: String,
     val source: String,
     // TODO ...

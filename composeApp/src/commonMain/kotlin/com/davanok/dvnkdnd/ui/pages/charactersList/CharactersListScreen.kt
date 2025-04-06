@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.ui.pages.charactersList
 
 import androidx.compose.foundation.background
@@ -38,13 +40,15 @@ import dvnkdnd.composeapp.generated.resources.sentiment_dissatisfied
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
 
 
 @Composable
 fun CharactersListScreen(
     onFABClick: () -> Unit,
     navigateToCharacter: (CharacterMin) -> Unit,
-    viewModel: CharactersListViewModel = koinInject()
+    viewModel: CharactersListViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TwoPane(

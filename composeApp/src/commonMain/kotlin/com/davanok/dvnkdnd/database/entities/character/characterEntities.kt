@@ -1,3 +1,5 @@
+@file:kotlin.OptIn(kotlin.uuid.ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.database.entities.character
 
 import androidx.room.ColumnInfo
@@ -10,14 +12,16 @@ import com.davanok.dvnkdnd.database.MainAdapters
 import com.davanok.dvnkdnd.database.entities.Proficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
+import okio.Path
+import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "character_stats",
     foreignKeys = [ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterStats(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val characterId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val characterId: Uuid,
     val strength: Int,
     val dexterity: Int,
     val constitution: Int,
@@ -30,8 +34,8 @@ data class CharacterStats(
     foreignKeys = [ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterSkill(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val characterId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val characterId: Uuid,
     val skill: Skills
 )
 @Entity(
@@ -39,8 +43,8 @@ data class CharacterSkill(
     foreignKeys = [ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterHealth(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val characterId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val characterId: Uuid,
     val max: Int,
     val current: Int,
     val temp: Int
@@ -50,8 +54,8 @@ data class CharacterHealth(
     foreignKeys = [ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterSpellSlots(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val characterId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val characterId: Uuid,
     @TypeConverters(MainAdapters::class) val usedSpells: List<Int>
 )
 @Entity(
@@ -62,9 +66,9 @@ data class CharacterSpellSlots(
     ]
 )
 data class CharacterProficiency(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val characterId: Long,
-    @ColumnInfo(index = true) val proficiencyId: Long
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val characterId: Uuid,
+    @ColumnInfo(index = true) val proficiencyId: Uuid
 )
 @Entity(
     tableName = "character_feats",
@@ -74,9 +78,9 @@ data class CharacterProficiency(
     ]
 )
 data class CharacterFeat(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val characterId: Long,
-    @ColumnInfo(index = true) val featId: Long
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val characterId: Uuid,
+    @ColumnInfo(index = true) val featId: Uuid
 )
 
 @Entity(
@@ -86,8 +90,8 @@ data class CharacterFeat(
     ]
 )
 data class CharacterImage(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val characterId: Long?,
-    val path: String
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val characterId: Uuid?,
+    val path: Path
 )
 

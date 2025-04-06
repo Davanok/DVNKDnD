@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
 import androidx.compose.foundation.background
@@ -47,8 +49,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
@@ -74,14 +76,16 @@ import io.github.vinceglb.filekit.core.PickerType
 import kotlinx.coroutines.launch
 import okio.Path
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 @Composable
 fun NewCharacterMainScreen(
     navigateToEntityInfo: (DnDEntityTypes, DnDEntityMin) -> Unit,
-    onContinue: (characterId: Long) -> Unit,
-    viewModel: NewCharacterMainViewModel = koinInject()
+    onContinue: (characterId: Uuid) -> Unit,
+    viewModel: NewCharacterMainViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     CreateCharacterContent(
@@ -103,7 +107,7 @@ fun NewCharacterMainScreen(
 @Composable
 private fun CreateCharacterContent(
     viewModel: NewCharacterMainViewModel,
-    empties: NewCharacterUiState.EmptyFields,
+    empties: NewCharacterMainUiState.EmptyFields,
     onCreateCharacter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -154,7 +158,7 @@ private fun CreateCharacterContent(
 @Composable
 private fun Content(
     state: NewCharacterMain,
-    empties: NewCharacterUiState.EmptyFields,
+    empties: NewCharacterMainUiState.EmptyFields,
     entities: DownloadableValuesState,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,

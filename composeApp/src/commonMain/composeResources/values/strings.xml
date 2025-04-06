@@ -53,7 +53,7 @@
     <string name="custom">Custom</string>
     <string name="homebrew">Homebrew</string>
 
-    <!--new character screen-->
+    <!--new character-->
     <string name="character_image">Character image</string>
     <string name="name">Name</string>
     <string name="description">Description</string>
@@ -63,6 +63,10 @@
     <string name="search_in_web">Search in web</string>
     <string name="confirm">Confirm</string>
     <string name="empty_field_error">This field cannot be empty</string>
+
+    <string name="standard_array_stats_option">Standard array</string>
+    <string name="manual_stats_option">Manual</string>
+    <string name="point_buy_stats_option">Point buy</string>
 
     <!--side sheet-->
     <string name="close_side_sheet">Close side sheet</string>

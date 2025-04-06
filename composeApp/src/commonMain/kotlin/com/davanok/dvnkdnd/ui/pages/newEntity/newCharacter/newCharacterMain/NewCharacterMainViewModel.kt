@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
 import androidx.compose.ui.util.fastFilter
@@ -13,8 +15,10 @@ import com.davanok.dvnkdnd.database.entities.character.Character
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import okio.Path
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class NewCharacterMainViewModel(
     private val repository: NewCharacterRepository,
@@ -22,8 +26,8 @@ class NewCharacterMainViewModel(
     private val browseRepository: BrowseRepository,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(NewCharacterUiState(isLoading = true))
-    val uiState: StateFlow<NewCharacterUiState> = _uiState
+    private val _uiState = MutableStateFlow(NewCharacterMainUiState())
+    val uiState: StateFlow<NewCharacterMainUiState> = _uiState
 
     fun hideSearchSheet(
         selectedEntity: DnDEntityWithSubEntities?,
@@ -60,8 +64,6 @@ class NewCharacterMainViewModel(
     private val _newCharacterMain = MutableStateFlow(NewCharacterMain())
     val newCharacterMain: StateFlow<NewCharacterMain> = _newCharacterMain
 
-
-    @OptIn(ExperimentalUuidApi::class)
     fun addCharacterImage(value: ByteArray) = viewModelScope.launch {
         val path = filesRepository.getFilename(
             FilesRepository.Paths.images,
@@ -89,41 +91,27 @@ class NewCharacterMainViewModel(
     }
 
     fun setCharacterMainImage(value: Path?) {
-        _newCharacterMain.value = _newCharacterMain.value.copy(
-            mainImage = value
-        )
+        _newCharacterMain.value = _newCharacterMain.value.copy(mainImage = value)
     }
 
     fun setCharacterName(value: String) {
-        _newCharacterMain.value = _newCharacterMain.value.copy(
-            name = value
-        )
+        _newCharacterMain.value = _newCharacterMain.value.copy(name = value)
     }
 
     fun setCharacterDescription(value: String) {
-        _newCharacterMain.value = _newCharacterMain.value.copy(
-            description = value
-        )
+        _newCharacterMain.value = _newCharacterMain.value.copy(description = value)
     }
 
     fun setCharacterClass(cls: DnDEntityWithSubEntities?, subCls: DnDEntityMin? = null) {
-        _newCharacterMain.value = _newCharacterMain.value.copy(
-            cls = cls,
-            subCls = subCls
-        )
+        _newCharacterMain.value = _newCharacterMain.value.copy(cls = cls, subCls = subCls)
     }
 
     fun setCharacterSubClass(value: DnDEntityMin?) {
-        _newCharacterMain.value = _newCharacterMain.value.copy(
-            subCls = value
-        )
+        _newCharacterMain.value = _newCharacterMain.value.copy(subCls = value)
     }
 
     fun setCharacterRace(race: DnDEntityWithSubEntities?, subRace: DnDEntityMin? = null) {
-        _newCharacterMain.value = _newCharacterMain.value.copy(
-            race = race,
-            subRace = subRace
-        )
+        _newCharacterMain.value = _newCharacterMain.value.copy(race = race, subRace = subRace)
     }
 
     fun setCharacterSubRace(value: DnDEntityMin?) {
@@ -136,16 +124,12 @@ class NewCharacterMainViewModel(
         background: DnDEntityWithSubEntities?,
         subBackground: DnDEntityMin? = null,
     ) {
-        _newCharacterMain.value = _newCharacterMain.value.copy(
-            background = background,
-            subBackground = subBackground
-        )
+        _newCharacterMain.value =
+            _newCharacterMain.value.copy(background = background, subBackground = subBackground)
     }
 
     fun setCharacterSubBackground(value: DnDEntityMin?) {
-        _newCharacterMain.value = _newCharacterMain.value.copy(
-            subBackground = value
-        )
+        _newCharacterMain.value = _newCharacterMain.value.copy(subBackground = value)
     }
 
     // downloadable items
@@ -192,9 +176,7 @@ class NewCharacterMainViewModel(
                 list.fastFilter { it.name.startsWith(query, ignoreCase = true) }
             }.filterValues { it.isNotEmpty() }
 
-        _searchSheetState.value = _searchSheetState.value.copy(
-            entitiesGroups = filteredEntities
-        )
+        _searchSheetState.value = _searchSheetState.value.copy(entitiesGroups = filteredEntities)
     }
 
     fun loadSearchEntities(content: DnDEntityTypes) = viewModelScope.launch {
@@ -215,10 +197,10 @@ class NewCharacterMainViewModel(
 
     // onCreate
 
-    private fun checkCharacter(character: NewCharacterMain): NewCharacterUiState.EmptyFields {
+    private fun checkCharacter(character: NewCharacterMain): NewCharacterMainUiState.EmptyFields {
         var (
             name, cls, subCls, race, subRace, background, subBackground,
-        ) = NewCharacterUiState.EmptyFields()
+        ) = NewCharacterMainUiState.EmptyFields()
 
         if (character.name.isBlank()) name = true
         if (character.cls == null) cls = true
@@ -228,7 +210,7 @@ class NewCharacterMainViewModel(
         if (character.background == null) background = true
         else if (character.subBackground !in character.background.subEntities) subBackground = true
 
-        return NewCharacterUiState.EmptyFields(
+        return NewCharacterMainUiState.EmptyFields(
             name = name,
             cls = cls,
             subCls = subCls,
@@ -239,7 +221,7 @@ class NewCharacterMainViewModel(
         )
     }
 
-    fun createCharacter(onSuccess: (characterId: Long) -> Unit) = viewModelScope.launch {
+    fun createCharacter(onSuccess: (characterId: Uuid) -> Unit) = viewModelScope.launch {
         // TODO: save images
         // TODO: save class / race / background to database
         val newCharacter = newCharacterMain.value
@@ -254,13 +236,34 @@ class NewCharacterMainViewModel(
     }
 
     // init
+    private fun setCheckingState(state: NewCharacterMainUiState.CheckingDataStates) {
+        _uiState.value = _uiState.value.copy(checkingDataState = state)
+    }
+
+    private fun checkData() = viewModelScope.launch {
+        setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_SERVER)
+        val requiredEntities: List<Uuid> =
+            Json.decodeFromString(browseRepository.getValue("primary_base_entities"))
+        setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_DATABASE)
+        val existingEntities = repository.getExistingEntities(requiredEntities)
+        setCheckingState(NewCharacterMainUiState.CheckingDataStates.CHECKING)
+        val notExistingEntities = requiredEntities.subtract(existingEntities)
+        if (notExistingEntities.isEmpty()) {
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.FINISH)
+            return@launch
+        }
+        // TODO
+//        browseRepository.loadEntities()
+    }
+
     init {
         loadMainValues()
+        checkData()
     }
 }
 
-data class NewCharacterUiState(
-    val isLoading: Boolean = false,
+data class NewCharacterMainUiState(
+    val checkingDataState: CheckingDataStates = CheckingDataStates.LOADING,
     val showSearchSheet: Boolean = false,
     val emptyFields: EmptyFields = EmptyFields(),
 ) {
@@ -279,6 +282,15 @@ data class NewCharacterUiState(
             )
             return values.any { it }
         }
+    }
+
+    enum class CheckingDataStates {
+        LOADING,
+        LOAD_FROM_SERVER,
+        LOAD_FROM_DATABASE,
+        CHECKING,
+        UPDATING,
+        FINISH
     }
 }
 

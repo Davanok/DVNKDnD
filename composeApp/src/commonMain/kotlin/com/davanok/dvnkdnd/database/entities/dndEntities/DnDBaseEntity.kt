@@ -1,20 +1,28 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.database.entities.dndEntities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "base_entities",
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["parentId"], onDelete = ForeignKey.CASCADE)
+    ],
+    indices = [
+        Index("webId", unique = true)
     ]
 )
 data class DnDBaseEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val parentId: Long? = null,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val parentId: Uuid? = null,
     @ColumnInfo(index = true) val type: DnDEntityTypes,
     val name: String,
     val description: String,
@@ -27,8 +35,8 @@ data class DnDBaseEntity(
     ]
 )
 data class EntityFullDescription(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val entityId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val entityId: Uuid,
     val text: String
 )
 
@@ -39,7 +47,7 @@ data class EntityFullDescription(
     ]
 )
 data class EntityImage(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val entityId: Long?,
+    @PrimaryKey(autoGenerate = true) val id: Uuid = Uuid.random(),
+    @ColumnInfo(index = true) val entityId: Uuid?,
     val path: String
 )

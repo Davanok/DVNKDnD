@@ -1,7 +1,12 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.ui.navigation
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -17,6 +22,7 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
+import kotlin.uuid.ExperimentalUuidApi
 
 
 @Composable
@@ -79,10 +85,9 @@ private fun NavGraphBuilder.newEntityDestinations(navController: NavHostControll
 
 private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostController) {
     composable<Route.EntityInfo> { backStack ->
-        val info: Route.EntityInfo = backStack.toRoute()
+        val route: Route.EntityInfo = backStack.toRoute()
         DnDEntityInfo(
-            DnDEntityTypes.valueOf(info.entityType),
-            info.entityId,
+            route.entityId,
             navigateBack = { navController.navigateUp() }
         )
     }
@@ -93,13 +98,15 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         composable<Route.New.Character.Main> {
             NewCharacterMainScreen(
                 navigateToEntityInfo = { type, entity ->
-                    navController.navigate(Route.EntityInfo(type.name, entity.id))
+                    navController.navigate(Route.EntityInfo(entity.id))
                 },
                 onContinue = { id -> navController.navigate(Route.New.Character.Stats(id)) }
             )
         }
-        composable<Route.New.Character.Stats> {
+        composable<Route.New.Character.Stats> { backStack ->
+            val route: Route.New.Character.Stats = backStack.toRoute()
             NewCharacterStatsScreen(
+                characterId = route.characterId,
                 onContinue = { id -> navController.navigate(Route.New.Character.Skills(id))  }
             )
         }

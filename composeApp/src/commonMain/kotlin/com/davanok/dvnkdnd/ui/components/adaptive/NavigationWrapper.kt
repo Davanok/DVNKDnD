@@ -53,7 +53,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.data.model.ui.WindowSizeClass
-import com.davanok.dvnkdnd.data.platform.BackHandler
 import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
@@ -81,12 +80,6 @@ fun AdaptiveNavigationWrapper(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val gesturesEnabled =
         drawerState.isOpen || layoutType == NavigationSuiteType.NavigationRail
-
-    BackHandler(enabled = drawerState.isOpen) {
-        coroutineScope.launch {
-            drawerState.close()
-        }
-    }
     val scope = rememberStateOfItems(navigationItems)
     val fabScope = if (floatingActionButton == null) null else rememberStateOfFAB(floatingActionButton)
 

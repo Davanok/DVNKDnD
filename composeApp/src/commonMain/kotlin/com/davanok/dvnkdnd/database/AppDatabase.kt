@@ -4,7 +4,6 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.database.daos.CharactersDao
-import com.davanok.dvnkdnd.database.daos.ClassesDao
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
 import com.davanok.dvnkdnd.database.daos.ProficienciesDao
 import com.davanok.dvnkdnd.database.entities.ListSpellComponentAdapter
@@ -99,7 +98,6 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
 @TypeConverters(MainAdapters::class, ListSpellComponentAdapter::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun getCharactersDao(): CharactersDao
-    abstract fun getClassesDao(): ClassesDao
     abstract fun getProficienciesDao(): ProficienciesDao
     abstract fun getEntitiesDao(): EntitiesDao
 }

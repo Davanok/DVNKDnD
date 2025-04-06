@@ -2,13 +2,14 @@ package com.davanok.dvnkdnd.database.model
 
 import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
-import androidx.room.Junction
 import androidx.room.Relation
+import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.CharacterWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.toDnDModifier
 import com.davanok.dvnkdnd.data.model.entities.toModifiersGroup
+import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
@@ -24,7 +25,7 @@ fun DnDBaseEntity.toDnDEntityMin() = DnDEntityMin(
 data class EntityWithSub(
     @Embedded val entity: DnDBaseEntity,
     @Relation(parentColumn = "id", entityColumn = "parentId")
-    val subEntities: List<DnDBaseEntity>
+    val subEntities: List<DnDBaseEntity>,
 ) {
     fun toEntityWithSubEntities() = DnDEntityWithSubEntities(
         id = entity.id,
@@ -36,50 +37,48 @@ data class EntityWithSub(
 }
 
 data class DbCharacterWithModifiers(
-    val id: Long,
-    val name: String,
+    @Embedded val character: Character,
     @Relation(parentColumn = "id", entityColumn = "characterId")
     val characterStats: CharacterStats,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "entityId",
-        associateBy = Junction(DnDBaseEntity::class, parentColumn = "cls", entityColumn = "id")
+        entity = EntityModifier::class,
+        parentColumn = "cls",
+        entityColumn = "entityId"
     )
     val clsModifiers: List<EntityModifier>,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "entityId",
-        associateBy = Junction(DnDBaseEntity::class, parentColumn = "subCls", entityColumn = "id")
+        entity = EntityModifier::class,
+        parentColumn = "subCls",
+        entityColumn = "entityId"
     )
     val subClsModifiers: List<EntityModifier>,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "entityId",
-        associateBy = Junction(DnDBaseEntity::class, parentColumn = "race", entityColumn = "id")
+        entity = EntityModifier::class,
+        parentColumn = "race",
+        entityColumn = "entityId"
     )
     val raceModifiers: List<EntityModifier>,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "entityId",
-        associateBy = Junction(DnDBaseEntity::class, parentColumn = "subRace", entityColumn = "id")
+        entity = EntityModifier::class,
+        parentColumn = "subRace",
+        entityColumn = "entityId"
     )
     val subRaceModifiers: List<EntityModifier>,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "entityId",
-        associateBy = Junction(DnDBaseEntity::class, parentColumn = "background", entityColumn = "id")
+        entity = EntityModifier::class,
+        parentColumn = "background",
+        entityColumn = "entityId"
     )
     val backgroundModifiers: List<EntityModifier>,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "entityId",
-        associateBy = Junction(DnDBaseEntity::class, parentColumn = "subBackground", entityColumn = "id")
+        entity = EntityModifier::class,
+        parentColumn = "subBackground",
+        entityColumn = "entityId"
     )
     val subBackgroundModifiers: List<EntityModifier>
 ) {
     fun toCharacterWithModifiers() = CharacterWithModifiers(
-        id = id,
-        name = name,
+        character = CharacterMin(character.id, character.name, character.level, character.mainImage),
         characterModifiers = characterStats.toModifiersGroup(),
         clsModifiers = clsModifiers.fastMap { it.toDnDModifier() },
         subClsModifiers = subClsModifiers.fastMap { it.toDnDModifier() },
