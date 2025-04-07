@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.database.entities.character
 
 import androidx.room.ColumnInfo
@@ -8,7 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import okio.Path
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Entity(

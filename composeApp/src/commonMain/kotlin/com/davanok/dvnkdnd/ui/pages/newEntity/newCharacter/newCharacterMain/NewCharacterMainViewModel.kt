@@ -9,19 +9,31 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
+import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
 import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
 import com.davanok.dvnkdnd.database.entities.character.Character
+import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.finish
+import dvnkdnd.composeapp.generated.resources.state_checking_data
+import dvnkdnd.composeapp.generated.resources.state_downloading
+import dvnkdnd.composeapp.generated.resources.state_loading
+import dvnkdnd.composeapp.generated.resources.state_loading_from_database
+import dvnkdnd.composeapp.generated.resources.state_loading_full_entities
+import dvnkdnd.composeapp.generated.resources.state_updating_entities
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okio.Path
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class NewCharacterMainViewModel(
     private val repository: NewCharacterRepository,
+    private val entitiesRepository: EntitiesRepository,
     private val filesRepository: FilesRepository,
     private val browseRepository: BrowseRepository,
 ) : ViewModel() {
@@ -183,7 +195,7 @@ class NewCharacterMainViewModel(
         _searchSheetState.value = _searchSheetState.value.copy(isLoading = true)
 
         loadedEntities[content] = browseRepository
-            .loadEntities(content)
+            .loadEntitiesWithSub(content)
             .groupBy { it.source }
 
         _searchSheetState.value = _searchSheetState.value.copy(isLoading = false)
@@ -244,16 +256,25 @@ class NewCharacterMainViewModel(
         setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_SERVER)
         val requiredEntities: List<Uuid> =
             Json.decodeFromString(browseRepository.getValue("primary_base_entities"))
+
         setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_DATABASE)
         val existingEntities = repository.getExistingEntities(requiredEntities)
+
         setCheckingState(NewCharacterMainUiState.CheckingDataStates.CHECKING)
         val notExistingEntities = requiredEntities.subtract(existingEntities)
+
         if (notExistingEntities.isEmpty()) {
             setCheckingState(NewCharacterMainUiState.CheckingDataStates.FINISH)
             return@launch
         }
-        // TODO
-//        browseRepository.loadEntities()
+
+        setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOADING_DATA)
+        val entities = browseRepository.loadEntitiesFullInfo(notExistingEntities.toList())
+
+        setCheckingState(NewCharacterMainUiState.CheckingDataStates.UPDATING)
+        entitiesRepository.insertFullEntities(entities)
+
+        setCheckingState(NewCharacterMainUiState.CheckingDataStates.FINISH)
     }
 
     init {
@@ -284,13 +305,14 @@ data class NewCharacterMainUiState(
         }
     }
 
-    enum class CheckingDataStates {
-        LOADING,
-        LOAD_FROM_SERVER,
-        LOAD_FROM_DATABASE,
-        CHECKING,
-        UPDATING,
-        FINISH
+    enum class CheckingDataStates(val text: StringResource) {
+        LOADING(Res.string.state_loading),
+        LOAD_FROM_SERVER(Res.string.state_downloading),
+        LOAD_FROM_DATABASE(Res.string.state_loading_from_database),
+        CHECKING(Res.string.state_checking_data),
+        LOADING_DATA(Res.string.state_loading_full_entities),
+        UPDATING(Res.string.state_updating_entities),
+        FINISH(Res.string.finish)
     }
 }
 

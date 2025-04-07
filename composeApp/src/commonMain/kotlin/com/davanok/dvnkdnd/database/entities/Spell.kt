@@ -1,5 +1,3 @@
-@file:kotlin.OptIn(kotlin.uuid.ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.database.entities
 
 import androidx.room.ColumnInfo
@@ -15,7 +13,6 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.MagicSchools
 import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubclass
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlin.uuid.Uuid
 
@@ -107,19 +104,4 @@ data class SpellAttackSave(
     @ColumnInfo(index = true) val attackId: Uuid,
     val savingThrow: Stats,
     val halfOnSuccess: Boolean,
-)
-
-@Entity(
-    tableName = "spell_classes",
-    foreignKeys = [
-        ForeignKey(Spell::class, ["id"], ["spellId"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDClass::class, ["id"], ["classId"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDSubclass::class, ["id"], ["subclassId"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class SpellClass(
-    @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val spellId: Uuid,
-    @ColumnInfo(index = true) val classId: Uuid,
-    @ColumnInfo(index = true) val subclassId: Uuid?,
 )

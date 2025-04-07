@@ -73,4 +73,12 @@
 
     <!--entity info screen-->
     <string name="error_when_loading_entity">Error when loading entity</string>
+
+    <!--loading data states-->
+    <string name="state_loading">Loading</string>
+    <string name="state_downloading">Loading required elements</string>
+    <string name="state_loading_from_database">Loading existing elements</string>
+    <string name="state_checking_data">Checking data</string>
+    <string name="state_loading_full_entities">Loading full entities</string>
+    <string name="state_updating_entities">Updating entities</string>
 </resources>

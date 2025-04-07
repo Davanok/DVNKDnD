@@ -7,13 +7,12 @@ import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
 import com.davanok.dvnkdnd.database.daos.ProficienciesDao
 import com.davanok.dvnkdnd.database.entities.ListSpellComponentAdapter
-import com.davanok.dvnkdnd.database.entities.Proficiency
+import com.davanok.dvnkdnd.database.entities.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.Spell
 import com.davanok.dvnkdnd.database.entities.SpellArea
 import com.davanok.dvnkdnd.database.entities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.SpellAttackLevelModifier
 import com.davanok.dvnkdnd.database.entities.SpellAttackSave
-import com.davanok.dvnkdnd.database.entities.SpellClass
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.character.CharacterSkill
@@ -24,40 +23,35 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityFullDescription
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityImage
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
-import com.davanok.dvnkdnd.database.entities.dndEntities.FeatModifier
-import com.davanok.dvnkdnd.database.entities.dndEntities.FeatSkill
-import com.davanok.dvnkdnd.database.entities.dndEntities.FeatProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDRace
 import com.davanok.dvnkdnd.database.entities.dndEntities.RaceSize
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubclass
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSubrace
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiencies
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityFullDescription
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityImage
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellSlots
-import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
-import com.davanok.dvnkdnd.database.entities.items.ItemProficiency
-import com.davanok.dvnkdnd.database.entities.items.Property
+import com.davanok.dvnkdnd.database.entities.items.Armor
+import com.davanok.dvnkdnd.database.entities.items.ItemProperty
 import com.davanok.dvnkdnd.database.entities.items.Weapon
 import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
 import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
 
 @Database(
     entities = [
-        Proficiency::class,
+        DnDProficiency::class,
         Spell::class,
         SpellArea::class,
         SpellAttack::class,
         SpellAttackLevelModifier::class,
         SpellAttackSave::class,
-        SpellClass::class,
         Character::class,
         CharacterStats::class,
         CharacterSkill::class,
@@ -71,24 +65,20 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
         EntityFullDescription::class,
         EntityImage::class,
         DnDClass::class,
+        ClassSpell::class,
         DnDFeat::class,
-        FeatModifier::class,
-        FeatSkill::class,
-        FeatProficiency::class,
         DnDRace::class,
         RaceSize::class,
-        DnDSubclass::class,
-        DnDSubrace::class,
+        EntityModifier::class,
         EntitySkill::class,
         EntitySavingThrow::class,
         EntityProficiencies::class,
         EntityAbility::class,
-        EntityModifier::class,
+        EntitySelectionLimits::class,
         SpellSlots::class,
-        Armor::class,
         DnDItem::class,
-        ItemProficiency::class,
-        Property::class,
+        Armor::class,
+        ItemProperty::class,
         Weapon::class,
         WeaponDamage::class,
         WeaponProperties::class

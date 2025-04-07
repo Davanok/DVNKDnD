@@ -36,6 +36,9 @@ kotlin {
     jvm("desktop")
 
     sourceSets {
+        all {
+            languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+        }
         val desktopMain by getting
         commonMain.dependencies {
             implementation(libs.napier)

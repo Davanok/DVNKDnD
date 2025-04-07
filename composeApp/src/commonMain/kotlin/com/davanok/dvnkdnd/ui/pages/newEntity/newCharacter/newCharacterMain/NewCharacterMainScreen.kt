@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -83,19 +86,22 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun NewCharacterMainScreen(
-    navigateToEntityInfo: (DnDEntityTypes, DnDEntityMin) -> Unit,
+    navigateToEntityInfo: (DnDEntityMin) -> Unit,
     onContinue: (characterId: Uuid) -> Unit,
     viewModel: NewCharacterMainViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    CreateCharacterContent(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        empties = uiState.emptyFields,
-        onCreateCharacter = { viewModel.createCharacter(onContinue) },
-        viewModel = viewModel
-    )
+    if (uiState.checkingDataState != NewCharacterMainUiState.CheckingDataStates.FINISH)
+        LoadingDataCard(uiState.checkingDataState)
+    else
+        CreateCharacterContent(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            empties = uiState.emptyFields,
+            onCreateCharacter = { viewModel.createCharacter(onContinue) },
+            viewModel = viewModel
+        )
     if (uiState.showSearchSheet)
         SearchSheet(
             onDismiss = viewModel::hideSearchSheet,
@@ -416,6 +422,26 @@ private fun ImagesList(
     }
 }
 
-
+@Composable
+private fun LoadingDataCard(state: NewCharacterMainUiState.CheckingDataStates) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Card(modifier = Modifier.align(Alignment.Center)) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(8.dp)
+                    .aspectRatio(4/3f)
+            ) {
+                Text(text = stringResource(state.text))
+                val stateValues = NewCharacterMainUiState.CheckingDataStates.entries
+                LinearProgressIndicator(
+                    progress = {
+                        stateValues.indexOf(state) / stateValues.size.toFloat()
+                    }
+                )
+            }
+        }
+    }
+}
 
 

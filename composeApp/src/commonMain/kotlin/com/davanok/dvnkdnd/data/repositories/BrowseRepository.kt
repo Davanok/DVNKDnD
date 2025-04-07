@@ -10,8 +10,8 @@ import kotlin.uuid.Uuid
 
 interface BrowseRepository {
     suspend fun loadEntityFullInfo(entityId: Uuid): DnDEntityFullInfo
-    suspend fun loadEntitiesFullInfo(entityId: List<Uuid>): List<DnDEntityFullInfo>
-    suspend fun loadEntities(entityType: DnDEntityTypes): List<DnDEntityWithSubEntities>
+    suspend fun loadEntitiesFullInfo(entityIds: List<Uuid>): List<DnDEntityFullInfo>
+    suspend fun loadEntitiesWithSub(entityType: DnDEntityTypes): List<DnDEntityWithSubEntities>
 
     suspend fun getValue(key: String): String
 }

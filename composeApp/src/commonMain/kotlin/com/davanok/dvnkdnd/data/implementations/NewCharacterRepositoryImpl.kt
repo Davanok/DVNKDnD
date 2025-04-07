@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.davanok.dvnkdnd.data.implementations
 
 import androidx.compose.ui.util.fastMap
@@ -6,6 +8,8 @@ import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
 import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
 import com.davanok.dvnkdnd.database.entities.character.Character
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 class NewCharacterRepositoryImpl(
@@ -15,9 +19,11 @@ class NewCharacterRepositoryImpl(
     override suspend fun getEntitiesWithSubList(type: DnDEntityTypes) =
         entitiesDao.getEntitiesWithSubList(type).fastMap { it.toEntityWithSubEntities() }
 
-    override suspend fun createCharacter(character: Character) =
+    override suspend fun createCharacter(character: Character): Uuid {
         charactersDao.insertCharacter(character)
+        return character.id
+    }
 
-    override suspend fun getExistingEntities(entityWebIds: List<Int>): List<Int> =
+    override suspend fun getExistingEntities(entityWebIds: List<Uuid>): List<Uuid> =
         entitiesDao.getExistingEntities(entityWebIds)
 }

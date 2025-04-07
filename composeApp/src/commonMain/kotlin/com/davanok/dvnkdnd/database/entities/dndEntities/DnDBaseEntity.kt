@@ -1,14 +1,10 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.database.entities.dndEntities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Entity(
@@ -21,6 +17,7 @@ data class DnDBaseEntity(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val parentId: Uuid? = null,
     @ColumnInfo(index = true) val type: DnDEntityTypes,
+    val shared: Boolean = false,
     val name: String,
     val description: String,
     val source: String

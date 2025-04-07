@@ -2,19 +2,17 @@
 
 package com.davanok.dvnkdnd.ui.navigation
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.core.bundle.Bundle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
@@ -22,18 +20,41 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
+import kotlin.reflect.typeOf
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+
+object UuidNavType : NavType<Uuid>(true) {
+    override fun get(bundle: Bundle, key: String): Uuid? {
+        return bundle.getByteArray(key)?.let { Uuid.fromByteArray(it) }
+    }
+
+    override fun parseValue(value: String): Uuid {
+        return Uuid.parse(value)
+    }
+
+    override fun put(
+        bundle: Bundle,
+        key: String,
+        value: Uuid,
+    ) {
+        bundle.putByteArray(key, value.toByteArray())
+    }
+
+}
 
 
 @Composable
 fun NavigationHost(
     navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.Main
+        startDestination = Route.Main,
+        typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
     ) {
         mainDestinations(navController)
 
@@ -41,7 +62,9 @@ fun NavigationHost(
 
         entityInfoDestinations(navController)
 
-        composable<Route.CharacterFull> { backStackEntry ->
+        composable<Route.CharacterFull>(
+            typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
+        )  { backStackEntry ->
             val route: Route.CharacterFull = backStackEntry.toRoute()
             CharacterFullScreen(route.characterId)
         }
@@ -84,7 +107,9 @@ private fun NavGraphBuilder.newEntityDestinations(navController: NavHostControll
 
 
 private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostController) {
-    composable<Route.EntityInfo> { backStack ->
+    composable<Route.EntityInfo>(
+        typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
+    ) { backStack ->
         val route: Route.EntityInfo = backStack.toRoute()
         DnDEntityInfo(
             route.entityId,
@@ -97,17 +122,17 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
     navigation<Route.New.Character>(startDestination = Route.New.Character.Main) {
         composable<Route.New.Character.Main> {
             NewCharacterMainScreen(
-                navigateToEntityInfo = { type, entity ->
-                    navController.navigate(Route.EntityInfo(entity.id))
-                },
+                navigateToEntityInfo = { navController.navigate(Route.EntityInfo(it.id)) },
                 onContinue = { id -> navController.navigate(Route.New.Character.Stats(id)) }
             )
         }
-        composable<Route.New.Character.Stats> { backStack ->
+        composable<Route.New.Character.Stats>(
+            typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
+        )  { backStack ->
             val route: Route.New.Character.Stats = backStack.toRoute()
             NewCharacterStatsScreen(
                 characterId = route.characterId,
-                onContinue = { id -> navController.navigate(Route.New.Character.Skills(id))  }
+                onContinue = { id -> navController.navigate(Route.New.Character.Skills(id)) }
             )
         }
     }

@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.database
 import androidx.room.TypeConverter
 import okio.Path
 import okio.Path.Companion.toPath
+import kotlin.uuid.Uuid
 
 @Suppress("unused")
 class MainAdapters {
@@ -15,5 +16,10 @@ class MainAdapters {
     fun stringToPathConverter(value: String) = value.toPath()
     @TypeConverter
     fun pathToStringConverter(value: Path) = value.toString()
+
+    @TypeConverter
+    fun uuidToBytes(value: Uuid) = value.toByteArray()
+    @TypeConverter
+    fun bytesToUuid(value: ByteArray) = Uuid.fromByteArray(value)
 }
 

@@ -3,7 +3,9 @@ package com.davanok.dvnkdnd.data.model.entities
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class DnDModifier(
     val selectable: Boolean,
     val stat: Stats,

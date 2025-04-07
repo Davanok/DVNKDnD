@@ -60,7 +60,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 fun SearchSheet(
     onDismiss: (DnDEntityWithSubEntities?, DnDEntityMin?) -> Unit,
-    onGetEntityInfo: (DnDEntityTypes, DnDEntityMin) -> Unit,
+    onGetEntityInfo: (DnDEntityMin) -> Unit,
     viewModel: NewCharacterMainViewModel
 ) {
     val uiState by viewModel.searchSheetState.collectAsStateWithLifecycle()
@@ -146,7 +146,6 @@ fun SearchSheet(
                                 trailingContent = {
                                     IconButton (
                                         onClick = { onGetEntityInfo(
-                                            uiState.searchType,
                                             entity.asDnDEntityMin()
                                         ) }
                                     ) {

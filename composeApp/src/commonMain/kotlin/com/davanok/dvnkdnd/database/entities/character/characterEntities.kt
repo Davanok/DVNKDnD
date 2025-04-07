@@ -1,5 +1,3 @@
-@file:kotlin.OptIn(kotlin.uuid.ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.database.entities.character
 
 import androidx.room.ColumnInfo
@@ -9,7 +7,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.database.MainAdapters
-import com.davanok.dvnkdnd.database.entities.Proficiency
+import com.davanok.dvnkdnd.database.entities.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import okio.Path
@@ -62,7 +60,7 @@ data class CharacterSpellSlots(
     tableName = "character_proficiencies",
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(Proficiency::class, ["id"], ["proficiencyId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDProficiency::class, ["id"], ["proficiencyId"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class CharacterProficiency(
