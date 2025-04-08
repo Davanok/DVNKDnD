@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
 import androidx.compose.ui.util.fastFilter
@@ -9,11 +7,12 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
+import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
-import com.davanok.dvnkdnd.data.repositories.NewCharacterRepository
 import com.davanok.dvnkdnd.database.entities.character.Character
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.finish
 import dvnkdnd.composeapp.generated.resources.state_checking_data
 import dvnkdnd.composeapp.generated.resources.state_downloading
@@ -21,18 +20,16 @@ import dvnkdnd.composeapp.generated.resources.state_loading
 import dvnkdnd.composeapp.generated.resources.state_loading_from_database
 import dvnkdnd.composeapp.generated.resources.state_loading_full_entities
 import dvnkdnd.composeapp.generated.resources.state_updating_entities
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okio.Path
 import org.jetbrains.compose.resources.StringResource
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class NewCharacterMainViewModel(
-    private val repository: NewCharacterRepository,
+    private val charactersRepository: CharactersRepository,
     private val entitiesRepository: EntitiesRepository,
     private val filesRepository: FilesRepository,
     private val browseRepository: BrowseRepository,
@@ -149,9 +146,9 @@ class NewCharacterMainViewModel(
     val downloadableState: StateFlow<DownloadableValuesState> = _downloadableState
 
     private fun loadMainValues() = viewModelScope.launch {
-        val classes = repository.getEntitiesWithSubList(DnDEntityTypes.CLASS)
-        val races = repository.getEntitiesWithSubList(DnDEntityTypes.RACE)
-        val backgrounds = repository.getEntitiesWithSubList(DnDEntityTypes.BACKGROUND)
+        val classes = entitiesRepository.getEntitiesWithSubList(DnDEntityTypes.CLASS)
+        val races = entitiesRepository.getEntitiesWithSubList(DnDEntityTypes.RACE)
+        val backgrounds = entitiesRepository.getEntitiesWithSubList(DnDEntityTypes.BACKGROUND)
 
         _downloadableState.value = _downloadableState.value.copy(
             isLoading = false,
@@ -234,52 +231,85 @@ class NewCharacterMainViewModel(
     }
 
     fun createCharacter(onSuccess: (characterId: Uuid) -> Unit) = viewModelScope.launch {
-        // TODO: save images
-        // TODO: save class / race / background to database
         val newCharacter = newCharacterMain.value
 
         val emptyFields = checkCharacter(newCharacter)
 
-        if (emptyFields.isEmpty()) _uiState.value = _uiState.value.copy(emptyFields = emptyFields)
+        if (emptyFields.hasEmptyFields()) _uiState.value = _uiState.value.copy(emptyFields = emptyFields)
         else {
-            val characterId = repository.createCharacter(newCharacter.getCharacter())
-            onSuccess(characterId)
+            val character = newCharacter.getCharacter()
+            val entities =
+                listOfNotNull(
+                    character.cls,
+                    character.subCls,
+                    character.race,
+                    character.subRace,
+                    character.background,
+                    character.subBackground
+                )
+            loadRequiredEntities(entities) {
+                val characterId = charactersRepository.createCharacter(character)
+                newCharacter.images.forEach {
+                    filesRepository.move(
+                        it,
+                        filesRepository.getFilename(
+                            FilesRepository.Paths.characterImages / characterId.toString(),
+                            "png"
+                        )
+                    )
+                }
+                onSuccess(characterId)
+            }
         }
     }
-
-    // init
     private fun setCheckingState(state: NewCharacterMainUiState.CheckingDataStates) {
         _uiState.value = _uiState.value.copy(checkingDataState = state)
     }
 
-    private fun checkData() = viewModelScope.launch {
-        setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_SERVER)
-        val requiredEntities: List<Uuid> =
-            Json.decodeFromString(browseRepository.getValue("primary_base_entities"))
+    private suspend fun loadRequiredEntities(requiredEntities: List<Uuid>, onSuccess: suspend () -> Unit) {
+        runCatching {
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_DATABASE)
+            val existingEntities = entitiesRepository.getExistingEntities(requiredEntities)
 
-        setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_DATABASE)
-        val existingEntities = repository.getExistingEntities(requiredEntities)
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.CHECKING)
+            val notExistingEntities = requiredEntities.subtract(existingEntities)
 
-        setCheckingState(NewCharacterMainUiState.CheckingDataStates.CHECKING)
-        val notExistingEntities = requiredEntities.subtract(existingEntities)
+            if (notExistingEntities.isEmpty()) {
+                setCheckingState(NewCharacterMainUiState.CheckingDataStates.FINISH)
+                return
+            }
 
-        if (notExistingEntities.isEmpty()) {
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOADING_DATA)
+            val entities = browseRepository.loadEntitiesFullInfo(notExistingEntities.toList())
+
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.UPDATING)
+            entitiesRepository.insertFullEntities(entities)
+        }.onFailure {
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR)
+        }.onSuccess {
             setCheckingState(NewCharacterMainUiState.CheckingDataStates.FINISH)
-            return@launch
+            onSuccess()
         }
+    }
 
-        setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOADING_DATA)
-        val entities = browseRepository.loadEntitiesFullInfo(notExistingEntities.toList())
+    // init
 
-        setCheckingState(NewCharacterMainUiState.CheckingDataStates.UPDATING)
-        entitiesRepository.insertFullEntities(entities)
+    private fun checkData(onSuccess: () -> Unit) = viewModelScope.launch {
+        runCatching {
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_SERVER)
 
-        setCheckingState(NewCharacterMainUiState.CheckingDataStates.FINISH)
+            Json.decodeFromString<List<Uuid>>(browseRepository.getValue("primary_base_entities"))
+        }.onFailure {
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR)
+        }.onSuccess {
+            loadRequiredEntities(it, onSuccess)
+        }
     }
 
     init {
-        loadMainValues()
-        checkData()
+        checkData {
+            loadMainValues()
+        }
     }
 }
 
@@ -297,7 +327,7 @@ data class NewCharacterMainUiState(
         val background: Boolean = false,
         val subBackground: Boolean = false,
     ) {
-        fun isEmpty(): Boolean {
+        fun hasEmptyFields(): Boolean {
             val values = listOf(
                 name, cls, subCls, race, subRace, background, subBackground
             )
@@ -312,7 +342,8 @@ data class NewCharacterMainUiState(
         CHECKING(Res.string.state_checking_data),
         LOADING_DATA(Res.string.state_loading_full_entities),
         UPDATING(Res.string.state_updating_entities),
-        FINISH(Res.string.finish)
+        FINISH(Res.string.finish),
+        ERROR(Res.string.error)
     }
 }
 

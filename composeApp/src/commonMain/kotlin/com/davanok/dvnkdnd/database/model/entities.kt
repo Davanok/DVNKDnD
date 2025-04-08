@@ -24,7 +24,7 @@ fun DnDBaseEntity.toDnDEntityMin() = DnDEntityMin(
 
 data class EntityWithSub(
     @Embedded val entity: DnDBaseEntity,
-    @Relation(parentColumn = "id", entityColumn = "parentId")
+    @Relation(parentColumn = "id", entityColumn = "parent_id")
     val subEntities: List<DnDBaseEntity>,
 ) {
     fun toEntityWithSubEntities() = DnDEntityWithSubEntities(
@@ -38,47 +38,46 @@ data class EntityWithSub(
 
 data class DbCharacterWithModifiers(
     @Embedded val character: Character,
-    @Relation(parentColumn = "id", entityColumn = "characterId")
+    @Relation(parentColumn = "id", entityColumn = "character_id")
     val characterStats: CharacterStats,
     @Relation(
-        entity = EntityModifier::class,
         parentColumn = "cls",
-        entityColumn = "entityId"
+        entityColumn = "entity_id"
     )
     val clsModifiers: List<EntityModifier>,
     @Relation(
-        entity = EntityModifier::class,
         parentColumn = "subCls",
-        entityColumn = "entityId"
+        entityColumn = "entity_id"
     )
     val subClsModifiers: List<EntityModifier>,
     @Relation(
-        entity = EntityModifier::class,
         parentColumn = "race",
-        entityColumn = "entityId"
+        entityColumn = "entity_id"
     )
     val raceModifiers: List<EntityModifier>,
     @Relation(
-        entity = EntityModifier::class,
         parentColumn = "subRace",
-        entityColumn = "entityId"
+        entityColumn = "entity_id"
     )
     val subRaceModifiers: List<EntityModifier>,
     @Relation(
-        entity = EntityModifier::class,
         parentColumn = "background",
-        entityColumn = "entityId"
+        entityColumn = "entity_id"
     )
     val backgroundModifiers: List<EntityModifier>,
     @Relation(
-        entity = EntityModifier::class,
         parentColumn = "subBackground",
-        entityColumn = "entityId"
+        entityColumn = "entity_id"
     )
-    val subBackgroundModifiers: List<EntityModifier>
+    val subBackgroundModifiers: List<EntityModifier>,
 ) {
     fun toCharacterWithModifiers() = CharacterWithModifiers(
-        character = CharacterMin(character.id, character.name, character.level, character.mainImage),
+        character = CharacterMin(
+            character.id,
+            character.name,
+            character.level,
+            character.mainImage
+        ),
         characterModifiers = characterStats.toModifiersGroup(),
         clsModifiers = clsModifiers.fastMap { it.toDnDModifier() },
         subClsModifiers = subClsModifiers.fastMap { it.toDnDModifier() },

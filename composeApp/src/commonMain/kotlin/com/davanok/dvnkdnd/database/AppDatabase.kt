@@ -33,7 +33,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.RaceSize
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiencies
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellSlots
@@ -72,7 +72,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
         EntityModifier::class,
         EntitySkill::class,
         EntitySavingThrow::class,
-        EntityProficiencies::class,
+        EntityProficiency::class,
         EntityAbility::class,
         EntitySelectionLimits::class,
         SpellSlots::class,

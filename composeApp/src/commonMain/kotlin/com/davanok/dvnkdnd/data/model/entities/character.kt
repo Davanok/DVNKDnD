@@ -2,6 +2,7 @@
 
 package com.davanok.dvnkdnd.data.model.entities
 
+import androidx.room.ColumnInfo
 import okio.Path
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -11,6 +12,7 @@ data class CharacterMin(
     val id: Uuid,
     val name: String,
     val level: Int,
+    @ColumnInfo("main_image")
     val image: Path? = null
 )
 

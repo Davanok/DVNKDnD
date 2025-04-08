@@ -10,12 +10,12 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "base_entities",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["parentId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["parent_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class DnDBaseEntity(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val parentId: Uuid? = null,
+    @ColumnInfo("parent_id", index = true) val parentId: Uuid? = null,
     @ColumnInfo(index = true) val type: DnDEntityTypes,
     val shared: Boolean = false,
     val name: String,

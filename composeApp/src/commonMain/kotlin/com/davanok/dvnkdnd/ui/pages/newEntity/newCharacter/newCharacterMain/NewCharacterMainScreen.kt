@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
 import androidx.compose.foundation.background
@@ -13,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -67,6 +66,7 @@ import dvnkdnd.composeapp.generated.resources.continue_str
 import dvnkdnd.composeapp.generated.resources.description
 import dvnkdnd.composeapp.generated.resources.drop_image
 import dvnkdnd.composeapp.generated.resources.empty_field_error
+import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.name
 import dvnkdnd.composeapp.generated.resources.no_character_images_yet
 import dvnkdnd.composeapp.generated.resources.race
@@ -78,9 +78,9 @@ import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerType
 import kotlinx.coroutines.launch
 import okio.Path
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
@@ -425,20 +425,32 @@ private fun ImagesList(
 @Composable
 private fun LoadingDataCard(state: NewCharacterMainUiState.CheckingDataStates) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Card(modifier = Modifier.align(Alignment.Center)) {
+        Card(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .sizeIn(maxWidth = 300.dp, maxHeight = 400.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(8.dp)
-                    .aspectRatio(4/3f)
+                    .aspectRatio(3/4f)
             ) {
+                if (state == NewCharacterMainUiState.CheckingDataStates.ERROR)
+                    Icon(
+                        painter = painterResource(Res.drawable.error),
+                        contentDescription = stringResource(state.text)
+                    )
                 Text(text = stringResource(state.text))
-                val stateValues = NewCharacterMainUiState.CheckingDataStates.entries
-                LinearProgressIndicator(
-                    progress = {
-                        stateValues.indexOf(state) / stateValues.size.toFloat()
-                    }
-                )
+
+                if (state != NewCharacterMainUiState.CheckingDataStates.ERROR) {
+                    val stateValues = NewCharacterMainUiState.CheckingDataStates.entries
+                    LinearProgressIndicator(
+                        progress = {
+                            stateValues.indexOf(state) / stateValues.size.toFloat()
+                        }
+                    )
+                }
             }
         }
     }

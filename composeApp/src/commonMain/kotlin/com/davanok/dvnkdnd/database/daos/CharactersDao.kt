@@ -10,7 +10,7 @@ import com.davanok.dvnkdnd.database.model.DbCharacterWithModifiers
 
 @Dao
 interface CharactersDao {
-    @Query("SELECT id, name, level, mainImage FROM characters")
+    @Query("SELECT id, name, level, main_image FROM characters")
     suspend fun loadCharactersMinList(): List<CharacterMin>
 
     @Insert

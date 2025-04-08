@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.data.implementations
 
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
@@ -13,28 +11,39 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
+private const val FULL_ENTITY_REQUEST = """
+*,
+modifiers:entity_modifiers(*),
+skills:entity_skills(*),
+saving_throws:entity_saving_throws(*),
+proficiencies:entity_proficiencies(*),
+abilities:entity_abilities(*),
+selection_limits:entity_selection_limits(*)
+"""
 
 class BrowseRepositoryImpl(
     private val postgrest: Postgrest,
     private val storage: Storage,
 ) : BrowseRepository {
     override suspend fun loadEntityFullInfo(entityId: Uuid): DnDEntityFullInfo {
-        return postgrest.from("base_entities").select {
+        return postgrest.from("base_entities").select(Columns.raw(FULL_ENTITY_REQUEST)) {
             filter { DnDEntityFullInfo::id eq "id" }
+            single()
         }.decodeSingle()
     }
 
     override suspend fun loadEntitiesFullInfo(entityIds: List<Uuid>): List<DnDEntityFullInfo> {
-        return postgrest.from("base_entities").select {
+        val result = postgrest.from("base_entities").select(Columns.raw(FULL_ENTITY_REQUEST)) {
             filter { DnDEntityFullInfo::id isIn entityIds }
-        }.decodeList()
+        }
+        return result.decodeList()
     }
 
     override suspend fun loadEntitiesWithSub(entityType: DnDEntityTypes): List<DnDEntityWithSubEntities> {
         val result = postgrest.from("base_entities").select(
-            Columns.raw("*, subEntities:base_entities(*)")
+            Columns.raw("*, sub_entities:base_entities(*)")
         ) {
             filter { DnDEntityWithSubEntities::type eq entityType.name }
         }.decodeList<DnDEntityWithSubEntities>()

@@ -5,8 +5,6 @@ import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.SYSTEM
-import okio.buffer
-import okio.use
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -30,6 +28,10 @@ class FilesRepositoryImpl(
     }
     override suspend fun delete(path: Path) {
         fs.delete(path)
+    }
+
+    override suspend fun move(from: Path, to: Path) {
+        fs.atomicMove(from, to)
     }
 
     @OptIn(ExperimentalUuidApi::class)

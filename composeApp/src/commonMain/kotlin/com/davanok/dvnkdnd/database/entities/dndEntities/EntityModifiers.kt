@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.DnDProficiency
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -14,12 +15,13 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "entity_modifiers",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class EntityModifier(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val entityId: Uuid,
+    @SerialName("entity_id")
+    @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     val selectable: Boolean,
     val stat: Stats,
     val modifier: Int,
@@ -29,12 +31,13 @@ data class EntityModifier(
 @Entity(
     tableName = "entity_skills",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class EntitySkill(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val entityId: Uuid,
+    @SerialName("entity_id")
+    @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     val selectable: Boolean,
     val skill: Skills,
 )
@@ -43,12 +46,13 @@ data class EntitySkill(
 @Entity(
     tableName = "entity_saving_throws",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class EntitySavingThrow(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val entityId: Uuid,
+    @SerialName("entity_id")
+    @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     val selectable: Boolean,
     val stat: Stats,
 )
@@ -57,28 +61,32 @@ data class EntitySavingThrow(
 @Entity(
     tableName = "entity_proficiencies",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDProficiency::class, ["id"], ["proficiencyId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DnDProficiency::class, ["id"], ["proficiency_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class EntityProficiencies(
+data class EntityProficiency(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val entityId: Uuid,
-    @ColumnInfo(index = true) val proficiencyId: Uuid,
+    @SerialName("entity_id")
+    @ColumnInfo("entity_id", index = true) val entityId: Uuid,
+    @SerialName("proficiency_id")
+    @ColumnInfo("proficiency_id", index = true) val proficiencyId: Uuid,
 )
 
 @Serializable
 @Entity(
     tableName = "entity_abilities",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDAbility::class, ["id"], ["abilityId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DnDAbility::class, ["id"], ["ability_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class EntityAbility(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val entityId: Uuid,
-    @ColumnInfo(index = true) val abilityId: Uuid,
+    @SerialName("entity_id")
+    @ColumnInfo("entity_id", index = true) val entityId: Uuid,
+    @SerialName("ability_id")
+    @ColumnInfo("ability_id", index = true) val abilityId: Uuid,
     val level: Int,
 )
 
@@ -86,15 +94,17 @@ data class EntityAbility(
 @Entity(
     tableName = "entity_selection_limits",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class EntitySelectionLimits(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val entityId: Uuid,
+    @SerialName("entity_id")
+    @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     val modifiers: Int?,
     val skills: Int?,
-    val savingThrows: Int?,
+    @SerialName("saving_throws")
+    @ColumnInfo("saving_throws") val savingThrows: Int?,
     val proficiencies: Int?,
     val abilities: Int?
 )
