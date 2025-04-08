@@ -20,6 +20,7 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
+import io.github.aakira.napier.Napier
 import kotlin.reflect.typeOf
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -123,7 +124,10 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         composable<Route.New.Character.Main> {
             NewCharacterMainScreen(
                 navigateToEntityInfo = { navController.navigate(Route.EntityInfo(it.id)) },
-                onContinue = { id -> navController.navigate(Route.New.Character.Stats(id)) }
+                onContinue = { id ->
+                    Napier.d { "navigate" }
+                    navController.navigate(Route.New.Character.Stats(id))
+                }
             )
         }
         composable<Route.New.Character.Stats>(
@@ -132,6 +136,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
             val route: Route.New.Character.Stats = backStack.toRoute()
             NewCharacterStatsScreen(
                 characterId = route.characterId,
+                onBack = { navController.navigateUp() },
                 onContinue = { id -> navController.navigate(Route.New.Character.Skills(id)) }
             )
         }

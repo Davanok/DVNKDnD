@@ -20,17 +20,13 @@ fun TwoPane(
     val windowSizeClass = info.windowSizeClass
 
     if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact)
-        Box(
-            modifier = modifier
-        ) {
+        Box(modifier = modifier) {
             firstPane(false)
         }
     else
-        Row(
-            modifier = modifier
-        ) {
-            Box { firstPane(true) }
+        Row(modifier = modifier) {
+            Box(modifier = Modifier.weight(.5f)) { firstPane(true) }
             Spacer(modifier = Modifier.width(24.dp))
-            Box { secondPane() }
+            Box(modifier = Modifier.weight(.5f)) { secondPane() }
         }
 }

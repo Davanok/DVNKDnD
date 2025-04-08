@@ -10,8 +10,8 @@ class CharactersRepositoryImpl(
 ) : CharactersRepository {
     override suspend fun loadCharactersMinList() = dao.loadCharactersMinList()
 
-    override suspend fun getCharacterWithModifiers() =
-        dao.getCharacterWithModifiers().toCharacterWithModifiers()
+    override suspend fun getCharacterWithModifiers(characterId: Uuid) =
+        dao.getCharacterWithModifiers(characterId).toCharacterWithModifiers()
 
 
     override suspend fun createCharacter(character: Character): Uuid {

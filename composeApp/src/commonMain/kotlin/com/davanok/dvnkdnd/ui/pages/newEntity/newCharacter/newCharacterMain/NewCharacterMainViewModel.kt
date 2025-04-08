@@ -213,11 +213,14 @@ class NewCharacterMainViewModel(
 
         if (character.name.isBlank()) name = true
         if (character.cls == null) cls = true
-        else if (character.subCls !in character.cls.subEntities) subCls = true
+        else if (character.cls.subEntities.isNotEmpty() && character.subCls !in character.cls.subEntities)
+            subCls = true
         if (character.race == null) race = true
-        else if (character.subRace !in character.race.subEntities) subRace = true
+        else if (character.race.subEntities.isNotEmpty() && character.subRace !in character.race.subEntities)
+            subRace = true
         if (character.background == null) background = true
-        else if (character.subBackground !in character.background.subEntities) subBackground = true
+        else if (character.background.subEntities.isNotEmpty() && character.subBackground !in character.background.subEntities)
+            subBackground = true
 
         return NewCharacterMainUiState.EmptyFields(
             name = name,
@@ -240,12 +243,12 @@ class NewCharacterMainViewModel(
             val character = newCharacter.getCharacter()
             val entities =
                 listOfNotNull(
-                    character.cls,
-                    character.subCls,
                     character.race,
                     character.subRace,
                     character.background,
-                    character.subBackground
+                    character.subBackground,
+                    newCharacter.cls?.id,
+                    newCharacter.subCls?.id
                 )
             loadRequiredEntities(entities) {
                 val characterId = charactersRepository.createCharacter(character)
@@ -276,6 +279,7 @@ class NewCharacterMainViewModel(
 
             if (notExistingEntities.isEmpty()) {
                 setCheckingState(NewCharacterMainUiState.CheckingDataStates.FINISH)
+                onSuccess()
                 return
             }
 
@@ -369,8 +373,6 @@ data class NewCharacterMain(
     fun getCharacter() = Character(
         name = name,
         description = description,
-        cls = cls?.id,
-        subCls = subCls?.id,
         race = race?.id,
         subRace = subRace?.id,
         background = background?.id,

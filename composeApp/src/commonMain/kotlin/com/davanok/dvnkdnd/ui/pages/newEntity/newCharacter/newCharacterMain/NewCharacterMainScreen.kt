@@ -1,17 +1,15 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -23,7 +21,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -55,6 +52,7 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
+import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.image.toByteArray
 import dvnkdnd.composeapp.generated.resources.Res
@@ -328,27 +326,17 @@ private fun ImageContent(
             onSetImageMain = onSetImageMain
         )
     else
-        Card(
-            modifier = modifier,
-            onClick = { imagePicker.launch() },
+        FullScreenCard (
+            modifier = Modifier.clickable(onClick = imagePicker::launch)
         ) {
-            Box (
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column (
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AccountBox,
-                        contentDescription = stringResource(Res.string.no_character_images_yet)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(Res.string.no_character_images_yet)
-                    )
-                }
-            }
+            Icon(
+                imageVector = Icons.Default.AccountBox,
+                contentDescription = stringResource(Res.string.no_character_images_yet)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(Res.string.no_character_images_yet)
+            )
         }
 }
 
@@ -424,34 +412,24 @@ private fun ImagesList(
 
 @Composable
 private fun LoadingDataCard(state: NewCharacterMainUiState.CheckingDataStates) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Card(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .sizeIn(maxWidth = 300.dp, maxHeight = 400.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(8.dp)
-                    .aspectRatio(3/4f)
-            ) {
-                if (state == NewCharacterMainUiState.CheckingDataStates.ERROR)
-                    Icon(
-                        painter = painterResource(Res.drawable.error),
-                        contentDescription = stringResource(state.text)
-                    )
-                Text(text = stringResource(state.text))
+    FullScreenCard {
+        if (state == NewCharacterMainUiState.CheckingDataStates.ERROR) {
+            Icon(
+                painter = painterResource(Res.drawable.error),
+                contentDescription = stringResource(state.text)
+            )
 
-                if (state != NewCharacterMainUiState.CheckingDataStates.ERROR) {
-                    val stateValues = NewCharacterMainUiState.CheckingDataStates.entries
-                    LinearProgressIndicator(
-                        progress = {
-                            stateValues.indexOf(state) / stateValues.size.toFloat()
-                        }
-                    )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        Text(text = stringResource(state.text))
+
+        if (state != NewCharacterMainUiState.CheckingDataStates.ERROR) {
+            val stateValues = NewCharacterMainUiState.CheckingDataStates.entries
+            LinearProgressIndicator(
+                progress = {
+                    stateValues.indexOf(state) / stateValues.size.toFloat()
                 }
-            }
+            )
         }
     }
 }

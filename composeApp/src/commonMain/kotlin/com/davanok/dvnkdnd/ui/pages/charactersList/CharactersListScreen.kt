@@ -5,17 +5,14 @@ package com.davanok.dvnkdnd.ui.pages.charactersList
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -31,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.ui.components.EmptyImage
+import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.adaptive.TwoPane
 import com.davanok.dvnkdnd.ui.navigation.FABScaffold
 import dvnkdnd.composeapp.generated.resources.Res
@@ -39,7 +37,6 @@ import dvnkdnd.composeapp.generated.resources.no_characters_yet
 import dvnkdnd.composeapp.generated.resources.sentiment_dissatisfied
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -48,7 +45,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun CharactersListScreen(
     onFABClick: () -> Unit,
     navigateToCharacter: (CharacterMin) -> Unit,
-    viewModel: CharactersListViewModel = koinViewModel()
+    viewModel: CharactersListViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TwoPane(
@@ -77,39 +74,36 @@ private fun FirstPaneContent(
     isLoading: Boolean,
     characters: List<CharacterMin>,
     onClick: (CharacterMin) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    if (isLoading) Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) { CircularProgressIndicator() }
-    else if (characters.isEmpty()) EmptyScreen(modifier)
-    else CharactersList(
-        characters,
-        onClick,
-        modifier
-    )
+    when {
+        isLoading -> Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) { CircularProgressIndicator() }
+
+        characters.isEmpty() -> EmptyScreen(modifier)
+        else -> CharactersList(
+            characters,
+            onClick,
+            modifier
+        )
+    }
 }
 
 @Composable
 private fun EmptyScreen(modifier: Modifier = Modifier) {
-    Box(modifier, contentAlignment = Alignment.Center) {
-        Card {
-            Column(
-                modifier = Modifier.padding(24.dp)
-            ) {
-                Icon(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    painter = painterResource(Res.drawable.sentiment_dissatisfied),
-                    contentDescription = stringResource(Res.string.no_characters_yet)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    text = stringResource(Res.string.no_characters_yet)
-                )
-            }
-        }
+    FullScreenCard(modifier = modifier) {
+        Icon(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            painter = painterResource(Res.drawable.sentiment_dissatisfied),
+            contentDescription = stringResource(Res.string.no_characters_yet)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = stringResource(Res.string.no_characters_yet)
+        )
     }
 }
 
@@ -139,19 +133,22 @@ private fun CharactersList(
 private fun CharacterCard(
     character: CharacterMin,
     onClick: (CharacterMin) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     ListItem(
         modifier = modifier.clickable { onClick(character) },
         headlineContent = { Text(character.name) },
         leadingContent = {
             if (character.image == null) EmptyImage(
-                modifier = modifier
+                modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape),
                 text = character.name
             )
             else AsyncImage(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
                 model = character.image,
                 contentDescription = stringResource(Res.string.character_image)
             )
@@ -162,7 +159,7 @@ private fun CharacterCard(
 @Composable
 private fun CharacterShortInfo(
     character: CharacterMin?,
-    viewModel: CharactersListViewModel
+    viewModel: CharactersListViewModel,
 ) {
     // TODO
     Box(modifier = Modifier.fillMaxSize().background(Color.Green))

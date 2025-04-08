@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
+import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.Spell
 import kotlin.uuid.Uuid
 
@@ -16,6 +17,7 @@ import kotlin.uuid.Uuid
 )
 data class DnDClass( // also subclass
     @PrimaryKey val id: Uuid, // in same time is entity id
+    val mainStat: Stats,
     val hitDice: Dices,
 )
 

@@ -70,6 +70,7 @@ fun AdaptiveNavigationWrapper(
     layoutType: NavigationSuiteType = calculateNavSuiteType(windowSizeClass),
     navigationItems: AdaptiveNavItemScope.() -> Unit,
     floatingActionButton: (AdaptiveFloatingActionButtonScope.() -> Unit)? = null,
+    showNavigationItems: Boolean = true,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = contentColorFor(containerColor),
@@ -97,14 +98,10 @@ fun AdaptiveNavigationWrapper(
                 ModalNavigationDrawerContent(
                     scope = scope.value,
                     onDrawerClicked = {
-                        coroutineScope.launch {
-                            drawerState.close()
-                        }
+                        coroutineScope.launch { drawerState.close() }
                     },
                     onItemClicked = {
-                        coroutineScope.launch {
-                            drawerState.close()
-                        }
+                        coroutineScope.launch { drawerState.close() }
                     },
                     fabScope = fabScope?.value,
                 )
@@ -116,16 +113,15 @@ fun AdaptiveNavigationWrapper(
                 NavigationSuiteScaffoldLayout(
                     layoutType = layoutType,
                     navigationSuite = {
-                        AdaptiveNavigationSuite(
-                            layoutType,
-                            scope.value,
-                            onDrawerClicked = {
-                                coroutineScope.launch {
-                                    drawerState.open()
-                                }
-                            },
-                            fabScope = fabScope?.value
-                        )
+                        if (showNavigationItems)
+                            AdaptiveNavigationSuite(
+                                layoutType,
+                                scope.value,
+                                onDrawerClicked = {
+                                    coroutineScope.launch { drawerState.open() }
+                                },
+                                fabScope = fabScope?.value
+                            )
                     }
                 ) {
                     CompositionLocalProvider(LocalAdaptiveInfo provides adaptiveNavigationInfo) {

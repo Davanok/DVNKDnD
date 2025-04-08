@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.model.DbCharacterWithModifiers
+import kotlin.uuid.Uuid
 
 @Dao
 interface CharactersDao {
@@ -17,6 +18,6 @@ interface CharactersDao {
     suspend fun insertCharacter(character: Character)
 
     @Transaction
-    @Query("SELECT * FROM characters")
-    suspend fun getCharacterWithModifiers(): DbCharacterWithModifiers
+    @Query("SELECT * FROM characters WHERE id == :characterId")
+    suspend fun getCharacterWithModifiers(characterId: Uuid): DbCharacterWithModifiers
 }

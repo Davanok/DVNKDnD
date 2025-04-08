@@ -7,6 +7,6 @@ import kotlin.uuid.Uuid
 
 interface CharactersRepository {
     suspend fun loadCharactersMinList(): List<CharacterMin>
-    suspend fun getCharacterWithModifiers(): CharacterWithModifiers
+    suspend fun getCharacterWithModifiers(characterId: Uuid): CharacterWithModifiers
     suspend fun createCharacter(character: Character): Uuid
 }

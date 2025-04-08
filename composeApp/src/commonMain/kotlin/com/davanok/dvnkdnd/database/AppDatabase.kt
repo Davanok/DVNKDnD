@@ -14,6 +14,7 @@ import com.davanok.dvnkdnd.database.entities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.SpellAttackLevelModifier
 import com.davanok.dvnkdnd.database.entities.SpellAttackSave
 import com.davanok.dvnkdnd.database.entities.character.Character
+import com.davanok.dvnkdnd.database.entities.character.CharacterClasses
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.character.CharacterSkill
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
@@ -53,6 +54,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
         SpellAttackLevelModifier::class,
         SpellAttackSave::class,
         Character::class,
+        CharacterClasses::class,
         CharacterStats::class,
         CharacterSkill::class,
         CharacterHealth::class,

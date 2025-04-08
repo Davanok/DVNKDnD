@@ -3,10 +3,11 @@
 package com.davanok.dvnkdnd.ui.pages.dndEntityInfo
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,11 +18,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
+import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.error
@@ -38,19 +40,19 @@ import kotlin.uuid.Uuid
 fun DnDEntityInfo(
     entityId: Uuid,
     navigateBack: () -> Unit,
-    viewModel: DnDEntityInfoViewModel = koinViewModel()
+    viewModel: DnDEntityInfoViewModel = koinViewModel(),
 ) {
     LaunchedEffect(entityId) {
         viewModel.loadEntityInfo(entityId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold (
+    Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton (
+                    IconButton(
                         onClick = navigateBack
                     ) {
                         Icon(
@@ -67,7 +69,7 @@ fun DnDEntityInfo(
                             else -> stringResource(Res.string.error)
                         }
                     )
-                        },
+                },
                 scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
             )
         }
@@ -76,22 +78,22 @@ fun DnDEntityInfo(
             uiState.isLoading -> Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-            uiState.entity != null -> Content()
-            else -> Box(modifier = Modifier.fillMaxSize()) {
-                Card(modifier = Modifier.align(Alignment.Center)) {
-                    val description = stringResource(Res.string.error_when_loading_entity)
-                    Icon(
-                        painter = painterResource(Res.drawable.error),
-                        contentDescription = description
-                    )
-                    Text(
-                        text = description
-                    )
-                }
+            uiState.entity == null -> FullScreenCard {
+                val description = stringResource(Res.string.error_when_loading_entity)
+                Icon(
+                    painter = painterResource(Res.drawable.error),
+                    contentDescription = description
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = description
+                )
             }
+            else -> Content()
         }
     }
 }
+
 @Composable
 private fun Content() {
 

@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -32,6 +34,15 @@ import org.jetbrains.compose.resources.stringResource
 fun HostScreen() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    val showNavItems by remember {
+        derivedStateOf {
+            TopLevelRoute.entries.any {
+                navBackStackEntry?.destination?.hasRoute(it.route::class) == true
+            }
+        }
+    }
+
     AdaptiveNavigationWrapper(
         modifier = Modifier
             .fillMaxSize(),
@@ -39,9 +50,7 @@ fun HostScreen() {
             TopLevelRoute.entries.forEach {
                 item(
                     selected = navBackStackEntry?.destination?.hasRoute(it.route::class) == true,
-                    onClick = {
-                        navController.navigate(it.route)
-                    },
+                    onClick = { navController.navigate(it.route) },
                     icon = {
                         Icon(
                             painter = painterResource(it.icon),
@@ -70,7 +79,8 @@ fun HostScreen() {
                     )
                 }
             )
-        }
+        },
+        showNavigationItems = showNavItems
     ) {
         NavigationHost(
             modifier = Modifier.fillMaxSize(),

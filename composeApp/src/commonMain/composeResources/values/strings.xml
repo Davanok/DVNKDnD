@@ -24,6 +24,13 @@
     <string name="sub_background">Sub background</string>
     <string name="ability">Ability</string>
 
+    <string name="strength">Strength</string>
+    <string name="dexterity">Dexterity</string>
+    <string name="constitution">Constitution</string>
+    <string name="intelligence">Intelligence</string>
+    <string name="wisdom">Wisdom</string>
+    <string name="charisma">Charisma</string>
+
     <!--images-->
     <string name="select_image">Select image</string>
     <string name="add_image">Add image</string>
@@ -67,6 +74,9 @@
     <string name="standard_array_stats_option">Standard array</string>
     <string name="manual_stats_option">Manual</string>
     <string name="point_buy_stats_option">Point buy</string>
+    <string name="decrease_modifier_value">Decrease modifier value</string>
+    <string name="increase_modifier_value">Increase modifier value</string>
+    <string name="about_modifiers">About modifiers</string>
 
     <!--side sheet-->
     <string name="close_side_sheet">Close side sheet</string>
