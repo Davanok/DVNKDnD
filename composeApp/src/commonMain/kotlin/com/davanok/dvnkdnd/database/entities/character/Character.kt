@@ -4,18 +4,20 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDRace
 import okio.Path
 import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "characters",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["race"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDBaseEntity::class, ["id"], ["subRace"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDBaseEntity::class, ["id"], ["background"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDBaseEntity::class, ["id"], ["subBackground"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDRace::class, ["id"], ["race"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDRace::class, ["id"], ["subRace"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDBackground::class, ["id"], ["background"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDBackground::class, ["id"], ["subBackground"], onDelete = ForeignKey.SET_NULL),
     ]
 )
 data class Character(
@@ -35,11 +37,13 @@ data class Character(
     tableName = "character_classes",
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DnDClass::class, ["id"], ["sub_class_id"], onDelete = ForeignKey.SET_NULL)
     ]
 )
 data class CharacterClasses(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("class_id", index = true) val classId: Uuid,
+    @ColumnInfo("sub_class_id", index = true) val subClassId: Uuid?
 )

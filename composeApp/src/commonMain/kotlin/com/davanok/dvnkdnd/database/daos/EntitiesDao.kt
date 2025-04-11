@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityFullInfo
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.entities.toBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier

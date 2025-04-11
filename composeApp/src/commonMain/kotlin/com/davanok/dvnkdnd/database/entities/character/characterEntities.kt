@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.database.entities.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import okio.Path
 import kotlin.uuid.Uuid
@@ -77,28 +78,40 @@ data class CharacterImage(
 // many to many
 @Entity(
     tableName = "character_proficiencies",
+    primaryKeys = ["character_id", "proficiency_id"],
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DnDProficiency::class, ["id"], ["proficiency_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class CharacterProficiency(
-    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("proficiency_id", index = true) val proficiencyId: Uuid,
 )
 
 @Entity(
     tableName = "character_feats",
+    primaryKeys = ["character_id", "feat_id"],
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DnDFeat::class, ["id"], ["feat_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class CharacterFeat(
-    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("feat_id", index = true) val featId: Uuid,
 )
 
+@Entity(
+    tableName = "character_selected_modifiers",
+    primaryKeys = ["character_id", "modifier_id"],
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(EntityModifier::class, ["id"], ["modifier_id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class CharacterSelectedModifiers(
+    @ColumnInfo("character_id", index = true) val characterId: Uuid,
+    @ColumnInfo("modifier_id", index = true) val modifierId: Uuid,
+)
 

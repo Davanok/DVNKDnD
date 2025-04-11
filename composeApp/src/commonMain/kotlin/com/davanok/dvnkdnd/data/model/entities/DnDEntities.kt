@@ -55,14 +55,19 @@ data class DnDEntityFullInfo(
 
     @SerialName("sub_entities")
     val subEntities: List<Uuid> = emptyList()
-) {
-    fun toBaseEntity() = DnDBaseEntity(
-        id = id,
-        parentId = parentId,
-        type = type,
-        shared = shared,
-        name = name,
-        description = description,
-        source = source
-    )
-}
+)
+fun DnDEntityFullInfo.toBaseEntity() = DnDBaseEntity(
+    id = id,
+    parentId = parentId,
+    type = type,
+    shared = shared,
+    name = name,
+    description = description,
+    source = source
+)
+
+data class DnDEntityWithModifiers(
+    val entity: DnDEntityMin,
+    val selectionLimit: Int? = null,
+    val modifiers: List<DnDModifier> = emptyList()
+)

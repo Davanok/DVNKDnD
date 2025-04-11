@@ -15,12 +15,12 @@ data class CharacterMin(
 
 data class CharacterWithModifiers(
     val character: CharacterMin,
-    val characterModifiers: DnDModifiersGroup?,
+    val characterStats: DnDModifiersGroup?,
 
-    val classesWithModifiers: Map<DnDEntityMin, List<DnDModifier>>,
-
-    val raceModifiers: List<DnDModifier>,
-    val subRaceModifiers: List<DnDModifier>,
-    val backgroundModifiers: List<DnDModifier>,
-    val subBackgroundModifiers: List<DnDModifier>,
+    val selectedModifiers: List<Uuid>,
+    val classes: List<DnDEntityWithModifiers>,
+    val race: DnDEntityWithModifiers?,
+    val subRace: DnDEntityWithModifiers?,
+    val background: DnDEntityWithModifiers?,
+    val subBackground: DnDEntityWithModifiers?,
 )

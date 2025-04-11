@@ -60,13 +60,13 @@ data class EntitySavingThrow(
 @Serializable
 @Entity(
     tableName = "entity_proficiencies",
+    primaryKeys = ["entity_id", "proficiency_id"],
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DnDProficiency::class, ["id"], ["proficiency_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class EntityProficiency(
-    @PrimaryKey val id: Uuid = Uuid.random(),
     @SerialName("entity_id")
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     @SerialName("proficiency_id")
@@ -76,35 +76,32 @@ data class EntityProficiency(
 @Serializable
 @Entity(
     tableName = "entity_abilities",
+    primaryKeys = ["entity_id", "ability_id"],
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DnDAbility::class, ["id"], ["ability_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class EntityAbility(
-    @PrimaryKey val id: Uuid = Uuid.random(),
     @SerialName("entity_id")
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     @SerialName("ability_id")
     @ColumnInfo("ability_id", index = true) val abilityId: Uuid,
-    val level: Int,
 )
 
 @Serializable
 @Entity(
     tableName = "entity_selection_limits",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class EntitySelectionLimits(
+data class EntitySelectionLimits( // selection limit sum also includes non selectable items
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @SerialName("entity_id")
-    @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     val modifiers: Int?,
     val skills: Int?,
     @SerialName("saving_throws")
     @ColumnInfo("saving_throws") val savingThrows: Int?,
     val proficiencies: Int?,
-    val abilities: Int?
+    val abilities: Int?,
 )

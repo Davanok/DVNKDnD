@@ -6,12 +6,11 @@ import androidx.room.PrimaryKey
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "abilities",
+    "backgrounds",
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DnDAbility(
-    @PrimaryKey val id: Uuid,
-    val level: Int
+data class DnDBackground( // also sub background
+    @PrimaryKey val id: Uuid
 )

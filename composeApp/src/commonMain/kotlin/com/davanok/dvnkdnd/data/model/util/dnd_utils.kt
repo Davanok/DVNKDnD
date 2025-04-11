@@ -17,10 +17,11 @@ fun calculateModifier(modifier: Int) = (modifier - 10).floorDiv(2)
  * 14 -> 7
  * 15 -> 9
  */
-fun calculateBuyingModifiersSum(modifiers: List<Int>): Int = modifiers.sumOf {
-    when {
-        it < 9 -> 0
-        it < 14 -> it - 8
-        else -> it - 7
-    }
+fun calculateModifierAmount(modifier: Int) = when {
+    modifier < 9 -> 0
+    modifier < 14 -> modifier - 8
+    else -> modifier - 7
+}
+fun calculateBuyingModifiersSum(modifiers: List<Int>) = modifiers.sumOf {
+    calculateModifierAmount(it)
 }

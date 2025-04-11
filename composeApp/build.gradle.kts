@@ -41,6 +41,8 @@ kotlin {
         }
         val desktopMain by getting
         commonMain.dependencies {
+            implementation(libs.toaster)
+
             implementation(libs.napier)
 
             implementation(libs.androidx.datastore.datastore)
