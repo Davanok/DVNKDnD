@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.database
 
 import androidx.room.TypeConverter
+import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
 import okio.Path
 import okio.Path.Companion.toPath
 import kotlin.uuid.Uuid
@@ -23,3 +24,14 @@ class MainAdapters {
     fun bytesToUuid(value: ByteArray) = Uuid.fromByteArray(value)
 }
 
+class ListSpellComponentAdapter {
+    @TypeConverter
+    fun toListConverter(value: String) = value.split(';').map { component ->
+        SpellComponents.entries.first { it.toString()[0] == component[0] }
+    }
+
+    @TypeConverter
+    fun toStringConverter(value: List<SpellComponents>) = value.joinToString(";") {
+        it.toString().first().toString()
+    }
+}

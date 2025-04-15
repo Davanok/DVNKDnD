@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityFullInfo
+import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.toBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
@@ -49,7 +49,7 @@ interface EntitiesDao {
     suspend fun insertSelectionLimits(selectionLimit: EntitySelectionLimits)
 
     @Transaction
-    suspend fun insertFullEntity(fullEntity: DnDEntityFullInfo) {
+    suspend fun insertFullEntity(fullEntity: DnDFullEntity) {
         insertEntity(fullEntity.toBaseEntity())
         insertModifiers(fullEntity.modifiers)
         insertSkills(fullEntity.skills)

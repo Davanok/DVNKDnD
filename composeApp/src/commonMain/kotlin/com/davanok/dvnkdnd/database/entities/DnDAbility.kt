@@ -3,20 +3,18 @@ package com.davanok.dvnkdnd.database.entities
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.data.model.dnd_enums.ProficiencyTypes
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-// proficiencies like heavy armor, weapons
 @Serializable
 @Entity(
-    tableName = "proficiencies",
+    tableName = "abilities",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.Companion.CASCADE)
     ]
 )
-data class DnDProficiency(
+data class DnDAbility(
     @PrimaryKey val id: Uuid,
-    val type: ProficiencyTypes,
+    val level: Int
 )

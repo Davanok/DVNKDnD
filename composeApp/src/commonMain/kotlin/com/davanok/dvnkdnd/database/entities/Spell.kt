@@ -14,41 +14,30 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 
-class ListSpellComponentAdapter {
-    @TypeConverter
-    fun toListConverter(value: String) = value.split(';').map { component ->
-        SpellComponents.entries.first { it.toString()[0] == component[0] }
-    }
-
-    @TypeConverter
-    fun toStringConverter(value: List<SpellComponents>) = value.joinToString(";") {
-        it.toString().first().toString()
-    }
-}
-
-
+@Serializable
 @Entity(
     tableName = "spells",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class Spell(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val entityId: Uuid,
     val school: MagicSchools,
     val level: Int,
     val castingTime: String,
-    @TypeConverters(ListSpellComponentAdapter::class) val components: List<SpellComponents>,
+    val components: List<SpellComponents>,
     val ritual: Boolean,
     val materialComponent: String?,
     val duration: String,
     val concentration: Boolean,
 )
 
+@Serializable
 @Entity(
     tableName = "spell_area",
     foreignKeys = [
@@ -63,6 +52,7 @@ data class SpellArea(
     val type: AreaTypes,
 )
 
+@Serializable
 @Entity(
     tableName = "spell_attacks",
     foreignKeys = [
@@ -78,6 +68,7 @@ data class SpellAttack(
     val modifier: Int,
 )
 
+@Serializable
 @Entity(
     tableName = "spell_attack_level_modifiers",
     foreignKeys = [
@@ -93,15 +84,15 @@ data class SpellAttackLevelModifier(
     val modifier: Int,
 )
 
+@Serializable
 @Entity(
     tableName = "spell_attack_save",
     foreignKeys = [
-        ForeignKey(SpellAttack::class, ["id"], ["attackId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(SpellAttack::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class SpellAttackSave(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val attackId: Uuid,
     val savingThrow: Stats,
     val halfOnSuccess: Boolean,
 )

@@ -5,8 +5,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Size
+import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
+@Serializable
 @Entity(
     tableName = "races",
     foreignKeys = [
@@ -17,15 +19,15 @@ data class DnDRace( // also subrace
     @PrimaryKey val id: Uuid,
     val speed: Int
 )
-
+@Serializable
 @Entity(
     tableName = "race_sizes",
+    primaryKeys = ["raceId", "size"],
     foreignKeys = [
         ForeignKey(DnDRace::class, ["id"], ["raceId"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class RaceSize(
-    @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val raceId: Uuid,
     val size: Size
 )

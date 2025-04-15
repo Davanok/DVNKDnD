@@ -3,8 +3,10 @@ package com.davanok.dvnkdnd.database.entities.dndEntities
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
+@Serializable
 @Entity(
     "backgrounds",
     foreignKeys = [
