@@ -28,7 +28,7 @@ import kotlin.uuid.Uuid
 data class Spell(
     @PrimaryKey val id: Uuid = Uuid.random(),
     val school: MagicSchools,
-    val level: Int,
+    val level: Int?,
     val castingTime: String,
     val components: List<SpellComponents>,
     val ritual: Boolean,
@@ -39,14 +39,13 @@ data class Spell(
 
 @Serializable
 @Entity(
-    tableName = "spell_area",
+    tableName = "spell_areas",
     foreignKeys = [
-        ForeignKey(Spell::class, ["id"], ["spellId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(Spell::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class SpellArea(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val spellId: Uuid,
     val range: Int,
     val area: Int,
     val type: AreaTypes,

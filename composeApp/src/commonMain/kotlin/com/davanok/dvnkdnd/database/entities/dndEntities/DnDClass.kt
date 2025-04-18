@@ -26,15 +26,15 @@ data class DnDClass( // also subclass
 @Serializable
 @Entity(
     tableName = "class_spells",
-    primaryKeys = ["spellId", "classId"],
+    primaryKeys = ["classId", "spellId"],
     foreignKeys = [
-        ForeignKey(Spell::class, ["id"], ["spellId"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DnDClass::class, ["id"], ["classId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(Spell::class, ["id"], ["spellId"], onDelete = ForeignKey.CASCADE),
     ]
 )
 data class ClassSpell( // spells that available for class
-    @ColumnInfo(index = true) val spellId: Uuid,
     @ColumnInfo(index = true) val classId: Uuid,
+    @ColumnInfo(index = true) val spellId: Uuid,
 )
 @Serializable
 @Entity(
@@ -43,14 +43,14 @@ data class ClassSpell( // spells that available for class
         ForeignKey(DnDClass::class, ["id"], ["classId"], onDelete = ForeignKey.CASCADE),
     ]
 )
-data class SpellSlots(
+data class ClassSpellSlots(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @SerialName("class_id")
-    @ColumnInfo(index = true) val classId: Uuid?,
+    @ColumnInfo(index = true) val classId: Uuid,
     val level: Int,
     @SerialName("prepared_spells")
     val preparedSpells: Int?,
-    val cantrips: Int,
+    val cantrips: Int?,
     @SerialName("spell_slots")
     val spellSlots: List<Int>
 )

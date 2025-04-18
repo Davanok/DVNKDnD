@@ -38,17 +38,17 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellSlots
+import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
 import com.davanok.dvnkdnd.database.entities.items.ItemProperty
 import com.davanok.dvnkdnd.database.entities.items.Weapon
 import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
-import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
 
 @Database(
     entities = [
+        DnDAbility::class,
         DnDProficiency::class,
         Spell::class,
         SpellArea::class,
@@ -65,13 +65,13 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
         CharacterProficiency::class,
         CharacterFeat::class,
         CharacterSelectedModifiers::class,
-        DnDAbility::class,
         DnDBackground::class,
         DnDBaseEntity::class,
         EntityFullDescription::class,
         EntityImage::class,
         DnDClass::class,
         ClassSpell::class,
+        ClassSpellSlots::class,
         DnDFeat::class,
         DnDRace::class,
         RaceSize::class,
@@ -81,14 +81,12 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponProperties
         EntityProficiency::class,
         EntityAbility::class,
         EntitySelectionLimits::class,
-        SpellSlots::class,
         DnDItem::class,
-        Armor::class,
-        ItemProperty::class,
         ItemPropertyLink::class,
+        ItemProperty::class,
+        Armor::class,
         Weapon::class,
-        WeaponDamage::class,
-        WeaponProperties::class
+        WeaponDamage::class
     ],
     version = 1
 )
