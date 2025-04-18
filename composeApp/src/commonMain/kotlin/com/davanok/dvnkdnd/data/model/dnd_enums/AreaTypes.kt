@@ -8,5 +8,5 @@ enum class AreaTypes {
     SPHERE,
     SELF,
     TOUCH,
-    CUSTOM
+    OTHER
 }

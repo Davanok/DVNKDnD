@@ -9,5 +9,5 @@ enum class MagicSchools {
     ILLUSION,
     NECROMANCY,
     TRANSMUTATION,
-    CUSTOM
+    OTHER
 }

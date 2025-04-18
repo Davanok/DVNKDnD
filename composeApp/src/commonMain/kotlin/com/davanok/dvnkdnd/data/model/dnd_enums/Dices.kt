@@ -8,5 +8,5 @@ enum class Dices {
     D12,
     D20,
     D100,
-    CUSTOM
+    OTHER
 }

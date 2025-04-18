@@ -14,5 +14,5 @@ enum class DamageTypes {
     RADIANT,
     SLASHING,
     THUNDER,
-    CUSTOM
+    OTHER
 }
