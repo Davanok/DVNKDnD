@@ -11,21 +11,26 @@ import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
 import com.davanok.dvnkdnd.database.entities.character.Character
+import com.davanok.dvnkdnd.ui.components.UiMessage
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.finish
+import dvnkdnd.composeapp.generated.resources.loading
 import dvnkdnd.composeapp.generated.resources.state_checking_data
 import dvnkdnd.composeapp.generated.resources.state_downloading
 import dvnkdnd.composeapp.generated.resources.state_loading
 import dvnkdnd.composeapp.generated.resources.state_loading_from_database
 import dvnkdnd.composeapp.generated.resources.state_loading_full_entities
 import dvnkdnd.composeapp.generated.resources.state_updating_entities
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okio.Path
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
 class NewCharacterMainViewModel(
@@ -265,7 +270,25 @@ class NewCharacterMainViewModel(
             }
         }
     }
-    private fun setCheckingState(state: NewCharacterMainUiState.CheckingDataStates) {
+    private fun addMessage(message: UiMessage) {
+        _uiState.value = _uiState.value.copy(
+            messages = _uiState.value.messages + message
+        )
+    }
+    fun removeMessage(messageId: Uuid) {
+        _uiState.value = _uiState.value.copy(
+            messages = _uiState.value.messages.fastFilter { it.id == messageId }
+        )
+    }
+    private fun setCheckingState(state: NewCharacterMainUiState.CheckingDataStates, thr: Throwable? = null) = viewModelScope.launch {
+        when (state) {
+            NewCharacterMainUiState.CheckingDataStates.ERROR ->
+                addMessage(UiMessage.Error(getString(state.text), error=thr))
+            NewCharacterMainUiState.CheckingDataStates.FINISH ->
+                addMessage(UiMessage.Success(getString(state.text)))
+            else ->
+                addMessage(UiMessage.Loading(getString(Res.string.loading)))
+        }
         _uiState.value = _uiState.value.copy(checkingDataState = state)
     }
 
@@ -289,7 +312,8 @@ class NewCharacterMainViewModel(
             setCheckingState(NewCharacterMainUiState.CheckingDataStates.UPDATING)
             entitiesRepository.insertFullEntities(entities)
         }.onFailure {
-            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR)
+            Napier.e(throwable = it) { "error when load required entities" }
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR, it)
         }.onSuccess {
             setCheckingState(NewCharacterMainUiState.CheckingDataStates.FINISH)
             onSuccess()
@@ -304,7 +328,8 @@ class NewCharacterMainViewModel(
 
             Json.decodeFromString<List<Uuid>>(browseRepository.getValue("primary_base_entities"))
         }.onFailure {
-            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR)
+            Napier.e(throwable = it) { "error when check data" }
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR, it)
         }.onSuccess {
             loadRequiredEntities(it, onSuccess)
         }
@@ -321,6 +346,7 @@ data class NewCharacterMainUiState(
     val checkingDataState: CheckingDataStates = CheckingDataStates.LOADING,
     val showSearchSheet: Boolean = false,
     val emptyFields: EmptyFields = EmptyFields(),
+    val messages: List<UiMessage> = emptyList()
 ) {
     data class EmptyFields(
         val name: Boolean = false,

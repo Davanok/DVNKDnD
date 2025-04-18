@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -54,13 +53,14 @@ import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
+import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.image.toByteArray
+import com.davanok.dvnkdnd.ui.navigation.StepNavigation
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
 import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.cls
-import dvnkdnd.composeapp.generated.resources.continue_str
 import dvnkdnd.composeapp.generated.resources.description
 import dvnkdnd.composeapp.generated.resources.drop_image
 import dvnkdnd.composeapp.generated.resources.empty_field_error
@@ -89,6 +89,11 @@ fun NewCharacterMainScreen(
     viewModel: NewCharacterMainViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    UiToaster(
+        messages = uiState.messages,
+        onRemoveMessage = viewModel::removeMessage
+    )
+
     if (uiState.checkingDataState != NewCharacterMainUiState.CheckingDataStates.FINISH)
         LoadingDataCard(uiState.checkingDataState)
     else
@@ -118,42 +123,38 @@ private fun CreateCharacterContent(
     val state by viewModel.newCharacterMain.collectAsStateWithLifecycle()
     val entities by viewModel.downloadableState.collectAsStateWithLifecycle()
 
-    Column (
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+    StepNavigation (
+        modifier = Modifier.fillMaxSize(),
+        next = onCreateCharacter
     ) {
-        ImageContent(
-            modifier = Modifier
-                .height(300.dp)
-                .widthIn(488.dp),
-            images = state.images,
-            mainImage = state.mainImage,
-            onAddImage = viewModel::addCharacterImage,
-            onRemoveImage = viewModel::removeCharacterImage,
-            onSetImageMain = viewModel::setCharacterMainImage
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Content(
-            state = state,
-            empties = empties,
-            entities = entities,
-            onNameChange = viewModel::setCharacterName,
-            onDescriptionChange = viewModel::setCharacterDescription,
-            onClassChange = viewModel::setCharacterClass,
-            onSubClassSelected = viewModel::setCharacterSubClass,
-            onRaceSelected = viewModel::setCharacterRace,
-            onSubRaceSelected = viewModel::setCharacterSubRace,
-            onBackgroundSelected = viewModel::setCharacterBackground,
-            onSubBackgroundSelected = viewModel::setCharacterSubBackground,
-            onOpenExtendedSearch = viewModel::openSearchSheet
-        )
-        Button (
-            modifier = Modifier
-                .align(Alignment.End),
-            onClick = onCreateCharacter
+        Column (
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = stringResource(Res.string.continue_str)
+            ImageContent(
+                modifier = Modifier
+                    .height(300.dp)
+                    .widthIn(488.dp),
+                images = state.images,
+                mainImage = state.mainImage,
+                onAddImage = viewModel::addCharacterImage,
+                onRemoveImage = viewModel::removeCharacterImage,
+                onSetImageMain = viewModel::setCharacterMainImage
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Content(
+                state = state,
+                empties = empties,
+                entities = entities,
+                onNameChange = viewModel::setCharacterName,
+                onDescriptionChange = viewModel::setCharacterDescription,
+                onClassChange = viewModel::setCharacterClass,
+                onSubClassSelected = viewModel::setCharacterSubClass,
+                onRaceSelected = viewModel::setCharacterRace,
+                onSubRaceSelected = viewModel::setCharacterSubRace,
+                onBackgroundSelected = viewModel::setCharacterBackground,
+                onSubBackgroundSelected = viewModel::setCharacterSubBackground,
+                onOpenExtendedSearch = viewModel::openSearchSheet
             )
         }
     }
@@ -321,7 +322,7 @@ private fun ImageContent(
             modifier = modifier,
             images = images,
             mainImage = mainImage,
-            onAddImage = { imagePicker.launch() },
+            onAddImage = imagePicker::launch,
             onRemoveImage = onRemoveImage,
             onSetImageMain = onSetImageMain
         )

@@ -6,6 +6,8 @@
     <string name="close_drawer">Close drawer</string>
     <string name="open_drawer">Open drawer</string>
     <string name="new">New</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
     <!--main destinations-->
     <string name="home">Home</string>
     <string name="items">Items</string>
