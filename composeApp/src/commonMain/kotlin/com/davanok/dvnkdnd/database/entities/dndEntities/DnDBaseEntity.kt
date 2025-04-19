@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 import kotlin.uuid.Uuid
 
 @Serializable

@@ -2,14 +2,15 @@ package com.davanok.dvnkdnd.data.model.entities
 
 import androidx.compose.runtime.Immutable
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
-import com.davanok.dvnkdnd.database.entities.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.DnDAbility
+import com.davanok.dvnkdnd.database.entities.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.Spell
 import com.davanok.dvnkdnd.database.entities.SpellArea
 import com.davanok.dvnkdnd.database.entities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.SpellAttackLevelModifier
 import com.davanok.dvnkdnd.database.entities.SpellAttackSave
 import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
@@ -22,7 +23,6 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.RaceSize
-import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import com.davanok.dvnkdnd.database.entities.items.ItemProperty
@@ -55,15 +55,24 @@ data class DnDEntityWithSubEntities (
 @Immutable
 @Serializable
 data class DnDFullEntity(
-    val base: DnDBaseEntity,
+    val id: Uuid = Uuid.random(),
+    @SerialName("parent_id")
+    val parentId: Uuid? = null,
+    @SerialName("user_id")
+    val userId: Uuid? = null,
+    val type: DnDEntityTypes,
+    val shared: Boolean = false,
+    val name: String,
+    val description: String,
+    val source: String,
 
     val modifiers: List<EntityModifier>,
     val skills: List<EntitySkill>,
     @SerialName("saving_throws")
     val savingThrows: List<EntitySavingThrow>,
 
-    val proficiencies: List<JoinProficiency>,
-    val abilities: List<JoinAbility>,
+    val proficiencies: List<EntityProficiency>,
+    val abilities: List<EntityAbility>,
 
     @SerialName("selection_limits")
     val selectionLimits: EntitySelectionLimits?,
@@ -79,27 +88,17 @@ data class DnDFullEntity(
 
     @SerialName("companion_entities")
     val companionEntities: List<DnDFullEntity> = emptyList()
-)
-@Serializable
-data class JoinProficiency(
-    val link: EntityProficiency,
-    val proficiency: ProficiencyWithInfo
-)
-@Serializable
-data class JoinAbility(
-    val link: EntityAbility,
-    val ability: AbilityWithInfo
-)
-@Serializable
-data class AbilityWithInfo(
-    val ability: DnDAbility,
-    val base: DnDBaseEntity
-)
-@Serializable
-data class ProficiencyWithInfo(
-    val proficiency: DnDProficiency,
-    val base: DnDBaseEntity
-)
+) {
+    fun toBaseEntity() = DnDBaseEntity(
+        id = id,
+        parentId,
+        type,
+        shared,
+        name,
+        description,
+        source
+    )
+}
 data class DnDEntityWithModifiers(
     val entity: DnDEntityMin,
     val selectionLimit: Int? = null,

@@ -10,11 +10,17 @@ fun calculateModifier(modifier: Int) = (modifier - 10).floorDiv(2)
 
 /**
  * 9  -> 1
+ *
  * 10 -> 2
+ *
  * 11 -> 3
+ *
  * 12 -> 4
+ *
  * 13 -> 5
+ *
  * 14 -> 7
+ *
  * 15 -> 9
  */
 fun calculateModifierAmount(modifier: Int) = when {
