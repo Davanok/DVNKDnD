@@ -43,7 +43,7 @@ data class ClassSpell( // spells that available for class
         ForeignKey(DnDClass::class, ["id"], ["classId"], onDelete = ForeignKey.CASCADE),
     ]
 )
-data class ClassSpellSlots(
+data class ClassSpellSlot(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @SerialName("class_id")
     @ColumnInfo(index = true) val classId: Uuid,

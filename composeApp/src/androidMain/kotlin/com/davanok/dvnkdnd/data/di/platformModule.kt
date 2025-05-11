@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.davanok.dvnkdnd.database.AppDatabase
-import com.davanok.dvnkdnd.database.getDatabaseBuilder
 import okio.Path.Companion.toPath
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -23,7 +22,7 @@ fun platformModule() = module {
     single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.createWithPath(
             produceFile = {
-                androidContext().filesDir.resolve("dvnkdnd.preferences_pb").absolutePath.toPath()
+                androidContext().getDatabasePath("dvnkdnd.preferences_pb").absolutePath.toPath()
             }
         )
     }

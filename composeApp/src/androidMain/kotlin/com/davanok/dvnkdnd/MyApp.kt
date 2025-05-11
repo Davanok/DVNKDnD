@@ -6,6 +6,7 @@ import com.davanok.dvnkdnd.data.di.initKoin
 lateinit var appDataDir: String
     private set
 lateinit var appCacheDir: String
+    private set
 
 class MyApp: Application() {
     override fun onCreate() {

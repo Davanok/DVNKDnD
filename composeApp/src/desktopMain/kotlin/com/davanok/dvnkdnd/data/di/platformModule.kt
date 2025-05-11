@@ -11,7 +11,7 @@ import org.koin.dsl.module
 
 fun platformModule() = module {
     single<RoomDatabase.Builder<AppDatabase>> {
-        val path = appDataDirectory() / "database.db"
+        val path = appDataDirectory() / "database" / "database.db"
         Room.databaseBuilder(
             name = path.toString()
         )
@@ -19,7 +19,7 @@ fun platformModule() = module {
     single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.createWithPath(
             produceFile = {
-                appDataDirectory() / "dvnkdnd.preferences_pb"
+                appDataDirectory() / "database" / "dvnkdnd.preferences_pb"
             }
         )
     }

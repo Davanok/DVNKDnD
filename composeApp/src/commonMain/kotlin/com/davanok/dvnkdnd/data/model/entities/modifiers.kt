@@ -53,6 +53,9 @@ data class DnDModifiersGroup(
         Stats.WISDOM -> copy(wisdom = value)
         Stats.CHARISMA -> copy(charisma = value)
     }
+    companion object {
+        val Default = DnDModifiersGroup(10, 10, 10, 10, 10, 10)
+    }
 }
 fun CharacterStats.toModifiersGroup() = DnDModifiersGroup(
     strength = strength,

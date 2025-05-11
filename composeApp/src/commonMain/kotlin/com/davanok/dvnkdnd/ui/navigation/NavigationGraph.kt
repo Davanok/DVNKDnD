@@ -42,7 +42,6 @@ object UuidNavType : NavType<Uuid>(true) {
     ) {
         bundle.putByteArray(key, value.toByteArray())
     }
-
 }
 
 

@@ -5,7 +5,6 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.davanok.dvnkdnd.database.AppDatabase
 import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
-import com.davanok.dvnkdnd.database.daos.ProficienciesDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.dsl.module
@@ -20,6 +19,5 @@ fun databaseModule() = module {
     }
 
     single<CharactersDao> { get<AppDatabase>().getCharactersDao() }
-    single<ProficienciesDao> { get<AppDatabase>().getProficienciesDao() }
     single<EntitiesDao> { get<AppDatabase>().getEntitiesDao() }
 }

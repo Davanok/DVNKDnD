@@ -1,7 +1,7 @@
 package com.davanok.dvnkdnd.data.repositories
 
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityFullInfo
+import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
@@ -24,8 +24,8 @@ interface EntitiesRepository {
 
     suspend fun insertSelectionLimits(selectionLimits: EntitySelectionLimits)
 
-    suspend fun insertFullEntity(fullEntity: DnDEntityFullInfo)
-    suspend fun insertFullEntities(fullEntities: List<DnDEntityFullInfo>)
+    suspend fun insertFullEntity(fullEntity: DnDFullEntity)
+    suspend fun insertFullEntities(fullEntities: List<DnDFullEntity>)
 
     /**
      * @param entityIds list of uuid that checked for existing in db

@@ -5,7 +5,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
-import com.davanok.dvnkdnd.database.daos.ProficienciesDao
 import com.davanok.dvnkdnd.database.entities.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.Spell
 import com.davanok.dvnkdnd.database.entities.SpellArea
@@ -38,7 +37,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
-import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpellSlots
+import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpellSlot
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
@@ -71,7 +70,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         EntityImage::class,
         DnDClass::class,
         ClassSpell::class,
-        ClassSpellSlots::class,
+        ClassSpellSlot::class,
         DnDFeat::class,
         DnDRace::class,
         RaceSize::class,
@@ -93,6 +92,5 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
 @TypeConverters(MainAdapters::class, ListSpellComponentAdapter::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun getCharactersDao(): CharactersDao
-    abstract fun getProficienciesDao(): ProficienciesDao
     abstract fun getEntitiesDao(): EntitiesDao
 }

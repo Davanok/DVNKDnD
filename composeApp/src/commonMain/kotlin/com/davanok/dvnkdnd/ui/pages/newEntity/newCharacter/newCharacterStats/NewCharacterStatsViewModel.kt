@@ -27,9 +27,9 @@ class NewCharacterStatsViewModel(
 
     fun loadCharacterWithModifiers(characterId: Uuid) = viewModelScope.launch {
         var character = repository.getCharacterWithModifiers(characterId)
-        if (character.characterModifiers == null)
+        if (character.characterStats == null)
             character = character.copy(
-                characterModifiers = DnDModifiersGroup(10, 10, 10, 10, 10, 10)
+                characterStats = DnDModifiersGroup.Default
             )
         _uiState.value = _uiState.value.copy(
             character = character,
@@ -38,6 +38,9 @@ class NewCharacterStatsViewModel(
     }
     fun setModifiers(modifiers: DnDModifiersGroup) {
         _uiState.value = _uiState.value.copy(modifiers = modifiers)
+    }
+    fun createCharacter(onSuccess: (characterId: Uuid) -> Unit) = viewModelScope.launch {
+
     }
 }
 enum class StatsCreationOptions(val title: StringResource) {
@@ -49,5 +52,5 @@ data class NewCharacterStatsUiState(
     val isLoading: Boolean = false,
     val selectedCreationOptions: StatsCreationOptions = StatsCreationOptions.POINT_BUY,
     val character: CharacterWithModifiers? = null,
-    val modifiers: DnDModifiersGroup = character?.characterModifiers?: DnDModifiersGroup(8, 8, 8, 8, 8, 8)
+    val modifiers: DnDModifiersGroup = character?.characterStats?: DnDModifiersGroup.Default
 )

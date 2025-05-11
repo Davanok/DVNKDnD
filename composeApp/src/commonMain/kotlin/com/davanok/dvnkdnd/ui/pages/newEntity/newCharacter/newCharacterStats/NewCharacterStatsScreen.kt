@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.entities.CharacterWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
+import com.davanok.dvnkdnd.ui.navigation.StepNavigation
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.loading_characters_error
@@ -33,8 +34,8 @@ import kotlin.uuid.Uuid
 @Composable
 fun NewCharacterStatsScreen(
     characterId: Uuid,
-    onBack: (Uuid) -> Unit,
-    onContinue: (Uuid) -> Unit,
+    onBack: (characterId: Uuid) -> Unit,
+    onContinue: (characterId: Uuid) -> Unit,
     viewModel: NewCharacterStatsViewModel = koinViewModel(),
 ) {
     LaunchedEffect(characterId) {
@@ -56,13 +57,21 @@ fun NewCharacterStatsScreen(
             Spacer(Modifier.height(16.dp))
             Text(text)
         }
-        else -> Content(
-            selectedCreationOption = uiState.selectedCreationOptions,
-            onOptionSelected = viewModel::selectCreationOption,
-            character = uiState.character!!,
-            modifiers = uiState.modifiers,
-            onModifiersChange = viewModel::setModifiers
-        )
+        else -> {
+            StepNavigation (
+                modifier = Modifier.fillMaxSize(),
+                next = { viewModel.createCharacter(onContinue) },
+                previous = { onBack(characterId) }
+            ) {
+                Content(
+                    selectedCreationOption = uiState.selectedCreationOptions,
+                    onOptionSelected = viewModel::selectCreationOption,
+                    character = uiState.character!!,
+                    modifiers = uiState.modifiers,
+                    onModifiersChange = viewModel::setModifiers
+                )
+            }
+        }
     }
 }
 
@@ -83,7 +92,8 @@ private fun Content(
             selectedCreationOption = selectedCreationOption,
             character = character,
             modifiers = modifiers,
-            onModifiersChange = onModifiersChange
+            onModifiersChange = onModifiersChange,
+            onSelectModifiers = {  }
         )
     }
 }

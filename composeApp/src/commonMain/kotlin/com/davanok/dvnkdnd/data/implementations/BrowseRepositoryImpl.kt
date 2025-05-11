@@ -79,9 +79,7 @@ class BrowseRepositoryImpl(
         }.decodeSingle()
 
         return result.copy(
-            companionEntities = loadEntitiesFullInfo(
-                result.abilities.fastMap { it.abilityId } + result.proficiencies.fastMap { it.proficiencyId }
-            )
+            companionEntities = loadEntitiesFullInfo(result.getSubEntitiesIds())
         )
     }
 
@@ -92,9 +90,7 @@ class BrowseRepositoryImpl(
 
         return result.fastMap { entity ->
             entity.copy(
-                companionEntities = loadEntitiesFullInfo(
-                    entity.abilities.fastMap { it.abilityId } + entity.proficiencies.fastMap { it.proficiencyId }
-                )
+                companionEntities = loadEntitiesFullInfo(entity.getSubEntitiesIds())
             )
         }
     }

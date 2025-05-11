@@ -135,10 +135,6 @@ android {
     }
 }
 
-dependencies {
-    debugImplementation(compose.uiTooling)
-}
-
 compose.desktop {
     application {
         mainClass = "com.davanok.dvnkdnd.MainKt"
@@ -156,6 +152,7 @@ compose.desktop {
 }
 
 dependencies {
+    debugImplementation(compose.uiTooling)
     listOf(
         "kspAndroid",
         "kspIosSimulatorArm64",

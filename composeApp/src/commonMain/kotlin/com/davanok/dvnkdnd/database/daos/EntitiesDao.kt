@@ -1,14 +1,18 @@
 package com.davanok.dvnkdnd.database.daos
 
+import androidx.compose.ui.util.fastForEach
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
+import com.davanok.dvnkdnd.data.model.entities.ClassWithSpells
 import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
-import com.davanok.dvnkdnd.data.model.entities.toBaseEntity
+import com.davanok.dvnkdnd.data.model.entities.FullItem
+import com.davanok.dvnkdnd.data.model.entities.FullSpell
+import com.davanok.dvnkdnd.data.model.entities.RaceWithSizes
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
@@ -20,7 +24,7 @@ import com.davanok.dvnkdnd.database.model.EntityWithSub
 import kotlin.uuid.Uuid
 
 @Dao
-interface EntitiesDao {
+interface EntitiesDao: EntityInfoDao {
     @Query("SELECT id, type, name, source FROM base_entities WHERE type == :type AND parent_id == :parentId")
     suspend fun getEntitiesMinList(type: DnDEntityTypes, parentId: Uuid? = null): List<DnDEntityMin>
     @Transaction
@@ -49,14 +53,55 @@ interface EntitiesDao {
     suspend fun insertSelectionLimits(selectionLimit: EntitySelectionLimits)
 
     @Transaction
+    suspend fun insertClassWithSpells(cls: ClassWithSpells) {
+        insertClass(cls.cls)
+        insertClassSpells(cls.spells)
+        insertClassSpellSlots(cls.slots)
+    }
+    @Transaction
+    suspend fun insertRaceWithSizes(race: RaceWithSizes) {
+        insertRace(race.race)
+        insertRaceSizes(race.sizes)
+    }
+    @Transaction
+    suspend fun insertFullSpell(spell: FullSpell) {
+        insertSpell(spell.spell)
+        insertSpellArea(spell.area)
+        spell.attacks.fastForEach {
+            insertFullSpellAttack(it)
+        }
+    }
+    @Transaction
+    suspend fun insertFullItem(item: FullItem) {
+        insertItem(item.item)
+        insertItemJoinProperties(item.properties)
+        item.armor?.let { insertArmor(it) }
+        item.weapon?.let { insertFullWeapon(it) }
+    }
+
+    @Transaction
     suspend fun insertFullEntity(fullEntity: DnDFullEntity) {
+        fullEntity.companionEntities.fastForEach {
+            insertFullEntity(it)
+        }
+
         insertEntity(fullEntity.toBaseEntity())
         insertModifiers(fullEntity.modifiers)
         insertSkills(fullEntity.skills)
         insertSavingThrows(fullEntity.savingThrows)
+        fullEntity.selectionLimits?.let { insertSelectionLimits(it) }
+
+        fullEntity.cls?.let { insertClassWithSpells(it) }
+        fullEntity.race?.let { insertRaceWithSizes(it) }
+        fullEntity.background?.let { insertBackground(it) }
+        fullEntity.feat?.let { insertFeat(it) }
+        fullEntity.ability?.let { insertAbility(it) }
+        fullEntity.proficiency?.let { insertProficiency(it) }
+        fullEntity.spell?.let { insertFullSpell(it) }
+        fullEntity.item?.let { insertFullItem(it) }
+
         insertProficiencies(fullEntity.proficiencies)
         insertAbilities(fullEntity.abilities)
-        fullEntity.selectionLimits?.let { insertSelectionLimits(it) }
     }
 
     @Query("SELECT exists(SELECT 1 FROM base_entities WHERE id == :entityId)")

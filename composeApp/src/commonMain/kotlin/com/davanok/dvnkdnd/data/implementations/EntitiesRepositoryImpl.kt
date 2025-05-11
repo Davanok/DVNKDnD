@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.data.implementations
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityFullInfo
+import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
@@ -40,11 +40,15 @@ class EntitiesRepositoryImpl(
         dao.insertSelectionLimits(selectionLimits)
 
 
-    override suspend fun insertFullEntity(fullEntity: DnDEntityFullInfo) =
+    override suspend fun insertFullEntity(fullEntity: DnDFullEntity) =
         dao.insertFullEntity(fullEntity)
 
-    override suspend fun insertFullEntities(fullEntities: List<DnDEntityFullInfo>) =
-        fullEntities.fastForEach { insertFullEntity(it) }
+    override suspend fun insertFullEntities(fullEntities: List<DnDFullEntity>) =
+        fullEntities.partition { it.parentId == null }.let { (withoutParent, withParent) ->
+            withoutParent.fastForEach { insertFullEntity(it) }
+            withParent.fastForEach { insertFullEntity(it) }
+        }
+        // false is upper then true
 
     override suspend fun getExistingEntities(entityIds: List<Uuid>): List<Uuid> =
         dao.getExistingEntities(entityIds)

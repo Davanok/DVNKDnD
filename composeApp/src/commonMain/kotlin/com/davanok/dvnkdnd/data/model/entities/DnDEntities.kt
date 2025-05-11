@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.data.model.entities
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.database.entities.DnDAbility
 import com.davanok.dvnkdnd.database.entities.DnDProficiency
@@ -10,7 +11,7 @@ import com.davanok.dvnkdnd.database.entities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.SpellAttackLevelModifier
 import com.davanok.dvnkdnd.database.entities.SpellAttackSave
 import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpellSlots
+import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpellSlot
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
@@ -91,13 +92,17 @@ data class DnDFullEntity(
 ) {
     fun toBaseEntity() = DnDBaseEntity(
         id = id,
-        parentId,
-        type,
-        shared,
-        name,
-        description,
-        source
+        parentId = parentId,
+        type = type,
+        shared = shared,
+        name = name,
+        description = description,
+        source = source
     )
+    fun getSubEntitiesIds() =
+        abilities.fastMap { it.abilityId } +
+                proficiencies.fastMap { it.proficiencyId } +
+                (cls?.spells?.fastMap { it.spellId } ?: emptyList())
 }
 data class DnDEntityWithModifiers(
     val entity: DnDEntityMin,
@@ -108,7 +113,7 @@ data class DnDEntityWithModifiers(
 data class ClassWithSpells(
     val cls: DnDClass,
     val spells: List<ClassSpell>,
-    val slots: List<ClassSpellSlots>
+    val slots: List<ClassSpellSlot>
 )
 @Serializable
 data class RaceWithSizes(
