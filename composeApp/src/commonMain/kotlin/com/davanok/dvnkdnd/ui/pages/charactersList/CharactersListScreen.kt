@@ -5,10 +5,8 @@ package com.davanok.dvnkdnd.ui.pages.charactersList
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -82,7 +80,11 @@ private fun FirstPaneContent(
             contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
 
-        characters.isEmpty() -> EmptyScreen(modifier)
+        characters.isEmpty() -> Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) { EmptyScreen() }
+
         else -> CharactersList(
             characters,
             onClick,
@@ -92,19 +94,20 @@ private fun FirstPaneContent(
 }
 
 @Composable
-private fun EmptyScreen(modifier: Modifier = Modifier) {
-    FullScreenCard(modifier = modifier) {
-        Icon(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            painter = painterResource(Res.drawable.sentiment_dissatisfied),
-            contentDescription = stringResource(Res.string.no_characters_yet)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = stringResource(Res.string.no_characters_yet)
-        )
-    }
+private fun EmptyScreen() {
+    FullScreenCard(
+        heroIcon = {
+            Icon(
+                painter = painterResource(Res.drawable.sentiment_dissatisfied),
+                contentDescription = stringResource(Res.string.no_characters_yet)
+            )
+        },
+        content = {
+            Text(
+                text = stringResource(Res.string.no_characters_yet)
+            )
+        }
+    )
 }
 
 @Composable

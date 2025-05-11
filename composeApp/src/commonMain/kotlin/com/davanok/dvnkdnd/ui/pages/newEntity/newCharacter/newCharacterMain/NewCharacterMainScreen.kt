@@ -86,7 +86,7 @@ import kotlin.uuid.Uuid
 fun NewCharacterMainScreen(
     navigateToEntityInfo: (DnDEntityMin) -> Unit,
     onContinue: (characterId: Uuid) -> Unit,
-    viewModel: NewCharacterMainViewModel = koinViewModel()
+    viewModel: NewCharacterMainViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     UiToaster(
@@ -123,11 +123,11 @@ private fun CreateCharacterContent(
     val state by viewModel.newCharacterMain.collectAsStateWithLifecycle()
     val entities by viewModel.downloadableState.collectAsStateWithLifecycle()
 
-    StepNavigation (
+    StepNavigation(
         modifier = Modifier.fillMaxSize(),
         next = onCreateCharacter
     ) {
-        Column (
+        Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -173,16 +173,19 @@ private fun Content(
     onSubRaceSelected: (DnDEntityMin?) -> Unit,
     onBackgroundSelected: (DnDEntityWithSubEntities?) -> Unit,
     onSubBackgroundSelected: (DnDEntityMin?) -> Unit,
-    onOpenExtendedSearch: (DnDEntityTypes, String) -> Unit
+    onOpenExtendedSearch: (DnDEntityTypes, String) -> Unit,
 ) {
     val textFieldModifier = Modifier
         .widthIn(488.dp)
     val errorText: (error: Boolean) -> @Composable (() -> Unit)? = { error ->
-        if (error) { { Text(
-            text = stringResource(Res.string.empty_field_error),
-            color = MaterialTheme.colorScheme.error
-        ) } }
-        else null
+        if (error) {
+            {
+                Text(
+                    text = stringResource(Res.string.empty_field_error),
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        } else null
     }
     OutlinedTextField(
         modifier = textFieldModifier,
@@ -277,7 +280,7 @@ private fun ImageContent(
     onAddImage: (ByteArray) -> Unit,
     onRemoveImage: (Path) -> Unit,
     onSetImageMain: (Path) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
@@ -296,8 +299,8 @@ private fun ImageContent(
     }
 
     if (isLoading) {
-        Dialog (
-            onDismissRequest = {  },
+        Dialog(
+            onDismissRequest = { },
             properties = DialogProperties(
                 dismissOnBackPress = false,
                 dismissOnClickOutside = false
@@ -327,18 +330,18 @@ private fun ImageContent(
             onSetImageMain = onSetImageMain
         )
     else
-        FullScreenCard (
-            modifier = Modifier.clickable(onClick = imagePicker::launch)
-        ) {
-            Icon(
-                imageVector = Icons.Default.AccountBox,
-                contentDescription = stringResource(Res.string.no_character_images_yet)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(Res.string.no_character_images_yet)
-            )
-        }
+        FullScreenCard(
+            modifier = Modifier.clickable(onClick = imagePicker::launch),
+            heroIcon = {
+                Icon(
+                    imageVector = Icons.Default.AccountBox,
+                    contentDescription = stringResource(Res.string.no_character_images_yet)
+                )
+            },
+            content = {
+                Text(stringResource(Res.string.no_character_images_yet))
+            }
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -362,7 +365,7 @@ private fun ImagesList(
     ) { index ->
         if (index != images.size) {
             val image = images[index]
-            Box (
+            Box(
                 modifier = Modifier
                     .size(300.dp)
                     .maskClip(MaterialTheme.shapes.extraLarge),
@@ -397,8 +400,7 @@ private fun ImagesList(
                     }
                 }
             }
-        }
-        else {
+        } else {
             FilledIconButton(
                 onClick = onAddImage
             ) {
@@ -413,26 +415,30 @@ private fun ImagesList(
 
 @Composable
 private fun LoadingDataCard(state: NewCharacterMainUiState.CheckingDataStates) {
-    FullScreenCard {
-        if (state == NewCharacterMainUiState.CheckingDataStates.ERROR) {
-            Icon(
-                painter = painterResource(Res.drawable.error),
-                contentDescription = stringResource(state.text)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        Text(text = stringResource(state.text))
-
-        if (state != NewCharacterMainUiState.CheckingDataStates.ERROR) {
-            val stateValues = NewCharacterMainUiState.CheckingDataStates.entries
-            LinearProgressIndicator(
-                progress = {
-                    stateValues.indexOf(state) / stateValues.size.toFloat()
+    FullScreenCard(
+        heroIcon = if (state == NewCharacterMainUiState.CheckingDataStates.ERROR) {
+            {
+                Icon(
+                    painter = painterResource(Res.drawable.error),
+                    contentDescription = stringResource(state.text)
+                )
+            }
+        } else null,
+        content = {
+            Text(text = stringResource(state.text))
+        },
+        supportContent =
+            if (state != NewCharacterMainUiState.CheckingDataStates.ERROR) {
+                {
+                    val stateValues = NewCharacterMainUiState.CheckingDataStates.entries
+                    LinearProgressIndicator(
+                        progress = {
+                            stateValues.indexOf(state) / stateValues.size.toFloat()
+                        }
+                    )
                 }
-            )
-        }
-    }
+            } else null
+    )
 }
 
 

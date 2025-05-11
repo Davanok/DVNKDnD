@@ -8,8 +8,12 @@ import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.toDnDModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 
 
 fun DnDBaseEntity.toDnDEntityMin() = DnDEntityMin(
@@ -51,3 +55,28 @@ data class EntityWithModifiers(
         modifiers = modifiers.fastMap { it.toDnDModifier() }
     )
 }
+
+data class DbFullEntity(
+    @Embedded
+    val base: DnDBaseEntity,
+
+    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    val modifiers: List<EntityModifier>,
+    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    val skills: List<EntitySkill>,
+    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    val savingThrow: List<EntitySavingThrow>,
+
+    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    val proficiencies: List<EntityProficiency>,
+    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    val abilities: List<EntityAbility>,
+
+    @Relation(parentColumn = "id", entityColumn = "id")
+    val selectionLimits: EntitySelectionLimits?
+
+//    TODO: add companion entities (entities that inherits from BaseEntity) (proficiencies, abilities, class spells)
+//    TODO?: add objects that expanding base entity
+)
+
+

@@ -3,9 +3,7 @@
 package com.davanok.dvnkdnd.ui.pages.dndEntityInfo
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import dvnkdnd.composeapp.generated.resources.Res
@@ -78,17 +75,16 @@ fun DnDEntityInfo(
             uiState.isLoading -> Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-            uiState.entity == null -> FullScreenCard {
-                val description = stringResource(Res.string.error_when_loading_entity)
-                Icon(
-                    painter = painterResource(Res.drawable.error),
-                    contentDescription = description
+            uiState.entity == null ->
+                FullScreenCard(
+                    heroIcon = {
+                        Icon(
+                            painter = painterResource(Res.drawable.error),
+                            contentDescription = stringResource(Res.string.error_when_loading_entity)
+                        )
+                    },
+                    content = { Text(stringResource(Res.string.error_when_loading_entity)) }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = description
-                )
-            }
             else -> Content()
         }
     }

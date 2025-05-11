@@ -48,15 +48,18 @@ fun NewCharacterStatsScreen(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-        uiState.character == null -> FullScreenCard {
-            val text = stringResource(Res.string.loading_characters_error)
-            Icon(
-                painter = painterResource(Res.drawable.error),
-                contentDescription = text
+        uiState.character == null ->
+            FullScreenCard(
+                heroIcon = {
+                    Icon(
+                        painter = painterResource(Res.drawable.error),
+                        contentDescription = stringResource(Res.string.loading_characters_error)
+                    )
+                },
+                content = {
+                    Text(stringResource(Res.string.loading_characters_error))
+                }
             )
-            Spacer(Modifier.height(16.dp))
-            Text(text)
-        }
         else -> {
             StepNavigation (
                 modifier = Modifier.fillMaxSize(),
