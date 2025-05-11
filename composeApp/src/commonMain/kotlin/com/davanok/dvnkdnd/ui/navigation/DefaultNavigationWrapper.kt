@@ -5,12 +5,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveNavigationWrapper
@@ -31,17 +30,11 @@ import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
-fun HostScreen() {
-    val navController = rememberNavController()
+fun DefaultNavigationWrapper(
+    navController: NavHostController,
+    content: @Composable () -> Unit
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-    val showNavItems by remember {
-        derivedStateOf {
-            TopLevelRoute.entries.any {
-                navBackStackEntry?.destination?.hasRoute(it.route::class) == true
-            }
-        }
-    }
 
     AdaptiveNavigationWrapper(
         modifier = Modifier
@@ -80,13 +73,8 @@ fun HostScreen() {
                 }
             )
         },
-        showNavigationItems = showNavItems
-    ) {
-        NavigationHost(
-            modifier = Modifier.fillMaxSize(),
-            navController = navController
-        )
-    }
+        content = content
+    )
 }
 private enum class TopLevelRoute(
     val title: StringResource,

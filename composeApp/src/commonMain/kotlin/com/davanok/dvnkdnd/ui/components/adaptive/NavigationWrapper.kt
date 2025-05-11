@@ -64,10 +64,17 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 
+data class AdaptiveNavigationInfo(
+    val windowSizeClass: WindowSizeClass,
+    val layoutType: NavigationSuiteType
+)
+val LocalAdaptiveInfo = staticCompositionLocalOf<AdaptiveNavigationInfo> {
+    error("CompositionLocal LocalAdaptiveInfo not provided")
+}
+
 @Composable
 fun AdaptiveNavigationWrapper(
-    windowSizeClass: WindowSizeClass = calculateWindowSizeClass(),
-    layoutType: NavigationSuiteType = calculateNavSuiteType(windowSizeClass),
+    adaptiveInfo: AdaptiveNavigationInfo = LocalAdaptiveInfo.current,
     navigationItems: AdaptiveNavItemScope.() -> Unit,
     floatingActionButton: (AdaptiveFloatingActionButtonScope.() -> Unit)? = null,
     showNavigationItems: Boolean = true,
@@ -80,14 +87,9 @@ fun AdaptiveNavigationWrapper(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val gesturesEnabled =
-        drawerState.isOpen || layoutType == NavigationSuiteType.NavigationRail
+        drawerState.isOpen || adaptiveInfo.layoutType == NavigationSuiteType.NavigationRail
     val scope = rememberStateOfItems(navigationItems)
     val fabScope = if (floatingActionButton == null) null else rememberStateOfFAB(floatingActionButton)
-
-    val adaptiveNavigationInfo = AdaptiveNavigationInfo(
-        layoutType = layoutType,
-        windowSizeClass = windowSizeClass
-    )
 
     Surface(modifier = modifier, color = containerColor, contentColor = contentColor) {
         ModalNavigationDrawer(
@@ -111,34 +113,23 @@ fun AdaptiveNavigationWrapper(
                 modifier = Modifier.safeDrawingPadding().imePadding()
             ) {
                 NavigationSuiteScaffoldLayout(
-                    layoutType = layoutType,
+                    layoutType = adaptiveInfo.layoutType,
                     navigationSuite = {
                         if (showNavigationItems)
                             AdaptiveNavigationSuite(
-                                layoutType,
+                                adaptiveInfo.layoutType,
                                 scope.value,
                                 onDrawerClicked = {
                                     coroutineScope.launch { drawerState.open() }
                                 },
                                 fabScope = fabScope?.value
                             )
-                    }
-                ) {
-                    CompositionLocalProvider(LocalAdaptiveInfo provides adaptiveNavigationInfo) {
-                        content()
-                    }
-                }
+                    },
+                    content = content
+                )
             }
         }
     }
-}
-
-data class AdaptiveNavigationInfo(
-    val layoutType: NavigationSuiteType,
-    val windowSizeClass: WindowSizeClass
-)
-val LocalAdaptiveInfo = staticCompositionLocalOf<AdaptiveNavigationInfo> {
-    error("CompositionLocal ContentType not provided")
 }
 
 @Composable

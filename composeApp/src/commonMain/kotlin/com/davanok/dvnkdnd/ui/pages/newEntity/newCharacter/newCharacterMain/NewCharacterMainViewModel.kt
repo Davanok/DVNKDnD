@@ -14,6 +14,7 @@ import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.ui.components.UiMessage
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.error
+import dvnkdnd.composeapp.generated.resources.error_when_loading_entity
 import dvnkdnd.composeapp.generated.resources.finish
 import dvnkdnd.composeapp.generated.resources.loading
 import dvnkdnd.composeapp.generated.resources.state_checking_data
@@ -196,9 +197,13 @@ class NewCharacterMainViewModel(
     fun loadSearchEntities(content: DnDEntityTypes) = viewModelScope.launch {
         _searchSheetState.value = _searchSheetState.value.copy(isLoading = true)
 
-        loadedEntities[content] = browseRepository
-            .loadEntitiesWithSub(content)
-            .groupBy { it.source }
+        runCatching {
+            loadedEntities[content] = browseRepository
+                .loadEntitiesWithSub(content)
+                .groupBy { it.source }
+        }.onFailure { thr ->
+            addMessage(UiMessage.Error(getString(Res.string.error_when_loading_entity), error=thr))
+        }
 
         _searchSheetState.value = _searchSheetState.value.copy(isLoading = false)
         filterEntities()
@@ -213,7 +218,13 @@ class NewCharacterMainViewModel(
 
     private fun checkCharacter(character: NewCharacterMain): NewCharacterMainUiState.EmptyFields {
         var (
-            name, cls, subCls, race, subRace, background, subBackground,
+            name,
+            cls,
+            subCls,
+            race,
+            subRace,
+            background,
+            subBackground
         ) = NewCharacterMainUiState.EmptyFields()
 
         if (character.name.isBlank()) name = true

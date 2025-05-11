@@ -77,25 +77,34 @@ private fun NavGraphBuilder.mainDestinations(navController: NavHostController) =
         startDestination = Route.Main.CharactersList
     ) {
         composable<Route.Main.CharactersList> {
-            CharactersListScreen(
-                onFABClick = { navController.navigate(Route.New) },
-                navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
-            )
+            DefaultNavigationWrapper(navController) {
+                CharactersListScreen(
+                    onFABClick = { navController.navigate(Route.New) },
+                    navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
+                )
+            }
         }
         composable<Route.Main.Items> {
+            DefaultNavigationWrapper(navController) {
 
+            }
         }
         composable<Route.Main.Browse> {
+            DefaultNavigationWrapper(navController) {
 
+            }
         }
         composable<Route.Main.Profile> {
+            DefaultNavigationWrapper(navController) {
 
+            }
         }
     }
 
 private fun NavGraphBuilder.newEntityDestinations(navController: NavHostController) {
     composable<Route.New> {
         NewEntityScreen(
+            onNavigateBack = navController::navigateUp,
             onNavigate = { route -> navController.navigate(route) }
         )
     }
@@ -113,7 +122,7 @@ private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostControl
         val route: Route.EntityInfo = backStack.toRoute()
         DnDEntityInfo(
             route.entityId,
-            navigateBack = { navController.navigateUp() }
+            navigateBack = navController::navigateUp
         )
     }
 }
@@ -123,6 +132,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         composable<Route.New.Character.Main> {
             NewCharacterMainScreen(
                 navigateToEntityInfo = { navController.navigate(Route.EntityInfo(it.id)) },
+                onBack = navController::navigateUp,
                 onContinue = { id ->
                     Napier.d { "navigate" }
                     navController.navigate(Route.New.Character.Stats(id))

@@ -85,6 +85,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun NewCharacterMainScreen(
     navigateToEntityInfo: (DnDEntityMin) -> Unit,
+    onBack: () -> Unit,
     onContinue: (characterId: Uuid) -> Unit,
     viewModel: NewCharacterMainViewModel = koinViewModel(),
 ) {
@@ -102,6 +103,7 @@ fun NewCharacterMainScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
             empties = uiState.emptyFields,
+            onBack = onBack,
             onCreateCharacter = { viewModel.createCharacter(onContinue) },
             viewModel = viewModel
         )
@@ -117,6 +119,7 @@ fun NewCharacterMainScreen(
 private fun CreateCharacterContent(
     viewModel: NewCharacterMainViewModel,
     empties: NewCharacterMainUiState.EmptyFields,
+    onBack: () -> Unit,
     onCreateCharacter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

@@ -5,13 +5,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.cancel
 import dvnkdnd.composeapp.generated.resources.next
 import dvnkdnd.composeapp.generated.resources.previous
 import org.jetbrains.compose.resources.stringResource
@@ -21,6 +24,7 @@ import org.jetbrains.compose.resources.stringResource
 fun StepNavigation(
     label: (@Composable () -> Unit)? = null,
     previous: (() -> Unit)? = null,
+    cancel: (() -> Unit)? = null,
     next: (() -> Unit)? = null,
     nextEnabled: Boolean = true,
     previousEnabled: Boolean = true,
@@ -39,7 +43,18 @@ fun StepNavigation(
                         onClick = previous,
                         enabled = previousEnabled
                     ) {
-                        Text(text = stringResource(Res.string.previous))
+                        Text(stringResource(Res.string.previous))
+                    }
+                }
+                cancel?.let {
+                    Button(
+                        onClick = cancel,
+                        colors = ButtonDefaults.buttonColors().copy(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(stringResource(Res.string.cancel))
                     }
                 }
                 next?.let {
@@ -47,7 +62,7 @@ fun StepNavigation(
                         onClick = next,
                         enabled = nextEnabled
                     ) {
-                        Text(text = stringResource(Res.string.next))
+                        Text(stringResource(Res.string.next))
                     }
                 }
             }
