@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
+
 import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,7 +17,6 @@ import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.error_when_loading_entity
 import dvnkdnd.composeapp.generated.resources.finish
-import dvnkdnd.composeapp.generated.resources.loading
 import dvnkdnd.composeapp.generated.resources.state_checking_data
 import dvnkdnd.composeapp.generated.resources.state_downloading
 import dvnkdnd.composeapp.generated.resources.state_loading
@@ -304,16 +304,10 @@ class NewCharacterMainViewModel(
         thr: Throwable? = null,
     ) =
         viewModelScope.launch {
-            when (state) {
-                NewCharacterMainUiState.CheckingDataStates.ERROR ->
-                    addMessage(UiMessage.Error(getString(state.text), error = thr))
-
-                NewCharacterMainUiState.CheckingDataStates.FINISH ->
-                    addMessage(UiMessage.Success(getString(state.text)))
-
-                else ->
-                    addMessage(UiMessage.Loading(getString(Res.string.loading)))
-            }
+            if (state == NewCharacterMainUiState.CheckingDataStates.ERROR)
+                addMessage(UiMessage.Error(getString(state.text), error = thr))
+            else if (state == NewCharacterMainUiState.CheckingDataStates.FINISH)
+                addMessage(UiMessage.Success(getString(state.text)))
             _uiState.value = _uiState.value.copy(checkingDataState = state)
         }
 

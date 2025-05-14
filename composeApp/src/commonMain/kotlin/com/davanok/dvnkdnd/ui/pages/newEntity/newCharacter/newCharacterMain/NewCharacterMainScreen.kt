@@ -1,7 +1,6 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -32,6 +32,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.carousel.CarouselState
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.runtime.Composable
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -62,6 +64,7 @@ import com.davanok.dvnkdnd.ui.navigation.StepNavigation
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
+import dvnkdnd.composeapp.generated.resources.cancel
 import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.description
@@ -99,16 +102,19 @@ fun NewCharacterMainScreen(
     )
 
     if (uiState.checkingDataState != NewCharacterMainUiState.CheckingDataStates.FINISH)
-        LoadingDataCard(uiState.checkingDataState)
+        LoadingDataCard(
+            state = uiState.checkingDataState,
+            onCancel = onBack
+        )
     else
         CreateCharacterContent(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
             empties = uiState.emptyFields,
             onBack = onBack,
             onCreateCharacter = { viewModel.createCharacter(onContinue) },
-            viewModel = viewModel
+            viewModel = viewModel,
+            modifier = Modifier
+                .imePadding()
+                .fillMaxSize()
         )
     if (uiState.showSearchSheet)
         SearchSheet(
@@ -130,12 +136,13 @@ private fun CreateCharacterContent(
     val entities by viewModel.downloadableState.collectAsStateWithLifecycle()
 
     StepNavigation(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         cancel = onBack,
         next = onCreateCharacter
     ) {
         Column(
-            modifier = modifier,
+            modifier = Modifier
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ImageContent(
@@ -345,15 +352,23 @@ private fun ImageContent(
                     .align(Alignment.Center)
                     .widthIn(max = 300.dp)
                     .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clickable(onClick = imagePicker::launch),
+                    .aspectRatio(1f),
+                onClick = imagePicker::launch,
             ) {
-                Icon(
-                    imageVector = Icons.Default.AccountBox,
-                    contentDescription = stringResource(Res.string.no_character_images_yet)
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(stringResource(Res.string.no_character_images_yet))
+                Column (
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceAround
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccountBox,
+                        contentDescription = stringResource(Res.string.no_character_images_yet)
+                    )
+                    Text(
+                        text = stringResource(Res.string.no_character_images_yet),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
 }
@@ -428,7 +443,10 @@ private fun ImagesList(
 }
 
 @Composable
-private fun LoadingDataCard(state: NewCharacterMainUiState.CheckingDataStates) {
+private fun LoadingDataCard(
+    state: NewCharacterMainUiState.CheckingDataStates,
+    onCancel: () -> Unit
+) {
     FullScreenCard(
         heroIcon = if (state == NewCharacterMainUiState.CheckingDataStates.ERROR) {
             {
@@ -446,12 +464,17 @@ private fun LoadingDataCard(state: NewCharacterMainUiState.CheckingDataStates) {
                 {
                     val stateValues = NewCharacterMainUiState.CheckingDataStates.entries
                     LinearProgressIndicator(
-                        progress = {
-                            stateValues.indexOf(state) / stateValues.size.toFloat()
-                        }
+                        progress = { stateValues.indexOf(state) / stateValues.size.toFloat() }
                     )
                 }
-            } else null
+            } else null,
+        navButtons = {
+            TextButton(
+                onClick = onCancel
+            ) {
+                Text(text = stringResource(Res.string.cancel))
+            }
+        }
     )
 }
 

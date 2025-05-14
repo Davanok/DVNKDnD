@@ -1,11 +1,12 @@
 package com.davanok.dvnkdnd.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
@@ -18,34 +19,45 @@ fun FullScreenCard(
     heroIcon: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
     supportContent: (@Composable () -> Unit)? = null,
+    navButtons: (@Composable RowScope.() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = Modifier.fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
+        contentAlignment = Alignment.Center
     ) {
-        Spacer(Modifier.weight(1/6f))
         Card(
             modifier = Modifier
-                .weight(2/3f)
-                .align(Alignment.CenterVertically)
-                .aspectRatio(0.75f)
-                .then(modifier)
+                .fillMaxSize(0.66f)
+                .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Column (
+                modifier = Modifier.padding(24.dp)
             ) {
-                heroIcon?.let {
-                    it()
-                    Spacer(Modifier.height(16.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    heroIcon?.invoke()
+
+                    content()
+
+                    supportContent?.invoke()
                 }
-                content()
-                supportContent?.let {
-                    Spacer(Modifier.height(16.dp))
-                    it()
+                navButtons?.let {
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.End),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        content = it
+                    )
                 }
             }
         }
-        Spacer(Modifier.weight(1/6f))
     }
 }
