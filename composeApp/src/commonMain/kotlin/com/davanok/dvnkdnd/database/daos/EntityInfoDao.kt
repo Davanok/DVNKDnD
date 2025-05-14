@@ -8,18 +8,18 @@ import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.FullSpellAttack
 import com.davanok.dvnkdnd.data.model.entities.FullWeapon
 import com.davanok.dvnkdnd.data.model.entities.JoinProperty
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.Spell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlot
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
@@ -27,15 +27,16 @@ import com.davanok.dvnkdnd.database.entities.items.ItemProperty
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
 import com.davanok.dvnkdnd.database.entities.items.Weapon
 import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
-import io.github.aakira.napier.Napier
 
 @Dao
 interface EntityInfoDao {
     // class
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClass(cls: DnDClass)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClassSpells(clsSpells: List<ClassSpell>)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClassSpellSlots(classSpellSlots: List<ClassSpellSlot>)
 
@@ -62,49 +63,54 @@ interface EntityInfoDao {
     // spell
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSpell(spell: Spell)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSpellArea(area: SpellArea)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSpellAttack(attack: SpellAttack)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSpellAttackModifiers(modifiers: List<SpellAttackLevelModifier>)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSpellAttackSave(save: SpellAttackSave)
 
     @Transaction
     suspend fun insertFullSpellAttack(attack: FullSpellAttack) {
-        Napier.d { "insert spell attack" }
         insertSpellAttack(attack.attack)
-        Napier.d { "insert spell attack modifiers" }
         insertSpellAttackModifiers(attack.modifiers)
-        Napier.d { "insert spell attack save" }
         attack.save?.let { insertSpellAttackSave(it) }
     }
 
     // item
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItem(item: DnDItem)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemPropertyLinks(link: List<ItemPropertyLink>)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemProperties(properties: List<ItemProperty>)
+
     @Transaction
     suspend fun insertItemJoinProperties(properties: List<JoinProperty>) {
         insertItemProperties(properties.fastMap { it.property })
         insertItemPropertyLinks(properties.fastMap { it.link })
     }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArmor(armor: Armor)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWeapon(weapon: Weapon)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWeaponDamages(damages: List<WeaponDamage>)
+
     @Transaction
     suspend fun insertFullWeapon(weapon: FullWeapon) {
-        Napier.d { "insert weapon" }
         insertWeapon(weapon.weapon)
-        Napier.d { "insert weapon damages" }
         insertWeaponDamages(weapon.damages)
     }
 }
