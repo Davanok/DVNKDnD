@@ -6,8 +6,8 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
-import com.davanok.dvnkdnd.database.entities.DnDAbility
-import com.davanok.dvnkdnd.database.entities.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid

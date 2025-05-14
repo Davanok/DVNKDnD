@@ -1,18 +1,20 @@
-package com.davanok.dvnkdnd.database.entities.dndEntities
+package com.davanok.dvnkdnd.database.entities.dndEntities.companion
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
 @Entity(
-    "backgrounds",
+    tableName = "feats",
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DnDBackground( // also sub background
-    @PrimaryKey val id: Uuid
+data class DnDFeat(
+    @PrimaryKey val id: Uuid,
+    val repeatable: Boolean
 )

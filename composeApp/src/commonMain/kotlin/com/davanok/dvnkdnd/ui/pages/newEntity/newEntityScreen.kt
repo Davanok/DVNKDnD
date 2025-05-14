@@ -77,14 +77,14 @@ fun NewEntityScreen(
     val windowSizeClass = adaptiveInfo.windowSizeClass
     val isCompact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
 
-    Scaffold (
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(stringResource(Res.string.new_entity_screen_title))
                 },
                 navigationIcon = {
-                    IconButton (
+                    IconButton(
                         onClick = onNavigateBack
                     ) {
                         Icon(
@@ -95,11 +95,13 @@ fun NewEntityScreen(
                 }
             )
         }
-    ) {
+    ) { paddingValues ->
         if (isCompact) CompactContent(
+            modifier = Modifier.padding(paddingValues),
             onItemClick = { onNavigate(it.route) }
         )
         else ExpandedContent(
+            modifier = Modifier.padding(paddingValues),
             onItemClick = { onNavigate(it.route) }
         )
     }
@@ -108,11 +110,11 @@ fun NewEntityScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CompactContent(
+    modifier: Modifier = Modifier,
     onItemClick: (EntityItem) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
     ) {
         EntityGroup.entries.forEach { group ->
             item(
@@ -136,7 +138,7 @@ private fun CompactContent(
                         Text(
                             text = stringResource(item.title)
                         )
-                                      },
+                    },
                     leadingContent = {
                         Image(
                             modifier = Modifier.size(56.dp),
@@ -149,6 +151,7 @@ private fun CompactContent(
         }
     }
 }
+
 @Composable
 fun measureTextWidth(text: String, style: TextStyle): Dp {
     val textMeasurer = rememberTextMeasurer()
@@ -160,12 +163,13 @@ fun measureTextWidth(text: String, style: TextStyle): Dp {
 fun calculateMaxTextWidth(text: Iterable<StringResource>, style: TextStyle): Dp {
     val maxSize = text
         .map { stringResource(it) }
-        .maxWithOrNull(compareBy { it.length }) !!
+        .maxWithOrNull(compareBy { it.length })!!
     return measureTextWidth(maxSize, style)
 }
 
 @Composable
 private fun ExpandedContent(
+    modifier: Modifier = Modifier,
     onItemClick: (EntityItem) -> Unit
 ) {
     var maxSize by remember { mutableStateOf(Int.MIN_VALUE) }
@@ -175,6 +179,7 @@ private fun ExpandedContent(
     )
 
     LazyVerticalGrid(
+        modifier = modifier,
         columns = GridCells.Adaptive(textMaxWidth + 32.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)

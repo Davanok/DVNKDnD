@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -128,6 +131,7 @@ private fun CreateCharacterContent(
 
     StepNavigation(
         modifier = Modifier.fillMaxSize(),
+        cancel = onBack,
         next = onCreateCharacter
     ) {
         Column(
@@ -333,18 +337,25 @@ private fun ImageContent(
             onSetImageMain = onSetImageMain
         )
     else
-        FullScreenCard(
-            modifier = Modifier.clickable(onClick = imagePicker::launch),
-            heroIcon = {
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Card(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .widthIn(max = 300.dp)
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clickable(onClick = imagePicker::launch),
+            ) {
                 Icon(
                     imageVector = Icons.Default.AccountBox,
                     contentDescription = stringResource(Res.string.no_character_images_yet)
                 )
-            },
-            content = {
+                Spacer(Modifier.height(16.dp))
                 Text(stringResource(Res.string.no_character_images_yet))
             }
-        )
+        }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

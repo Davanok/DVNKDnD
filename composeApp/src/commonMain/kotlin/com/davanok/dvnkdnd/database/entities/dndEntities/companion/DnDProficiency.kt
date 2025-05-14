@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.database.entities
+package com.davanok.dvnkdnd.database.entities.dndEntities.companion
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -13,7 +13,7 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "proficiencies",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.Companion.CASCADE)
     ]
 )
 data class DnDProficiency(

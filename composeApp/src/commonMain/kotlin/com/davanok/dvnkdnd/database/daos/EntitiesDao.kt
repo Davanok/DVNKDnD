@@ -12,7 +12,6 @@ import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.FullSpell
-import com.davanok.dvnkdnd.data.model.entities.RaceWithSizes
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
@@ -21,6 +20,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.model.EntityWithSub
+import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
 
 @Dao
@@ -54,18 +54,18 @@ interface EntitiesDao: EntityInfoDao {
 
     @Transaction
     suspend fun insertClassWithSpells(cls: ClassWithSpells) {
+        Napier.d { "insert class" }
         insertClass(cls.cls)
+        Napier.d { "insert class spells" }
         insertClassSpells(cls.spells)
+        Napier.d { "insert class spell slots" }
         insertClassSpellSlots(cls.slots)
     }
     @Transaction
-    suspend fun insertRaceWithSizes(race: RaceWithSizes) {
-        insertRace(race.race)
-        insertRaceSizes(race.sizes)
-    }
-    @Transaction
     suspend fun insertFullSpell(spell: FullSpell) {
+        Napier.d { "insert spell" }
         insertSpell(spell.spell)
+        Napier.d { "insert spell area" }
         insertSpellArea(spell.area)
         spell.attacks.fastForEach {
             insertFullSpellAttack(it)
@@ -73,31 +73,48 @@ interface EntitiesDao: EntityInfoDao {
     }
     @Transaction
     suspend fun insertFullItem(item: FullItem) {
+        Napier.d { "insert item" }
         insertItem(item.item)
+        Napier.d { "insert item property" }
         insertItemJoinProperties(item.properties)
+        Napier.d { "insert armor" }
         item.armor?.let { insertArmor(it) }
         item.weapon?.let { insertFullWeapon(it) }
     }
 
     @Transaction
     suspend fun insertFullEntity(fullEntity: DnDFullEntity) {
+        Napier.i { "insert full entity (${fullEntity.type}) with id: ${fullEntity.id}" }
         fullEntity.companionEntities.fastForEach {
             insertFullEntity(it)
         }
 
+        Napier.d { "insert base entity" }
         insertEntity(fullEntity.toBaseEntity())
+        Napier.d { "insert modifiers" }
         insertModifiers(fullEntity.modifiers)
+        Napier.d { "insert skills" }
         insertSkills(fullEntity.skills)
+        Napier.d { "insert saving throws" }
         insertSavingThrows(fullEntity.savingThrows)
+        Napier.d { "insert selection limits" }
         fullEntity.selectionLimits?.let { insertSelectionLimits(it) }
 
+        Napier.d { "insert class" }
         fullEntity.cls?.let { insertClassWithSpells(it) }
-        fullEntity.race?.let { insertRaceWithSizes(it) }
+        Napier.d { "insert race" }
+        fullEntity.race?.let { insertRace(it) }
+        Napier.d { "insert background" }
         fullEntity.background?.let { insertBackground(it) }
+        Napier.d { "insert feat" }
         fullEntity.feat?.let { insertFeat(it) }
+        Napier.d { "insert ability" }
         fullEntity.ability?.let { insertAbility(it) }
+        Napier.d { "insert proficiency" }
         fullEntity.proficiency?.let { insertProficiency(it) }
+        Napier.d { "insert spell" }
         fullEntity.spell?.let { insertFullSpell(it) }
+        Napier.d { "insert item" }
         fullEntity.item?.let { insertFullItem(it) }
 
         insertProficiencies(fullEntity.proficiencies)

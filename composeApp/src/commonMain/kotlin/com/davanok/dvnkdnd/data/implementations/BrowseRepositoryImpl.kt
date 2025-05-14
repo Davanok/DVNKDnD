@@ -2,14 +2,13 @@ package com.davanok.dvnkdnd.data.implementations
 
 import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.Storage
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.uuid.Uuid
@@ -19,32 +18,15 @@ private const val FULL_ENTITY_REQUEST = """
 modifiers:entity_modifiers!entity_modifiers_entity_id_fkey(*),
 skills:entity_skills(*),
 saving_throws:entity_saving_throws(*),
-proficiencies:entity_proficiencies(
-    *,
-    proficiency:proficiencies!entity_proficiencies_proficiency_id_fkey(
-        *,
-        base:base_entities!dnd_proficiencies_id_fkey(*)
-    )
-),
-abilities:entity_abilities(
-    *,
-    ability:abilities!entity_abilities_ability_id_fkey(
-        *,
-        base:base_entities!abilities_id_fkey(*)
-    )
-),
+proficiencies:entity_proficiencies(*),
+abilities:entity_abilities(*),
 selection_limits:entity_selection_limits(*),
 cls:classes(
     *,
-    base:base_entities(*),
     spells:class_spells(*),
     slots:class_spell_slots(*)
 ),
-race:races(
-    *,
-    base:base_entities(*),
-    sizes:race_sizes(*)
-),
+race:races(*),
 background:backgrounds(*),
 feat:feats(*),
 ability:abilities!abilities_id_fkey(*),
@@ -56,9 +38,9 @@ spell:spells(
 ),
 item:items(
     *,
-    item_properties(
+    properties:item_properties(
         *,
-        item_property(*)
+        property:properties(*)
     ),
     armor:armors(*),
     weapon:weapons(
@@ -73,10 +55,11 @@ class BrowseRepositoryImpl(
     private val storage: Storage,
 ) : BrowseRepository {
     override suspend fun loadEntityFullInfo(entityId: Uuid): DnDFullEntity {
-        val result: DnDFullEntity = postgrest.from("base_entities").select(Columns.raw(FULL_ENTITY_REQUEST)) {
-            filter { eq("id", entityId) }
-            single()
-        }.decodeSingle()
+        val result: DnDFullEntity =
+            postgrest.from("base_entities").select(Columns.raw(FULL_ENTITY_REQUEST)) {
+                filter { eq("id", entityId) }
+                single()
+            }.decodeSingle()
 
         return result.copy(
             companionEntities = loadEntitiesFullInfo(result.getSubEntitiesIds())
@@ -84,9 +67,10 @@ class BrowseRepositoryImpl(
     }
 
     override suspend fun loadEntitiesFullInfo(entityIds: List<Uuid>): List<DnDFullEntity> {
-        val result: List<DnDFullEntity> = postgrest.from("base_entities").select(Columns.raw(FULL_ENTITY_REQUEST)) {
-            filter { isIn("id", entityIds) }
-        }.decodeList()
+        val result: List<DnDFullEntity> =
+            postgrest.from("base_entities").select(Columns.raw(FULL_ENTITY_REQUEST)) {
+                filter { isIn("id", entityIds) }
+            }.decodeList()
 
         return result.fastMap { entity ->
             entity.copy(
@@ -107,7 +91,7 @@ class BrowseRepositoryImpl(
         val result = postgrest.from("key_value").select(Columns.list("value")) {
             filter { eq("key", key) }
             single()
-        }.decodeAs<String>()
+        }.data
         return Json.parseToJsonElement(result).jsonObject["value"]!!.jsonPrimitive.content
     }
 }

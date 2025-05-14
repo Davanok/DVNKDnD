@@ -5,11 +5,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-@Serializable
 @Entity(
     tableName = "items",
     foreignKeys = [
@@ -19,10 +17,9 @@ import kotlin.uuid.Uuid
 data class DnDItem(
     @PrimaryKey val id: Uuid,
     val cost: Int?, // in copper pieces
-    val weight: Int?
+    val weight: Int?,
 )
 
-@Serializable
 @Entity(
     tableName = "item_properties",
     primaryKeys = ["item_id", "property_id"],
@@ -32,19 +29,19 @@ data class DnDItem(
     ]
 )
 data class ItemPropertyLink(
-    @SerialName("item_id")
     @ColumnInfo("item_id") val itemId: Uuid,
-    @SerialName("property_id")
-    @ColumnInfo("property_id") val propertyId: Uuid
+    @ColumnInfo("property_id") val propertyId: Uuid,
 )
+
 // properties for items like heavy, two-handed, graze
 @Serializable
 @Entity(tableName = "properties")
 data class ItemProperty(
     @PrimaryKey val id: Uuid = Uuid.random(),
     val name: String,
-    val description: String
+    val description: String,
 )
+
 @Serializable
 @Entity(
     tableName = "armors",

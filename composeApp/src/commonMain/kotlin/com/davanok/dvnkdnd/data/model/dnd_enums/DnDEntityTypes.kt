@@ -38,5 +38,4 @@ fun DnDEntityTypes.stringRes() = when(this) {
     DnDEntityTypes.FEAT -> Res.string.feat
     DnDEntityTypes.SPELL -> Res.string.spell
     DnDEntityTypes.ITEM -> Res.string.item
-
 }

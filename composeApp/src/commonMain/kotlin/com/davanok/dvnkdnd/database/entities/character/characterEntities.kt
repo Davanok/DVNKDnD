@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
-import com.davanok.dvnkdnd.database.entities.DnDProficiency
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import okio.Path

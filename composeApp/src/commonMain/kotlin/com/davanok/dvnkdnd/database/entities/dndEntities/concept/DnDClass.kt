@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.database.entities.dndEntities
+package com.davanok.dvnkdnd.database.entities.dndEntities.concept
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -6,12 +6,12 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
-import com.davanok.dvnkdnd.database.entities.Spell
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.Spell
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-@Serializable
 @Entity(
     tableName = "classes",
     foreignKeys = [

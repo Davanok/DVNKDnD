@@ -4,10 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBackground
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDRace
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
 import okio.Path
 import kotlin.uuid.Uuid
 

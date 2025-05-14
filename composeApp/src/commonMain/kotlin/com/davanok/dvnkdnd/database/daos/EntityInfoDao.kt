@@ -8,26 +8,26 @@ import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.FullSpellAttack
 import com.davanok.dvnkdnd.data.model.entities.FullWeapon
 import com.davanok.dvnkdnd.data.model.entities.JoinProperty
-import com.davanok.dvnkdnd.database.entities.DnDAbility
-import com.davanok.dvnkdnd.database.entities.DnDProficiency
-import com.davanok.dvnkdnd.database.entities.Spell
-import com.davanok.dvnkdnd.database.entities.SpellArea
-import com.davanok.dvnkdnd.database.entities.SpellAttack
-import com.davanok.dvnkdnd.database.entities.SpellAttackLevelModifier
-import com.davanok.dvnkdnd.database.entities.SpellAttackSave
-import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpellSlot
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBackground
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDRace
-import com.davanok.dvnkdnd.database.entities.dndEntities.RaceSize
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.Spell
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlot
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import com.davanok.dvnkdnd.database.entities.items.ItemProperty
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
 import com.davanok.dvnkdnd.database.entities.items.Weapon
 import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
+import io.github.aakira.napier.Napier
 
 @Dao
 interface EntityInfoDao {
@@ -42,8 +42,6 @@ interface EntityInfoDao {
     // race
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRace(race: DnDRace)
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRaceSizes(sizes: List<RaceSize>)
 
     // background
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -76,8 +74,11 @@ interface EntityInfoDao {
 
     @Transaction
     suspend fun insertFullSpellAttack(attack: FullSpellAttack) {
+        Napier.d { "insert spell attack" }
         insertSpellAttack(attack.attack)
+        Napier.d { "insert spell attack modifiers" }
         insertSpellAttackModifiers(attack.modifiers)
+        Napier.d { "insert spell attack save" }
         attack.save?.let { insertSpellAttackSave(it) }
     }
 
@@ -101,7 +102,9 @@ interface EntityInfoDao {
     suspend fun insertWeaponDamages(damages: List<WeaponDamage>)
     @Transaction
     suspend fun insertFullWeapon(weapon: FullWeapon) {
+        Napier.d { "insert weapon" }
         insertWeapon(weapon.weapon)
+        Napier.d { "insert weapon damages" }
         insertWeaponDamages(weapon.damages)
     }
 }

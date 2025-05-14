@@ -1,24 +1,19 @@
-package com.davanok.dvnkdnd.database.entities
+package com.davanok.dvnkdnd.database.entities.dndEntities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.data.model.dnd_enums.AreaTypes
 import com.davanok.dvnkdnd.data.model.dnd_enums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
 import com.davanok.dvnkdnd.data.model.dnd_enums.MagicSchools
 import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 
-@Serializable
 @Entity(
     tableName = "spells",
     foreignKeys = [
@@ -51,7 +46,6 @@ data class SpellArea(
     val type: AreaTypes,
 )
 
-@Serializable
 @Entity(
     tableName = "spell_attacks",
     foreignKeys = [

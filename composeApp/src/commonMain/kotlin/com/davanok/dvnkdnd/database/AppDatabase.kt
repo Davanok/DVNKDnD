@@ -5,12 +5,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
-import com.davanok.dvnkdnd.database.entities.DnDProficiency
-import com.davanok.dvnkdnd.database.entities.Spell
-import com.davanok.dvnkdnd.database.entities.SpellArea
-import com.davanok.dvnkdnd.database.entities.SpellAttack
-import com.davanok.dvnkdnd.database.entities.SpellAttackLevelModifier
-import com.davanok.dvnkdnd.database.entities.SpellAttackSave
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.Spell
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClasses
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
@@ -21,23 +21,22 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifiers
-import com.davanok.dvnkdnd.database.entities.DnDAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBackground
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityFullDescription
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityImage
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDClass
-import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDFeat
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDRace
-import com.davanok.dvnkdnd.database.entities.dndEntities.RaceSize
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
-import com.davanok.dvnkdnd.database.entities.dndEntities.ClassSpellSlot
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlot
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
@@ -73,7 +72,6 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         ClassSpellSlot::class,
         DnDFeat::class,
         DnDRace::class,
-        RaceSize::class,
         EntityModifier::class,
         EntitySkill::class,
         EntitySavingThrow::class,

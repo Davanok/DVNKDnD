@@ -31,7 +31,6 @@ import kotlinx.serialization.json.Json
 import okio.Path
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
 class NewCharacterMainViewModel(
@@ -202,7 +201,12 @@ class NewCharacterMainViewModel(
                 .loadEntitiesWithSub(content)
                 .groupBy { it.source }
         }.onFailure { thr ->
-            addMessage(UiMessage.Error(getString(Res.string.error_when_loading_entity), error=thr))
+            addMessage(
+                UiMessage.Error(
+                    getString(Res.string.error_when_loading_entity),
+                    error = thr
+                )
+            )
         }
 
         _searchSheetState.value = _searchSheetState.value.copy(isLoading = false)
@@ -224,7 +228,7 @@ class NewCharacterMainViewModel(
             race,
             subRace,
             background,
-            subBackground
+            subBackground,
         ) = NewCharacterMainUiState.EmptyFields()
 
         if (character.name.isBlank()) name = true
@@ -254,7 +258,8 @@ class NewCharacterMainViewModel(
 
         val emptyFields = checkCharacter(newCharacter)
 
-        if (emptyFields.hasEmptyFields()) _uiState.value = _uiState.value.copy(emptyFields = emptyFields)
+        if (emptyFields.hasEmptyFields()) _uiState.value =
+            _uiState.value.copy(emptyFields = emptyFields)
         else {
             val character = newCharacter.getCharacter()
             val entities =
@@ -281,29 +286,41 @@ class NewCharacterMainViewModel(
             }
         }
     }
+
     private fun addMessage(message: UiMessage) {
         _uiState.value = _uiState.value.copy(
             messages = _uiState.value.messages + message
         )
     }
+
     fun removeMessage(messageId: Uuid) {
         _uiState.value = _uiState.value.copy(
             messages = _uiState.value.messages.fastFilter { it.id == messageId }
         )
     }
-    private fun setCheckingState(state: NewCharacterMainUiState.CheckingDataStates, thr: Throwable? = null) = viewModelScope.launch {
-        when (state) {
-            NewCharacterMainUiState.CheckingDataStates.ERROR ->
-                addMessage(UiMessage.Error(getString(state.text), error=thr))
-            NewCharacterMainUiState.CheckingDataStates.FINISH ->
-                addMessage(UiMessage.Success(getString(state.text)))
-            else ->
-                addMessage(UiMessage.Loading(getString(Res.string.loading)))
-        }
-        _uiState.value = _uiState.value.copy(checkingDataState = state)
-    }
 
-    private suspend fun loadRequiredEntities(requiredEntities: List<Uuid>, onSuccess: suspend () -> Unit) {
+    private fun setCheckingState(
+        state: NewCharacterMainUiState.CheckingDataStates,
+        thr: Throwable? = null,
+    ) =
+        viewModelScope.launch {
+            when (state) {
+                NewCharacterMainUiState.CheckingDataStates.ERROR ->
+                    addMessage(UiMessage.Error(getString(state.text), error = thr))
+
+                NewCharacterMainUiState.CheckingDataStates.FINISH ->
+                    addMessage(UiMessage.Success(getString(state.text)))
+
+                else ->
+                    addMessage(UiMessage.Loading(getString(Res.string.loading)))
+            }
+            _uiState.value = _uiState.value.copy(checkingDataState = state)
+        }
+
+    private suspend fun loadRequiredEntities(
+        requiredEntities: List<Uuid>,
+        onSuccess: suspend () -> Unit,
+    ) {
         runCatching {
             setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_DATABASE)
             val existingEntities = entitiesRepository.getExistingEntities(requiredEntities)
@@ -336,7 +353,6 @@ class NewCharacterMainViewModel(
     private fun checkData(onSuccess: () -> Unit) = viewModelScope.launch {
         runCatching {
             setCheckingState(NewCharacterMainUiState.CheckingDataStates.LOAD_FROM_SERVER)
-
             Json.decodeFromString<List<Uuid>>(browseRepository.getValue("primary_base_entities"))
         }.onFailure {
             Napier.e(throwable = it) { "error when check data" }
@@ -357,7 +373,7 @@ data class NewCharacterMainUiState(
     val checkingDataState: CheckingDataStates = CheckingDataStates.LOADING,
     val showSearchSheet: Boolean = false,
     val emptyFields: EmptyFields = EmptyFields(),
-    val messages: List<UiMessage> = emptyList()
+    val messages: List<UiMessage> = emptyList(),
 ) {
     data class EmptyFields(
         val name: Boolean = false,

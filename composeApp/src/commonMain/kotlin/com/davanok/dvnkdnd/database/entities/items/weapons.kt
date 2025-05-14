@@ -10,7 +10,6 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 
-@Serializable
 @Entity(
     tableName = "weapons",
     foreignKeys = [ForeignKey(DnDItem::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]

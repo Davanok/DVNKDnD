@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.data.implementations
 
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastJoinToString
 import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
@@ -13,6 +14,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
+import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
 
 class EntitiesRepositoryImpl(
@@ -45,6 +47,7 @@ class EntitiesRepositoryImpl(
 
     override suspend fun insertFullEntities(fullEntities: List<DnDFullEntity>) =
         fullEntities.partition { it.parentId == null }.let { (withoutParent, withParent) ->
+            Napier.d { withoutParent.fastMap { it.parentId }.fastJoinToString() }
             withoutParent.fastForEach { insertFullEntity(it) }
             withParent.fastForEach { insertFullEntity(it) }
         }
