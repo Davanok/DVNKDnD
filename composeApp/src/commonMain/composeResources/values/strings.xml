@@ -83,6 +83,7 @@
     <string name="increase_modifier_value">Increase modifier value</string>
     <string name="about_modifiers">About modifiers</string>
     <string name="no_modifiers_for_info">No modifiers for info</string>
+    <string name="not_selected">Not selected</string>
 
     <!--side sheet-->
     <string name="close_side_sheet">Close side sheet</string>

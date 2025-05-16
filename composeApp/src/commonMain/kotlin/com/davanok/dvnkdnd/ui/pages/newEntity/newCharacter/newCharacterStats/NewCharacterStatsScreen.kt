@@ -2,10 +2,8 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SegmentedButton
@@ -17,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.entities.CharacterWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
@@ -113,7 +110,8 @@ private fun CreationOptionsSelector(
                 selected = selectedCreationOption == option,
                 onClick = { onOptionSelected(option) },
                 shape = SegmentedButtonDefaults.itemShape(
-                    index, StatsCreationOptions.entries.size
+                    index = index,
+                    count = StatsCreationOptions.entries.size
                 ),
                 label = { Text(text = stringResource(option.title)) }
             )

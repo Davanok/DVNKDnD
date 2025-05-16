@@ -19,26 +19,40 @@ fun Table(
     verticalAlignment: Alignment.Vertical = Alignment.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     modifier: Modifier = Modifier,
-    cell: @Composable (row: Int, column: Int) -> Unit
+    cell: @Composable (row: Int, column: Int) -> Unit,
 ) {
     val measurePolicy =
-        remember(rows, columns, verticalAlignment, horizontalAlignment) { TableMeasurePolicy(rows, columns, verticalAlignment, horizontalAlignment) }
-    Layout(content = {
-        repeat(rows) { row ->
-            repeat(columns) { column ->
-                cell(row, column)
-            }
+        remember(rows, columns, verticalAlignment, horizontalAlignment) {
+            TableMeasurePolicy(
+                rows,
+                columns,
+                verticalAlignment,
+                horizontalAlignment
+            )
         }
-    }, measurePolicy = measurePolicy, modifier = modifier)
+    Layout(
+        content = {
+            repeat(rows) { row ->
+                repeat(columns) { column ->
+                    cell(row, column)
+                }
+            }
+        },
+        measurePolicy = measurePolicy,
+        modifier = modifier
+    )
 }
 
 private class TableMeasurePolicy(
     private val rows: Int,
     private val columns: Int,
     private val verticalAlignment: Alignment.Vertical,
-    private val horizontalAlignment: Alignment.Horizontal
+    private val horizontalAlignment: Alignment.Horizontal,
 ) : MeasurePolicy {
-    override fun MeasureScope.measure(measurables: List<Measurable>, constraints: Constraints): MeasureResult {
+    override fun MeasureScope.measure(
+        measurables: List<Measurable>,
+        constraints: Constraints,
+    ): MeasureResult {
         val measured = measurables.map { it.measure(constraints) }
 
         val columnWidths = List(columns) { column ->
@@ -74,7 +88,8 @@ private class TableMeasurePolicy(
                     val placeable = measured[i]
                     val columnWidth = columnWidths[column]
                     val yOffset = verticalAlignment.align(placeable.height, rowHeight)
-                    val xOffset = horizontalAlignment.align(placeable.width, columnWidth, layoutDirection)
+                    val xOffset =
+                        horizontalAlignment.align(placeable.width, columnWidth, layoutDirection)
                     placeable.placeRelative(x + xOffset, y + yOffset)
 
                     x += columnWidth
@@ -83,5 +98,4 @@ private class TableMeasurePolicy(
             }
         }
     }
-
 }

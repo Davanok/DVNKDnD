@@ -134,7 +134,6 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
                 navigateToEntityInfo = { navController.navigate(Route.EntityInfo(it.id)) },
                 onBack = navController::navigateUp,
                 onContinue = { id ->
-                    Napier.d { "navigate" }
                     navController.navigate(Route.New.Character.Stats(id))
                 }
             )
