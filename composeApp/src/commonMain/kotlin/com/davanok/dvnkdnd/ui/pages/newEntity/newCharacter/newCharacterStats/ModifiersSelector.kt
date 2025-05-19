@@ -1,18 +1,19 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
@@ -112,7 +113,14 @@ fun ModifiersSelector(
                     onModifierSelected = onSelectModifiers
                 )
 
-                StatsCreationOptions.MANUAL -> TODO()
+                StatsCreationOptions.MANUAL -> ManualModifiersSelector(
+                    character = modifiers,
+                    onChange = onModifiersChange,
+                    onInfoClick = { showInfoSheet = it },
+                    allModifiers = commonModifiers,
+                    selectedModifiers = character.selectedModifiers,
+                    onModifierSelected = onSelectModifiers
+                )
             }
         }
     }
@@ -168,67 +176,37 @@ private fun ColumnScope.PointBuyModifiersSelector(
         text = (DnDConstants.BUYING_BALANCE - modifiersSum).toString(),
         style = MaterialTheme.typography.bodyLarge
     )
-    val firstColumnSpan = allModifiers.size
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(allModifiers.size + firstColumnSpan)
-    ) {
-        item(
-            key = "start-top-spacer",
-            span = { GridItemSpan(firstColumnSpan) },
-            content = { Spacer(Modifier) }
-        )
-        items(
-            allModifiers,
-            key = { "header ${it.entity.id}" }
-        ) {
-            val entity = it.entity
-            Text(
-                text = "${stringResource(entity.type.stringRes())}\n${entity.name}",
-                textAlign = TextAlign.Center
-            )
-        }
-        Stats.entries.fastForEach { stat ->
-            item(
-                key = { "selection-row $stat" },
-                span = { GridItemSpan(firstColumnSpan) },
-            ) {
-                ModifierSelectorRow(
-                    value = character[stat],
-                    onValueChange = { onChange(character.set(stat, it)) },
-                    onInfoClick = { onInfoClick(stat) },
-                    label = { Text(stringResource(stat.stringRes())) },
-                    minValueCheck = { it >= DnDConstants.MIN_VALUE_TO_BUY },
-                    maxValueCheck = {
-                        it <= DnDConstants.MAX_VALUE_TO_BUY &&
-                                DnDConstants.BUYING_BALANCE >= calculateBuyingModifiersSum(
-                            character
-                                .set(stat, it)
-                                .toModifiersList()
-                                .fastMap { it.modifier }
-                        )
-                    },
-                    additionalModifiers = allModifiers.fastFlatMap { it.modifiers }.fastMapNotNull {
-                        when {
-                            it.stat != stat -> null
-                            it.id !in selectedModifiers -> null
-                            else -> it.modifier
-                        }
-                    }
+    ModifiersSelectionGroup(
+        modifier = Modifier.fillMaxSize(),
+        allModifiers = allModifiers,
+        selectedModifiers = selectedModifiers,
+        onModifierSelected = onModifierSelected
+    ) { stat ->
+        ModifierSelectorRow(
+            value = character[stat],
+            onValueChange = { onChange(character.set(stat, it)) },
+            onInfoClick = { onInfoClick(stat) },
+            label = { Text(stringResource(stat.stringRes())) },
+            minValueCheck = { it >= DnDConstants.MIN_VALUE_TO_BUY },
+            maxValueCheck = {
+                it <= DnDConstants.MAX_VALUE_TO_BUY &&
+                        DnDConstants.BUYING_BALANCE >= calculateBuyingModifiersSum(
+                    character
+                        .set(stat, it)
+                        .toModifiersList()
+                        .fastMap { it.modifier }
                 )
-            }
-            items(
-                count = allModifiers.size,
-                key = { "selection-button $stat $it" }
-            ) { index ->
-                val modifiers = allModifiers[index].modifiers
-                modifiers.fastFirstOrNull { it.stat == stat }?.let { modifier ->
-                    RadioButton(
-                        selected = modifier.id in selectedModifiers,
-                        onClick = { onModifierSelected(modifier) }
-                    )
-                } ?: Spacer(Modifier)
-            }
-        }
+            },
+            additionalModifiers = allModifiers
+                .fastFlatMap { it.modifiers }
+                .fastMapNotNull {
+                    when {
+                        it.stat != stat -> null
+                        it.id !in selectedModifiers -> null
+                        else -> it.modifier
+                    }
+                }
+        )
     }
 }
 
@@ -244,12 +222,12 @@ private fun ColumnScope.StandardArrayModifiersSelector(
     LaunchedEffect(Unit) {
         onChange(DnDModifiersGroup(-1, -1, -1, -1, -1, -1))
     }
+    val modifiers = character.toModifiersList().fastMap { it.modifier }
     Row(
         modifier = Modifier
             .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally)
     ) {
-        val modifiers = character.toModifiersList().fastMap { it.modifier }
         DnDConstants.DEFAULT_ARRAY.forEach { value ->
             key(value) {
                 SuggestionChip(
@@ -262,66 +240,128 @@ private fun ColumnScope.StandardArrayModifiersSelector(
             }
         }
     }
-    val firstColumnSpan = allModifiers.size
-    val notSelectedText = stringResource(Res.string.not_selected)
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(allModifiers.size + firstColumnSpan)
-    ) {
-        item(
-            key = "start-top-spacer",
-            span = { GridItemSpan(firstColumnSpan) },
-            content = { Spacer(Modifier) }
-        )
-        items(
-            allModifiers,
-            key = { "header ${it.entity.id}" }
+    ModifiersSelectionGroup(
+        modifier = Modifier.fillMaxSize(),
+        allModifiers = allModifiers,
+        selectedModifiers = selectedModifiers,
+        onModifierSelected = onModifierSelected
+    ) { stat ->
+        SelectableTextField(
+            value = character[stat].let {
+                if (it > 0) it.toString()
+                else stringResource(Res.string.not_selected)
+            },
+            onValueChange = { },
+            label = { Text(stringResource(stat.stringRes())) },
         ) {
-            val entity = it.entity
-            Text(
-                text = "${stringResource(entity.type.stringRes())}\n${entity.name}",
-                textAlign = TextAlign.Center
+            item(
+                text = { Text(stringResource(Res.string.not_selected)) },
+                onClick = { onChange(character.set(stat, -1)) }
+            )
+            DnDConstants.DEFAULT_ARRAY.filterNot { it in modifiers }.forEach {
+                item(
+                    text = { Text(text = it.toString()) },
+                    onClick = { onChange(character.set(stat, it.toInt())) }
+                )
+            }
+        }
+        IconButton(onClick = { onInfoClick(stat) }) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = stringResource(Res.string.about_modifiers)
             )
         }
-        Stats.entries.fastForEach { stat ->
-            item(
-                key = { "selection-row $stat" },
-                span = { GridItemSpan(firstColumnSpan) },
-            ) {
-                SelectableTextField(
-                    value = character[stat].let {
-                        if (it > 0) it.toString()
-                        else notSelectedText
-                    },
-                    onValueChange = { },
-                    label = { Text(stringResource(stat.stringRes())) },
-                ) {
-                    item(
-                        text = { Text(notSelectedText) },
-                        onClick = {
-                            onChange(character.set(stat, -1))
-                        }
-                    )
-                    DnDConstants.DEFAULT_ARRAY.forEach {
-                        item(
-                            text = { Text(text = it.toString()) },
-                            onClick = {
-                                onChange(character.set(stat, it.toInt()))
-                            }
-                        )
+    }
+}
+
+@Composable
+private fun ColumnScope.ManualModifiersSelector(
+    character: DnDModifiersGroup,
+    onChange: (DnDModifiersGroup) -> Unit,
+    onInfoClick: (stat: Stats) -> Unit,
+    allModifiers: List<DnDEntityWithModifiers>,
+    selectedModifiers: List<Uuid>,
+    onModifierSelected: (DnDModifier) -> Unit,
+) {
+    ModifiersSelectionGroup(
+        modifier = Modifier.fillMaxSize(),
+        allModifiers = allModifiers,
+        selectedModifiers = selectedModifiers,
+        onModifierSelected = onModifierSelected
+    ) { stat ->
+        ModifierSelectorRow(
+            value = character[stat],
+            onValueChange = { onChange(character.set(stat, it)) },
+            onInfoClick = { onInfoClick(stat) },
+            label = { Text(stringResource(stat.stringRes())) },
+            minValueCheck = { true },
+            maxValueCheck = { true },
+            additionalModifiers = allModifiers
+                .fastFlatMap { it.modifiers }
+                .fastMapNotNull {
+                    when {
+                        it.stat != stat -> null
+                        it.id !in selectedModifiers -> null
+                        else -> it.modifier
                     }
                 }
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ModifiersSelectionGroup(
+    allModifiers: List<DnDEntityWithModifiers>,
+    selectedModifiers: List<Uuid>,
+    onModifierSelected: (DnDModifier) -> Unit,
+    modifier: Modifier = Modifier,
+    modifierField: @Composable (stat: Stats) -> Unit
+) {
+    val modifierColumnWeight = .1f
+    val firstColumnWeight = 1 - modifierColumnWeight * allModifiers.size
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState()).then(modifier)
+    ) {
+        Row(Modifier.fillMaxWidth()) {
+            Spacer(Modifier.weight(firstColumnWeight))
+            allModifiers.forEach { modGroup ->
+                Box(
+                    modifier = Modifier
+                        .weight(modifierColumnWeight)
+                        .padding(4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "${stringResource(modGroup.entity.type.stringRes())}\n${modGroup.entity.name}",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodySmall,
+                        softWrap = false
+                    )
+                }
             }
-            items(
-                count = allModifiers.size,
-                key = { "selection-button $stat $it" }
-            ) { index ->
-                allModifiers[index].modifiers.fastFilter { it.stat == stat }.let { modifiers ->
-                    if (modifiers.isEmpty()) Spacer(Modifier)
-                    else Row {
-                        modifiers.fastForEach {
+        }
+        Stats.entries.fastForEach { stat ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(Modifier.weight(firstColumnWeight)) {
+                    modifierField(stat)
+                }
+
+                allModifiers.forEach { modGroup ->
+                    Box(
+                        modifier = Modifier
+                            .weight(modifierColumnWeight),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        modGroup.modifiers.fastFirstOrNull { it.stat == stat }?.let { modifier ->
                             RadioButton(
-                                selected = it.id in selectedModifiers,
-                                onClick = { onModifierSelected(it) }
+                                selected = !modifier.selectable || modifier.id in selectedModifiers,
+                                onClick = { onModifierSelected(modifier) }
                             )
                         }
                     }
@@ -375,15 +415,13 @@ private fun ModifierSelectorRow(
             },
             visualTransformation = SuffixVisualTransformation(
                 additionalModifiers.fastJoinToString("") { it.toSignedString() }
-            ),
-            trailingIcon = {
-                IconButton(onClick = onInfoClick) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = stringResource(Res.string.about_modifiers)
-                    )
-                }
-            }
+            )
         )
+        IconButton(onClick = onInfoClick) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = stringResource(Res.string.about_modifiers)
+            )
+        }
     }
 }

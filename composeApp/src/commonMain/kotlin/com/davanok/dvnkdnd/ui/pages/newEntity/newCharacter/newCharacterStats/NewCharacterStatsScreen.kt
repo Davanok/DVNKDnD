@@ -10,6 +10,7 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,6 +22,7 @@ import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.navigation.StepNavigation
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.loading_characters_error
 import org.jetbrains.compose.resources.painterResource
@@ -55,6 +57,13 @@ fun NewCharacterStatsScreen(
                 },
                 content = {
                     Text(stringResource(Res.string.loading_characters_error))
+                },
+                navButtons = {
+                    TextButton(
+                        onClick = { onBack(characterId) }
+                    ) {
+                        Text(text = stringResource(Res.string.back))
+                    }
                 }
             )
         else -> {
@@ -113,7 +122,12 @@ private fun CreationOptionsSelector(
                     index = index,
                     count = StatsCreationOptions.entries.size
                 ),
-                label = { Text(text = stringResource(option.title)) }
+                label = {
+                    Text(
+                        text = stringResource(option.title),
+                        softWrap = false
+                    )
+                }
             )
         }
     }
