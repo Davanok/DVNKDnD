@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +18,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun FullScreenCard(
     heroIcon: (@Composable () -> Unit)? = null,
-    content: @Composable () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
     supportContent: (@Composable () -> Unit)? = null,
     navButtons: (@Composable RowScope.() -> Unit)? = null,
     modifier: Modifier = Modifier,

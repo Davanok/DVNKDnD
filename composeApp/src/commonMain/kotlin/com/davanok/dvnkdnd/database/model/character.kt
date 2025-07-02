@@ -8,7 +8,7 @@ import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.CharacterWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.toModifiersGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
-import com.davanok.dvnkdnd.database.entities.character.CharacterClasses
+import com.davanok.dvnkdnd.database.entities.character.CharacterClass
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifiers
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
@@ -33,7 +33,7 @@ data class DbCharacterWithModifiers(
         parentColumn = "id",
         entityColumn = "id",
         associateBy = Junction(
-            value = CharacterClasses::class,
+            value = CharacterClass::class,
             parentColumn = "character_id",
             entityColumn = "class_id"
         )

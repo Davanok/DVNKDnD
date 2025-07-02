@@ -66,6 +66,7 @@
     <string name="homebrew">Homebrew</string>
 
     <!--new character-->
+    <!--main-->
     <string name="character_image">Character image</string>
     <string name="name">Name</string>
     <string name="description">Description</string>
@@ -75,7 +76,7 @@
     <string name="search_in_web">Search in web</string>
     <string name="confirm">Confirm</string>
     <string name="empty_field_error">This field cannot be empty</string>
-
+    <!--stats-->
     <string name="standard_array_stats_option">Standard array</string>
     <string name="manual_stats_option">Manual</string>
     <string name="point_buy_stats_option">Point buy</string>
@@ -84,6 +85,21 @@
     <string name="about_modifiers">About modifiers</string>
     <string name="no_modifiers_for_info">No modifiers for info</string>
     <string name="not_selected">Not selected</string>
+    <string name="about_modifiers_selectors">About modifiers selectors</string>
+    <string name="modifiers_selectors_hint"><![CDATA[
+Choose how to generate your ability modifiers based on your preferred level of customization, speed of character creation, and campaign style:<br/><br/>
+
+<b>• Point Buy:</b><br/>
+Allocate a fixed pool of points (typically 27) to spend on Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma. This method ensures balanced characters of roughly equal power and is ideal for long‐term campaigns where optimization and fairness matter.<br/><br/>
+
+<b>• Standard Array:</b><br/>
+Use the preset scores <i>[15, 14, 13, 12, 10, 8]</i> and assign them to your abilities as you like. This approach speeds up creation—perfect for one‐shots, convention games, or groups new to the rules—while still offering meaningful choice.<br/><br/>
+
+<b>• Manual Entry:</b><br/>
+Enter any combination of values you and your DM agree on, whether from a homebrew system, a special event, or a thematic build. This gives maximum flexibility for narrative experiments, high‐power campaigns, or strictly role-play-driven characters.<br/><br/>
+
+Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard Array</b> when you need quick, fair setup, and <b>Manual Entry</b> when you’re looking to push creative or story-driven boundaries.
+    ]]></string>
 
     <!--side sheet-->
     <string name="close_side_sheet">Close side sheet</string>

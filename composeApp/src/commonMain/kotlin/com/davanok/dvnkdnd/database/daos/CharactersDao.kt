@@ -2,10 +2,13 @@ package com.davanok.dvnkdnd.database.daos
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.database.entities.character.Character
+import com.davanok.dvnkdnd.database.entities.character.CharacterClass
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifiers
 import com.davanok.dvnkdnd.database.model.DbCharacterWithModifiers
 import kotlin.uuid.Uuid
 
@@ -16,8 +19,13 @@ interface CharactersDao {
 
     @Insert
     suspend fun insertCharacter(character: Character)
+    @Insert
+    suspend fun insertCharacterClass(cls: CharacterClass)
 
     @Transaction
     @Query("SELECT * FROM characters WHERE id == :characterId")
     suspend fun getCharacterWithModifiers(characterId: Uuid): DbCharacterWithModifiers
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertCharacterSelectedModifiers(items: List<CharacterSelectedModifiers>)
 }

@@ -38,6 +38,7 @@ value class WindowWidthSizeClass private constructor(private val value: Int) :
     override fun toString(): String {
         return "WindowWidthSizeClass." +
                 when (this) {
+                    Small -> "Small"
                     Compact -> "Compact"
                     Medium -> "Medium"
                     Expanded -> "Expanded"
@@ -48,13 +49,14 @@ value class WindowWidthSizeClass private constructor(private val value: Int) :
     }
 
     companion object {
-        val Compact = WindowWidthSizeClass(0)
-        val Medium = WindowWidthSizeClass(1)
-        val Expanded = WindowWidthSizeClass(2)
-        val Large = WindowWidthSizeClass(3)
-        val ExtraLarge = WindowWidthSizeClass(4)
+        val Small = WindowWidthSizeClass(0)
+        val Compact = WindowWidthSizeClass(1)
+        val Medium = WindowWidthSizeClass(2)
+        val Expanded = WindowWidthSizeClass(3)
+        val Large = WindowWidthSizeClass(4)
+        val ExtraLarge = WindowWidthSizeClass(5)
 
-        val AllSizeClassList = listOf(ExtraLarge, Large, Expanded, Medium, Compact)
+        val AllSizeClassList = listOf(ExtraLarge, Large, Expanded, Medium, Compact, Small)
 
         private fun WindowWidthSizeClass.breakpoint(): Dp {
             return when {
@@ -62,6 +64,7 @@ value class WindowWidthSizeClass private constructor(private val value: Int) :
                 this == Large -> 1200.dp
                 this == Expanded -> 840.dp
                 this == Medium -> 600.dp
+                this == Compact -> 400.dp
                 else -> 0.dp
             }
         }
@@ -96,6 +99,7 @@ value class WindowHeightSizeClass private constructor(private val value: Int) :
     override fun toString(): String {
         return "WindowHeightSizeClass." +
                 when (this) {
+                    Small -> "Small"
                     Compact -> "Compact"
                     Medium -> "Medium"
                     Expanded -> "Expanded"
@@ -106,13 +110,14 @@ value class WindowHeightSizeClass private constructor(private val value: Int) :
     }
 
     companion object {
-        val Compact = WindowHeightSizeClass(0)
-        val Medium = WindowHeightSizeClass(1)
-        val Expanded = WindowHeightSizeClass(2)
-        val Large = WindowHeightSizeClass(3)
-        val ExtraLarge = WindowHeightSizeClass(4)
+        val Small = WindowHeightSizeClass(0)
+        val Compact = WindowHeightSizeClass(1)
+        val Medium = WindowHeightSizeClass(2)
+        val Expanded = WindowHeightSizeClass(3)
+        val Large = WindowHeightSizeClass(4)
+        val ExtraLarge = WindowHeightSizeClass(5)
 
-        val AllSizeClassList = listOf(ExtraLarge, Large, Expanded, Medium, Compact)
+        val AllSizeClassList = listOf(ExtraLarge, Large, Expanded, Medium, Compact, Small)
 
         private fun WindowHeightSizeClass.breakpoint(): Dp {
             return when {
@@ -120,6 +125,7 @@ value class WindowHeightSizeClass private constructor(private val value: Int) :
                 this == Large -> 1200.dp
                 this == Expanded -> 900.dp
                 this == Medium -> 480.dp
+                this == Compact -> 320.dp
                 else -> 0.dp
             }
         }

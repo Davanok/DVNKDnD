@@ -60,6 +60,7 @@ data class DnDEntityWithSubEntities(
     fun asDnDEntityMin() = DnDEntityMin(id, type, name, source)
 }
 
+@Immutable
 data class DnDEntityWithModifiers(
     val entity: DnDEntityMin,
     val selectionLimit: Int? = null,

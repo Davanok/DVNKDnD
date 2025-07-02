@@ -173,8 +173,8 @@ class NewCharacterMainViewModel(
     val searchSheetState: StateFlow<SearchSheetUiState> = _searchSheetState
 
     private val loadedEntities = mutableMapOf(
-        DnDEntityTypes.CLASS to emptyMap<String, List<DnDEntityWithSubEntities>>(),
-        DnDEntityTypes.RACE to emptyMap<String, List<DnDEntityWithSubEntities>>(),
+        DnDEntityTypes.CLASS to emptyMap(),
+        DnDEntityTypes.RACE to emptyMap(),
         DnDEntityTypes.BACKGROUND to emptyMap<String, List<DnDEntityWithSubEntities>>()
     )
 
@@ -272,7 +272,11 @@ class NewCharacterMainViewModel(
                     newCharacter.subCls?.id
                 )
             loadRequiredEntities(entities) {
-                val characterId = charactersRepository.createCharacter(character)
+                val characterId = charactersRepository.createCharacter(
+                    character,
+                    newCharacter.cls!!.id,
+                    newCharacter.subCls?.id
+                )
                 newCharacter.images.forEach {
                     filesRepository.move(
                         it,
@@ -300,16 +304,10 @@ class NewCharacterMainViewModel(
     }
 
     private fun setCheckingState(
-        state: NewCharacterMainUiState.CheckingDataStates,
-        thr: Throwable? = null,
-    ) =
-        viewModelScope.launch {
-            if (state == NewCharacterMainUiState.CheckingDataStates.ERROR)
-                addMessage(UiMessage.Error(getString(state.text), error = thr))
-            else if (state == NewCharacterMainUiState.CheckingDataStates.FINISH)
-                addMessage(UiMessage.Success(getString(state.text)))
-            _uiState.value = _uiState.value.copy(checkingDataState = state)
-        }
+        state: NewCharacterMainUiState.CheckingDataStates
+    ) {
+        _uiState.value = _uiState.value.copy(checkingDataState = state)
+    }
 
     private suspend fun loadRequiredEntities(
         requiredEntities: List<Uuid>,
@@ -335,7 +333,7 @@ class NewCharacterMainViewModel(
             entitiesRepository.insertFullEntities(entities)
         }.onFailure {
             Napier.e(throwable = it) { "error when load required entities" }
-            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR, it)
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR)
         }.onSuccess {
             setCheckingState(NewCharacterMainUiState.CheckingDataStates.FINISH)
             onSuccess()
@@ -350,7 +348,7 @@ class NewCharacterMainViewModel(
             Json.decodeFromString<List<Uuid>>(browseRepository.getValue("primary_base_entities"))
         }.onFailure {
             Napier.e(throwable = it) { "error when check data" }
-            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR, it)
+            setCheckingState(NewCharacterMainUiState.CheckingDataStates.ERROR)
         }.onSuccess {
             loadRequiredEntities(it, onSuccess)
         }

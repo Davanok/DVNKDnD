@@ -1,10 +1,7 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.core.bundle.Bundle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -13,6 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import androidx.savedstate.SavedState
+import androidx.savedstate.read
+import androidx.savedstate.write
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
@@ -20,27 +20,32 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
-import io.github.aakira.napier.Napier
 import kotlin.reflect.typeOf
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
 object UuidNavType : NavType<Uuid>(true) {
-    override fun get(bundle: Bundle, key: String): Uuid? {
-        return bundle.getByteArray(key)?.let { Uuid.fromByteArray(it) }
+    override fun put(
+        bundle: SavedState,
+        key: String,
+        value: Uuid,
+    ) {
+        bundle.write {
+            putString(key, value.toHexDashString())
+        }
+    }
+
+    override fun get(
+        bundle: SavedState,
+        key: String,
+    ): Uuid? {
+        bundle.read {
+            return getStringOrNull(key)?.let { Uuid.parse(it) }
+        }
     }
 
     override fun parseValue(value: String): Uuid {
         return Uuid.parse(value)
-    }
-
-    override fun put(
-        bundle: Bundle,
-        key: String,
-        value: Uuid,
-    ) {
-        bundle.putByteArray(key, value.toByteArray())
     }
 }
 
@@ -53,7 +58,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.Main,
+        startDestination = Route.New.Character,
         typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
     ) {
         mainDestinations(navController)
@@ -128,7 +133,7 @@ private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostControl
 }
 
 private fun NavGraphBuilder.characterCreationFlow(navController: NavHostController) =
-    navigation<Route.New.Character>(startDestination = Route.New.Character.Main) {
+    navigation<Route.New.Character>(startDestination = Route.New.Character.Stats(Uuid.parse("1aae0af3-20a9-458c-8dcd-dbe35c7f688a"))) {
         composable<Route.New.Character.Main> {
             NewCharacterMainScreen(
                 navigateToEntityInfo = { navController.navigate(Route.EntityInfo(it.id)) },
