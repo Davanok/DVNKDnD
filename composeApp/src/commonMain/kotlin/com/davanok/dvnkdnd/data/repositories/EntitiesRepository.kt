@@ -5,7 +5,7 @@ import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
@@ -15,7 +15,7 @@ import kotlin.uuid.Uuid
 interface EntitiesRepository {
     suspend fun insertEntity(entity: DnDBaseEntity)
 
-    suspend fun insertModifiers(modifiers: List<EntityModifier>)
+    suspend fun insertModifiers(modifiers: List<EntityModifierBonus>)
     suspend fun insertSkills(skills: List<EntitySkill>)
     suspend fun insertSavingThrows(throws: List<EntitySavingThrow>)
 

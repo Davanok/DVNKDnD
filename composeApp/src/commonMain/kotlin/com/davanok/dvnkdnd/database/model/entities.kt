@@ -9,7 +9,7 @@ import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.toDnDModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
@@ -47,7 +47,7 @@ data class EntityWithModifiers(
     )
     val selectionLimit: Int?,
     @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val modifiers: List<EntityModifier>,
+    val modifiers: List<EntityModifierBonus>,
 ) {
     fun toDnDEntityWithModifiers() = DnDEntityWithModifiers(
         entity = entity.toDnDEntityMin(),
@@ -61,7 +61,7 @@ data class DbFullEntity(
     val base: DnDBaseEntity,
 
     @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val modifiers: List<EntityModifier>,
+    val modifiers: List<EntityModifierBonus>,
     @Relation(parentColumn = "id", entityColumn = "entity_id")
     val skills: List<EntitySkill>,
     @Relation(parentColumn = "id", entityColumn = "entity_id")

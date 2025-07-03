@@ -2,18 +2,18 @@ package com.davanok.dvnkdnd.data.model.entities
 
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-data class DnDModifier(
+data class DnDModifierBonus(
     val id: Uuid,
     val selectable: Boolean,
     val stat: Stats,
     val modifier: Int
 )
-fun EntityModifier.toDnDModifier() = DnDModifier(
+fun EntityModifierBonus.toDnDModifier() = DnDModifierBonus(
     id = id,
     selectable = selectable,
     stat = stat,
@@ -27,14 +27,14 @@ data class DnDModifiersGroup(
     val wisdom: Int,
     val charisma: Int
 ) {
-    fun toModifiersList(): List<DnDModifier> {
+    fun toModifiersList(): List<DnDModifierBonus> {
         return listOf(
-            DnDModifier(Uuid.NIL, false, Stats.STRENGTH, strength),
-            DnDModifier(Uuid.NIL, false, Stats.DEXTERITY, dexterity),
-            DnDModifier(Uuid.NIL, false, Stats.CONSTITUTION, constitution),
-            DnDModifier(Uuid.NIL, false, Stats.INTELLIGENCE, intelligence),
-            DnDModifier(Uuid.NIL, false, Stats.WISDOM, wisdom),
-            DnDModifier(Uuid.NIL, false, Stats.CHARISMA, charisma),
+            DnDModifierBonus(Uuid.NIL, false, Stats.STRENGTH, strength),
+            DnDModifierBonus(Uuid.NIL, false, Stats.DEXTERITY, dexterity),
+            DnDModifierBonus(Uuid.NIL, false, Stats.CONSTITUTION, constitution),
+            DnDModifierBonus(Uuid.NIL, false, Stats.INTELLIGENCE, intelligence),
+            DnDModifierBonus(Uuid.NIL, false, Stats.WISDOM, wisdom),
+            DnDModifierBonus(Uuid.NIL, false, Stats.CHARISMA, charisma),
         )
     }
     operator fun get(stat: Stats) = when(stat) {

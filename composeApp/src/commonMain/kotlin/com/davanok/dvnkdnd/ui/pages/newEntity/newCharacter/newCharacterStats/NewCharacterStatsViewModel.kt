@@ -6,7 +6,7 @@ import androidx.compose.ui.util.fastFlatMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
-import com.davanok.dvnkdnd.data.model.entities.DnDModifier
+import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
@@ -63,7 +63,7 @@ class NewCharacterStatsViewModel(
     fun setModifiers(modifiers: DnDModifiersGroup) {
         _uiState.value = _uiState.value.copy(modifiers = modifiers)
     }
-    fun selectModifier(modifier: DnDModifier) {
+    fun selectModifier(modifier: DnDModifierBonus) {
         val current = _uiState.value.selectedModifiersBonuses.toMutableSet()
         val (limit, group) = modifierInfo[modifier.id] ?: (0 to emptySet())
 

@@ -60,7 +60,7 @@ import androidx.compose.ui.util.fastSumBy
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.data.model.dnd_enums.stringRes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
-import com.davanok.dvnkdnd.data.model.entities.DnDModifier
+import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
@@ -129,7 +129,7 @@ fun ModifiersSelector(
     selectedModifiersBonuses: Set<Uuid>,
     modifiers: DnDModifiersGroup,
     onModifiersChange: (DnDModifiersGroup) -> Unit,
-    onSelectModifiers: (DnDModifier) -> Unit,
+    onSelectModifiers: (DnDModifierBonus) -> Unit,
 ) {
     var showInfoSheet by remember { mutableStateOf(false) }
     Crossfade(
@@ -211,7 +211,7 @@ private fun ColumnScope.PointBuyModifiersSelector(
     onChange: (DnDModifiersGroup) -> Unit,
     entitiesWithModifiers: List<DnDEntityWithModifiers>,
     selectedModifiersBonuses: Set<Uuid>,
-    onModifierSelected: (DnDModifier) -> Unit,
+    onModifierSelected: (DnDModifierBonus) -> Unit,
 ) {
     val modifiersSum =
         calculateBuyingModifiersSum(character.toModifiersList().fastMap { it.modifier })
@@ -253,7 +253,7 @@ private fun StandardArrayModifiersSelector(
     onChange: (DnDModifiersGroup) -> Unit,
     entitiesWithModifiers: List<DnDEntityWithModifiers>,
     selectedModifiersBonuses: Set<Uuid>,
-    onModifierSelected: (DnDModifier) -> Unit,
+    onModifierSelected: (DnDModifierBonus) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         onChange(approximateToDefault(character))
@@ -392,7 +392,7 @@ private fun ManualModifiersSelector(
     onChange: (DnDModifiersGroup) -> Unit,
     entitiesWithModifiers: List<DnDEntityWithModifiers>,
     selectedModifiersBonuses: Set<Uuid>,
-    onModifierSelected: (DnDModifier) -> Unit,
+    onModifierSelected: (DnDModifierBonus) -> Unit,
 ) {
     ModifiersSelectionGroup(
         modifier = Modifier.fillMaxSize(),
@@ -416,7 +416,7 @@ private fun ManualModifiersSelector(
 fun ModifiersSelectionGroup(
     entitiesWithModifiers: List<DnDEntityWithModifiers>,
     selectedModifiersBonuses: Set<Uuid>,
-    onModifierSelected: (DnDModifier) -> Unit,
+    onModifierSelected: (DnDModifierBonus) -> Unit,
     modifier: Modifier = Modifier,
     modifierField: @Composable (stat: Stats) -> Unit,
 ) {

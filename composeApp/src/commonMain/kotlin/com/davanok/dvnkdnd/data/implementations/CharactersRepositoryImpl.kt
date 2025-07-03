@@ -7,7 +7,7 @@ import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClass
-import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifiers
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifierBonus
 import kotlin.collections.plus
 import kotlin.uuid.Uuid
 
@@ -38,15 +38,15 @@ class CharactersRepositoryImpl(
                 .fastFilter { !it.selectable }
                 .fastMap { it.id }
 
-        setCharacterSelectedModifiers(characterId = character.id, modifierIds = notSelectableModifiers)
+        setCharacterSelectedModifierBonuses(characterId = character.id, bonusIds = notSelectableModifiers)
 
         return character.id
     }
 
-    override suspend fun setCharacterSelectedModifiers(characterId: Uuid, modifierIds: List<Uuid>) {
-        val entities = modifierIds.fastMap { modifierId ->
-            CharacterSelectedModifiers(characterId, modifierId)
+    override suspend fun setCharacterSelectedModifierBonuses(characterId: Uuid, bonusIds: List<Uuid>) {
+        val entities = bonusIds.fastMap { modifierId ->
+            CharacterSelectedModifierBonus(characterId, modifierId)
         }
-        dao.insertCharacterSelectedModifiers(entities)
+        dao.insertCharacterSelectedModifierBonuses(entities)
     }
 }

@@ -10,7 +10,7 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
@@ -64,7 +64,7 @@ data class DnDEntityWithSubEntities(
 data class DnDEntityWithModifiers(
     val entity: DnDEntityMin,
     val selectionLimit: Int? = null,
-    val modifiers: List<DnDModifier> = emptyList(),
+    val modifiers: List<DnDModifierBonus> = emptyList(),
 )
 
 @Immutable
@@ -81,7 +81,7 @@ data class DnDFullEntity(
     val description: String,
     val source: String,
 
-    val modifiers: List<EntityModifier>,
+    val modifierBonuses: List<EntityModifierBonus>,
     val skills: List<EntitySkill>,
     @SerialName("saving_throws")
     val savingThrows: List<EntitySavingThrow>,

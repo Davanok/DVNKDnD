@@ -20,7 +20,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterSkill
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
-import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifiers
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifierBonus
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
@@ -30,7 +30,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
@@ -62,7 +62,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         CharacterImage::class,
         CharacterProficiency::class,
         CharacterFeat::class,
-        CharacterSelectedModifiers::class,
+        CharacterSelectedModifierBonus::class,
         DnDBackground::class,
         DnDBaseEntity::class,
         EntityFullDescription::class,
@@ -72,7 +72,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         ClassSpellSlot::class,
         DnDFeat::class,
         DnDRace::class,
-        EntityModifier::class,
+        EntityModifierBonus::class,
         EntitySkill::class,
         EntitySavingThrow::class,
         EntityProficiency::class,

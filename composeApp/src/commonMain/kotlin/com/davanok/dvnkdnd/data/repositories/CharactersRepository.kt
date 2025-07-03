@@ -9,5 +9,5 @@ interface CharactersRepository {
     suspend fun loadCharactersMinList(): List<CharacterMin>
     suspend fun getCharacterWithModifiers(characterId: Uuid): CharacterWithModifiers
     suspend fun createCharacter(character: Character, classId: Uuid, subClassId: Uuid?): Uuid
-    suspend fun setCharacterSelectedModifiers(characterId: Uuid, modifierIds: List<Uuid>)
+    suspend fun setCharacterSelectedModifierBonuses(characterId: Uuid, bonusIds: List<Uuid>)
 }

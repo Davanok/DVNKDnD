@@ -14,7 +14,7 @@ import com.davanok.dvnkdnd.data.model.entities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.FullSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
@@ -39,7 +39,7 @@ interface EntitiesDao : EntityInfoDao {
     suspend fun insertEntity(entity: DnDBaseEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertModifiers(modifiers: List<EntityModifier>)
+    suspend fun insertModifiers(modifiers: List<EntityModifierBonus>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSkills(skills: List<EntitySkill>)
@@ -88,7 +88,7 @@ interface EntitiesDao : EntityInfoDao {
         }
 
         insertEntity(fullEntity.toBaseEntity())
-        insertModifiers(fullEntity.modifiers)
+        insertModifiers(fullEntity.modifierBonuses)
         insertSkills(fullEntity.skills)
         insertSavingThrows(fullEntity.savingThrows)
         fullEntity.selectionLimits?.let { insertSelectionLimits(it) }

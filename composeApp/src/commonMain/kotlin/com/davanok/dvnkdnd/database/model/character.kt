@@ -9,7 +9,7 @@ import com.davanok.dvnkdnd.data.model.entities.CharacterWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.toModifiersGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClass
-import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifiers
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifierBonus
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlin.uuid.Uuid
@@ -21,7 +21,7 @@ data class DbCharacterWithModifiers(
     val characterStats: CharacterStats?,
 
     @Relation(
-        entity = CharacterSelectedModifiers::class,
+        entity = CharacterSelectedModifierBonus::class,
         parentColumn = "id",
         entityColumn = "character_id",
         projection = ["modifier_id"]

@@ -9,7 +9,7 @@ import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
@@ -23,7 +23,7 @@ class EntitiesRepositoryImpl(
     override suspend fun insertEntity(entity: DnDBaseEntity) =
         dao.insertEntity(entity)
 
-    override suspend fun insertModifiers(modifiers: List<EntityModifier>) =
+    override suspend fun insertModifiers(modifiers: List<EntityModifierBonus>) =
         dao.insertModifiers(modifiers)
 
     override suspend fun insertSkills(skills: List<EntitySkill>) =

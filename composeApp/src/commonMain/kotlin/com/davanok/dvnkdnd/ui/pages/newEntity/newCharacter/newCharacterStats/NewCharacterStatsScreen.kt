@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
-import com.davanok.dvnkdnd.data.model.entities.DnDModifier
+import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
@@ -73,7 +73,7 @@ private fun Content(
     selectedModifiersBonuses: Set<Uuid>,
     modifiers: DnDModifiersGroup,
     onModifiersChange: (DnDModifiersGroup) -> Unit,
-    onSelectModifier: (DnDModifier) -> Unit
+    onSelectModifier: (DnDModifierBonus) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()

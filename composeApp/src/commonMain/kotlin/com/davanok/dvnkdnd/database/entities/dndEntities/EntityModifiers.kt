@@ -14,12 +14,12 @@ import kotlin.uuid.Uuid
 
 @Serializable
 @Entity(
-    tableName = "entity_modifiers",
+    tableName = "entity_modifier_bonuses",
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class EntityModifier(
+data class EntityModifierBonus(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @SerialName("entity_id")
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,

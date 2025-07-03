@@ -8,7 +8,7 @@ import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClass
-import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifiers
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifierBonus
 import com.davanok.dvnkdnd.database.model.DbCharacterWithModifiers
 import kotlin.uuid.Uuid
 
@@ -27,5 +27,5 @@ interface CharactersDao {
     suspend fun getCharacterWithModifiers(characterId: Uuid): DbCharacterWithModifiers
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertCharacterSelectedModifiers(items: List<CharacterSelectedModifiers>)
+    suspend fun insertCharacterSelectedModifierBonuses(items: List<CharacterSelectedModifierBonus>)
 }

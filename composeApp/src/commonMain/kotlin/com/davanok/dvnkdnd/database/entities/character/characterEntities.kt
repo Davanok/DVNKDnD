@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import okio.Path
 import kotlin.uuid.Uuid
@@ -103,15 +103,15 @@ data class CharacterFeat(
 )
 
 @Entity(
-    tableName = "character_selected_modifiers",
-    primaryKeys = ["character_id", "modifier_id"],
+    tableName = "character_selected_modifier_bonuses",
+    primaryKeys = ["character_id", "bonus_id"],
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(EntityModifier::class, ["id"], ["modifier_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(EntityModifierBonus::class, ["id"], ["bonus_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class CharacterSelectedModifiers(
+data class CharacterSelectedModifierBonus(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    @ColumnInfo("modifier_id", index = true) val modifierId: Uuid,
+    @ColumnInfo("bonus_id", index = true) val bonusId: Uuid,
 )
 
