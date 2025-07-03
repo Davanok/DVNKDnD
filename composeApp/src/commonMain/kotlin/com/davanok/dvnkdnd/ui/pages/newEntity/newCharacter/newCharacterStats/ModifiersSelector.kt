@@ -131,7 +131,6 @@ fun ModifiersSelector(
     onModifiersChange: (DnDModifiersGroup) -> Unit,
     onSelectModifiers: (DnDModifierBonus) -> Unit,
 ) {
-    var showInfoSheet by remember { mutableStateOf(false) }
     Crossfade(
         modifier = Modifier.fillMaxSize(),
         targetState = selectedCreationOption
@@ -166,43 +165,6 @@ fun ModifiersSelector(
             }
         }
     }
-    if (showInfoSheet)
-        AdaptiveModalSheet(
-            onDismissRequest = { showInfoSheet = false }
-        ) {
-            Text(
-                text = buildAnnotatedString {
-                    allEntitiesWithModifiers.fastForEach { entity ->
-                        if (entity.modifiers.isEmpty()) return@fastForEach
-                        withStyle(MaterialTheme.typography.labelLarge.toSpanStyle()) {
-                            append(entity.entity.type.stringRes())
-                            append(' ')
-                            append(entity.entity.name)
-                        }
-                        entity.modifiers.groupBy { it.stat }.forEach { (stat, modifiers) ->
-                            append("\n\t")
-                            append(stat.stringRes())
-                            modifiers.fastForEach {
-                                append("\n\t\t")
-                                if (it.id in selectedModifiersBonuses)
-                                    withStyle(
-                                        LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough)
-                                            .toSpanStyle()
-                                    ) {
-                                        append(it.modifier.toSignedString())
-                                    }
-                                else
-                                    append(it.modifier.toSignedString())
-                                append(' ')
-                            }
-                        }
-                        append('\n')
-                    }
-                }.let {
-                    it.ifBlank { AnnotatedString(stringResource(Res.string.no_modifiers_for_info)) }
-                }
-            )
-        }
 }
 
 @Composable

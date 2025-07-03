@@ -13,6 +13,7 @@ import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.manual_stats_option
 import dvnkdnd.composeapp.generated.resources.point_buy_stats_option
 import dvnkdnd.composeapp.generated.resources.standard_array_stats_option
+import dvnkdnd.composeapp.generated.resources.saving_data_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -76,8 +77,18 @@ class NewCharacterStatsViewModel(
         _uiState.value = _uiState.value.copy(selectedModifiersBonuses = current)
     }
 
-    fun createCharacter(onSuccess: (characterId: Uuid) -> Unit) = viewModelScope.launch {
-
+    fun saveCharacterStats(characterId: Uuid, onSuccess: (characterId: Uuid) -> Unit) = viewModelScope.launch {
+        val state = _uiState.value
+        runCatching {
+            repository.setCharacterStats(characterId, state.modifiers)
+            repository.setCharacterSelectedModifierBonuses(characterId, state.selectedModifiersBonuses.toList())
+        }.onFailure {
+            _uiState.value = state.copy(
+                error = Res.string.saving_data_error
+            )
+        }.onSuccess {
+            onSuccess(characterId)
+        }
     }
 }
 
@@ -89,6 +100,7 @@ enum class StatsCreationOptions(val title: StringResource) {
 
 data class NewCharacterStatsUiState(
     val isLoading: Boolean = false,
+    val error: StringResource? = null,
     val selectedCreationOptions: StatsCreationOptions = StatsCreationOptions.POINT_BUY,
 
     val modifiers: DnDModifiersGroup = DnDModifiersGroup.Default,

@@ -9,6 +9,7 @@ import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClass
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifierBonus
+import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.model.DbCharacterWithModifiers
 import kotlin.uuid.Uuid
 
@@ -25,6 +26,9 @@ interface CharactersDao {
     @Transaction
     @Query("SELECT * FROM characters WHERE id == :characterId")
     suspend fun getCharacterWithModifiers(characterId: Uuid): DbCharacterWithModifiers
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCharacterStats(stats: CharacterStats)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCharacterSelectedModifierBonuses(items: List<CharacterSelectedModifierBonus>)

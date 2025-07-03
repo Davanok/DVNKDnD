@@ -100,6 +100,8 @@ Enter any combination of values you and your DM agree on, whether from a homebre
 
 Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard Array</b> when you need quick, fair setup, and <b>Manual Entry</b> when you’re looking to push creative or story-driven boundaries.
     ]]></string>
+    <!--common-->
+    <string name="saving_data_error">Error when saving data</string>
 
     <!--side sheet-->
     <string name="close_side_sheet">Close side sheet</string>
