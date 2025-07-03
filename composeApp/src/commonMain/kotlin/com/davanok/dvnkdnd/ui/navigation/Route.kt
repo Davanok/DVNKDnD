@@ -22,6 +22,7 @@ sealed interface Route {
             @Serializable data object Main : Route
             @Serializable data class Stats(val characterId: Uuid) : Route
             @Serializable data class Skills(val characterId: Uuid) : Route
+            @Serializable data class Health(val characterId: Uuid) : Route
         }
         @Serializable data object Item : Route
         // custom

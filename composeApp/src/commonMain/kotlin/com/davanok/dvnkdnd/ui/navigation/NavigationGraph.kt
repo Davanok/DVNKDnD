@@ -18,6 +18,7 @@ import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
 import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
 import kotlin.reflect.typeOf
@@ -133,24 +134,32 @@ private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostControl
 }
 
 private fun NavGraphBuilder.characterCreationFlow(navController: NavHostController) =
-    navigation<Route.New.Character>(startDestination = Route.New.Character.Stats(Uuid.parse("1aae0af3-20a9-458c-8dcd-dbe35c7f688a"))) {
+    navigation<Route.New.Character>(startDestination = Route.New.Character.Main) {
         composable<Route.New.Character.Main> {
             NewCharacterMainScreen(
                 navigateToEntityInfo = { navController.navigate(Route.EntityInfo(it.id)) },
                 onBack = navController::navigateUp,
-                onContinue = { id ->
-                    navController.navigate(Route.New.Character.Stats(id))
-                }
+                onContinue = { id -> navController.navigate(Route.New.Character.Stats(id)) }
             )
         }
         composable<Route.New.Character.Stats>(
             typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
-        )  { backStack ->
+        ) { backStack ->
             val route: Route.New.Character.Stats = backStack.toRoute()
             NewCharacterStatsScreen(
                 characterId = route.characterId,
                 onBack = { navController.navigateUp() },
                 onContinue = { id -> navController.navigate(Route.New.Character.Skills(id)) }
+            )
+        }
+        composable<Route.New.Character.Skills>(
+            typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
+        ) { backStack ->
+            val route: Route.New.Character.Skills = backStack.toRoute()
+            NewCharacterSkillsScreen(
+                characterId = route.characterId,
+                onBack = { navController.navigateUp() },
+                onContinue = { id -> navController.navigate(Route.New.Character.Health(id)) }
             )
         }
     }
