@@ -25,7 +25,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SuggestionChip
@@ -43,11 +42,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastFirst
@@ -66,14 +61,11 @@ import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
-import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveInfo
-import com.davanok.dvnkdnd.ui.components.append
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.decrease_modifier_value
 import dvnkdnd.composeapp.generated.resources.increase_modifier_value
-import dvnkdnd.composeapp.generated.resources.no_modifiers_for_info
 import dvnkdnd.composeapp.generated.resources.remove
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -83,15 +75,14 @@ import kotlin.uuid.Uuid
 private fun List<DnDEntityWithModifiers>.appliedModifiers(
     stat: Stats,
     selectedModifiers: Set<Uuid>,
-) =
-    fastFlatMap { it.modifiers }
-        .fastMapNotNull {
-            when {
-                it.stat != stat -> null
-                it.id !in selectedModifiers -> null
-                else -> it.modifier
-            }
+) = fastFlatMap { it.modifiers }
+    .fastMapNotNull {
+        when {
+            it.stat != stat -> null
+            it.id !in selectedModifiers -> null
+            else -> it.modifier
         }
+    }
 
 
 private fun approximateToDefault(input: DnDModifiersGroup): DnDModifiersGroup {
