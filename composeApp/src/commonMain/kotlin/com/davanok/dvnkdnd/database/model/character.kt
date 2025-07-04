@@ -5,7 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.CharacterMin
-import com.davanok.dvnkdnd.data.model.entities.CharacterWithModifiers
+import com.davanok.dvnkdnd.data.model.entities.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.toModifiersGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClass
@@ -14,7 +14,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlin.uuid.Uuid
 
-data class DbCharacterWithModifiers(
+data class DbCharacterWithAllModifiers(
     @Embedded val character: Character,
 
     @Relation(parentColumn = "id", entityColumn = "id")
@@ -65,7 +65,7 @@ data class DbCharacterWithModifiers(
     )
     val subBackgroundModifiers: EntityWithModifiers?,
 ) {
-    fun toCharacterWithModifiers() = CharacterWithModifiers(
+    fun toCharacterWithModifiers() = CharacterWithAllModifiers(
         character = CharacterMin(
             character.id,
             character.name,

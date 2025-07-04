@@ -18,15 +18,15 @@ class CharactersRepositoryImpl(
 ) : CharactersRepository {
     override suspend fun loadCharactersMinList() = dao.loadCharactersMinList()
 
-    override suspend fun getCharacterWithModifiers(characterId: Uuid) =
-        dao.getCharacterWithModifiers(characterId).toCharacterWithModifiers()
+    override suspend fun getCharacterWithAllModifiers(characterId: Uuid) =
+        dao.getCharacterWithAllModifiers(characterId).toCharacterWithModifiers()
 
 
     override suspend fun createCharacter(character: Character, classId: Uuid, subClassId: Uuid?): Uuid {
         dao.insertCharacter(character)
         dao.insertCharacterClass(CharacterClass(character.id, classId, subClassId))
 
-        val characterWithModifiers = dao.getCharacterWithModifiers(character.id)
+        val characterWithModifiers = dao.getCharacterWithAllModifiers(character.id)
             .toCharacterWithModifiers()
 
         val notSelectableModifiers =

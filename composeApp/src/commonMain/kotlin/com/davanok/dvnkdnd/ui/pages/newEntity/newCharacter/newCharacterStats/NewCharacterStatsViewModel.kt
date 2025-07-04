@@ -32,8 +32,8 @@ class NewCharacterStatsViewModel(
         _uiState.value = _uiState.value.copy(selectedCreationOptions = option)
     }
 
-    fun loadCharacterWithModifiers(characterId: Uuid) = viewModelScope.launch {
-        var character = repository.getCharacterWithModifiers(characterId)
+    fun loadCharacterWithAllModifiers(characterId: Uuid) = viewModelScope.launch {
+        var character = repository.getCharacterWithAllModifiers(characterId)
         if (character.characterStats == null)
             character = character.copy(
                 characterStats = DnDModifiersGroup.Default

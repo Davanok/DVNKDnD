@@ -57,7 +57,7 @@ fun NewCharacterStatsScreen(
     viewModel: NewCharacterStatsViewModel = koinViewModel(),
 ) {
     LaunchedEffect(characterId) {
-        viewModel.loadCharacterWithModifiers(characterId)
+        viewModel.loadCharacterWithAllModifiers(characterId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     when {

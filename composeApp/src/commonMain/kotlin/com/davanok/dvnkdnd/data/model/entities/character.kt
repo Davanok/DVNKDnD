@@ -13,7 +13,7 @@ data class CharacterMin(
     val image: Path? = null
 )
 
-data class CharacterWithModifiers(
+data class CharacterWithAllModifiers(
     val character: CharacterMin,
     val characterStats: DnDModifiersGroup?,
 
