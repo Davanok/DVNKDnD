@@ -16,7 +16,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterClass
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
-import com.davanok.dvnkdnd.database.entities.character.CharacterSkill
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedSkill
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
@@ -58,7 +58,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         CharacterStats::class,
         CharacterHealth::class,
         CharacterSpellSlots::class,
-        CharacterSkill::class,
+        CharacterSelectedSkill::class,
         CharacterImage::class,
         CharacterProficiency::class,
         CharacterFeat::class,

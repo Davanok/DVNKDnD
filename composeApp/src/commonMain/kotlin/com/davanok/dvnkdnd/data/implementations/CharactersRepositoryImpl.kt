@@ -16,18 +16,24 @@ import kotlin.uuid.Uuid
 class CharactersRepositoryImpl(
     private val dao: CharactersDao,
 ) : CharactersRepository {
-    override suspend fun loadCharactersMinList() = dao.loadCharactersMinList()
+    override suspend fun getCharactersMinList() = dao.getCharactersMinList()
 
     override suspend fun getCharacterWithAllModifiers(characterId: Uuid) =
-        dao.getCharacterWithAllModifiers(characterId).toCharacterWithModifiers()
+        dao.getCharacterWithAllModifiers(characterId).toCharacterWithAllModifiers()
 
+    override suspend fun getCharacterWithAllSkills(characterId: Uuid) =
+        dao.getCharacterWithAllSkills(characterId)
 
-    override suspend fun createCharacter(character: Character, classId: Uuid, subClassId: Uuid?): Uuid {
+    override suspend fun createCharacter(
+        character: Character,
+        classId: Uuid,
+        subClassId: Uuid?
+    ): Uuid {
         dao.insertCharacter(character)
         dao.insertCharacterClass(CharacterClass(character.id, classId, subClassId))
 
         val characterWithModifiers = dao.getCharacterWithAllModifiers(character.id)
-            .toCharacterWithModifiers()
+            .toCharacterWithAllModifiers()
 
         val notSelectableModifiers =
             (characterWithModifiers.classes + listOfNotNull(

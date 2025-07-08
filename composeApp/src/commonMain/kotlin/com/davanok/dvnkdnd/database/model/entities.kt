@@ -5,8 +5,10 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSkills
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.toDnDModifier
+import com.davanok.dvnkdnd.data.model.entities.toDnDSkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
@@ -37,7 +39,7 @@ data class EntityWithSub(
     )
 }
 
-data class EntityWithModifiers(
+data class DbEntityWithModifiers(
     @Embedded val entity: DnDBaseEntity,
     @Relation(
         entity = EntitySelectionLimits::class,
@@ -53,6 +55,24 @@ data class EntityWithModifiers(
         entity = entity.toDnDEntityMin(),
         selectionLimit = selectionLimit,
         modifiers = modifiers.fastMap { it.toDnDModifier() }
+    )
+}
+data class DbEntityWithSkills(
+    @Embedded val entity: DnDBaseEntity,
+    @Relation(
+        entity = EntitySelectionLimits::class,
+        parentColumn = "id",
+        entityColumn = "id",
+        projection = ["skills"]
+    )
+    val selectionLimit: Int?,
+    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    val skills: List<EntitySkill>,
+) {
+    fun toDndEntityWithSkills() = DnDEntityWithSkills(
+        entity = entity.toDnDEntityMin(),
+        selectionLimit = selectionLimit,
+        modifiers = skills.fastMap { it.toDnDSkill() }
     )
 }
 

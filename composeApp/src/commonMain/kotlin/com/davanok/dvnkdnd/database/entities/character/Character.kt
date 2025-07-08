@@ -14,9 +14,9 @@ import kotlin.uuid.Uuid
     tableName = "characters",
     foreignKeys = [
         ForeignKey(DnDRace::class, ["id"], ["race"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDRace::class, ["id"], ["subRace"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDRace::class, ["id"], ["sub_race"], onDelete = ForeignKey.SET_NULL),
         ForeignKey(DnDBackground::class, ["id"], ["background"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDBackground::class, ["id"], ["subBackground"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DnDBackground::class, ["id"], ["sub_background"], onDelete = ForeignKey.SET_NULL),
     ]
 )
 data class Character(
@@ -24,14 +24,15 @@ data class Character(
     val name: String,
     val description: String,
     @ColumnInfo(index = true) val race: Uuid?,
-    @ColumnInfo(index = true) val subRace: Uuid?,
+    @ColumnInfo("sub_race", index = true) val subRace: Uuid?,
     @ColumnInfo(index = true) val background: Uuid?,
-    @ColumnInfo(index = true) val subBackground: Uuid?,
+    @ColumnInfo("sub_background", index = true) val subBackground: Uuid?,
     val level: Int = 1,
     @ColumnInfo("proficiency_bonus") val proficiencyBonus: Int = 2,
     val source: String? = null,
-    @ColumnInfo("main_image") val mainImage: Path? = null
+    @ColumnInfo("image") val image: Path? = null
 )
+
 @Entity(
     tableName = "character_classes",
     foreignKeys = [

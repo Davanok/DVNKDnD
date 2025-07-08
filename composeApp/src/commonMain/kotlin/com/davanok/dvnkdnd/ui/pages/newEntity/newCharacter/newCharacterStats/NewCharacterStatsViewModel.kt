@@ -105,5 +105,5 @@ data class NewCharacterStatsUiState(
 
     val modifiers: DnDModifiersGroup = DnDModifiersGroup.Default,
     val selectedModifiersBonuses: Set<Uuid> = emptySet(),
-    @Stable val allEntitiesWithModifiers: List<DnDEntityWithModifiers> = emptyList()
+    val allEntitiesWithModifiers: List<DnDEntityWithModifiers> = emptyList()
 )

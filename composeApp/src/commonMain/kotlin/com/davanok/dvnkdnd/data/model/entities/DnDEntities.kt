@@ -68,6 +68,13 @@ data class DnDEntityWithModifiers(
 )
 
 @Immutable
+data class DnDEntityWithSkills(
+    val entity: DnDEntityMin,
+    val selectionLimit: Int? = null,
+    val modifiers: List<DnDSkill> = emptyList(),
+)
+
+@Immutable
 @Serializable
 data class DnDFullEntity(
     val id: Uuid = Uuid.random(),
@@ -81,6 +88,7 @@ data class DnDFullEntity(
     val description: String,
     val source: String,
 
+    @SerialName("modifier_bonuses")
     val modifierBonuses: List<EntityModifierBonus>,
     val skills: List<EntitySkill>,
     @SerialName("saving_throws")

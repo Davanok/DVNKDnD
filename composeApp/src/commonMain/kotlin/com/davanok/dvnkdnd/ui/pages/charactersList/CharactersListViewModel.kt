@@ -24,7 +24,7 @@ class CharactersListViewModel(
     fun loadCharacters() = viewModelScope.launch {
         _uiState.value = _uiState.value.copy(
             isLoading = false,
-            characters = repository.loadCharactersMinList()
+            characters = repository.getCharactersMinList()
         )
     }
 

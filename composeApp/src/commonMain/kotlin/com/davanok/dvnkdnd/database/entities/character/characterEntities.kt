@@ -8,6 +8,7 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import okio.Path
 import kotlin.uuid.Uuid
@@ -49,18 +50,16 @@ data class CharacterSpellSlots(
 
 // one to many
 @Entity(
-    tableName = "character_skills",
-    foreignKeys = [ForeignKey(
-        Character::class,
-        ["id"],
-        ["character_id"],
-        onDelete = ForeignKey.CASCADE
-    )]
+    tableName = "character_selected_skills",
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(EntitySkill::class, ["id"], ["skill_id"], onDelete = ForeignKey.CASCADE)
+    ],
+    primaryKeys = ["character_id", "skill_id"]
 )
-data class CharacterSkill(
-    @PrimaryKey val id: Uuid = Uuid.random(),
+data class CharacterSelectedSkill(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    val skill: Skills,
+    @ColumnInfo("skill_id", index = true) val skillId: Uuid
 )
 
 @Entity(

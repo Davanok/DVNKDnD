@@ -8,3 +8,6 @@ class NewCharacterSkillsViewModel(
 ) : ViewModel() {
 
 }
+data class NewCharacterSkillsUiState(
+    
+)

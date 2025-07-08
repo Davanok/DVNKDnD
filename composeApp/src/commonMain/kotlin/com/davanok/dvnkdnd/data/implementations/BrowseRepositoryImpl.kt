@@ -15,7 +15,7 @@ import kotlin.uuid.Uuid
 
 private const val FULL_ENTITY_REQUEST = """
 *,
-modifiers:entity_modifier_bonuses!entity_modifiers_entity_id_fkey(*),
+modifier_bonuses:entity_modifier_bonuses!entity_modifiers_entity_id_fkey(*),
 skills:entity_skills(*),
 saving_throws:entity_saving_throws(*),
 proficiencies:entity_proficiencies(*),
