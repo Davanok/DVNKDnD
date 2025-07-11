@@ -29,8 +29,8 @@ data class DnDItem(
     ]
 )
 data class ItemPropertyLink(
-    @ColumnInfo("item_id") val itemId: Uuid,
-    @ColumnInfo("property_id") val propertyId: Uuid,
+    @ColumnInfo("item_id", index = true) val itemId: Uuid,
+    @ColumnInfo("property_id", index = true) val propertyId: Uuid,
 )
 
 // properties for items like heavy, two-handed, graze

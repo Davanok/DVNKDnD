@@ -35,12 +35,12 @@ data class Character(
 
 @Entity(
     tableName = "character_classes",
+    primaryKeys = ["character_id", "class_id"],
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DnDClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DnDClass::class, ["id"], ["sub_class_id"], onDelete = ForeignKey.SET_NULL)
-    ],
-    primaryKeys = ["character_id", "class_id"]
+    ]
 )
 data class CharacterClass(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,

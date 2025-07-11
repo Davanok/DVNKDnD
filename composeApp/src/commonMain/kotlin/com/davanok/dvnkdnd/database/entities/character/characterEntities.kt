@@ -51,11 +51,11 @@ data class CharacterSpellSlots(
 // one to many
 @Entity(
     tableName = "character_selected_skills",
+    primaryKeys = ["character_id", "skill_id"],
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(EntitySkill::class, ["id"], ["skill_id"], onDelete = ForeignKey.CASCADE)
-    ],
-    primaryKeys = ["character_id", "skill_id"]
+    ]
 )
 data class CharacterSelectedSkill(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
