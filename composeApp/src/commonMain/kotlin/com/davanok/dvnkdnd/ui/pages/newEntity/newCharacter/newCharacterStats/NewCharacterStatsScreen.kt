@@ -27,6 +27,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import com.davanok.dvnkdnd.data.model.dnd_enums.stringRes
@@ -35,10 +36,13 @@ import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiMessage
+import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.append
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import com.davanok.dvnkdnd.ui.navigation.StepNavigation
+import com.dokar.sonner.Toaster
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
 import dvnkdnd.composeapp.generated.resources.modifiers_selectors_hint
@@ -60,10 +64,17 @@ fun NewCharacterStatsScreen(
         viewModel.loadCharacterWithAllModifiers(characterId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    UiToaster(
+        messages = listOfNotNull(uiState.warning)
+            .fastMap { UiMessage.Error(stringResource(it)) },
+        onRemoveMessage = { viewModel.removeWarning() }
+    )
+
     when {
         uiState.isLoading -> LoadingCard()
-        uiState.error != null -> ErrorCard(
-            text = stringResource(uiState.error!!),
+        uiState.criticalError != null -> ErrorCard(
+            text = stringResource(uiState.criticalError!!),
             onBack = { onBack(characterId) }
         )
         else -> StepNavigation (

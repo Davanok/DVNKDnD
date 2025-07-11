@@ -3,14 +3,19 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFlatMap
+import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.util.DnDConstants
+import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.manual_stats_option
+import dvnkdnd.composeapp.generated.resources.modifier_selection_invalid
+import dvnkdnd.composeapp.generated.resources.point_buy_stats_balance_invalid
 import dvnkdnd.composeapp.generated.resources.point_buy_stats_option
 import dvnkdnd.composeapp.generated.resources.standard_array_stats_option
 import dvnkdnd.composeapp.generated.resources.saving_data_error
@@ -27,6 +32,10 @@ class NewCharacterStatsViewModel(
     val uiState: StateFlow<NewCharacterStatsUiState> = _uiState
 
     private var modifierInfo: Map<Uuid, Pair<Int, Set<Uuid>>> = emptyMap()
+
+    fun removeWarning() {
+        _uiState.value = _uiState.value.copy(warning = null)
+    }
 
     fun selectCreationOption(option: StatsCreationOptions) {
         _uiState.value = _uiState.value.copy(selectedCreationOptions = option)
@@ -77,14 +86,58 @@ class NewCharacterStatsViewModel(
         _uiState.value = _uiState.value.copy(selectedModifiersBonuses = current)
     }
 
+    private fun checkSelectedModifierBonuses(): Boolean {
+        val state = _uiState.value
+        if (state.selectedCreationOptions == StatsCreationOptions.POINT_BUY) {
+            val modifiersSum =
+                calculateBuyingModifiersSum(
+                    state
+                        .modifiers
+                        .toModifiersList()
+                        .fastMap { it.modifier }
+                )
+            val balance = DnDConstants.BUYING_BALANCE - modifiersSum
+            if (balance != 0) {
+                _uiState.value = state.copy(
+                    warning = Res.string.point_buy_stats_balance_invalid
+                )
+                return false
+            }
+        }
+
+        val selected = state.selectedModifiersBonuses
+
+        val limitsByGroup: Map<Set<Uuid>, Int> = modifierInfo
+            .values
+            .groupBy(
+                keySelector = { it.second },
+                valueTransform = { it.first }
+            )
+            .mapValues { (_, limits) ->
+                limits.firstOrNull() ?: 0
+            }
+
+        for ((groupSet, limit) in limitsByGroup) {
+            val countInGroup = selected.count { it in groupSet }
+            if (countInGroup != limit) {
+                _uiState.value = state.copy(
+                    warning = Res.string.modifier_selection_invalid
+                )
+                return false
+            }
+        }
+        return true
+    }
+
     fun saveCharacterStats(characterId: Uuid, onSuccess: (characterId: Uuid) -> Unit) = viewModelScope.launch {
+        if (!checkSelectedModifierBonuses()) return@launch
         val state = _uiState.value
         runCatching {
             repository.setCharacterStats(characterId, state.modifiers)
             repository.setCharacterSelectedModifierBonuses(characterId, state.selectedModifiersBonuses.toList())
         }.onFailure {
             _uiState.value = state.copy(
-                error = Res.string.saving_data_error
+                criticalError = Res.string.saving_data_error
             )
         }.onSuccess {
             onSuccess(characterId)
@@ -100,7 +153,8 @@ enum class StatsCreationOptions(val title: StringResource) {
 
 data class NewCharacterStatsUiState(
     val isLoading: Boolean = false,
-    val error: StringResource? = null,
+    val warning: StringResource? = null,
+    val criticalError: StringResource? = null,
     val selectedCreationOptions: StatsCreationOptions = StatsCreationOptions.POINT_BUY,
 
     val modifiers: DnDModifiersGroup = DnDModifiersGroup.Default,
