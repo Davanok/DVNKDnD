@@ -30,25 +30,23 @@ fun initApp() {
 @Composable
 @Preview
 fun App() {
-    KoinContext {
-        initApp()
-        val darkTheme = isSystemInDarkTheme()
-        MaterialTheme(
-            colorScheme = getColorScheme(darkTheme)
-        ) {
-            Surface {
-                val adaptiveInfo = AdaptiveNavigationInfo(
-                    windowSizeClass = calculateWindowSizeClass(),
-                    layoutType = calculateNavSuiteType()
+    initApp()
+    val darkTheme = isSystemInDarkTheme()
+    MaterialTheme(
+        colorScheme = getColorScheme(darkTheme)
+    ) {
+        Surface {
+            val adaptiveInfo = AdaptiveNavigationInfo(
+                windowSizeClass = calculateWindowSizeClass(),
+                layoutType = calculateNavSuiteType()
+            )
+            CompositionLocalProvider(
+                LocalColorScheme provides ColorScheme(darkTheme),
+                LocalAdaptiveInfo provides adaptiveInfo
+            ) {
+                NavigationHost(
+                    modifier = Modifier.fillMaxSize()
                 )
-                CompositionLocalProvider(
-                    LocalColorScheme provides ColorScheme(darkTheme),
-                    LocalAdaptiveInfo provides adaptiveInfo
-                ) {
-                    NavigationHost(
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
             }
         }
     }
