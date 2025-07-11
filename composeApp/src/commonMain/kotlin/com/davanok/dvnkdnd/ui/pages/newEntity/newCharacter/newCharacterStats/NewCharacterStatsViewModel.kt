@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
 
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
@@ -17,8 +16,8 @@ import dvnkdnd.composeapp.generated.resources.manual_stats_option
 import dvnkdnd.composeapp.generated.resources.modifier_selection_invalid
 import dvnkdnd.composeapp.generated.resources.point_buy_stats_balance_invalid
 import dvnkdnd.composeapp.generated.resources.point_buy_stats_option
-import dvnkdnd.composeapp.generated.resources.standard_array_stats_option
 import dvnkdnd.composeapp.generated.resources.saving_data_error
+import dvnkdnd.composeapp.generated.resources.standard_array_stats_option
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

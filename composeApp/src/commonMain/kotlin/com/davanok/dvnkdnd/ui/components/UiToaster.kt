@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dokar.sonner.TextToastAction
 import com.dokar.sonner.Toast
 import com.dokar.sonner.ToastType
 import com.dokar.sonner.Toaster
@@ -35,7 +34,7 @@ fun UiToaster(
         // Listen to State<List<UiMessage>> changes and map to toasts
         toaster.listenMany {
             currentMessages.map { message ->
-                message.toToast(onDismiss = { onRemoveMessage(message.id) })
+                message.toToast()
             }
         }
     }
@@ -69,7 +68,7 @@ sealed interface UiMessage {
         override val id: Uuid = Uuid.random(),
     ) : UiMessage
 }
-private fun UiMessage.toToast(onDismiss: (toast: Toast) -> Unit): Toast = when (this) {
+private fun UiMessage.toToast(): Toast = when (this) {
     is UiMessage.Error -> Toast(
         id = id,
         message = message,
