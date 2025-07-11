@@ -43,7 +43,6 @@ fun UiToaster(
     Toaster(
         state = toaster,
         modifier = modifier,
-        richColors = true,
         darkTheme = LocalColorScheme.current.darkTheme,
         iconSlot = { toast ->
             if (toast.icon == "loading") LoadingIcon()
@@ -76,21 +75,18 @@ private fun UiMessage.toToast(onDismiss: (toast: Toast) -> Unit): Toast = when (
         message = message,
         type = ToastType.Error,
         duration = Duration.INFINITE,
-        action = TextToastAction(text = "Dismiss", onClick = onDismiss),
     )
 
     is UiMessage.Success -> Toast(
         id = id,
         message = message,
         type = ToastType.Success,
-        action = TextToastAction(text = "Dismiss", onClick = onDismiss),
     )
 
     is UiMessage.Loading -> Toast(
         id = id,
         message = message,
         type = ToastType.Normal,
-        action = TextToastAction(text = "Dismiss", onClick = onDismiss),
         icon = "loading"
     )
 }
