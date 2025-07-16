@@ -72,7 +72,7 @@ data class DbEntityWithSkills(
     fun toDndEntityWithSkills() = DnDEntityWithSkills(
         entity = entity.toDnDEntityMin(),
         selectionLimit = selectionLimit,
-        modifiers = skills.fastMap { it.toDnDSkill() }
+        skills = skills.fastMap { it.toDnDSkill() }
     )
 }
 

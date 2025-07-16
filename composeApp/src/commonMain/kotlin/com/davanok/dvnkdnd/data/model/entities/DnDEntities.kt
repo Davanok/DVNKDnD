@@ -57,7 +57,7 @@ data class DnDEntityWithSubEntities(
     @SerialName("sub_entities")
     val subEntities: List<DnDEntityMin>,
 ) {
-    fun asDnDEntityMin() = DnDEntityMin(id, type, name, source)
+    fun toDnDEntityMin() = DnDEntityMin(id, type, name, source)
 }
 
 @Immutable
@@ -71,7 +71,7 @@ data class DnDEntityWithModifiers(
 data class DnDEntityWithSkills(
     val entity: DnDEntityMin,
     val selectionLimit: Int? = null,
-    val modifiers: List<DnDSkill> = emptyList(),
+    val skills: List<DnDSkill> = emptyList(),
 )
 
 @Immutable

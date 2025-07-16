@@ -22,7 +22,7 @@ class CharactersRepositoryImpl(
         dao.getCharacterWithAllModifiers(characterId).toCharacterWithAllModifiers()
 
     override suspend fun getCharacterWithAllSkills(characterId: Uuid) =
-        dao.getCharacterWithAllSkills(characterId)
+        dao.getCharacterWithAllSkills(characterId).toCharacterWithAllSkills()
 
     override suspend fun createCharacter(
         character: Character,
