@@ -13,6 +13,7 @@ import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.loading_character_error
 import dvnkdnd.composeapp.generated.resources.manual_stats_option
 import dvnkdnd.composeapp.generated.resources.modifier_selection_invalid
 import dvnkdnd.composeapp.generated.resources.point_buy_stats_balance_invalid
@@ -42,32 +43,43 @@ class NewCharacterStatsViewModel(
     }
 
     fun loadCharacterWithAllModifiers(characterId: Uuid) = viewModelScope.launch {
-        var character = repository.getCharacterWithAllModifiers(characterId)
-        if (character.characterStats == null)
-            character = character.copy(
-                characterStats = DnDModifiersGroup.Default
+        runCatching {
+            repository.getCharacterWithAllModifiers(characterId)
+        }.onFailure {
+            _uiState.value = _uiState.value.copy(
+                error = UiError.Critical(
+                    message = Res.string.loading_character_error,
+                    details = it
+                )
             )
-        val allCharacterEntities = (character.classes + listOfNotNull(
-            character.race,
-            character.subRace,
-            character.background,
-            character.subBackground
-        )).fastFilter { it.modifiers.isNotEmpty() }
-        modifierInfo = allCharacterEntities
-            .fastFlatMap { entity ->
-                val limit = entity.selectionLimit ?: 0
-                entity.modifiers.map { mod ->
-                    mod.id to (limit to entity.modifiers.map { it.id }.toSet())
-                }
-            }.toMap()
+        }.onSuccess { loaded ->
+            var character = loaded
+            if (character.characterStats == null)
+                character = character.copy(
+                    characterStats = DnDModifiersGroup.Default
+                )
+            val allCharacterEntities = (character.classes + listOfNotNull(
+                character.race,
+                character.subRace,
+                character.background,
+                character.subBackground
+            )).fastFilter { it.modifiers.isNotEmpty() }
+            modifierInfo = allCharacterEntities
+                .fastFlatMap { entity ->
+                    val limit = entity.selectionLimit ?: 0
+                    entity.modifiers.map { mod ->
+                        mod.id to (limit to entity.modifiers.map { it.id }.toSet())
+                    }
+                }.toMap()
 
-        _uiState.value = _uiState.value.copy(
-            modifiers = character.characterStats ?: DnDModifiersGroup.Default,
-            selectedModifiersBonuses = character.selectedModifiers.toSet(),
-            allEntitiesWithModifiers = allCharacterEntities,
+            _uiState.value = _uiState.value.copy(
+                modifiers = character.characterStats ?: DnDModifiersGroup.Default,
+                selectedModifiersBonuses = character.selectedModifiers.toSet(),
+                allEntitiesWithModifiers = allCharacterEntities,
 
-            isLoading = false
-        )
+                isLoading = false
+            )
+        }
     }
 
     fun setModifiers(modifiers: DnDModifiersGroup) {

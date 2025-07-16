@@ -151,16 +151,27 @@ class NewCharacterMainViewModel(
     val downloadableState: StateFlow<DownloadableValuesState> = _downloadableState
 
     private fun loadMainValues() = viewModelScope.launch {
-        val classes = entitiesRepository.getEntitiesWithSubList(DnDEntityTypes.CLASS)
-        val races = entitiesRepository.getEntitiesWithSubList(DnDEntityTypes.RACE)
-        val backgrounds = entitiesRepository.getEntitiesWithSubList(DnDEntityTypes.BACKGROUND)
+        runCatching {
+            val classes = entitiesRepository.getEntitiesWithSubList(DnDEntityTypes.CLASS)
+            val races = entitiesRepository.getEntitiesWithSubList(DnDEntityTypes.RACE)
+            val backgrounds = entitiesRepository.getEntitiesWithSubList(DnDEntityTypes.BACKGROUND)
 
-        _downloadableState.value = _downloadableState.value.copy(
-            isLoading = false,
-            classes = classes,
-            races = races,
-            backgrounds = backgrounds
-        )
+            Triple(classes, races, backgrounds)
+        }.onFailure {
+            addMessage(
+                UiMessage.Error(
+                    getString(Res.string.error_when_loading_entity),
+                    error = it
+                )
+            )
+        }.onSuccess { (classes, races, backgrounds) ->
+            _downloadableState.value = _downloadableState.value.copy(
+                isLoading = false,
+                classes = classes,
+                races = races,
+                backgrounds = backgrounds
+            )
+        }
     }
 
     // Search content
