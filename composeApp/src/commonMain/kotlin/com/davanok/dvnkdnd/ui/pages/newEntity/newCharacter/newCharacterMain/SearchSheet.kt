@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -41,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.ui.components.sideSheet.ModalSideSheet
@@ -49,12 +46,11 @@ import com.davanok.dvnkdnd.ui.components.sideSheet.rememberModalSideSheetState
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.close_side_sheet
 import dvnkdnd.composeapp.generated.resources.confirm
+import dvnkdnd.composeapp.generated.resources.refresh
 import dvnkdnd.composeapp.generated.resources.search_in_web
 import dvnkdnd.composeapp.generated.resources.show_info_about
-import dvnkdnd.composeapp.generated.resources.refresh
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -146,7 +142,7 @@ fun SearchSheet(
                                 trailingContent = {
                                     IconButton (
                                         onClick = { onGetEntityInfo(
-                                            entity.asDnDEntityMin()
+                                            entity.toDnDEntityMin()
                                         ) }
                                     ) {
                                         Icon(

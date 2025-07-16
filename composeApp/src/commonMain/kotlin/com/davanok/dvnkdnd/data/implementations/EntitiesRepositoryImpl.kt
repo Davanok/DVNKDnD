@@ -47,7 +47,6 @@ class EntitiesRepositoryImpl(
 
     override suspend fun insertFullEntities(fullEntities: List<DnDFullEntity>) =
         fullEntities.partition { it.parentId == null }.let { (withoutParent, withParent) ->
-            Napier.d { withoutParent.fastMap { it.parentId }.fastJoinToString() }
             withoutParent.fastForEach { insertFullEntity(it) }
             withParent.fastForEach { insertFullEntity(it) }
         }

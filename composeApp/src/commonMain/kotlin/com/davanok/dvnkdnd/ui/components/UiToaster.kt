@@ -119,6 +119,12 @@ sealed interface UiMessage {
         val error: Throwable? = null,
     ) : UiMessage
 
+    data class Warning(
+        val message: String,
+        override val id: Uuid = Uuid.random(),
+        val error: Throwable? = null,
+    ) : UiMessage
+
     data class Loading(
         val message: String,
         override val id: Uuid = Uuid.random(),
@@ -126,6 +132,13 @@ sealed interface UiMessage {
 }
 private fun UiMessage.toToast(): Toast = when (this) {
     is UiMessage.Error -> Toast(
+        id = id,
+        message = message,
+        type = ToastType.Error,
+        duration = Duration.INFINITE,
+        action = error?.let { ErrorInfoAction(it) }
+    )
+    is UiMessage.Warning -> Toast(
         id = id,
         message = message,
         type = ToastType.Error,

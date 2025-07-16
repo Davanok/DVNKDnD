@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
@@ -33,7 +34,7 @@ class NewCharacterStatsViewModel(
     private var modifierInfo: Map<Uuid, Pair<Int, Set<Uuid>>> = emptyMap()
 
     fun removeWarning() {
-        _uiState.value = _uiState.value.copy(warning = null)
+        _uiState.value = _uiState.value.copy(error = null)
     }
 
     fun selectCreationOption(option: StatsCreationOptions) {
@@ -98,7 +99,7 @@ class NewCharacterStatsViewModel(
             val balance = DnDConstants.BUYING_BALANCE - modifiersSum
             if (balance != 0) {
                 _uiState.value = state.copy(
-                    warning = Res.string.point_buy_stats_balance_invalid
+                    error = UiError.Warning(Res.string.point_buy_stats_balance_invalid)
                 )
                 return false
             }
@@ -120,7 +121,7 @@ class NewCharacterStatsViewModel(
             val countInGroup = selected.count { it in groupSet }
             if (countInGroup != limit) {
                 _uiState.value = state.copy(
-                    warning = Res.string.modifier_selection_invalid
+                    error = UiError.Warning(Res.string.modifier_selection_invalid)
                 )
                 return false
             }
@@ -136,7 +137,7 @@ class NewCharacterStatsViewModel(
             repository.setCharacterSelectedModifierBonuses(characterId, state.selectedModifiersBonuses.toList())
         }.onFailure {
             _uiState.value = state.copy(
-                criticalError = Res.string.saving_data_error
+                error = UiError.Critical(Res.string.saving_data_error, it)
             )
         }.onSuccess {
             onSuccess(characterId)
@@ -152,8 +153,7 @@ enum class StatsCreationOptions(val title: StringResource) {
 
 data class NewCharacterStatsUiState(
     val isLoading: Boolean = false,
-    val warning: StringResource? = null,
-    val criticalError: StringResource? = null,
+    val error: UiError? = null,
     val selectedCreationOptions: StatsCreationOptions = StatsCreationOptions.POINT_BUY,
 
     val modifiers: DnDModifiersGroup = DnDModifiersGroup.Default,

@@ -27,16 +27,16 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import com.davanok.dvnkdnd.data.model.dnd_enums.stringRes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
-import com.davanok.dvnkdnd.ui.components.UiMessage
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.append
@@ -63,15 +63,14 @@ fun NewCharacterStatsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     UiToaster(
-        messages = listOfNotNull(uiState.warning)
-            .fastMap { UiMessage.Error(stringResource(it)) },
-        onRemoveMessage = { viewModel.removeWarning() }
+        message = uiState.error?.toUiMessage(),
+        onRemoveMessage = viewModel::removeWarning
     )
 
     when {
         uiState.isLoading -> LoadingCard()
-        uiState.criticalError != null -> ErrorCard(
-            text = stringResource(uiState.criticalError!!),
+        uiState.error is UiError.Critical -> ErrorCard(
+            text = stringResource(uiState.error!!.message),
             onBack = { onBack(characterId) }
         )
         else -> StepNavigation (
