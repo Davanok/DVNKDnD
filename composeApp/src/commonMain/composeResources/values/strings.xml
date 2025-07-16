@@ -35,6 +35,25 @@
     <string name="wisdom">Wisdom</string>
     <string name="charisma">Charisma</string>
 
+    <string name="athletics">Athletics</string>
+    <string name="acrobatics">Acrobatics</string>
+    <string name="sleight_of_hand">Sleight of hand</string>
+    <string name="stealth">Stealth</string>
+    <string name="arcana">Arcana</string>
+    <string name="history">History</string>
+    <string name="investigation">Investigation</string>
+    <string name="nature">Nature</string>
+    <string name="religion">Religion</string>
+    <string name="animal_handling">Animal handling</string>
+    <string name="insight">Insight</string>
+    <string name="medicine">Medicine</string>
+    <string name="perception">Perception</string>
+    <string name="survival">Survival</string>
+    <string name="deception">Deception</string>
+    <string name="intimidation">Intimidation</string>
+    <string name="performance">Performance</string>
+    <string name="persuasion">Persuasion</string>
+
     <!--images-->
     <string name="select_image">Select image</string>
     <string name="add_image">Add image</string>
@@ -54,6 +73,7 @@
     <string name="back">Back</string>
     <string name="refresh">Refresh</string>
     <string name="continue_str">Continue</string>
+    <string name="error_info">Error info</string>
 
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
@@ -103,6 +123,7 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="modifier_selection_invalid">Invalid modifier bonuses selection count</string>
     <string name="point_buy_stats_balance_invalid">Invalid point buy balance</string>
     <!--common-->
+    <string name="loading_character_error">Error when loading character</string>
     <string name="saving_data_error">Error when saving data</string>
 
     <!--side sheet-->
