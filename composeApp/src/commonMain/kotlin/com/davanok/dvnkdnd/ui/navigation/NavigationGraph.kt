@@ -17,6 +17,7 @@ import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
 import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen.LoadingDataScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
@@ -134,7 +135,19 @@ private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostControl
 }
 
 private fun NavGraphBuilder.characterCreationFlow(navController: NavHostController) =
-    navigation<Route.New.Character>(startDestination = Route.New.Character.Main) {
+    navigation<Route.New.Character>(startDestination = Route.New.Character.LoadData) {
+        composable<Route.New.Character.LoadData> {
+            LoadingDataScreen(
+                onBack = navController::navigateUp,
+                onContinue = {
+                    navController.navigate(Route.New.Character.Main) {
+                        popUpTo(Route.New.Character.LoadData) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
         composable<Route.New.Character.Main> {
             NewCharacterMainScreen(
                 navigateToEntityInfo = { navController.navigate(Route.EntityInfo(it.id)) },
