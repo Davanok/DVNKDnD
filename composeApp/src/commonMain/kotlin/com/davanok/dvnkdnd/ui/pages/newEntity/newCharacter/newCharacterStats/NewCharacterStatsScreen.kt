@@ -29,7 +29,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
-import com.davanok.dvnkdnd.data.model.dnd_enums.stringRes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
@@ -188,13 +187,13 @@ private fun AboutModifiersSelectorsDialog(
                     allEntitiesWithModifiers.fastForEach { entity ->
                         if (entity.modifiers.isEmpty()) return@fastForEach
                         withStyle(MaterialTheme.typography.labelLarge.toSpanStyle()) {
-                            append(entity.entity.type.stringRes())
+                            append(entity.entity.type.stringRes)
                             append(' ')
                             append(entity.entity.name)
                         }
                         entity.modifiers.groupBy { it.stat }.forEach { (stat, modifiers) ->
                             append("\n\t")
-                            append(stat.stringRes())
+                            append(stat.stringRes)
                             modifiers.fastForEach {
                                 append("\n\t\t")
                                 if (it.id in selectedModifiersBonuses)

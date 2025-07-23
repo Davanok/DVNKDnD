@@ -53,7 +53,6 @@ import androidx.compose.ui.util.fastMapIndexed
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.compose.ui.util.fastSumBy
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
-import com.davanok.dvnkdnd.data.model.dnd_enums.stringRes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
@@ -182,7 +181,7 @@ private fun ColumnScope.PointBuyModifiersSelector(
         ModifierSelectorRow(
             value = character[stat],
             onValueChange = { onChange(character.set(stat, it)) },
-            label = stringResource(stat.stringRes()),
+            label = stringResource(stat.stringRes),
             minValueCheck = { it >= DnDConstants.MIN_VALUE_TO_BUY },
             maxValueCheck = {
                 it <= DnDConstants.MAX_VALUE_TO_BUY &&
@@ -240,7 +239,7 @@ private fun StandardArrayModifiersSelector(
     ) { stat ->
         Column {
             Text(
-                text = stringResource(stat.stringRes()),
+                text = stringResource(stat.stringRes),
                 maxLines = 1,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
@@ -356,7 +355,7 @@ private fun ManualModifiersSelector(
         ModifierSelectorRow(
             value = character[stat],
             onValueChange = { onChange(character.set(stat, it)) },
-            label = stringResource(stat.stringRes()),
+            label = stringResource(stat.stringRes),
             minValueCheck = { true },
             maxValueCheck = { true },
             additionalModifiers = entitiesWithModifiers

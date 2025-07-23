@@ -11,31 +11,17 @@ import dvnkdnd.composeapp.generated.resources.spell
 import dvnkdnd.composeapp.generated.resources.sub_background
 import dvnkdnd.composeapp.generated.resources.sub_class
 import dvnkdnd.composeapp.generated.resources.sub_race
-import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.StringResource
 
-@Serializable
-enum class DnDEntityTypes {
-    CLASS,
-    SUB_CLASS,
-    RACE,
-    SUB_RACE,
-    BACKGROUND,
-    SUB_BACKGROUND,
-    ABILITY,
-    FEAT,
-    SPELL,
-    ITEM,
-}
-
-fun DnDEntityTypes.stringRes() = when(this) {
-    DnDEntityTypes.CLASS -> Res.string.cls
-    DnDEntityTypes.SUB_CLASS -> Res.string.sub_class
-    DnDEntityTypes.RACE -> Res.string.race
-    DnDEntityTypes.SUB_RACE -> Res.string.sub_race
-    DnDEntityTypes.BACKGROUND -> Res.string.background
-    DnDEntityTypes.SUB_BACKGROUND -> Res.string.sub_background
-    DnDEntityTypes.ABILITY -> Res.string.ability
-    DnDEntityTypes.FEAT -> Res.string.feat
-    DnDEntityTypes.SPELL -> Res.string.spell
-    DnDEntityTypes.ITEM -> Res.string.item
+enum class DnDEntityTypes(val stringRes: StringResource) {
+    CLASS(Res.string.cls),
+    SUB_CLASS(Res.string.sub_class),
+    RACE(Res.string.race),
+    SUB_RACE(Res.string.sub_race),
+    BACKGROUND(Res.string.background),
+    SUB_BACKGROUND(Res.string.sub_background),
+    ABILITY(Res.string.ability),
+    FEAT(Res.string.feat),
+    SPELL(Res.string.spell),
+    ITEM(Res.string.item),
 }

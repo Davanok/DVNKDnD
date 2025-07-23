@@ -19,31 +19,26 @@ import dvnkdnd.composeapp.generated.resources.religion
 import dvnkdnd.composeapp.generated.resources.sleight_of_hand
 import dvnkdnd.composeapp.generated.resources.stealth
 import dvnkdnd.composeapp.generated.resources.survival
+import org.jetbrains.compose.resources.StringResource
 
-enum class Skills {
-    ATHLETICS, // strength
-    ACROBATICS, SLEIGHT_OF_HAND, STEALTH, // dexterity
-    ARCANA, HISTORY, INVESTIGATION, NATURE, RELIGION, // intelligence
-    ANIMAL_HANDLING, INSIGHT, MEDICINE, PERCEPTION, SURVIVAL, // wisdom
-    DECEPTION, INTIMIDATION, PERFORMANCE, PERSUASION, // charisma
+enum class Skills(val stringRes: StringResource) {
+    ATHLETICS(Res.string.athletics),
+    ACROBATICS(Res.string.acrobatics),
+    SLEIGHT_OF_HAND(Res.string.sleight_of_hand),
+    STEALTH(Res.string.stealth),
+    ARCANA(Res.string.arcana),
+    HISTORY(Res.string.history),
+    INVESTIGATION(Res.string.investigation),
+    NATURE(Res.string.nature),
+    RELIGION(Res.string.religion),
+    ANIMAL_HANDLING(Res.string.animal_handling),
+    INSIGHT(Res.string.insight),
+    MEDICINE(Res.string.medicine),
+    PERCEPTION(Res.string.perception),
+    SURVIVAL(Res.string.survival),
+    DECEPTION(Res.string.deception),
+    INTIMIDATION(Res.string.intimidation),
+    PERFORMANCE(Res.string.performance),
+    PERSUASION(Res.string.persuasion)
 }
-fun Skills.stringRes() = when(this) {
-    Skills.ATHLETICS -> Res.string.athletics
-    Skills.ACROBATICS -> Res.string.acrobatics
-    Skills.SLEIGHT_OF_HAND -> Res.string.sleight_of_hand
-    Skills.STEALTH -> Res.string.stealth
-    Skills.ARCANA -> Res.string.arcana
-    Skills.HISTORY -> Res.string.history
-    Skills.INVESTIGATION -> Res.string.investigation
-    Skills.NATURE -> Res.string.nature
-    Skills.RELIGION -> Res.string.religion
-    Skills.ANIMAL_HANDLING -> Res.string.animal_handling
-    Skills.INSIGHT -> Res.string.insight
-    Skills.MEDICINE -> Res.string.medicine
-    Skills.PERCEPTION -> Res.string.perception
-    Skills.SURVIVAL -> Res.string.survival
-    Skills.DECEPTION -> Res.string.deception
-    Skills.INTIMIDATION -> Res.string.intimidation
-    Skills.PERFORMANCE -> Res.string.performance
-    Skills.PERSUASION -> Res.string.persuasion
-}
+
