@@ -1,7 +1,7 @@
 package com.davanok.dvnkdnd.data.implementations
 
+import com.davanok.dvnkdnd.data.model.types.CheckingDataStates
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
-import com.davanok.dvnkdnd.data.repositories.CheckingDataStates
 import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.data.repositories.UtilsDataRepository
 import kotlinx.coroutines.flow.Flow

@@ -42,6 +42,13 @@ import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
 import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveInfo
 import com.davanok.dvnkdnd.ui.navigation.Route
+import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Ability
+import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Background
+import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Character
+import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Class
+import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Item
+import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Race
+import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Spell
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.ability
 import dvnkdnd.composeapp.generated.resources.background
@@ -233,20 +240,14 @@ private enum class EntityItem(
     Ability(Res.string.ability, Res.drawable.fantasy, Route.New.Ability),
     Class(Res.string.cls, Res.drawable.rogue, Route.New.Class),
     Race(Res.string.race, Res.drawable.tiefling, Route.New.Race),
-    Background(Res.string.background, Res.drawable.urchin, Route.New.Background);
-
-    companion object {
-        val main = listOf(Character, Item)
-        val custom = listOf(Spell, Ability)
-        val homebrew = listOf(Class, Race, Background)
-    }
+    Background(Res.string.background, Res.drawable.urchin, Route.New.Background)
 }
 
 private enum class EntityGroup(
     val title: StringResource,
     val items: List<EntityItem>
 ) {
-    Main(Res.string.main, EntityItem.main),
-    Custom(Res.string.custom, EntityItem.custom),
-    Homebrew(Res.string.homebrew, EntityItem.homebrew)
+    Main(Res.string.main, listOf(Character, Item)),
+    Custom(Res.string.custom, listOf(Spell, Ability)),
+    Homebrew(Res.string.homebrew, listOf(Class, Race, Background))
 }

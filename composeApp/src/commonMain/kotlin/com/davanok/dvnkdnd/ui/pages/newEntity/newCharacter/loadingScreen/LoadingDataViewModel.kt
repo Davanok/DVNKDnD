@@ -2,7 +2,7 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.repositories.CheckingDataStates
+import com.davanok.dvnkdnd.data.model.types.CheckingDataStates
 import com.davanok.dvnkdnd.data.repositories.ExternalKeyValueRepository
 import com.davanok.dvnkdnd.data.repositories.UtilsDataRepository
 import dvnkdnd.composeapp.generated.resources.Res
