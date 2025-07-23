@@ -71,6 +71,7 @@ fun NewCharacterStatsScreen(
         uiState.isLoading -> LoadingCard()
         uiState.error is UiError.Critical -> ErrorCard(
             text = stringResource(uiState.error!!.message),
+            exception = uiState.error?.exception,
             onBack = { onBack(characterId) }
         )
         else -> StepNavigation (

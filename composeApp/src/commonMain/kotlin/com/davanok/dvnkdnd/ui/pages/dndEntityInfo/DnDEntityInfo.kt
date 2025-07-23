@@ -1,12 +1,8 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.ui.pages.dndEntityInfo
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,19 +13,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.ui.components.FullScreenCard
+import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.ui.components.ErrorCard
+import com.davanok.dvnkdnd.ui.components.LoadingCard
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.error_when_loading_entity
 import dvnkdnd.composeapp.generated.resources.loading
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,19 +67,14 @@ fun DnDEntityInfo(
         }
     ) {
         when {
-            uiState.isLoading -> Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-            uiState.entity == null ->
-                FullScreenCard(
-                    heroIcon = {
-                        Icon(
-                            painter = painterResource(Res.drawable.error),
-                            contentDescription = stringResource(Res.string.error_when_loading_entity)
-                        )
-                    },
-                    content = { Text(stringResource(Res.string.error_when_loading_entity)) }
-                )
+            uiState.isLoading -> LoadingCard()
+            uiState.error is UiError.Critical -> ErrorCard(
+                text = stringResource(uiState.error!!.message),
+                exception = uiState.error!!.exception
+            )
+            uiState.entity == null -> ErrorCard(
+                text = stringResource(Res.string.error_when_loading_entity)
+            )
             else -> Content()
         }
     }

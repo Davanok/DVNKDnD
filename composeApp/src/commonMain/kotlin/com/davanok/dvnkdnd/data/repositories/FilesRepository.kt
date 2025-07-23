@@ -4,10 +4,10 @@ import okio.Path
 import okio.Path.Companion.toPath
 
 interface FilesRepository {
-    suspend fun write(bytes: ByteArray, path: Path)
-    suspend fun read(path: Path): ByteArray
-    suspend fun delete(path: Path)
-    suspend fun move(from: Path, to: Path)
+    suspend fun write(bytes: ByteArray, path: Path): Result<Unit>
+    suspend fun read(path: Path): Result<ByteArray>
+    suspend fun delete(path: Path): Result<Unit>
+    suspend fun move(from: Path, to: Path): Result<Unit>
 
     fun getFilename(dir: Path, extension: String, temp: Boolean = false): Path
 

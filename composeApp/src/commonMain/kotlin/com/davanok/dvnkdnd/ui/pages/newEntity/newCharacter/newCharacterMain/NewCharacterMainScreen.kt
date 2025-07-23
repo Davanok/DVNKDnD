@@ -28,14 +28,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.carousel.CarouselState
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,22 +54,23 @@ import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.ui.toUiMessage
+import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
-import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
+import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.image.toByteArray
 import com.davanok.dvnkdnd.ui.navigation.StepNavigation
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
-import dvnkdnd.composeapp.generated.resources.cancel
 import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.description
 import dvnkdnd.composeapp.generated.resources.drop_image
 import dvnkdnd.composeapp.generated.resources.empty_field_error
-import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.name
 import dvnkdnd.composeapp.generated.resources.no_character_images_yet
 import dvnkdnd.composeapp.generated.resources.race
@@ -82,7 +82,6 @@ import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerType
 import kotlinx.coroutines.launch
 import okio.Path
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
@@ -95,19 +94,22 @@ fun NewCharacterMainScreen(
     onContinue: (characterId: Uuid) -> Unit,
     viewModel: NewCharacterMainViewModel = koinViewModel(),
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadMainValues()
+    }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    UiToaster(
-        messages = uiState.messages,
-        onRemoveMessage = viewModel::removeMessage
-    )
 
-    if (uiState.checkingDataState != NewCharacterMainUiState.CheckingDataStates.FINISH)
-        LoadingDataCard(
-            state = uiState.checkingDataState,
-            onCancel = onBack
+    when {
+        uiState.isLoading -> LoadingCard()
+        uiState.error is UiError.Critical -> ErrorCard(
+            text = stringResource(uiState.error!!.message),
+            exception = uiState.error?.exception,
+            onBack = onBack
         )
-    else
-        CreateCharacterContent(
+
+        else -> CreateCharacterContent(
+            character = uiState.character,
+            entities = uiState.entities,
             empties = uiState.emptyFields,
             onBack = onBack,
             onCreateCharacter = { viewModel.createCharacter(onContinue) },
@@ -116,6 +118,12 @@ fun NewCharacterMainScreen(
                 .imePadding()
                 .fillMaxSize()
         )
+    }
+
+    UiToaster(
+        message = uiState.error?.toUiMessage(),
+        onRemoveMessage = viewModel::removeWarning
+    )
     if (uiState.showSearchSheet)
         SearchSheet(
             onDismiss = viewModel::hideSearchSheet,
@@ -126,15 +134,14 @@ fun NewCharacterMainScreen(
 
 @Composable
 private fun CreateCharacterContent(
+    character: NewCharacterMain,
+    entities: DownloadableValues,
     viewModel: NewCharacterMainViewModel,
     empties: NewCharacterMainUiState.EmptyFields,
     onBack: () -> Unit,
     onCreateCharacter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val state by viewModel.newCharacterMain.collectAsStateWithLifecycle()
-    val entities by viewModel.downloadableState.collectAsStateWithLifecycle()
-
     StepNavigation(
         modifier = modifier,
         cancel = onBack,
@@ -149,15 +156,15 @@ private fun CreateCharacterContent(
                 modifier = Modifier
                     .height(300.dp)
                     .widthIn(488.dp),
-                images = state.images,
-                mainImage = state.mainImage,
+                images = character.images,
+                mainImage = character.mainImage,
                 onAddImage = viewModel::addCharacterImage,
                 onRemoveImage = viewModel::removeCharacterImage,
                 onSetImageMain = viewModel::setCharacterMainImage
             )
             Spacer(modifier = Modifier.height(24.dp))
             Content(
-                state = state,
+                state = character,
                 empties = empties,
                 entities = entities,
                 onNameChange = viewModel::setCharacterName,
@@ -178,7 +185,7 @@ private fun CreateCharacterContent(
 private fun Content(
     state: NewCharacterMain,
     empties: NewCharacterMainUiState.EmptyFields,
-    entities: DownloadableValuesState,
+    entities: DownloadableValues,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onClassChange: (DnDEntityWithSubEntities?) -> Unit,
@@ -355,7 +362,7 @@ private fun ImageContent(
                     .aspectRatio(1f),
                 onClick = imagePicker::launch,
             ) {
-                Column (
+                Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceAround
@@ -441,41 +448,3 @@ private fun ImagesList(
         }
     }
 }
-
-@Composable
-private fun LoadingDataCard(
-    state: NewCharacterMainUiState.CheckingDataStates,
-    onCancel: () -> Unit
-) {
-    FullScreenCard(
-        heroIcon = if (state == NewCharacterMainUiState.CheckingDataStates.ERROR) {
-            {
-                Icon(
-                    painter = painterResource(Res.drawable.error),
-                    contentDescription = stringResource(state.text)
-                )
-            }
-        } else null,
-        content = {
-            Text(text = stringResource(state.text))
-        },
-        supportContent =
-            if (state != NewCharacterMainUiState.CheckingDataStates.ERROR) {
-                {
-                    val stateValues = NewCharacterMainUiState.CheckingDataStates.entries
-                    LinearProgressIndicator(
-                        progress = { stateValues.indexOf(state) / stateValues.size.toFloat() }
-                    )
-                }
-            } else null,
-        navButtons = {
-            TextButton(
-                onClick = onCancel
-            ) {
-                Text(text = stringResource(Res.string.cancel))
-            }
-        }
-    )
-}
-
-

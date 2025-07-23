@@ -85,7 +85,7 @@ private fun NavGraphBuilder.mainDestinations(navController: NavHostController) =
         composable<Route.Main.CharactersList> {
             DefaultNavigationWrapper(navController) {
                 CharactersListScreen(
-                    onFABClick = { navController.navigate(Route.New) },
+                    onNewCharacter = { navController.navigate(Route.New) },
                     navigateToCharacter = { navController.navigate(Route.CharacterFull(it.id)) }
                 )
             }

@@ -5,7 +5,6 @@ import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.SYSTEM
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class FilesRepositoryImpl(
@@ -14,30 +13,30 @@ class FilesRepositoryImpl(
 ): FilesRepository {
     private val fs: FileSystem = FileSystem.SYSTEM
 
-    override suspend fun write(bytes: ByteArray, path: Path) {
+    override suspend fun write(bytes: ByteArray, path: Path) = runCatching {
         val parent = path.parent
         if (parent != null && !fs.exists(parent)) fs.createDirectories(parent)
         fs.write(path) {
             write(bytes)
         }
+        Unit
     }
-    override suspend fun read(path: Path): ByteArray {
+    override suspend fun read(path: Path): Result<ByteArray> = runCatching {
         fs.read(path) {
-            return readByteArray()
+            readByteArray()
         }
     }
-    override suspend fun delete(path: Path) {
+    override suspend fun delete(path: Path) = runCatching {
         fs.delete(path)
     }
 
-    override suspend fun move(from: Path, to: Path) {
+    override suspend fun move(from: Path, to: Path) = runCatching {
         fs.atomicMove(from, to)
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     override fun getFilename(dir: Path, extension: String, temp: Boolean): Path {
         val root = if (temp) cacheDir else defaultDir
-        var result = root / dir / (Uuid.random().toHexString() + "." + extension).toPath()
+        val result = root / dir / (Uuid.random().toHexString() + "." + extension).toPath()
         return result
     }
 }

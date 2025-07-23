@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.ClassWithSpells
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.FullSpell
@@ -31,6 +32,10 @@ interface EntitiesDao : EntityInfoDao {
     @Transaction
     @Query("SELECT * FROM base_entities WHERE type == :type")
     suspend fun getEntitiesWithSubList(type: DnDEntityTypes): List<EntityWithSub>
+
+    @Transaction
+    @Query("SELECT * FROM base_entities WHERE type IN (:types)")
+    suspend fun getEntitiesWithSubList(vararg types: DnDEntityTypes): List<DnDEntityWithSubEntities>
 
     @Query("SELECT id FROM base_entities WHERE id IN (:entitiesIds)")
     suspend fun getExistingEntities(entitiesIds: List<Uuid>): List<Uuid>

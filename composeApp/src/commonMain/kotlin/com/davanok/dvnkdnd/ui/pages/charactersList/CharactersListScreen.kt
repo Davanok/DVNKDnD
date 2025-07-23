@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package com.davanok.dvnkdnd.ui.pages.charactersList
 
 import androidx.compose.foundation.background
@@ -25,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.data.model.entities.CharacterMin
+import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.ui.components.EmptyImage
+import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.adaptive.TwoPane
 import com.davanok.dvnkdnd.ui.navigation.FABScaffold
@@ -36,35 +36,40 @@ import dvnkdnd.composeapp.generated.resources.sentiment_dissatisfied
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.uuid.ExperimentalUuidApi
 
 
 @Composable
 fun CharactersListScreen(
-    onFABClick: () -> Unit,
+    onNewCharacter: () -> Unit,
     navigateToCharacter: (CharacterMin) -> Unit,
     viewModel: CharactersListViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    TwoPane(
-        modifier = Modifier.fillMaxSize(),
-        firstPane = { twoPane ->
-            FABScaffold(
-                onClick = onFABClick
-            ) {
-                FirstPaneContent(
-                    modifier = Modifier.fillMaxSize(),
-                    isLoading = uiState.isLoading,
-                    characters = uiState.characters,
-                    onClick = { character ->
-                        if (twoPane) viewModel.selectCharacter(character)
-                        else navigateToCharacter(character)
-                    }
-                )
-            }
-        },
-        secondPane = { CharacterShortInfo(uiState.currentCharacter, viewModel) }
+    if (uiState.error is UiError.Critical) ErrorCard(
+        text = stringResource(uiState.error!!.message),
+        exception = uiState.error!!.exception,
+        refresh = viewModel::loadCharacters
     )
+    else
+        TwoPane(
+            modifier = Modifier.fillMaxSize(),
+            firstPane = { twoPane ->
+                FABScaffold(
+                    onClick = onNewCharacter
+                ) {
+                    FirstPaneContent(
+                        modifier = Modifier.fillMaxSize(),
+                        isLoading = uiState.isLoading,
+                        characters = uiState.characters,
+                        onClick = { character ->
+                            if (twoPane) viewModel.selectCharacter(character)
+                            else navigateToCharacter(character)
+                        }
+                    )
+                }
+            },
+            secondPane = { CharacterShortInfo(uiState.currentCharacter, viewModel) }
+        )
 }
 
 @Composable

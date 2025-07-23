@@ -43,13 +43,11 @@ class NewCharacterStatsViewModel(
     }
 
     fun loadCharacterWithAllModifiers(characterId: Uuid) = viewModelScope.launch {
-        runCatching {
-            repository.getCharacterWithAllModifiers(characterId)
-        }.onFailure {
+        repository.getCharacterWithAllModifiers(characterId).onFailure {
             _uiState.value = _uiState.value.copy(
                 error = UiError.Critical(
                     message = Res.string.loading_character_error,
-                    details = it
+                    exception = it
                 )
             )
         }.onSuccess { loaded ->
@@ -85,6 +83,7 @@ class NewCharacterStatsViewModel(
     fun setModifiers(modifiers: DnDModifiersGroup) {
         _uiState.value = _uiState.value.copy(modifiers = modifiers)
     }
+
     fun selectModifier(modifier: DnDModifierBonus) {
         val current = _uiState.value.selectedModifiersBonuses.toMutableSet()
         val (limit, group) = modifierInfo[modifier.id] ?: (0 to emptySet())
@@ -141,20 +140,24 @@ class NewCharacterStatsViewModel(
         return true
     }
 
-    fun saveCharacterStats(characterId: Uuid, onSuccess: (characterId: Uuid) -> Unit) = viewModelScope.launch {
-        if (!checkSelectedModifierBonuses()) return@launch
-        val state = _uiState.value
-        runCatching {
-            repository.setCharacterStats(characterId, state.modifiers)
-            repository.setCharacterSelectedModifierBonuses(characterId, state.selectedModifiersBonuses.toList())
-        }.onFailure {
-            _uiState.value = state.copy(
-                error = UiError.Critical(Res.string.saving_data_error, it)
-            )
-        }.onSuccess {
-            onSuccess(characterId)
+    fun saveCharacterStats(characterId: Uuid, onSuccess: (characterId: Uuid) -> Unit) =
+        viewModelScope.launch {
+            if (!checkSelectedModifierBonuses()) return@launch
+            val state = _uiState.value
+            runCatching {
+                repository.setCharacterStats(characterId, state.modifiers)
+                repository.setCharacterSelectedModifierBonuses(
+                    characterId,
+                    state.selectedModifiersBonuses.toList()
+                )
+            }.onFailure {
+                _uiState.value = state.copy(
+                    error = UiError.Critical(Res.string.saving_data_error, it)
+                )
+            }.onSuccess {
+                onSuccess(characterId)
+            }
         }
-    }
 }
 
 enum class StatsCreationOptions(val title: StringResource) {

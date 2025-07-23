@@ -66,6 +66,7 @@
     <string name="zoom_out">Zoom out</string>
 
     <!--common-->
+    <string name="info">Info</string>
     <string name="cancel">Cancel</string>
     <string name="more">More</string>
     <string name="loading">Loading</string>

@@ -16,23 +16,20 @@ import kotlin.uuid.Uuid
 class CharactersRepositoryImpl(
     private val dao: CharactersDao,
 ) : CharactersRepository {
-    override suspend fun getCharactersMinList() = dao.getCharactersMinList()
+    override suspend fun getCharactersMinList() = runCatching {
+        dao.getCharactersMinList()
+    }
 
-    override suspend fun getCharacterWithAllModifiers(characterId: Uuid) =
+    override suspend fun getCharacterWithAllModifiers(characterId: Uuid) = runCatching {
         dao.getCharacterWithAllModifiers(characterId).toCharacterWithAllModifiers()
+    }
 
-    override suspend fun getCharacterWithAllSkills(characterId: Uuid) =
+    override suspend fun getCharacterWithAllSkills(characterId: Uuid) = runCatching {
         dao.getCharacterWithAllSkills(characterId).toCharacterWithAllSkills()
+    }
 
-    override suspend fun createCharacter(
-        character: Character,
-        classId: Uuid,
-        subClassId: Uuid?
-    ): Uuid {
-        dao.insertCharacter(character)
-        dao.insertCharacterClass(CharacterClass(character.id, classId, subClassId))
-
-        val characterWithModifiers = dao.getCharacterWithAllModifiers(character.id)
+    private suspend fun implementCharacterNonSelectableBonuses(characterId: Uuid) { // TODO implement skills
+        val characterWithModifiers = dao.getCharacterWithAllModifiers(characterId)
             .toCharacterWithAllModifiers()
 
         val notSelectableModifiers =
@@ -46,15 +43,31 @@ class CharactersRepositoryImpl(
                 .fastFilter { !it.selectable }
                 .fastMap { it.id }
 
-        setCharacterSelectedModifierBonuses(characterId = character.id, bonusIds = notSelectableModifiers)
+        setCharacterSelectedModifierBonuses(
+            characterId = characterId,
+            bonusIds = notSelectableModifiers
+        )
+    }
 
-        return character.id
+    override suspend fun createCharacter(
+        character: Character,
+        classId: Uuid,
+        subClassId: Uuid?
+    ): Result<Uuid> = runCatching {
+        val characterId = character.id
+
+        dao.insertCharacter(character)
+        dao.insertCharacterClass(CharacterClass(characterId, classId, subClassId))
+
+        implementCharacterNonSelectableBonuses(characterId)
+
+        characterId
     }
 
     override suspend fun setCharacterStats(
         characterId: Uuid,
         modifiers: DnDModifiersGroup,
-    ) {
+    ): Result<Unit> = runCatching {
         val stats = modifiers.run {
             CharacterStats(
                 id = characterId,
@@ -69,7 +82,10 @@ class CharactersRepositoryImpl(
         dao.insertCharacterStats(stats)
     }
 
-    override suspend fun setCharacterSelectedModifierBonuses(characterId: Uuid, bonusIds: List<Uuid>) {
+    override suspend fun setCharacterSelectedModifierBonuses(
+        characterId: Uuid,
+        bonusIds: List<Uuid>
+    ): Result<Unit> = runCatching {
         val entities = bonusIds.fastMap { modifierId ->
             CharacterSelectedModifierBonus(characterId, modifierId)
         }
