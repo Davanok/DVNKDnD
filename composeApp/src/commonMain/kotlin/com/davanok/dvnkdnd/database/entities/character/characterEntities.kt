@@ -4,12 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
-import com.davanok.dvnkdnd.database.entities.items.DnDItem
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import okio.Path
 import kotlin.uuid.Uuid
 

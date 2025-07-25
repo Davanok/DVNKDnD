@@ -9,13 +9,11 @@ import com.davanok.dvnkdnd.data.model.dnd_enums.MagicSchools
 import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier

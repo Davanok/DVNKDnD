@@ -1,7 +1,6 @@
 package com.davanok.dvnkdnd.data.model.entities
 
 import androidx.compose.ui.util.fastMap
-import com.davanok.dvnkdnd.database.model.toDnDEntityMin
 import okio.Path
 import kotlin.uuid.Uuid
 
