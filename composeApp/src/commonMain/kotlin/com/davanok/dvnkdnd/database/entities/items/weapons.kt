@@ -21,11 +21,11 @@ data class Weapon(
 @Serializable
 @Entity(
     tableName = "weapon_damages",
-    foreignKeys = [ForeignKey(Weapon::class, ["id"], ["weaponId"], onDelete = ForeignKey.CASCADE)]
+    foreignKeys = [ForeignKey(Weapon::class, ["id"], ["weapon_id"], onDelete = ForeignKey.CASCADE)]
 )
 data class WeaponDamage(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val weaponId: Uuid,
+    @ColumnInfo("weapon_id", index = true) val weaponId: Uuid,
     val damageType: DamageTypes,
     val diceCount: Int,
     val dice: Dices,

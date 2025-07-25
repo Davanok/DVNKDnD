@@ -48,6 +48,19 @@ data class CharacterSpellSlots(
     val usedSpells: List<Int>, // used spells for every spell level
 )
 
+@Entity(
+    tableName = "character_selected_modifier_bonuses",
+    primaryKeys = ["character_id", "bonus_id"],
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(EntityModifierBonus::class, ["id"], ["bonus_id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class CharacterSelectedModifierBonus(
+    @ColumnInfo("character_id", index = true) val characterId: Uuid,
+    @ColumnInfo("bonus_id", index = true) val bonusId: Uuid,
+)
+
 // one to many
 @Entity(
     tableName = "character_selected_skills",
@@ -60,18 +73,6 @@ data class CharacterSpellSlots(
 data class CharacterSelectedSkill(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("skill_id", index = true) val skillId: Uuid
-)
-
-@Entity(
-    tableName = "character_images",
-    foreignKeys = [
-        ForeignKey(DnDItem::class, ["id"], ["character_id"], onDelete = ForeignKey.SET_NULL),
-    ]
-)
-data class CharacterImage(
-    @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo("character_id", index = true) val characterId: Uuid?,
-    val path: Path,
 )
 
 // many to many
@@ -102,15 +103,13 @@ data class CharacterFeat(
 )
 
 @Entity(
-    tableName = "character_selected_modifier_bonuses",
-    primaryKeys = ["character_id", "bonus_id"],
+    tableName = "character_images",
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(EntityModifierBonus::class, ["id"], ["bonus_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.SET_NULL),
     ]
 )
-data class CharacterSelectedModifierBonus(
-    @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    @ColumnInfo("bonus_id", index = true) val bonusId: Uuid,
+data class CharacterImage(
+    @PrimaryKey val id: Uuid = Uuid.random(),
+    @ColumnInfo("character_id", index = true) val characterId: Uuid?,
+    val path: Path,
 )
-

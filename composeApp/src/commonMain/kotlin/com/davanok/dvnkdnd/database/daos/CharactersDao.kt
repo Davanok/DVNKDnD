@@ -9,15 +9,21 @@ import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClass
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifierBonus
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedSkill
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.model.DbCharacterWithAllModifiers
 import com.davanok.dvnkdnd.database.model.DbCharacterWithAllSkills
+import com.davanok.dvnkdnd.database.model.DbFullCharacter
 import kotlin.uuid.Uuid
 
 @Dao
 interface CharactersDao {
     @Query("SELECT id, name, level, image FROM characters")
     suspend fun getCharactersMinList(): List<CharacterMin>
+
+    @Transaction
+    @Query("SELECT * FROM characters WHERE id == :characterId")
+    suspend fun getFullCharacter(characterId: Uuid): DbFullCharacter?
 
     @Insert
     suspend fun insertCharacter(character: Character)
@@ -37,4 +43,6 @@ interface CharactersDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCharacterSelectedModifierBonuses(items: List<CharacterSelectedModifierBonus>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertCharacterSelectedSkills(items: List<CharacterSelectedSkill>)
 }

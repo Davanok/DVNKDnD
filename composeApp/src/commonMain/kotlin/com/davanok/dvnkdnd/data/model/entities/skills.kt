@@ -16,3 +16,9 @@ fun EntitySkill.toDnDSkill() = DnDSkill(
     selectable = selectable,
     skill = skill
 )
+fun DnDSkill.toEntitySkill(entityId: Uuid) = EntitySkill(
+    id = id,
+    entityId = entityId,
+    selectable = selectable,
+    skill = skill
+)

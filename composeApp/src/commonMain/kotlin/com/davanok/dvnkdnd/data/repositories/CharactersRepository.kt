@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.repositories
 
+import com.davanok.dvnkdnd.data.model.entities.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.CharacterWithAllSkills
@@ -8,6 +9,8 @@ import com.davanok.dvnkdnd.database.entities.character.Character
 import kotlin.uuid.Uuid
 
 interface CharactersRepository {
+    suspend fun getFullCharacter(characterId: Uuid): Result<CharacterFull?>
+
     suspend fun getCharactersMinList(): Result<List<CharacterMin>>
     suspend fun getCharacterWithAllModifiers(characterId: Uuid): Result<CharacterWithAllModifiers>
     suspend fun getCharacterWithAllSkills(characterId: Uuid): Result<CharacterWithAllSkills>
@@ -16,4 +19,5 @@ interface CharactersRepository {
 
     suspend fun setCharacterStats(characterId: Uuid, modifiers: DnDModifiersGroup): Result<Unit>
     suspend fun setCharacterSelectedModifierBonuses(characterId: Uuid, bonusIds: List<Uuid>): Result<Unit>
+    suspend fun setCharacterSelectedSkills(characterId: Uuid, skillIds: List<Uuid>): Result<Unit>
 }

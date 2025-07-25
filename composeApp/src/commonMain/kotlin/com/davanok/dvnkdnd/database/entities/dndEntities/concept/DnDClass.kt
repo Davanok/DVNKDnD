@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.Spell
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -26,27 +26,27 @@ data class DnDClass( // also subclass
 @Serializable
 @Entity(
     tableName = "class_spells",
-    primaryKeys = ["classId", "spellId"],
+    primaryKeys = ["class_id", "spell_id"],
     foreignKeys = [
-        ForeignKey(DnDClass::class, ["id"], ["classId"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(Spell::class, ["id"], ["spellId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DnDClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DnDSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE),
     ]
 )
 data class ClassSpell( // spells that available for class
-    @ColumnInfo(index = true) val classId: Uuid,
-    @ColumnInfo(index = true) val spellId: Uuid,
+    @ColumnInfo("class_id", index = true) val classId: Uuid,
+    @ColumnInfo("spell_id", index = true) val spellId: Uuid,
 )
 @Serializable
 @Entity(
     tableName = "spell_slots",
     foreignKeys = [
-        ForeignKey(DnDClass::class, ["id"], ["classId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DnDClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE),
     ]
 )
 data class ClassSpellSlot(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @SerialName("class_id")
-    @ColumnInfo(index = true) val classId: Uuid,
+    @ColumnInfo("class_id", index = true) val classId: Uuid,
     val level: Int,
     @SerialName("prepared_spells")
     val preparedSpells: Int?,

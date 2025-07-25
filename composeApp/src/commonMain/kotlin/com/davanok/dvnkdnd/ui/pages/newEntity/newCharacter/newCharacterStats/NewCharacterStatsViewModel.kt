@@ -72,7 +72,7 @@ class NewCharacterStatsViewModel(
 
             _uiState.value = _uiState.value.copy(
                 modifiers = character.characterStats ?: DnDModifiersGroup.Default,
-                selectedModifiersBonuses = character.selectedModifiers.toSet(),
+                selectedModifiersBonuses = character.selectedModifierBonuses.toSet(),
                 allEntitiesWithModifiers = allCharacterEntities,
 
                 isLoading = false

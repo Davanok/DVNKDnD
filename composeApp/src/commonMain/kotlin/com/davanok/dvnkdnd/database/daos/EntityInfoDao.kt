@@ -7,8 +7,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.FullSpellAttack
 import com.davanok.dvnkdnd.data.model.entities.FullWeapon
-import com.davanok.dvnkdnd.data.model.entities.JoinProperty
-import com.davanok.dvnkdnd.database.entities.dndEntities.Spell
+import com.davanok.dvnkdnd.data.model.entities.JoinItemProperty
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
@@ -62,7 +62,7 @@ interface EntityInfoDao {
 
     // spell
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSpell(spell: Spell)
+    suspend fun insertSpell(spell: DnDSpell)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSpellArea(area: SpellArea)
@@ -94,7 +94,7 @@ interface EntityInfoDao {
     suspend fun insertItemProperties(properties: List<ItemProperty>)
 
     @Transaction
-    suspend fun insertItemJoinProperties(properties: List<JoinProperty>) {
+    suspend fun insertItemJoinProperties(properties: List<JoinItemProperty>) {
         insertItemProperties(properties.fastMap { it.property })
         insertItemPropertyLinks(properties.fastMap { it.link })
     }

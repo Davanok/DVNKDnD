@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.database.daos
 
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -13,6 +14,8 @@ import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.FullSpell
+import com.davanok.dvnkdnd.data.model.entities.toEntityModifierBonus
+import com.davanok.dvnkdnd.data.model.entities.toEntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
@@ -71,7 +74,9 @@ interface EntitiesDao : EntityInfoDao {
     @Transaction
     suspend fun insertFullSpell(spell: FullSpell) {
         insertSpell(spell.spell)
-        insertSpellArea(spell.area)
+        spell.area?.let {
+            insertSpellArea(it)
+        }
         spell.attacks.fastForEach {
             insertFullSpellAttack(it)
         }
@@ -88,13 +93,14 @@ interface EntitiesDao : EntityInfoDao {
     @Transaction
     suspend fun insertFullEntity(fullEntity: DnDFullEntity) {
         Napier.i { "insert full entity (${fullEntity.type}) with id: ${fullEntity.id}" }
+        val entityId = fullEntity.id
         fullEntity.companionEntities.fastForEach {
             insertFullEntity(it)
         }
 
         insertEntity(fullEntity.toBaseEntity())
-        insertModifiers(fullEntity.modifierBonuses)
-        insertSkills(fullEntity.skills)
+        insertModifiers(fullEntity.modifierBonuses.fastMap { it.toEntityModifierBonus(entityId) })
+        insertSkills(fullEntity.skills.fastMap { it.toEntitySkill(entityId) })
         insertSavingThrows(fullEntity.savingThrows)
         fullEntity.selectionLimits?.let { insertSelectionLimits(it) }
 

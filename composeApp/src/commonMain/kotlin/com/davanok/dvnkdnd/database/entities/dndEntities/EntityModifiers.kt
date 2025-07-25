@@ -12,7 +12,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-@Serializable
 @Entity(
     tableName = "entity_modifier_bonuses",
     foreignKeys = [
@@ -21,14 +20,12 @@ import kotlin.uuid.Uuid
 )
 data class EntityModifierBonus(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @SerialName("entity_id")
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     val selectable: Boolean,
     val stat: Stats,
     val modifier: Int,
 )
 
-@Serializable
 @Entity(
     tableName = "entity_skills",
     foreignKeys = [
@@ -37,7 +34,6 @@ data class EntityModifierBonus(
 )
 data class EntitySkill(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @SerialName("entity_id")
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     val selectable: Boolean,
     val skill: Skills,

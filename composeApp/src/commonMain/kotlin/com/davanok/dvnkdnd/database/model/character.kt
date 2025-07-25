@@ -4,9 +4,12 @@ import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
+import com.davanok.dvnkdnd.data.model.entities.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.CharacterWithAllSkills
+import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
+import com.davanok.dvnkdnd.data.model.entities.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.toModifiersGroup
 import com.davanok.dvnkdnd.database.entities.character.*
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
@@ -73,7 +76,7 @@ data class DbCharacterWithAllModifiers(
     fun toCharacterWithAllModifiers() = CharacterWithAllModifiers(
         character = character.toCharacterMin(),
         characterStats = characterStats?.toModifiersGroup(),
-        selectedModifiers = selectedModifiers,
+        selectedModifierBonuses = selectedModifiers,
         classes = classesWithModifiers.fastMap { it.toDnDEntityWithModifiers() },
         race = raceModifiers?.toDnDEntityWithModifiers(),
         subRace = subRaceModifiers?.toDnDEntityWithModifiers(),
@@ -137,5 +140,111 @@ data class DbCharacterWithAllSkills(
         subRace = subRaceWithSkills?.toDndEntityWithSkills(),
         background = backgroundWithSkills?.toDndEntityWithSkills(),
         subBackground = subBackgroundWithSkills?.toDndEntityWithSkills()
+    )
+}
+
+data class DbFullCharacter(
+    @Embedded val character: Character,
+
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val images: List<CharacterImage>,
+
+    @Relation(parentColumn = "id", entityColumn = "id")
+    val stats: CharacterStats?,
+    @Relation(parentColumn = "id", entityColumn = "id")
+    val health: CharacterHealth?,
+    @Relation(parentColumn = "id", entityColumn = "id")
+    val usedSpells: CharacterSpellSlots?,
+
+    @Relation(
+        entity = DnDBaseEntity::class,
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            CharacterClass::class,
+            parentColumn = "character_id",
+            entityColumn = "class_id"
+        )
+    )
+    val classes: List<DbFullEntity>,
+    @Relation(
+        entity = DnDBaseEntity::class,
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            CharacterClass::class,
+            parentColumn = "character_id",
+            entityColumn = "sub_class_id"
+        )
+    )
+    val subClasses: List<DbFullEntity>,
+    @Relation(
+        entity = DnDBaseEntity::class,
+        parentColumn = "race",
+        entityColumn = "id"
+    )
+    val race: DbFullEntity?,
+    @Relation(
+        entity = DnDBaseEntity::class,
+        parentColumn = "sub_race",
+        entityColumn = "id"
+    )
+    val subRace: DbFullEntity?,
+    @Relation(
+        entity = DnDBaseEntity::class,
+        parentColumn = "background",
+        entityColumn = "id"
+    )
+    val background: DbFullEntity?,
+    @Relation(
+        entity = DnDBaseEntity::class,
+        parentColumn = "sub_background",
+        entityColumn = "id"
+    )
+    val subBackground: DbFullEntity?,
+
+    @Relation(
+        entity = DnDBaseEntity::class,
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            CharacterFeat::class,
+            parentColumn = "character_id",
+            entityColumn = "feat_id"
+        )
+    )
+    val feats: List<DbFullEntity>,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "character_id",
+    )
+    val selectedModifierBonuses: List<CharacterSelectedModifierBonus>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "character_id",
+    )
+    val selectedSkills: List<CharacterSelectedSkill>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "character_id",
+    )
+    val selectedProficiencies: List<CharacterProficiency>
+) {
+    fun toCharacterFull(): CharacterFull = CharacterFull(
+        character = character.toCharacterMin(),
+        images = images.fastMap { DatabaseImage(it.id, it.path) },
+        stats = stats?.toModifiersGroup(),
+        health = health?.let { DnDCharacterHealth(it.max, it.current, it.temp) },
+        usedSpells = usedSpells?.usedSpells.orEmpty(),
+        classes = (classes + subClasses).fastMap { it.toDnDFullEntity() },
+        race = race?.toDnDFullEntity(),
+        subRace = subRace?.toDnDFullEntity(),
+        background = background?.toDnDFullEntity(),
+        subBackground = subBackground?.toDnDFullEntity(),
+        feats = feats.fastMap { it.toDnDFullEntity() },
+        selectedModifierBonuses = selectedModifierBonuses.fastMap { it.bonusId },
+        selectedSkills = selectedSkills.fastMap { it.skillId },
+        selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId }
     )
 }

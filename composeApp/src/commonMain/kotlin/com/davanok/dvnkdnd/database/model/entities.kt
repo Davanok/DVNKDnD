@@ -3,10 +3,17 @@ package com.davanok.dvnkdnd.database.model
 import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Relation
+import com.davanok.dvnkdnd.data.model.entities.ClassWithSpells
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSkills
 import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.entities.FullItem
+import com.davanok.dvnkdnd.data.model.entities.FullSpell
+import com.davanok.dvnkdnd.data.model.entities.FullSpellAttack
+import com.davanok.dvnkdnd.data.model.entities.FullWeapon
+import com.davanok.dvnkdnd.data.model.entities.JoinItemProperty
 import com.davanok.dvnkdnd.data.model.entities.toDnDModifier
 import com.davanok.dvnkdnd.data.model.entities.toDnDSkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
@@ -16,6 +23,25 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlot
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
+import com.davanok.dvnkdnd.database.entities.items.Armor
+import com.davanok.dvnkdnd.database.entities.items.DnDItem
+import com.davanok.dvnkdnd.database.entities.items.ItemProperty
+import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
+import com.davanok.dvnkdnd.database.entities.items.Weapon
+import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
 
 
 fun DnDBaseEntity.toDnDEntityMin() = DnDEntityMin(
@@ -75,28 +101,263 @@ data class DbEntityWithSkills(
         skills = skills.fastMap { it.toDnDSkill() }
     )
 }
-
+data class JoinClassSpell(
+    @Embedded
+    val link: ClassSpell,
+    @Relation(
+        DnDBaseEntity::class,
+        parentColumn = "spell_id",
+        entityColumn = "id"
+    )
+    val spell: DbFullEntity
+)
+data class DbClassWithSpells(
+    @Embedded
+    val cls: DnDClass,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "class_id"
+    )
+    val spells: List<JoinClassSpell>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "class_id"
+    )
+    val slots: List<ClassSpellSlot>
+) {
+    fun toClassWithSpells() = ClassWithSpells(
+        id = cls.id,
+        mainStat = cls.mainStat,
+        hitDice = cls.hitDice,
+        spells = spells.fastMap { it.link },
+        slots = slots
+    )
+}
+data class DbFullSpellAttack(
+    @Embedded
+    val attack: SpellAttack,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "attack_id"
+    )
+    val modifiers: List<SpellAttackLevelModifier>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val save: SpellAttackSave?
+) {
+    fun toFullSpellAttack() = FullSpellAttack(
+        id = attack.id,
+        spellId = attack.spellId,
+        damageType = attack.damageType,
+        diceCount = attack.diceCount,
+        dice = attack.dice,
+        modifier = attack.modifier,
+        modifiers = modifiers,
+        save = save
+    )
+}
+data class DbFullSpell(
+    @Embedded
+    val spell: DnDSpell,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val area: SpellArea?,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "spell_id"
+    )
+    val attacks: List<DbFullSpellAttack>
+) {
+    fun toFullSpell() = FullSpell(
+        id = spell.id,
+        school = spell.school,
+        level = spell.level,
+        castingTime = spell.castingTime,
+        components = spell.components,
+        ritual = spell.ritual,
+        materialComponent = spell.materialComponent,
+        duration = spell.duration,
+        concentration = spell.concentration,
+        area = area,
+        attacks = attacks.fastMap { it.toFullSpellAttack() }
+    )
+}
+data class DbJoinItemProperty(
+    @Embedded
+    val link: ItemPropertyLink,
+    @Relation(
+        parentColumn = "property_id",
+        entityColumn = "id"
+    )
+    val property: ItemProperty
+) {
+    fun toJoinItemProperty() = JoinItemProperty(
+        itemId = link.itemId,
+        propertyId = link.propertyId,
+        property = property
+    )
+}
+data class DbFullWeapon(
+    @Embedded
+    val weapon: Weapon,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "weapon_id"
+    )
+    val damages: List<WeaponDamage>
+) {
+    fun toFullWeapon() = FullWeapon(
+        id = weapon.id,
+        atkBonus = weapon.atkBonus,
+        damages = damages
+    )
+}
+data class DbFullItem(
+    @Embedded
+    val item: DnDItem,
+    @Relation(
+        ItemPropertyLink::class,
+        parentColumn = "id",
+        entityColumn = "item_id"
+    )
+    val properties: List<DbJoinItemProperty>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val armor: Armor?,
+    @Relation(
+        Weapon::class,
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val weapon: DbFullWeapon?
+) {
+    fun toFullItem() = FullItem(
+        id = item.id,
+        cost = item.cost,
+        weight = item.weight,
+        properties = properties.fastMap { it.toJoinItemProperty() },
+        armor = armor,
+        weapon = weapon?.toFullWeapon()
+    )
+}
+data class JoinEntityProficiency(
+    @Embedded
+    val link: EntityProficiency,
+    @Relation(
+        DnDBaseEntity::class,
+        parentColumn = "proficiency_id",
+        entityColumn = "id"
+    )
+    val proficiency: DbFullEntity
+)
+data class JoinEntityAbility(
+    @Embedded
+    val link: EntityAbility,
+    @Relation(
+        DnDBaseEntity::class,
+        parentColumn = "ability_id",
+        entityColumn = "id"
+    )
+    val ability: DbFullEntity
+)
 data class DbFullEntity(
     @Embedded
     val base: DnDBaseEntity,
 
     @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val modifiers: List<EntityModifierBonus>,
+    val modifierBonuses: List<EntityModifierBonus>,
     @Relation(parentColumn = "id", entityColumn = "entity_id")
     val skills: List<EntitySkill>,
     @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val savingThrow: List<EntitySavingThrow>,
+    val savingThrows: List<EntitySavingThrow>,
 
-    @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val proficiencies: List<EntityProficiency>,
-    @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val abilities: List<EntityAbility>,
+    @Relation(EntityProficiency::class, parentColumn = "id", entityColumn = "entity_id")
+    val proficiencies: List<JoinEntityProficiency>,
+    @Relation(EntityAbility::class, parentColumn = "id", entityColumn = "entity_id")
+    val abilities: List<JoinEntityAbility>,
 
     @Relation(parentColumn = "id", entityColumn = "id")
-    val selectionLimits: EntitySelectionLimits?
+    val selectionLimits: EntitySelectionLimits?,
 
-//    TODO: add companion entities (entities that inherits from BaseEntity) (proficiencies, abilities, class spells)
-//    TODO?: add objects that expanding base entity
-)
+    @Relation(
+        entity = DnDClass::class,
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val cls: DbClassWithSpells?,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val race: DnDRace?,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val background: DnDBackground?,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val feat: DnDFeat?,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val ability: DnDAbility?,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val proficiency: DnDProficiency?,
+    @Relation(
+        DnDSpell::class,
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val spell: DbFullSpell?,
+    @Relation(
+        DnDItem::class,
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val item: DbFullItem?
+) {
+    fun toDnDFullEntity(): DnDFullEntity = DnDFullEntity(
+        id = base.id,
+        parentId = base.parentId,
+        userId = null,
+        type = base.type,
+        shared = base.shared,
+        name = base.name,
+        description = base.description,
+        source = base.source,
+        modifierBonuses = modifierBonuses.fastMap { it.toDnDModifier() },
+        skills = skills.fastMap { it.toDnDSkill() },
+        savingThrows = savingThrows,
+        proficiencies = proficiencies.fastMap { it.link },
+        abilities = abilities.fastMap { it.link },
+        selectionLimits = selectionLimits,
+        cls = cls?.toClassWithSpells(),
+        race = race,
+        background = background,
+        feat = feat,
+        ability = ability,
+        proficiency = proficiency,
+        spell = spell?.toFullSpell(),
+        item = item?.toFullItem(),
+        companionEntities = (
+                abilities.fastMap { it.ability } +
+                        proficiencies.fastMap { it.proficiency } +
+                        cls?.spells?.fastMap { it.spell }.orEmpty()
+                ).fastMap { it.toDnDFullEntity() }
+    )
+}
 
 

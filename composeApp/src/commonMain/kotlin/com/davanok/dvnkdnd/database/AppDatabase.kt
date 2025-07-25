@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
-import com.davanok.dvnkdnd.database.entities.dndEntities.Spell
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
@@ -48,7 +48,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
     entities = [
         DnDAbility::class,
         DnDProficiency::class,
-        Spell::class,
+        DnDSpell::class,
         SpellArea::class,
         SpellAttack::class,
         SpellAttackLevelModifier::class,

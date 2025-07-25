@@ -20,7 +20,7 @@ import kotlin.uuid.Uuid
         ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class Spell(
+data class DnDSpell(
     @PrimaryKey val id: Uuid = Uuid.random(),
     val school: MagicSchools,
     val level: Int?,
@@ -36,7 +36,7 @@ data class Spell(
 @Entity(
     tableName = "spell_areas",
     foreignKeys = [
-        ForeignKey(Spell::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDSpell::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class SpellArea(
@@ -49,12 +49,12 @@ data class SpellArea(
 @Entity(
     tableName = "spell_attacks",
     foreignKeys = [
-        ForeignKey(Spell::class, ["id"], ["spellId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DnDSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class SpellAttack(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val spellId: Uuid,
+    @ColumnInfo("spell_id", index = true) val spellId: Uuid,
     val damageType: DamageTypes,
     val diceCount: Int,
     val dice: Dices,
@@ -65,12 +65,12 @@ data class SpellAttack(
 @Entity(
     tableName = "spell_attack_level_modifiers",
     foreignKeys = [
-        ForeignKey(SpellAttack::class, ["id"], ["attackId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(SpellAttack::class, ["id"], ["attack_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class SpellAttackLevelModifier(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val attackId: Uuid,
+    @ColumnInfo("attack_id", index = true) val attackId: Uuid,
     val level: Int,
     val diceCount: Int,
     val dice: Dices,

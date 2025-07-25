@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.data.model.entities
 import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -15,6 +16,13 @@ data class DnDModifierBonus(
 )
 fun EntityModifierBonus.toDnDModifier() = DnDModifierBonus(
     id = id,
+    selectable = selectable,
+    stat = stat,
+    modifier = modifier
+)
+fun DnDModifierBonus.toEntityModifierBonus(entityId: Uuid) = EntityModifierBonus(
+    id = id,
+    entityId = entityId,
     selectable = selectable,
     stat = stat,
     modifier = modifier

@@ -15,7 +15,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
-import com.davanok.dvnkdnd.database.entities.dndEntities.Spell
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
@@ -63,15 +63,15 @@ data class DnDEntityWithSubEntities(
 @Immutable
 data class DnDEntityWithModifiers(
     val entity: DnDEntityMin,
-    val selectionLimit: Int? = null,
-    val modifiers: List<DnDModifierBonus> = emptyList(),
+    val selectionLimit: Int?,
+    val modifiers: List<DnDModifierBonus>,
 )
 
 @Immutable
 data class DnDEntityWithSkills(
     val entity: DnDEntityMin,
-    val selectionLimit: Int? = null,
-    val skills: List<DnDSkill> = emptyList(),
+    val selectionLimit: Int?,
+    val skills: List<DnDSkill>,
 )
 
 @Immutable
@@ -79,9 +79,9 @@ data class DnDEntityWithSkills(
 data class DnDFullEntity(
     val id: Uuid = Uuid.random(),
     @SerialName("parent_id")
-    val parentId: Uuid? = null,
+    val parentId: Uuid?,
     @SerialName("user_id")
-    val userId: Uuid? = null,
+    val userId: Uuid?,
     val type: DnDEntityTypes,
     val shared: Boolean = false,
     val name: String,
@@ -89,8 +89,8 @@ data class DnDFullEntity(
     val source: String,
 
     @SerialName("modifier_bonuses")
-    val modifierBonuses: List<EntityModifierBonus>,
-    val skills: List<EntitySkill>,
+    val modifierBonuses: List<DnDModifierBonus>,
+    val skills: List<DnDSkill>,
     @SerialName("saving_throws")
     val savingThrows: List<EntitySavingThrow>,
 
@@ -100,14 +100,14 @@ data class DnDFullEntity(
     @SerialName("selection_limits")
     val selectionLimits: EntitySelectionLimits?,
 
-    val cls: ClassWithSpells? = null,
-    val race: DnDRace? = null,
-    val background: DnDBackground? = null,
-    val feat: DnDFeat? = null,
-    val ability: DnDAbility? = null,
-    val proficiency: DnDProficiency? = null,
-    val spell: FullSpell? = null,
-    val item: FullItem? = null,
+    val cls: ClassWithSpells?,
+    val race: DnDRace?,
+    val background: DnDBackground?,
+    val feat: DnDFeat?,
+    val ability: DnDAbility?,
+    val proficiency: DnDProficiency?,
+    val spell: FullSpell?,
+    val item: FullItem?,
 
     @SerialName("companion_entities")
     val companionEntities: List<DnDFullEntity> = emptyList(),
@@ -121,11 +121,17 @@ data class DnDFullEntity(
         description = description,
         source = source
     )
+    fun toDnDEntityMin() = DnDEntityMin(
+        id = id,
+        type = type,
+        name = name,
+        source = source
+    )
 
     fun getSubEntitiesIds() =
         abilities.fastMap { it.abilityId } +
                 proficiencies.fastMap { it.proficiencyId } +
-                (cls?.spells?.fastMap { it.spellId } ?: emptyList())
+                cls?.spells?.fastMap { it.spellId }.orEmpty()
 }
 
 @Serializable
@@ -156,11 +162,11 @@ data class FullSpell(
     val duration: String,
     val concentration: Boolean,
 
-    val area: SpellArea,
+    val area: SpellArea?,
     val attacks: List<FullSpellAttack>,
 ) {
     val spell
-        get() = Spell(
+        get() = DnDSpell(
             id,
             school,
             level,
@@ -200,15 +206,15 @@ data class FullItem(
     val cost: Int?, // in copper pieces
     val weight: Int?,
 
-    val properties: List<JoinProperty>,
-    val armor: Armor? = null,
-    val weapon: FullWeapon? = null,
+    val properties: List<JoinItemProperty>,
+    val armor: Armor?,
+    val weapon: FullWeapon?,
 ) {
     val item get() = DnDItem(id, cost, weight)
 }
 
 @Serializable
-data class JoinProperty(
+data class JoinItemProperty(
     @SerialName("item_id")
     val itemId: Uuid,
     @SerialName("property_id")
