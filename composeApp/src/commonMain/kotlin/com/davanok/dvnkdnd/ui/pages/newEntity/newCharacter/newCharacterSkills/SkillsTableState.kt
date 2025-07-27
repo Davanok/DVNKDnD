@@ -6,9 +6,9 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastForEach
-import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSkills
-import com.davanok.dvnkdnd.data.model.entities.DnDSkill
+import com.davanok.dvnkdnd.data.model.dndEnums.Skills
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSkills
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
 import kotlin.uuid.Uuid
 
 data class UiSkillState(

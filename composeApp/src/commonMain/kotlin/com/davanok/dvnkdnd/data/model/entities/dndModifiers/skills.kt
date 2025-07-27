@@ -1,6 +1,6 @@
-package com.davanok.dvnkdnd.data.model.entities
+package com.davanok.dvnkdnd.data.model.entities.dndModifiers
 
-import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
+import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid

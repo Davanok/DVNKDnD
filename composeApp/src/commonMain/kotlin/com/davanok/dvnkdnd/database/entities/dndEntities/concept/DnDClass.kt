@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
-import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Dices
+import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import kotlinx.serialization.SerialName

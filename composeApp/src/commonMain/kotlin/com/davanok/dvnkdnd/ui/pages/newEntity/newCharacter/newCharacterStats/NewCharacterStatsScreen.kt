@@ -29,9 +29,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithModifiers
-import com.davanok.dvnkdnd.data.model.entities.DnDModifierBonus
-import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithModifiers
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard

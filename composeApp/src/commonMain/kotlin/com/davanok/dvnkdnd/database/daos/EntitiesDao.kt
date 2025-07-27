@@ -7,15 +7,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.ClassWithSpells
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityMin
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
-import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
-import com.davanok.dvnkdnd.data.model.entities.FullItem
-import com.davanok.dvnkdnd.data.model.entities.FullSpell
-import com.davanok.dvnkdnd.data.model.entities.toEntityModifierBonus
-import com.davanok.dvnkdnd.data.model.entities.toEntitySkill
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.ClassWithSpells
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntityModifierBonus
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
@@ -66,14 +66,14 @@ interface EntitiesDao : EntityInfoDao {
 
     @Transaction
     suspend fun insertClassWithSpells(cls: ClassWithSpells) {
-        insertClass(cls.cls)
+        insertClass(cls.toDnDClass())
         insertClassSpells(cls.spells)
         insertClassSpellSlots(cls.slots)
     }
 
     @Transaction
     suspend fun insertFullSpell(spell: FullSpell) {
-        insertSpell(spell.spell)
+        insertSpell(spell.toSpell())
         spell.area?.let {
             insertSpellArea(it)
         }
@@ -84,7 +84,7 @@ interface EntitiesDao : EntityInfoDao {
 
     @Transaction
     suspend fun insertFullItem(item: FullItem) {
-        insertItem(item.item)
+        insertItem(item.toDnDItem())
         insertItemJoinProperties(item.properties)
         item.armor?.let { insertArmor(it) }
         item.weapon?.let { insertFullWeapon(it) }

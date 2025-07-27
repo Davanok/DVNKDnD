@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 import kotlin.uuid.Uuid

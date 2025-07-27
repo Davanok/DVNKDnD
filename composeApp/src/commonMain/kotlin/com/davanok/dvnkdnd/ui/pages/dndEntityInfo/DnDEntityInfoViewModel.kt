@@ -4,7 +4,7 @@ package com.davanok.dvnkdnd.ui.pages.dndEntityInfo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import dvnkdnd.composeapp.generated.resources.Res

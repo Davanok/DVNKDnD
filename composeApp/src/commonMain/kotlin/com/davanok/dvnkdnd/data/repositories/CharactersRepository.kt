@@ -1,10 +1,10 @@
 package com.davanok.dvnkdnd.data.repositories
 
-import com.davanok.dvnkdnd.data.model.entities.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.CharacterMin
-import com.davanok.dvnkdnd.data.model.entities.CharacterWithAllModifiers
-import com.davanok.dvnkdnd.data.model.entities.CharacterWithAllSkills
-import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.database.entities.character.Character
 import kotlin.uuid.Uuid
 

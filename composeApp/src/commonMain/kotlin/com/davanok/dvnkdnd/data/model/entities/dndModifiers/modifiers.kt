@@ -1,6 +1,6 @@
-package com.davanok.dvnkdnd.data.model.entities
+package com.davanok.dvnkdnd.data.model.entities.dndModifiers
 
-import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
 import kotlinx.serialization.Serializable

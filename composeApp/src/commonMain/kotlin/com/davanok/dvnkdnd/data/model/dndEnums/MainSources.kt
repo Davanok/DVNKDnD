@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.model.dnd_enums
+package com.davanok.dvnkdnd.data.model.dndEnums
 
 object MainSources {
     const val PHB = "Player's handbook"

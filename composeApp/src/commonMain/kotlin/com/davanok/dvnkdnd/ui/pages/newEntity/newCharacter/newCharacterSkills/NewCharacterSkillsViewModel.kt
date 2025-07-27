@@ -2,8 +2,8 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.dnd_enums.Skills
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSkills
+import com.davanok.dvnkdnd.data.model.dndEnums.Skills
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSkills
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.loading_characters_error

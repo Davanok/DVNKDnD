@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.model.dnd_enums
+package com.davanok.dvnkdnd.data.model.dndEnums
 
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.charisma

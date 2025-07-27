@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.database.entities.dndEntities.concept
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.data.model.dnd_enums.Size
+import com.davanok.dvnkdnd.data.model.dndEnums.Size
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid

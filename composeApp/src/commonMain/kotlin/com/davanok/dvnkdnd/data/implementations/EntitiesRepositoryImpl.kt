@@ -2,9 +2,9 @@ package com.davanok.dvnkdnd.data.implementations
 
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
-import com.davanok.dvnkdnd.data.model.dnd_enums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.DnDEntityWithSubEntities
-import com.davanok.dvnkdnd.data.model.entities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.database.daos.EntitiesDao
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity

@@ -1,7 +1,7 @@
 package com.davanok.dvnkdnd.database
 
 import androidx.room.TypeConverter
-import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
+import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
 import okio.Path
 import okio.Path.Companion.toPath
 import kotlin.uuid.Uuid

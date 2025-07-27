@@ -3,8 +3,10 @@ package com.davanok.dvnkdnd.data.implementations
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
-import com.davanok.dvnkdnd.data.model.entities.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
+import com.davanok.dvnkdnd.data.model.entities.character.toCharacterWithAllModifiers
+import com.davanok.dvnkdnd.data.model.entities.character.toCharacterWithAllSkills
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.database.daos.CharactersDao
 import com.davanok.dvnkdnd.database.entities.character.Character

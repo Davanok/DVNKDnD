@@ -5,9 +5,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
-import com.davanok.dvnkdnd.data.model.entities.FullSpellAttack
-import com.davanok.dvnkdnd.data.model.entities.FullWeapon
-import com.davanok.dvnkdnd.data.model.entities.JoinItemProperty
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpellAttack
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullWeapon
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinItemProperty
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
@@ -78,7 +78,7 @@ interface EntityInfoDao {
 
     @Transaction
     suspend fun insertFullSpellAttack(attack: FullSpellAttack) {
-        insertSpellAttack(attack.attack)
+        insertSpellAttack(attack.toAttack())
         insertSpellAttackModifiers(attack.modifiers)
         attack.save?.let { insertSpellAttackSave(it) }
     }
@@ -96,7 +96,7 @@ interface EntityInfoDao {
     @Transaction
     suspend fun insertItemJoinProperties(properties: List<JoinItemProperty>) {
         insertItemProperties(properties.fastMap { it.property })
-        insertItemPropertyLinks(properties.fastMap { it.link })
+        insertItemPropertyLinks(properties.fastMap { it.toItemPropertyLink() })
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -110,7 +110,7 @@ interface EntityInfoDao {
 
     @Transaction
     suspend fun insertFullWeapon(weapon: FullWeapon) {
-        insertWeapon(weapon.weapon)
+        insertWeapon(weapon.toWeapon())
         insertWeaponDamages(weapon.damages)
     }
 }

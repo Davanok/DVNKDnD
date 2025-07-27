@@ -4,12 +4,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.data.model.dnd_enums.AreaTypes
-import com.davanok.dvnkdnd.data.model.dnd_enums.DamageTypes
-import com.davanok.dvnkdnd.data.model.dnd_enums.Dices
-import com.davanok.dvnkdnd.data.model.dnd_enums.MagicSchools
-import com.davanok.dvnkdnd.data.model.dnd_enums.SpellComponents
-import com.davanok.dvnkdnd.data.model.dnd_enums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.AreaTypes
+import com.davanok.dvnkdnd.data.model.dndEnums.DamageTypes
+import com.davanok.dvnkdnd.data.model.dndEnums.Dices
+import com.davanok.dvnkdnd.data.model.dndEnums.MagicSchools
+import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
+import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
