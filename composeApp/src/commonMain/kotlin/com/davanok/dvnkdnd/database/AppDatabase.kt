@@ -13,6 +13,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifie
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClass
+import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
@@ -60,6 +61,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         CharacterSpellSlots::class,
         CharacterSelectedSkill::class,
         CharacterImage::class,
+        CharacterCoins::class,
         CharacterProficiency::class,
         CharacterFeat::class,
         CharacterSelectedModifierBonus::class,

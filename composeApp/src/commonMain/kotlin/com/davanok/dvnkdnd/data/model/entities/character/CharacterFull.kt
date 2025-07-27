@@ -9,6 +9,7 @@ data class CharacterFull(
     val character: CharacterMin,
 
     val images: List<DatabaseImage>,
+    val coins: CoinsGroup?,
 
     val stats: DnDModifiersGroup?,
     val health: DnDCharacterHealth?,
@@ -25,9 +26,4 @@ data class CharacterFull(
     val selectedModifierBonuses: List<Uuid>,
     val selectedSkills: List<Uuid>,
     val selectedProficiencies: List<Uuid>
-)
-data class DnDCharacterHealth(
-    val max: Int,
-    val current: Int,
-    val temp: Int
 )

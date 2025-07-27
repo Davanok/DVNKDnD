@@ -10,6 +10,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifie
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.character.toDnDCoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toModifiersGroup
 import com.davanok.dvnkdnd.database.entities.character.*
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
@@ -149,6 +150,9 @@ data class DbFullCharacter(
     @Relation(parentColumn = "id", entityColumn = "character_id")
     val images: List<CharacterImage>,
 
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val coins: CharacterCoins?,
+
     @Relation(parentColumn = "id", entityColumn = "id")
     val stats: CharacterStats?,
     @Relation(parentColumn = "id", entityColumn = "id")
@@ -234,6 +238,7 @@ data class DbFullCharacter(
     fun toCharacterFull(): CharacterFull = CharacterFull(
         character = character.toCharacterMin(),
         images = images.fastMap { DatabaseImage(it.id, it.path) },
+        coins = coins?.toDnDCoinsGroup(),
         stats = stats?.toModifiersGroup(),
         health = health?.let { DnDCharacterHealth(it.max, it.current, it.temp) },
         usedSpells = usedSpells?.usedSpells.orEmpty(),

@@ -111,3 +111,19 @@ data class CharacterImage(
     @ColumnInfo("character_id", index = true) val characterId: Uuid?,
     val path: Path,
 )
+@Entity(
+    tableName = "character_coins",
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class CharacterCoins(
+    @PrimaryKey
+    @ColumnInfo("character_id")
+    val characterId: Uuid,
+    val copper: Int,
+    val silver: Int,
+    val electrum: Int,
+    val gold: Int,
+    val platinum: Int
+)
