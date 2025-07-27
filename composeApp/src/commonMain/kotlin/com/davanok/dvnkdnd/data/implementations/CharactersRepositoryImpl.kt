@@ -82,7 +82,7 @@ class CharactersRepositoryImpl(
         val characterId = character.id
 
         dao.insertCharacter(character)
-        dao.insertCharacterClass(CharacterClass(characterId, classId, subClassId))
+        dao.insertCharacterClass(CharacterClass(characterId, classId, subClassId, 1))
 
         implementCharacterNonSelectableBonuses(characterId)
 

@@ -15,7 +15,7 @@ data class CharacterFull(
     val health: DnDCharacterHealth?,
     val usedSpells: List<Int>,
 
-    val classes: List<DnDFullEntity>,
+    val classes: List<CharacterClassInfo>,
     val race: DnDFullEntity?,
     val subRace: DnDFullEntity?,
     val background: DnDFullEntity?,
@@ -26,4 +26,9 @@ data class CharacterFull(
     val selectedModifierBonuses: List<Uuid>,
     val selectedSkills: List<Uuid>,
     val selectedProficiencies: List<Uuid>
+)
+data class CharacterClassInfo(
+    val level: Int,
+    val cls: DnDFullEntity,
+    val subCls: DnDFullEntity?
 )

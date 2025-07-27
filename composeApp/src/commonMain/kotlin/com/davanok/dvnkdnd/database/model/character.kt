@@ -9,6 +9,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterClassInfo
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toModifiersGroup
@@ -143,7 +144,28 @@ data class DbCharacterWithAllSkills(
         subBackground = subBackgroundWithSkills?.toDndEntityWithSkills()
     )
 }
-
+data class DbJoinCharacterClass(
+    @Embedded
+    val link: CharacterClass,
+    @Relation(
+        DnDBaseEntity::class,
+        parentColumn = "class_id",
+        entityColumn = "id"
+    )
+    val cls: DbFullEntity,
+    @Relation(
+        DnDBaseEntity::class,
+        parentColumn = "sub_class_id",
+        entityColumn = "id"
+    )
+    val subCls: DbFullEntity?
+) {
+    fun toCharacterClassInfo() = CharacterClassInfo(
+        level = link.level,
+        cls = cls.toDnDFullEntity(),
+        subCls = subCls?.toDnDFullEntity()
+    )
+}
 data class DbFullCharacter(
     @Embedded val character: Character,
 
@@ -161,27 +183,11 @@ data class DbFullCharacter(
     val usedSpells: CharacterSpellSlots?,
 
     @Relation(
-        entity = DnDBaseEntity::class,
+        entity = CharacterClass::class,
         parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction(
-            CharacterClass::class,
-            parentColumn = "character_id",
-            entityColumn = "class_id"
-        )
+        entityColumn = "character_id"
     )
-    val classes: List<DbFullEntity>,
-    @Relation(
-        entity = DnDBaseEntity::class,
-        parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction(
-            CharacterClass::class,
-            parentColumn = "character_id",
-            entityColumn = "sub_class_id"
-        )
-    )
-    val subClasses: List<DbFullEntity>,
+    val classes: List<DbJoinCharacterClass>,
     @Relation(
         entity = DnDBaseEntity::class,
         parentColumn = "race",
@@ -242,7 +248,7 @@ data class DbFullCharacter(
         stats = stats?.toModifiersGroup(),
         health = health?.let { DnDCharacterHealth(it.max, it.current, it.temp) },
         usedSpells = usedSpells?.usedSpells.orEmpty(),
-        classes = (classes + subClasses).fastMap { it.toDnDFullEntity() },
+        classes = classes.fastMap { it.toCharacterClassInfo() },
         race = race?.toDnDFullEntity(),
         subRace = subRace?.toDnDFullEntity(),
         background = background?.toDnDFullEntity(),

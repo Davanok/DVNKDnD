@@ -45,5 +45,6 @@ data class Character(
 data class CharacterClass(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("class_id", index = true) val classId: Uuid,
-    @ColumnInfo("sub_class_id", index = true) val subClassId: Uuid?
+    @ColumnInfo("sub_class_id", index = true) val subClassId: Uuid?,
+    val level: Int
 )

@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.model.entities.character
 
+import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSkills
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
@@ -20,7 +21,10 @@ data class CharacterWithAllSkills(
 fun CharacterFull.toCharacterWithAllSkills() = CharacterWithAllSkills(
     character = character,
     selectedSkills = selectedSkills,
-    classes = classes.fastMap { it.toEntityWithSkills() },
+    classes = classes.fastFlatMap {
+        listOfNotNull(it.cls, it.subCls)
+            .fastMap { e -> e.toEntityWithSkills() }
+                              },
     race = race?.toEntityWithSkills(),
     subRace = subRace?.toEntityWithSkills(),
     background = background?.toEntityWithSkills(),
