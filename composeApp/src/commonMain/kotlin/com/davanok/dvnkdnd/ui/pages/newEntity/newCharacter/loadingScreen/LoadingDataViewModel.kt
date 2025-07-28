@@ -36,7 +36,9 @@ class LoadingDataViewModel(
         requiredEntities: List<Uuid>,
         onSuccess: () -> Unit
     ) {
+        var hasError = false
         utilsDataRepository.checkAndLoadEntities(requiredEntities).collect {
+            if (it == CheckingDataStates.ERROR) hasError = true
             setCheckingState(
                 when (it) {
                     CheckingDataStates.LOAD_FROM_DATABASE -> LoadingDataUiState.LOAD_FROM_DATABASE
@@ -48,8 +50,10 @@ class LoadingDataViewModel(
                 }
             )
         }
-        setCheckingState(LoadingDataUiState.FINISH)
-        onSuccess()
+        if (!hasError) {
+            setCheckingState(LoadingDataUiState.FINISH)
+            onSuccess()
+        }
     }
     
     fun checkRequiredEntities(onSuccess: () -> Unit) = viewModelScope.launch {
