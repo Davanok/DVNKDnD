@@ -62,10 +62,14 @@ class BrowseRepositoryImpl(
                 single()
             }.decodeSingle<DnDFullEntity>()
         }.mapCatching { entity ->
-            val companionEntities = loadEntitiesFullInfo(entity.getSubEntitiesIds()).getOrThrow()
-            entity.copy(
-                companionEntities = companionEntities
-            )
+            val companionIds = entity.getSubEntitiesIds()
+            if (companionIds.isNotEmpty()) {
+                val companionEntities = loadEntitiesFullInfo(companionIds).getOrThrow()
+                entity.copy(
+                    companionEntities = companionEntities
+                )
+            }
+            else entity
         }
 
     override suspend fun loadEntitiesFullInfo(entityIds: List<Uuid>): Result<List<DnDFullEntity>> =
@@ -75,15 +79,16 @@ class BrowseRepositoryImpl(
             }.decodeList<DnDFullEntity>()
         }.mapCatching { entities ->
             val companionIds = entities.fastFlatMap { it.getSubEntitiesIds() }
-            val companionEntities = loadEntitiesFullInfo(companionIds).getOrThrow()
-
-            val groups = companionEntities.groupBy { it.parentId }
-
-            entities.fastMap {
-                it.copy(
-                    companionEntities = groups[it.id] ?: emptyList()
-                )
+            if (companionIds.isNotEmpty()) {
+                val companionEntities = loadEntitiesFullInfo(companionIds).getOrThrow()
+                val groups = companionEntities.groupBy { it.parentId }
+                entities.fastMap {
+                    it.copy(
+                        companionEntities = groups[it.id] ?: emptyList()
+                    )
+                }
             }
+            else entities
         }
 
     override suspend fun loadEntitiesWithSub(entityType: DnDEntityTypes): Result<List<DnDEntityWithSubEntities>> =
