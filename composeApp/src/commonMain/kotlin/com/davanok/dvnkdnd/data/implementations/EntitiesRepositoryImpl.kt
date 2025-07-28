@@ -77,6 +77,8 @@ class EntitiesRepositoryImpl(
     override suspend fun getEntitiesWithSubList(
         vararg types: DnDEntityTypes
     ): Result<Map<DnDEntityTypes, List<DnDEntityWithSubEntities>>> = runCatching {
-        dao.getEntitiesWithSubList(*types).groupBy { it.type }
+        dao.getEntitiesWithSubList(*types)
+            .fastMap { it.toEntityWithSubEntities() }
+            .groupBy { it.type }
     }
 }

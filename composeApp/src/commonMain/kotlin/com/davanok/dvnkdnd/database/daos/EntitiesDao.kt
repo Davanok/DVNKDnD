@@ -38,7 +38,7 @@ interface EntitiesDao : EntityInfoDao {
 
     @Transaction
     @Query("SELECT * FROM base_entities WHERE type IN (:types)")
-    suspend fun getEntitiesWithSubList(vararg types: DnDEntityTypes): List<DnDEntityWithSubEntities>
+    suspend fun getEntitiesWithSubList(vararg types: DnDEntityTypes): List<EntityWithSub>
 
     @Query("SELECT id FROM base_entities WHERE id IN (:entitiesIds)")
     suspend fun getExistingEntities(entitiesIds: List<Uuid>): List<Uuid>
