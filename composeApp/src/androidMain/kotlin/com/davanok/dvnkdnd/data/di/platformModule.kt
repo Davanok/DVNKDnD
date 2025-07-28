@@ -10,7 +10,7 @@ import okio.Path.Companion.toPath
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
-fun platformModule() = module {
+actual fun platformModule() = module {
     single<RoomDatabase.Builder<AppDatabase>> {
         val context = androidContext()
         val dbFile = context.getDatabasePath("database.db")

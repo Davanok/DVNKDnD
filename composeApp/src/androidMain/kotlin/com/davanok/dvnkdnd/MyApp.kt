@@ -1,7 +1,6 @@
 package com.davanok.dvnkdnd
 
 import android.app.Application
-import com.davanok.dvnkdnd.data.di.initKoin
 
 lateinit var appDataDir: String
     private set
@@ -13,6 +12,5 @@ class MyApp: Application() {
         super.onCreate()
         appDataDir = filesDir.absolutePath
         appCacheDir = cacheDir.absolutePath
-        initKoin(this@MyApp)
     }
 }

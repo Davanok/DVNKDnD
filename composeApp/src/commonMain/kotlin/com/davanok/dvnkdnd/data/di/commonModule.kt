@@ -21,12 +21,14 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 fun commonModule() = module {
-    single<CharactersRepository> { CharactersRepositoryImpl(get()) }
+    singleOf(::CharactersRepositoryImpl) bind CharactersRepository::class
     single<FilesRepository> { FilesRepositoryImpl(appDataDirectory(), appCacheDirectory()) }
-    single<EntitiesRepository> { EntitiesRepositoryImpl(get()) }
+    singleOf(::EntitiesRepositoryImpl) bind EntitiesRepository::class
 
     single<SupabaseClient> {
         createSupabaseClient(
@@ -41,8 +43,6 @@ fun commonModule() = module {
         val client: SupabaseClient = get()
         BrowseRepositoryImpl(client.postgrest, client.storage)
     }
-    single<UtilsDataRepository> {
-        UtilsDataRepositoryImpl(get(), get())
-    }
-    single<ExternalKeyValueRepository> { ExternalKeyValueRepositoryImpl(get()) }
+    singleOf(::UtilsDataRepositoryImpl) bind UtilsDataRepository::class
+    singleOf(::ExternalKeyValueRepositoryImpl) bind ExternalKeyValueRepository::class
 }

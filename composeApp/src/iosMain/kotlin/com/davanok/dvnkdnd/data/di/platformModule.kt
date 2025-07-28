@@ -9,7 +9,7 @@ import com.davanok.dvnkdnd.data.platform.appDataDirectory
 import com.davanok.dvnkdnd.database.AppDatabase
 import org.koin.dsl.module
 
-fun platformModule() = module {
+actual fun platformModule() = module {
     single<RoomDatabase.Builder<AppDatabase>> {
         val path = appDataDirectory() / "database" / "dvnkdnd.db"
         Room.databaseBuilder<AppDatabase>(
