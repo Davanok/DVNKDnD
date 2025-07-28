@@ -101,16 +101,6 @@ data class DbEntityWithSkills(
         skills = skills.fastMap { it.toDnDSkill() }
     )
 }
-data class JoinClassSpell(
-    @Embedded
-    val link: ClassSpell,
-    @Relation(
-        DnDBaseEntity::class,
-        parentColumn = "spell_id",
-        entityColumn = "id"
-    )
-    val spell: DbFullEntity
-)
 data class DbClassWithSpells(
     @Embedded
     val cls: DnDClass,
@@ -118,7 +108,7 @@ data class DbClassWithSpells(
         parentColumn = "id",
         entityColumn = "class_id"
     )
-    val spells: List<JoinClassSpell>,
+    val spells: List<ClassSpell>,
     @Relation(
         parentColumn = "id",
         entityColumn = "class_id"
@@ -129,7 +119,7 @@ data class DbClassWithSpells(
         id = cls.id,
         mainStat = cls.mainStat,
         hitDice = cls.hitDice,
-        spells = spells.fastMap { it.link },
+        spells = spells,
         slots = slots
     )
 }
@@ -167,6 +157,7 @@ data class DbFullSpell(
     )
     val area: SpellArea?,
     @Relation(
+        SpellAttack::class,
         parentColumn = "id",
         entityColumn = "spell_id"
     )
@@ -246,26 +237,6 @@ data class DbFullItem(
         weapon = weapon?.toFullWeapon()
     )
 }
-data class JoinEntityProficiency(
-    @Embedded
-    val link: EntityProficiency,
-    @Relation(
-        DnDBaseEntity::class,
-        parentColumn = "proficiency_id",
-        entityColumn = "id"
-    )
-    val proficiency: DbFullEntity
-)
-data class JoinEntityAbility(
-    @Embedded
-    val link: EntityAbility,
-    @Relation(
-        DnDBaseEntity::class,
-        parentColumn = "ability_id",
-        entityColumn = "id"
-    )
-    val ability: DbFullEntity
-)
 data class DbFullEntity(
     @Embedded
     val base: DnDBaseEntity,
@@ -277,10 +248,10 @@ data class DbFullEntity(
     @Relation(parentColumn = "id", entityColumn = "entity_id")
     val savingThrows: List<EntitySavingThrow>,
 
-    @Relation(EntityProficiency::class, parentColumn = "id", entityColumn = "entity_id")
-    val proficiencies: List<JoinEntityProficiency>,
-    @Relation(EntityAbility::class, parentColumn = "id", entityColumn = "entity_id")
-    val abilities: List<JoinEntityAbility>,
+    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    val proficiencies: List<EntityProficiency>,
+    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    val abilities: List<EntityAbility>,
 
     @Relation(parentColumn = "id", entityColumn = "id")
     val selectionLimits: EntitySelectionLimits?,
@@ -341,8 +312,8 @@ data class DbFullEntity(
         modifierBonuses = modifierBonuses.fastMap { it.toDnDModifier() },
         skills = skills.fastMap { it.toDnDSkill() },
         savingThrows = savingThrows,
-        proficiencies = proficiencies.fastMap { it.link },
-        abilities = abilities.fastMap { it.link },
+        proficiencies = proficiencies,
+        abilities = abilities,
         selectionLimits = selectionLimits,
         cls = cls?.toClassWithSpells(),
         race = race,
@@ -352,11 +323,7 @@ data class DbFullEntity(
         proficiency = proficiency,
         spell = spell?.toFullSpell(),
         item = item?.toFullItem(),
-        companionEntities = (
-                abilities.fastMap { it.ability } +
-                        proficiencies.fastMap { it.proficiency } +
-                        cls?.spells?.fastMap { it.spell }.orEmpty()
-                ).fastMap { it.toDnDFullEntity() }
+        companionEntities = emptyList()
     )
 }
 
