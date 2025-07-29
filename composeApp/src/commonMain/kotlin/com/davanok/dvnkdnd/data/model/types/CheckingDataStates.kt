@@ -5,6 +5,5 @@ enum class CheckingDataStates {
     CHECKING,
     LOADING_DATA,
     UPDATING,
-    FINISH,
-    ERROR
+    FINISH
 }

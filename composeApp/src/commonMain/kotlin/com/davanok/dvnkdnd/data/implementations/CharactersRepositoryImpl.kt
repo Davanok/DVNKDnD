@@ -1,20 +1,13 @@
 package com.davanok.dvnkdnd.data.implementations
 
-import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.character.toCharacterWithAllModifiers
-import com.davanok.dvnkdnd.data.model.entities.character.toCharacterWithAllSkills
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.database.daos.CharactersDao
-import com.davanok.dvnkdnd.database.entities.character.Character
-import com.davanok.dvnkdnd.database.entities.character.CharacterClass
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifierBonus
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedSkill
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
-import kotlin.collections.plus
 import kotlin.uuid.Uuid
 
 class CharactersRepositoryImpl(
@@ -34,59 +27,6 @@ class CharactersRepositoryImpl(
 
     override suspend fun getCharacterWithAllSkills(characterId: Uuid) = runCatching {
         dao.getCharacterWithAllSkills(characterId).toCharacterWithAllSkills()
-    }
-
-    private suspend fun implementCharacterNonSelectableBonuses(characterId: Uuid) {
-        val fullCharacter = getFullCharacter(characterId).getOrThrow()
-        checkNotNull(fullCharacter)
-        val characterWithModifiers = fullCharacter.toCharacterWithAllModifiers()
-        val characterWithSkills = fullCharacter.toCharacterWithAllSkills()
-
-        val notSelectableModifiers =
-            (characterWithModifiers.classes + listOfNotNull(
-                characterWithModifiers.race,
-                characterWithModifiers.subRace,
-                characterWithModifiers.background,
-                characterWithModifiers.subBackground
-            ))
-                .fastFlatMap { it.modifiers }
-                .fastFilter { !it.selectable }
-                .fastMap { it.id }
-
-        val notSelectableSkills =
-            (characterWithSkills.classes + listOfNotNull(
-                characterWithSkills.race,
-                characterWithSkills.subRace,
-                characterWithSkills.background,
-                characterWithSkills.subBackground
-            ))
-                .fastFlatMap { it.skills }
-                .fastFilter { !it.selectable }
-                .fastMap { it.id }
-
-        setCharacterSelectedModifierBonuses(
-            characterId = characterId,
-            bonusIds = notSelectableModifiers
-        ).getOrThrow()
-        setCharacterSelectedSkills(
-            characterId = characterId,
-            skillIds = notSelectableSkills
-        ).getOrThrow()
-    }
-
-    override suspend fun createCharacter(
-        character: Character,
-        classId: Uuid,
-        subClassId: Uuid?
-    ): Result<Uuid> = runCatching {
-        val characterId = character.id
-
-        dao.insertCharacter(character)
-        dao.insertCharacterClass(CharacterClass(characterId, classId, subClassId, 1))
-
-        implementCharacterNonSelectableBonuses(characterId)
-
-        characterId
     }
 
     override suspend fun setCharacterStats(

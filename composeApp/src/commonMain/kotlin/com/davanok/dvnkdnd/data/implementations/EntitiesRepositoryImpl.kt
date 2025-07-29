@@ -19,6 +19,13 @@ import kotlin.uuid.Uuid
 class EntitiesRepositoryImpl(
     private val dao: EntitiesDao,
 ) : EntitiesRepository {
+    override suspend fun getFullEntity(entityId: Uuid): Result<DnDFullEntity?> = runCatching {
+        dao.getFullEntity(entityId)?.toDnDFullEntity()
+    }
+    override suspend fun getFullEntities(entityIds: List<Uuid>): Result<List<DnDFullEntity>> = runCatching {
+        dao.getFullEntities(entityIds).fastMap { it.toDnDFullEntity() }
+    }
+
     override suspend fun insertEntity(entity: DnDBaseEntity) = runCatching {
         dao.insertEntity(entity)
     }
@@ -68,6 +75,10 @@ class EntitiesRepositoryImpl(
 
     override suspend fun getExistsEntity(entityId: Uuid): Result<Boolean> = runCatching {
         dao.getExistsEntity(entityId)
+    }
+
+    override suspend fun getEntitiesWithSubList(entityIds: List<Uuid>) = runCatching {
+        dao.getEntitiesWithSubList(entityIds).fastMap { it.toEntityWithSubEntities() }
     }
 
     override suspend fun getEntitiesWithSubList(type: DnDEntityTypes) = runCatching {

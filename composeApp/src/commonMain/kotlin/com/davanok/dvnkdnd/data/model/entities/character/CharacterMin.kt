@@ -8,5 +8,5 @@ data class CharacterMin(
     val id: Uuid,
     val name: String,
     val level: Int,
-    val image: Path? = null
+    val image: Path?
 )

@@ -33,13 +33,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
+import androidx.compose.ui.util.fastMap
+import androidx.compose.ui.util.fastMaxBy
+import com.davanok.dvnkdnd.data.model.ui.isCompact
 import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveInfo
 import com.davanok.dvnkdnd.ui.navigation.Route
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Ability
@@ -82,7 +85,7 @@ fun NewEntityScreen(
 ) {
     val adaptiveInfo = LocalAdaptiveInfo.current
     val windowSizeClass = adaptiveInfo.windowSizeClass
-    val isCompact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
+    val isCompact = windowSizeClass.isCompact()
 
     Scaffold(
         topBar = {
@@ -150,7 +153,8 @@ private fun CompactContent(
                         Image(
                             modifier = Modifier.size(56.dp),
                             painter = painterResource(item.image),
-                            contentDescription = stringResource(item.title)
+                            contentDescription = stringResource(item.title),
+                            contentScale = ContentScale.Crop
                         )
                     }
                 )
@@ -162,16 +166,17 @@ private fun CompactContent(
 @Composable
 fun measureTextWidth(text: String, style: TextStyle): Dp {
     val textMeasurer = rememberTextMeasurer()
-    val widthInPixels = textMeasurer.measure(text, style).size.width
-    return with(LocalDensity.current) { widthInPixels.toDp() }
+    val widthInPixels = remember(text) { textMeasurer.measure(text, style).size.width }
+    val density = LocalDensity.current
+    return remember(widthInPixels) { density.run { widthInPixels.toDp() } }
 }
 
 @Composable
-fun calculateMaxTextWidth(text: Iterable<StringResource>, style: TextStyle): Dp {
-    val maxSize = text
-        .map { stringResource(it) }
-        .maxWithOrNull(compareBy { it.length })!!
-    return measureTextWidth(maxSize, style)
+fun calculateMaxTextWidth(text: List<StringResource>, style: TextStyle): Dp {
+    val textWithMaxLength = text
+        .fastMap { stringResource(it) }
+        .fastMaxBy { it.length }!!
+    return measureTextWidth(textWithMaxLength, style)
 }
 
 @Composable
@@ -181,7 +186,7 @@ private fun ExpandedContent(
 ) {
     var maxSize by remember { mutableStateOf(Int.MIN_VALUE) }
     val textMaxWidth = calculateMaxTextWidth(
-        EntityItem.entries.map { it.title },
+        EntityItem.entries.fastMap { it.title },
         MaterialTheme.typography.headlineMedium
     )
 

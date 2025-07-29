@@ -16,6 +16,7 @@ import dvnkdnd.composeapp.generated.resources.state_loading_full_entities
 import dvnkdnd.composeapp.generated.resources.state_updating_entities
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
@@ -37,19 +38,21 @@ class LoadingDataViewModel(
         onSuccess: () -> Unit
     ) {
         var hasError = false
-        utilsDataRepository.checkAndLoadEntities(requiredEntities).collect {
-            if (it == CheckingDataStates.ERROR) hasError = true
-            setCheckingState(
-                when (it) {
-                    CheckingDataStates.LOAD_FROM_DATABASE -> LoadingDataUiState.LOAD_FROM_DATABASE
-                    CheckingDataStates.CHECKING -> LoadingDataUiState.CHECKING
-                    CheckingDataStates.LOADING_DATA -> LoadingDataUiState.LOADING_DATA
-                    CheckingDataStates.UPDATING -> LoadingDataUiState.UPDATING
-                    CheckingDataStates.FINISH -> LoadingDataUiState.FINISH
-                    CheckingDataStates.ERROR -> LoadingDataUiState.ERROR
-                }
-            )
-        }
+        utilsDataRepository.checkAndLoadEntities(requiredEntities)
+            .catch {
+                hasError = true
+                setCheckingState(LoadingDataUiState.ERROR)
+            }.collect {
+                setCheckingState(
+                    when (it) {
+                        CheckingDataStates.LOAD_FROM_DATABASE -> LoadingDataUiState.LOAD_FROM_DATABASE
+                        CheckingDataStates.CHECKING -> LoadingDataUiState.CHECKING
+                        CheckingDataStates.LOADING_DATA -> LoadingDataUiState.LOADING_DATA
+                        CheckingDataStates.UPDATING -> LoadingDataUiState.UPDATING
+                        CheckingDataStates.FINISH -> LoadingDataUiState.FINISH
+                    }
+                )
+            }
         if (!hasError) {
             setCheckingState(LoadingDataUiState.FINISH)
             onSuccess()

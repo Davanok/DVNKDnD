@@ -16,7 +16,6 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,19 +45,14 @@ import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
 import dvnkdnd.composeapp.generated.resources.modifiers_selectors_hint
 import dvnkdnd.composeapp.generated.resources.no_modifiers_for_info
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
 
 @Composable
 fun NewCharacterStatsScreen(
-    characterId: Uuid,
-    onBack: (characterId: Uuid) -> Unit,
-    onContinue: (characterId: Uuid) -> Unit,
-    viewModel: NewCharacterStatsViewModel = koinViewModel(),
+    onBack: () -> Unit,
+    onContinue: () -> Unit,
+    viewModel: NewCharacterStatsViewModel
 ) {
-    LaunchedEffect(characterId) {
-        viewModel.loadCharacterWithAllModifiers(characterId)
-    }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     UiToaster(
@@ -71,12 +65,12 @@ fun NewCharacterStatsScreen(
         uiState.error is UiError.Critical -> ErrorCard(
             text = stringResource(uiState.error!!.message),
             exception = uiState.error?.exception,
-            onBack = { onBack(characterId) }
+            onBack = onBack
         )
         else -> StepNavigation (
             modifier = Modifier.fillMaxSize(),
-            next = { viewModel.saveCharacterStats(characterId, onContinue) },
-            previous = { onBack(characterId) }
+            next = { viewModel.commit(onContinue) },
+            previous = onBack
         ) {
             Content(
                 selectedCreationOption = uiState.selectedCreationOptions,

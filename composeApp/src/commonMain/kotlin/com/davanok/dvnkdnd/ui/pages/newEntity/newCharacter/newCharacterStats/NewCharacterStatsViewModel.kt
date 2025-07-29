@@ -4,16 +4,14 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
-import com.davanok.dvnkdnd.data.repositories.CharactersRepository
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.loading_character_error
 import dvnkdnd.composeapp.generated.resources.manual_stats_option
 import dvnkdnd.composeapp.generated.resources.modifier_selection_invalid
 import dvnkdnd.composeapp.generated.resources.point_buy_stats_balance_invalid
@@ -22,12 +20,11 @@ import dvnkdnd.composeapp.generated.resources.saving_data_error
 import dvnkdnd.composeapp.generated.resources.standard_array_stats_option
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.Uuid
 
 class NewCharacterStatsViewModel(
-    private val repository: CharactersRepository,
+    private val newCharacterViewModel: NewCharacterViewModel,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NewCharacterStatsUiState(isLoading = true))
     val uiState: StateFlow<NewCharacterStatsUiState> = _uiState
@@ -42,42 +39,31 @@ class NewCharacterStatsViewModel(
         _uiState.value = _uiState.value.copy(selectedCreationOptions = option)
     }
 
-    fun loadCharacterWithAllModifiers(characterId: Uuid) = viewModelScope.launch {
-        repository.getCharacterWithAllModifiers(characterId).onFailure {
-            _uiState.value = _uiState.value.copy(
-                error = UiError.Critical(
-                    message = Res.string.loading_character_error,
-                    exception = it
-                )
-            )
-        }.onSuccess { loaded ->
-            var character = loaded
-            if (character.characterStats == null)
-                character = character.copy(
-                    characterStats = DnDModifiersGroup.Default
-                )
-            val allCharacterEntities = (character.classes + listOfNotNull(
-                character.race,
-                character.subRace,
-                character.background,
-                character.subBackground
-            )).fastFilter { it.modifiers.isNotEmpty() }
-            modifierInfo = allCharacterEntities
-                .fastFlatMap { entity ->
-                    val limit = entity.selectionLimit ?: 0
-                    entity.modifiers.map { mod ->
-                        mod.id to (limit to entity.modifiers.map { it.id }.toSet())
-                    }
-                }.toMap()
+    fun loadCharacterWithAllModifiers() {
+        val character = newCharacterViewModel.getCharacterWithAllModifiers()
 
-            _uiState.value = _uiState.value.copy(
-                modifiers = character.characterStats ?: DnDModifiersGroup.Default,
-                selectedModifiersBonuses = character.selectedModifierBonuses.toSet(),
-                allEntitiesWithModifiers = allCharacterEntities,
+        val allCharacterEntities = (character.classes + listOfNotNull(
+            character.race,
+            character.subRace,
+            character.background,
+            character.subBackground
+        )).fastFilter { it.modifiers.isNotEmpty() }
 
-                isLoading = false
-            )
-        }
+        modifierInfo = allCharacterEntities
+            .fastFlatMap { entity ->
+                val limit = entity.selectionLimit ?: 0
+                entity.modifiers.map { mod ->
+                    mod.id to (limit to entity.modifiers.map { it.id }.toSet())
+                }
+            }.toMap()
+
+        _uiState.value = _uiState.value.copy(
+            modifiers = character.characterStats ?: DnDModifiersGroup.Default,
+            selectedModifiersBonuses = character.selectedModifierBonuses.toSet(),
+            allEntitiesWithModifiers = allCharacterEntities,
+
+            isLoading = false
+        )
     }
 
     fun setModifiers(modifiers: DnDModifiersGroup) {
@@ -140,24 +126,24 @@ class NewCharacterStatsViewModel(
         return true
     }
 
-    fun saveCharacterStats(characterId: Uuid, onSuccess: (characterId: Uuid) -> Unit) =
-        viewModelScope.launch {
-            if (!checkSelectedModifierBonuses()) return@launch
-            val state = _uiState.value
-            runCatching {
-                repository.setCharacterStats(characterId, state.modifiers)
-                repository.setCharacterSelectedModifierBonuses(
-                    characterId,
-                    state.selectedModifiersBonuses.toList()
-                )
-            }.onFailure {
-                _uiState.value = state.copy(
-                    error = UiError.Critical(Res.string.saving_data_error, it)
-                )
-            }.onSuccess {
-                onSuccess(characterId)
-            }
+    fun commit(onSuccess: () -> Unit) {
+        if (!checkSelectedModifierBonuses()) return
+        val state = _uiState.value
+        newCharacterViewModel.setCharacterModifiers(
+            stats = state.modifiers,
+            selectedBonuses = state.selectedModifiersBonuses.toList()
+        ).onFailure {
+            _uiState.value = state.copy(
+                error = UiError.Critical(Res.string.saving_data_error, it)
+            )
+        }.onSuccess {
+            onSuccess()
         }
+    }
+
+    init {
+        loadCharacterWithAllModifiers()
+    }
 }
 
 enum class StatsCreationOptions(val title: StringResource) {

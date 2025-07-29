@@ -34,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.carousel.CarouselState
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,22 +82,22 @@ import io.github.vinceglb.filekit.core.PickerType
 import kotlinx.coroutines.launch
 import okio.Path
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
 
 
 @Composable
 fun NewCharacterMainScreen(
-    navigateToEntityInfo: (DnDEntityMin) -> Unit,
+    navigateToEntityInfo: (Uuid) -> Unit,
     onBack: () -> Unit,
-    onContinue: (characterId: Uuid) -> Unit,
-    viewModel: NewCharacterMainViewModel = koinViewModel(),
+    onContinue: () -> Unit,
+    viewModel: NewCharacterMainViewModel
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.loadMainValues()
-    }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    UiToaster(
+        message = uiState.error?.toUiMessage(),
+        onRemoveMessage = viewModel::removeWarning
+    )
     when {
         uiState.isLoading -> LoadingCard()
         uiState.error is UiError.Critical -> ErrorCard(
@@ -107,82 +106,75 @@ fun NewCharacterMainScreen(
             onBack = onBack
         )
 
-        else -> CreateCharacterContent(
-            character = uiState.character,
-            entities = uiState.entities,
-            empties = uiState.emptyFields,
-            onBack = onBack,
-            onCreateCharacter = { viewModel.createCharacter(onContinue) },
-            viewModel = viewModel,
-            modifier = Modifier
-                .imePadding()
-                .fillMaxSize()
-        )
+        else ->
+            StepNavigation(
+                modifier = Modifier
+                    .imePadding()
+                    .fillMaxSize(),
+                cancel = onBack,
+                next = { viewModel.commit(onContinue) }
+            ) {
+                Content(
+                    character = uiState.character,
+                    entities = uiState.entities,
+                    empties = uiState.emptyFields,
+                    viewModel = viewModel
+                )
+            }
     }
 
-    UiToaster(
-        message = uiState.error?.toUiMessage(),
-        onRemoveMessage = viewModel::removeWarning
-    )
     if (uiState.showSearchSheet)
         SearchSheet(
             onDismiss = viewModel::hideSearchSheet,
-            onGetEntityInfo = navigateToEntityInfo,
+            onGetEntityInfo = { navigateToEntityInfo(it.id) },
             viewModel = viewModel
         )
 }
 
 @Composable
-private fun CreateCharacterContent(
+private fun Content(
     character: NewCharacterMain,
     entities: DownloadableValues,
     viewModel: NewCharacterMainViewModel,
     empties: NewCharacterMainUiState.EmptyFields,
-    onBack: () -> Unit,
-    onCreateCharacter: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    StepNavigation(
-        modifier = modifier,
-        cancel = onBack,
-        next = onCreateCharacter
+    Column(
+        modifier = modifier.then(
+            Modifier.verticalScroll(rememberScrollState())
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
+        ImageContent(
             modifier = Modifier
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            ImageContent(
-                modifier = Modifier
-                    .height(300.dp)
-                    .widthIn(488.dp),
-                images = character.images,
-                mainImage = character.mainImage,
-                onAddImage = viewModel::addCharacterImage,
-                onRemoveImage = viewModel::removeCharacterImage,
-                onSetImageMain = viewModel::setCharacterMainImage
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Content(
-                state = character,
-                empties = empties,
-                entities = entities,
-                onNameChange = viewModel::setCharacterName,
-                onDescriptionChange = viewModel::setCharacterDescription,
-                onClassChange = viewModel::setCharacterClass,
-                onSubClassSelected = viewModel::setCharacterSubClass,
-                onRaceSelected = viewModel::setCharacterRace,
-                onSubRaceSelected = viewModel::setCharacterSubRace,
-                onBackgroundSelected = viewModel::setCharacterBackground,
-                onSubBackgroundSelected = viewModel::setCharacterSubBackground,
-                onOpenExtendedSearch = viewModel::openSearchSheet
-            )
-        }
+                .height(300.dp)
+                .widthIn(488.dp),
+            images = character.images,
+            mainImage = character.mainImage,
+            onAddImage = viewModel::addCharacterImage,
+            onRemoveImage = viewModel::removeCharacterImage,
+            onSetImageMain = viewModel::setCharacterMainImage
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        TextFields(
+            state = character,
+            empties = empties,
+            entities = entities,
+            onNameChange = viewModel::setCharacterName,
+            onDescriptionChange = viewModel::setCharacterDescription,
+            onClassChange = viewModel::setCharacterClass,
+            onSubClassSelected = viewModel::setCharacterSubClass,
+            onRaceSelected = viewModel::setCharacterRace,
+            onSubRaceSelected = viewModel::setCharacterSubRace,
+            onBackgroundSelected = viewModel::setCharacterBackground,
+            onSubBackgroundSelected = viewModel::setCharacterSubBackground,
+            onOpenExtendedSearch = viewModel::openSearchSheet
+        )
     }
 }
 
 @Composable
-private fun Content(
+private fun TextFields(
     state: NewCharacterMain,
     empties: NewCharacterMainUiState.EmptyFields,
     entities: DownloadableValues,

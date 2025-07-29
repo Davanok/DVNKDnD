@@ -21,8 +21,8 @@ import com.davanok.dvnkdnd.ui.components.LoadingCard
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.error
-import dvnkdnd.composeapp.generated.resources.error_when_loading_entity
 import dvnkdnd.composeapp.generated.resources.loading
+import dvnkdnd.composeapp.generated.resources.loading_entity_error
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
@@ -73,7 +73,7 @@ fun DnDEntityInfo(
                 exception = uiState.error!!.exception
             )
             uiState.entity == null -> ErrorCard(
-                text = stringResource(Res.string.error_when_loading_entity)
+                text = stringResource(Res.string.loading_entity_error)
             )
             else -> Content()
         }

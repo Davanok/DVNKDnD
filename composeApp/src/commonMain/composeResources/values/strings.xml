@@ -75,6 +75,7 @@
     <string name="refresh">Refresh</string>
     <string name="continue_str">Continue</string>
     <string name="error_info">Error info</string>
+    <string name="ok">Ok</string>
 
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
@@ -123,15 +124,19 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     ]]></string>
     <string name="modifier_selection_invalid">Invalid modifier bonuses selection count</string>
     <string name="point_buy_stats_balance_invalid">Invalid point buy balance</string>
+    <!--skills-->
+    <string name="not_all_available_skills_selected">Not all available skill selected</string>
     <!--common-->
     <string name="loading_character_error">Error when loading character</string>
     <string name="saving_data_error">Error when saving data</string>
+    <string name="loading_entities_error">Error when loading entities</string>
+    <string name="downloading_entities_error">Error when download entities</string>
 
     <!--side sheet-->
     <string name="close_side_sheet">Close side sheet</string>
 
     <!--entity info screen-->
-    <string name="error_when_loading_entity">Error when loading entity</string>
+    <string name="loading_entity_error">Error when loading entity</string>
 
     <!--loading data states-->
     <string name="state_loading">Loading</string>

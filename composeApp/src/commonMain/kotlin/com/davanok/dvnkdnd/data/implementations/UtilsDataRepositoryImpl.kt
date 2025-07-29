@@ -5,7 +5,6 @@ import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.data.repositories.UtilsDataRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlin.uuid.Uuid
 
@@ -32,7 +31,5 @@ class UtilsDataRepositoryImpl(
             emit(CheckingDataStates.UPDATING)
             entitiesRepository.insertFullEntities(entities)
             emit(CheckingDataStates.FINISH)
-        }.catch {
-            emit(CheckingDataStates.ERROR)
         }
 }

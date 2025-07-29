@@ -17,11 +17,15 @@ import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
 import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen.LoadingDataScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.sharedKoinViewModel
+import org.koin.core.parameter.parametersOf
 import kotlin.reflect.typeOf
 import kotlin.uuid.Uuid
 
@@ -60,7 +64,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.New.Character,
+        startDestination = Route.Main,
         typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
     ) {
         mainDestinations(navController)
@@ -140,39 +144,44 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
             LoadingDataScreen(
                 onBack = navController::navigateUp,
                 onContinue = {
-                    navController.navigate(Route.New.Character.Main) {
-                        popUpTo(Route.New.Character.LoadData) {
-                            inclusive = true
-                        }
-                    }
+                    navController.navigateWithRemoveFromBackStack(Route.New.Character.Main)
                 }
             )
         }
-        composable<Route.New.Character.Main> {
+        composable<Route.New.Character.Main> { backStack ->
+            val newCharacterViewModel: NewCharacterViewModel =
+                backStack.sharedKoinViewModel(navController)
             NewCharacterMainScreen(
-                navigateToEntityInfo = { navController.navigate(Route.EntityInfo(it.id)) },
+                navigateToEntityInfo = { id -> navController.navigate(Route.EntityInfo(id)) },
                 onBack = navController::navigateUp,
-                onContinue = { id -> navController.navigate(Route.New.Character.Stats(id)) }
+                onContinue = { navController.navigate(Route.New.Character.Stats) },
+                viewModel = koinInject { parametersOf(newCharacterViewModel) }
             )
         }
-        composable<Route.New.Character.Stats>(
-            typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
-        ) { backStack ->
-            val route: Route.New.Character.Stats = backStack.toRoute()
+        composable<Route.New.Character.Stats> { backStack ->
+            val newCharacterViewModel: NewCharacterViewModel =
+                backStack.sharedKoinViewModel(navController)
             NewCharacterStatsScreen(
-                characterId = route.characterId,
-                onBack = { navController.navigateUp() },
-                onContinue = { id -> navController.navigate(Route.New.Character.Skills(id)) }
+                onBack = navController::navigateUp,
+                onContinue = { navController.navigate(Route.New.Character.Skills) },
+                viewModel = koinInject { parametersOf(newCharacterViewModel) }
             )
         }
-        composable<Route.New.Character.Skills>(
-            typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
-        ) { backStack ->
-            val route: Route.New.Character.Skills = backStack.toRoute()
+        composable<Route.New.Character.Skills> { backStack ->
+            val newCharacterViewModel: NewCharacterViewModel =
+                backStack.sharedKoinViewModel(navController)
             NewCharacterSkillsScreen(
-                characterId = route.characterId,
-                onBack = { navController.navigateUp() },
-                onContinue = { id -> navController.navigate(Route.New.Character.Health(id)) }
+                onBack = navController::navigateUp,
+                onContinue = { navController.navigate(Route.New.Character) },
+                viewModel = koinInject { parametersOf(newCharacterViewModel) }
             )
         }
     }
+
+private fun <T : Any> NavHostController.navigateWithRemoveFromBackStack(
+    destinationRoute: T
+) = navigate(destinationRoute) {
+    popUpTo(currentDestination?.route!!) {
+        inclusive = true
+    }
+}

@@ -10,7 +10,6 @@ import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ClassWithSpells
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
@@ -23,15 +22,28 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
+import com.davanok.dvnkdnd.database.model.DbFullEntity
 import com.davanok.dvnkdnd.database.model.EntityWithSub
 import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
 
 @Dao
 interface EntitiesDao : EntityInfoDao {
+    @Transaction
+    @Query("SELECT * FROM base_entities WHERE id == :entityId")
+    suspend fun getFullEntity(entityId: Uuid): DbFullEntity?
+    @Transaction
+    @Query("SELECT * FROM base_entities WHERE id IN (:entityIds)")
+    suspend fun getFullEntities(entityIds: List<Uuid>): List<DbFullEntity>
+
+
     @Query("SELECT id, type, name, source FROM base_entities WHERE type == :type AND parent_id == :parentId")
     suspend fun getEntitiesMinList(type: DnDEntityTypes, parentId: Uuid? = null): List<DnDEntityMin>
 
+
+    @Transaction
+    @Query("SELECT * FROM base_entities WHERE id IN (:entityIds)")
+    suspend fun getEntitiesWithSubList(entityIds: List<Uuid>): List<EntityWithSub>
     @Transaction
     @Query("SELECT * FROM base_entities WHERE type == :type")
     suspend fun getEntitiesWithSubList(type: DnDEntityTypes): List<EntityWithSub>

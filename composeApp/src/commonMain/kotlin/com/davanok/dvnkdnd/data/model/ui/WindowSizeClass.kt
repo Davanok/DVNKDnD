@@ -7,7 +7,7 @@ import androidx.compose.ui.util.fastForEach
 import kotlin.jvm.JvmInline
 
 fun WindowSizeClass.isCompact(): Boolean =
-    widthSizeClass == WindowWidthSizeClass.Compact || heightSizeClass == WindowHeightSizeClass.Compact
+    widthSizeClass <= WindowWidthSizeClass.Compact || heightSizeClass <= WindowHeightSizeClass.Compact
 
 class WindowSizeClass(
     val widthSizeClass: WindowWidthSizeClass,

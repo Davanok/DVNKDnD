@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
+import com.davanok.dvnkdnd.data.model.ui.isCompact
 
 @Composable
 fun TwoPane(
@@ -19,7 +19,7 @@ fun TwoPane(
     val info = LocalAdaptiveInfo.current
     val windowSizeClass = info.windowSizeClass
 
-    if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact)
+    if (windowSizeClass.isCompact())
         Box(modifier = modifier) {
             firstPane(false)
         }

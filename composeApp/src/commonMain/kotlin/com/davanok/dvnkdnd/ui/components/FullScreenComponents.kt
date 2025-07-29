@@ -15,6 +15,7 @@ import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.info
+import dvnkdnd.composeapp.generated.resources.ok
 import dvnkdnd.composeapp.generated.resources.refresh
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -79,6 +80,10 @@ fun ErrorCard(
         AlertDialog(
             text = { Text(exceptionInfo.toString()) },
             onDismissRequest = { exceptionInfo = null },
-            confirmButton = { exceptionInfo = null }
+            confirmButton = {
+                TextButton(onClick = { exceptionInfo = null }) {
+                    Text(text = stringResource(Res.string.ok))
+                }
+            }
         )
 }
