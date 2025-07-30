@@ -166,8 +166,9 @@ private data class NewCharacterWithFullEntities(
             subBackground
         )
 
-    fun toCharacterMin() = CharacterMin(
-        id = Uuid.NIL,
+    fun toCharacterMin(id: Uuid = Uuid.NIL) = CharacterMin(
+        id = id,
+        userId = null,
         name = name,
         level = 1,
         image = mainImage

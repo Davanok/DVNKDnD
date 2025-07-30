@@ -17,6 +17,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinItemProperty
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinProficiency
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toAbilityLink
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDSelectionLimits
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellSlots
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSkill
@@ -36,7 +37,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlot
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
@@ -46,6 +47,7 @@ import com.davanok.dvnkdnd.database.entities.items.ItemProperty
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
 import com.davanok.dvnkdnd.database.entities.items.Weapon
 import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
+import kotlin.uuid.Uuid
 
 
 fun DnDBaseEntity.toDnDEntityMin() = DnDEntityMin(
@@ -109,22 +111,23 @@ data class DbClassWithSpells(
     @Embedded
     val cls: DnDClass,
     @Relation(
+        ClassSpell::class,
         parentColumn = "id",
-        entityColumn = "class_id"
+        entityColumn = "class_id",
+        projection = ["spell_id"]
     )
-    val spells: List<ClassSpell>,
+    val spells: List<Uuid>,
     @Relation(
         parentColumn = "id",
         entityColumn = "class_id"
     )
-    val slots: List<ClassSpellSlot>
+    val slots: List<ClassSpellSlots>
 ) {
     fun toClassWithSpells() = ClassWithSpells(
-        id = cls.id,
-        mainStat = cls.mainStat,
+        mainStats = cls.mainStats,
         hitDice = cls.hitDice,
         spells = spells,
-        slots = slots
+        slots = slots.fastMap { it.toSpellSlots() }
     )
 }
 data class DbFullSpellAttack(
@@ -265,7 +268,7 @@ data class DbFullEntity(
     @Relation(parentColumn = "id", entityColumn = "entity_id")
     val savingThrows: List<EntitySavingThrow>,
 
-    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    @Relation(EntityProficiency::class, parentColumn = "id", entityColumn = "entity_id")
     val proficiencies: List<DbJoinProficiency>,
     @Relation(parentColumn = "id", entityColumn = "entity_id")
     val abilities: List<EntityAbility>,

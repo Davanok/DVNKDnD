@@ -16,7 +16,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlot
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
@@ -37,7 +37,7 @@ interface EntityInfoDao {
     suspend fun insertClassSpells(clsSpells: List<ClassSpell>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertClassSpellSlots(classSpellSlots: List<ClassSpellSlot>)
+    suspend fun insertClassSpellSlots(classSpellSlots: List<ClassSpellSlots>)
 
     // race
     @Insert(onConflict = OnConflictStrategy.REPLACE)

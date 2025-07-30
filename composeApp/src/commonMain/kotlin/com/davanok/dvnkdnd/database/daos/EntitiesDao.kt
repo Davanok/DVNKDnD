@@ -13,6 +13,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toClassSpellSlots
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityAbility
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityProficiency
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntitySelectionLimits
@@ -27,6 +28,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
 import com.davanok.dvnkdnd.database.model.DbFullEntity
 import com.davanok.dvnkdnd.database.model.EntityWithSub
 import io.github.aakira.napier.Napier
@@ -85,10 +87,12 @@ interface EntitiesDao : EntityInfoDao {
     suspend fun insertSelectionLimits(selectionLimit: EntitySelectionLimits)
 
     @Transaction
-    suspend fun insertClassWithSpells(cls: ClassWithSpells) {
-        insertClass(cls.toDnDClass())
-        insertClassSpells(cls.spells)
-        insertClassSpellSlots(cls.slots)
+    suspend fun insertClassWithSpells(entityId: Uuid, cls: ClassWithSpells) {
+        insertClass(cls.toDnDClass(entityId))
+        insertClassSpells(
+            cls.spells.fastMap { ClassSpell(classId = entityId, spellId = it) }
+        )
+        insertClassSpellSlots(cls.slots.fastMap { it.toClassSpellSlots(entityId) })
     }
 
     @Transaction
@@ -127,7 +131,7 @@ interface EntitiesDao : EntityInfoDao {
             insertSelectionLimits(it.toEntitySelectionLimits(entityId))
         }
 
-        fullEntity.cls?.let { insertClassWithSpells(it) }
+        fullEntity.cls?.let { insertClassWithSpells(entityId, it) }
         fullEntity.race?.let { insertRace(it) }
         fullEntity.background?.let { insertBackground(it) }
         fullEntity.feat?.let { insertFeat(it) }

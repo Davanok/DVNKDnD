@@ -37,7 +37,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlot
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
@@ -71,7 +71,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         EntityImage::class,
         DnDClass::class,
         ClassSpell::class,
-        ClassSpellSlot::class,
+        ClassSpellSlots::class,
         DnDFeat::class,
         DnDRace::class,
         EntityModifierBonus::class,
@@ -89,7 +89,11 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
     ],
     version = 1
 )
-@TypeConverters(MainAdapters::class, ListSpellComponentAdapter::class)
+@TypeConverters(
+    MainAdapters::class,
+    ListSpellComponentAdapter::class,
+    EnumListAdapters::class
+)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun getCharactersDao(): CharactersDao
     abstract fun getEntitiesDao(): EntitiesDao

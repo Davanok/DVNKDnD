@@ -69,6 +69,5 @@ data class DnDFullEntity(
     )
 
     fun getSubEntitiesIds() =
-        abilities.fastMap { it.abilityId } +
-                cls?.spells?.fastMap { it.spellId }.orEmpty()
+        abilities.fastMap { it.abilityId } + cls?.spells.orEmpty()
 }

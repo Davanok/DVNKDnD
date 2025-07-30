@@ -2,8 +2,11 @@ package com.davanok.dvnkdnd.database
 
 import androidx.room.TypeConverter
 import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
+import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import okio.Path
 import okio.Path.Companion.toPath
+import kotlin.enums.EnumEntries
+import kotlin.enums.enumEntries
 import kotlin.uuid.Uuid
 
 @Suppress("unused")
@@ -34,4 +37,19 @@ class ListSpellComponentAdapter {
     fun toStringConverter(value: List<SpellComponents>) = value.joinToString(";") {
         it.toString().first().toString()
     }
+}
+class EnumListAdapters {
+//    @TypeConverter
+//    inline fun <reified E: Enum<E>>toListConverter(value: String) = value.split(';').map {
+//        enumValueOf<E>(it)
+//    }
+//    @TypeConverter
+//    fun <E: Enum<E>>toStringConverter(value: List<E>) = value.joinToString { it.name }
+
+    @TypeConverter
+    fun toListConverter(value: String) = value.split(';').map {
+        Stats.valueOf(it)
+    }
+    @TypeConverter
+    fun toStringConverter(value: List<Stats>) = value.joinToString { it.name }
 }
