@@ -37,7 +37,7 @@ data class DnDFullEntity(
     @SerialName("saving_throws")
     val savingThrows: List<DnDSavingThrow>,
 
-    val proficiencies: List<ProficiencyLink>,
+    val proficiencies: List<JoinProficiency>,
     val abilities: List<AbilityLink>,
 
     @SerialName("selection_limits")
@@ -48,7 +48,6 @@ data class DnDFullEntity(
     val background: DnDBackground?,
     val feat: DnDFeat?,
     val ability: DnDAbility?,
-    val proficiency: DnDProficiency?,
     val spell: FullSpell?,
     val item: FullItem?,
 
@@ -74,6 +73,5 @@ data class DnDFullEntity(
 
     fun getSubEntitiesIds() =
         abilities.fastMap { it.abilityId } +
-                proficiencies.fastMap { it.proficiencyId } +
                 cls?.spells?.fastMap { it.spellId }.orEmpty()
 }

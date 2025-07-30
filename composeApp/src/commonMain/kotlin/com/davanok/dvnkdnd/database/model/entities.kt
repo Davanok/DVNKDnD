@@ -14,8 +14,8 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpellAttack
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullWeapon
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinItemProperty
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinProficiency
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toAbilityLink
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toProficiencyLink
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSkill
@@ -240,6 +240,19 @@ data class DbFullItem(
         weapon = weapon?.toFullWeapon()
     )
 }
+data class DbJoinProficiency(
+    @Embedded val link: EntityProficiency,
+    @Relation(
+        parentColumn = "proficiency_id",
+        entityColumn = "id"
+    )
+    val proficiency: DnDProficiency
+) {
+    fun toJoinProficiency() = JoinProficiency(
+        level = link.level,
+        proficiency = proficiency
+    )
+}
 data class DbFullEntity(
     @Embedded
     val base: DnDBaseEntity,
@@ -252,7 +265,7 @@ data class DbFullEntity(
     val savingThrows: List<EntitySavingThrow>,
 
     @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val proficiencies: List<EntityProficiency>,
+    val proficiencies: List<DbJoinProficiency>,
     @Relation(parentColumn = "id", entityColumn = "entity_id")
     val abilities: List<EntityAbility>,
 
@@ -314,7 +327,7 @@ data class DbFullEntity(
         modifierBonuses = modifierBonuses.fastMap { it.toDnDModifier() },
         skills = skills.fastMap { it.toDnDSkill() },
         savingThrows = savingThrows.fastMap { it.toDnDSavingThrow() },
-        proficiencies = proficiencies.fastMap { it.toProficiencyLink() },
+        proficiencies = proficiencies.fastMap { it.toJoinProficiency() },
         abilities = abilities.fastMap { it.toAbilityLink() },
         selectionLimits = selectionLimits,
         cls = cls?.toClassWithSpells(),
@@ -322,7 +335,6 @@ data class DbFullEntity(
         background = background,
         feat = feat,
         ability = ability,
-        proficiency = proficiency,
         spell = spell?.toFullSpell(),
         item = item?.toFullItem(),
         companionEntities = emptyList()

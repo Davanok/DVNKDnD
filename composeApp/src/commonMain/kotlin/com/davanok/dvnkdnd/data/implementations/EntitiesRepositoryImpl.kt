@@ -31,7 +31,7 @@ class EntitiesRepositoryImpl(
     }
 
     override suspend fun insertModifiers(modifiers: List<EntityModifierBonus>) = runCatching {
-        dao.insertModifiers(modifiers)
+        dao.insertModifierBonuses(modifiers)
     }
 
     override suspend fun insertSkills(skills: List<EntitySkill>) = runCatching {
@@ -43,11 +43,11 @@ class EntitiesRepositoryImpl(
     }
 
     override suspend fun insertProficiencies(proficiencies: List<EntityProficiency>) = runCatching {
-        dao.insertProficiencies(proficiencies)
+        dao.insertProficiencyLinks(proficiencies)
     }
 
     override suspend fun insertAbilities(abilities: List<EntityAbility>) = runCatching {
-        dao.insertAbilities(abilities)
+        dao.insertAbilityLinks(abilities)
     }
 
     override suspend fun insertSelectionLimits(selectionLimits: EntitySelectionLimits) =

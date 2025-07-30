@@ -56,10 +56,6 @@ interface EntityInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAbility(ability: DnDAbility)
 
-    // proficiency
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProficiency(proficiency: DnDProficiency)
-
     // spell
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSpell(spell: DnDSpell)

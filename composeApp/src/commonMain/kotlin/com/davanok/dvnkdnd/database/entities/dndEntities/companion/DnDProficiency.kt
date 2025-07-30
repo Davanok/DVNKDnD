@@ -1,10 +1,9 @@
 package com.davanok.dvnkdnd.database.entities.dndEntities.companion
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.ProficiencyTypes
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -12,11 +11,10 @@ import kotlin.uuid.Uuid
 @Serializable
 @Entity(
     tableName = "proficiencies",
-    foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
-    ]
+    indices = [Index(value = ["type", "name"], unique = true)]
 )
 data class DnDProficiency(
-    @PrimaryKey val id: Uuid,
+    @PrimaryKey val id: Uuid = Uuid.random(),
     val type: ProficiencyTypes,
+    val name: String
 )

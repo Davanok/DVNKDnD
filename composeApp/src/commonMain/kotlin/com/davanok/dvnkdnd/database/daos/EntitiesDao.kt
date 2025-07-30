@@ -25,6 +25,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.model.DbFullEntity
 import com.davanok.dvnkdnd.database.model.EntityWithSub
 import io.github.aakira.napier.Napier
@@ -62,7 +63,10 @@ interface EntitiesDao : EntityInfoDao {
     suspend fun insertEntity(entity: DnDBaseEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertModifiers(modifiers: List<EntityModifierBonus>)
+    suspend fun insertProficiencies(proficiencies: List<DnDProficiency>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertModifierBonuses(modifiers: List<EntityModifierBonus>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSkills(skills: List<EntitySkill>)
@@ -70,11 +74,11 @@ interface EntitiesDao : EntityInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSavingThrows(throws: List<EntitySavingThrow>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProficiencies(proficiency: List<EntityProficiency>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertProficiencyLinks(proficiency: List<EntityProficiency>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAbilities(ability: List<EntityAbility>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAbilityLinks(ability: List<EntityAbility>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSelectionLimits(selectionLimit: EntitySelectionLimits)
@@ -112,9 +116,10 @@ interface EntitiesDao : EntityInfoDao {
         fullEntity.companionEntities.fastForEach {
             insertFullEntity(it)
         }
+        insertProficiencies(fullEntity.proficiencies.fastMap { it.proficiency })
 
         insertEntity(fullEntity.toBaseEntity())
-        insertModifiers(fullEntity.modifierBonuses.fastMap { it.toEntityModifierBonus(entityId) })
+        insertModifierBonuses(fullEntity.modifierBonuses.fastMap { it.toEntityModifierBonus(entityId) })
         insertSkills(fullEntity.skills.fastMap { it.toEntitySkill(entityId) })
         insertSavingThrows(fullEntity.savingThrows.fastMap { it.toEntitySavingThrow(entityId) })
         fullEntity.selectionLimits?.let { insertSelectionLimits(it) }
@@ -124,12 +129,11 @@ interface EntitiesDao : EntityInfoDao {
         fullEntity.background?.let { insertBackground(it) }
         fullEntity.feat?.let { insertFeat(it) }
         fullEntity.ability?.let { insertAbility(it) }
-        fullEntity.proficiency?.let { insertProficiency(it) }
         fullEntity.spell?.let { insertFullSpell(it) }
         fullEntity.item?.let { insertFullItem(it) }
 
-        insertProficiencies(fullEntity.proficiencies.fastMap { it.toEntityProficiency(entityId) })
-        insertAbilities(fullEntity.abilities.fastMap { it.toEntityAbility(entityId) })
+        insertProficiencyLinks(fullEntity.proficiencies.fastMap { it.toEntityProficiency(entityId) })
+        insertAbilityLinks(fullEntity.abilities.fastMap { it.toEntityAbility(entityId) })
     }
 
     @Query("SELECT exists(SELECT 1 FROM base_entities WHERE id == :entityId)")
