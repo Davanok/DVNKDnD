@@ -19,7 +19,10 @@ private const val FULL_ENTITY_REQUEST = """
 modifier_bonuses:entity_modifier_bonuses!entity_modifiers_entity_id_fkey(*),
 skills:entity_skills(*),
 saving_throws:entity_saving_throws(*),
-proficiencies:entity_proficiencies(*),
+proficiencies:entity_proficiencies(
+    level,
+    proficiency:proficiencies(*)
+),
 abilities:entity_abilities(*),
 selection_limits:entity_selection_limits(*),
 cls:classes(
@@ -31,7 +34,6 @@ race:races(*),
 background:backgrounds(*),
 feat:feats(*),
 ability:abilities!abilities_id_fkey(*),
-proficiency:proficiencies!dnd_proficiencies_id_fkey(*),
 spell:spells(
     *,
     area:spell_areas(*),
