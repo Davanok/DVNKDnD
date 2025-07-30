@@ -4,11 +4,11 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
@@ -37,7 +37,7 @@ data class DnDFullEntity(
     val modifierBonuses: List<DnDModifierBonus>,
     val skills: List<DnDSkill>,
     @SerialName("saving_throws")
-    val savingThrows: List<EntitySavingThrow>,
+    val savingThrows: List<DnDSavingThrow>,
 
     val proficiencies: List<EntityProficiency>,
     val abilities: List<EntityAbility>,

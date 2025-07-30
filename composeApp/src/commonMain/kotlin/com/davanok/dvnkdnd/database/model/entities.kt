@@ -15,6 +15,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpellAttack
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullWeapon
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinItemProperty
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDModifier
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
@@ -310,7 +311,7 @@ data class DbFullEntity(
         source = base.source,
         modifierBonuses = modifierBonuses.fastMap { it.toDnDModifier() },
         skills = skills.fastMap { it.toDnDSkill() },
-        savingThrows = savingThrows,
+        savingThrows = savingThrows.fastMap { it.toDnDSavingThrow() },
         proficiencies = proficiencies,
         abilities = abilities,
         selectionLimits = selectionLimits,
