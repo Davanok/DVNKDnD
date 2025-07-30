@@ -7,15 +7,12 @@ import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.collections.orEmpty
 import kotlin.uuid.Uuid
 
 @Immutable
@@ -41,7 +38,7 @@ data class DnDFullEntity(
     val abilities: List<AbilityLink>,
 
     @SerialName("selection_limits")
-    val selectionLimits: EntitySelectionLimits?,
+    val selectionLimits: DnDSelectionLimits?,
 
     val cls: ClassWithSpells?,
     val race: DnDRace?,

@@ -16,6 +16,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullWeapon
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinItemProperty
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinProficiency
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toAbilityLink
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDSelectionLimits
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSkill
@@ -329,7 +330,7 @@ data class DbFullEntity(
         savingThrows = savingThrows.fastMap { it.toDnDSavingThrow() },
         proficiencies = proficiencies.fastMap { it.toJoinProficiency() },
         abilities = abilities.fastMap { it.toAbilityLink() },
-        selectionLimits = selectionLimits,
+        selectionLimits = selectionLimits?.toDnDSelectionLimits(),
         cls = cls?.toClassWithSpells(),
         race = race,
         background = background,

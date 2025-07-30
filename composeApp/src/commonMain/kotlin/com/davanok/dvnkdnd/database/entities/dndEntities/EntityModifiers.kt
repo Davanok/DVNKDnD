@@ -82,7 +82,6 @@ data class EntityAbility(
     val level: Int
 )
 
-@Serializable
 @Entity(
     tableName = "entity_selection_limits",
     foreignKeys = [
@@ -93,7 +92,6 @@ data class EntitySelectionLimits( // selection limit sum also includes non selec
     @PrimaryKey val id: Uuid = Uuid.random(),
     val modifiers: Int?,
     val skills: Int?,
-    @SerialName("saving_throws")
     @ColumnInfo("saving_throws") val savingThrows: Int?,
     val proficiencies: Int?,
     val abilities: Int?,

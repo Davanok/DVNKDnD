@@ -15,6 +15,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityAbility
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityProficiency
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntitySelectionLimits
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntityModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntitySavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntitySkill
@@ -122,7 +123,9 @@ interface EntitiesDao : EntityInfoDao {
         insertModifierBonuses(fullEntity.modifierBonuses.fastMap { it.toEntityModifierBonus(entityId) })
         insertSkills(fullEntity.skills.fastMap { it.toEntitySkill(entityId) })
         insertSavingThrows(fullEntity.savingThrows.fastMap { it.toEntitySavingThrow(entityId) })
-        fullEntity.selectionLimits?.let { insertSelectionLimits(it) }
+        fullEntity.selectionLimits?.let {
+            insertSelectionLimits(it.toEntitySelectionLimits(entityId))
+        }
 
         fullEntity.cls?.let { insertClassWithSpells(it) }
         fullEntity.race?.let { insertRace(it) }
