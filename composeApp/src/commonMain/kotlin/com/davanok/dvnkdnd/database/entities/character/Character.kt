@@ -21,6 +21,7 @@ import kotlin.uuid.Uuid
 )
 data class Character(
     @PrimaryKey val id: Uuid = Uuid.random(),
+    @ColumnInfo("user_id") val userId: Uuid? = null,
     val name: String,
     val description: String,
     @ColumnInfo(index = true) val race: Uuid?,

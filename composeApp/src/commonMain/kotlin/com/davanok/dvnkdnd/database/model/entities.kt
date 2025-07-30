@@ -303,9 +303,8 @@ data class DbFullEntity(
     fun toDnDFullEntity(): DnDFullEntity = DnDFullEntity(
         id = base.id,
         parentId = base.parentId,
-        userId = null,
+        userId = base.userId,
         type = base.type,
-        shared = base.shared,
         name = base.name,
         description = base.description,
         source = base.source,

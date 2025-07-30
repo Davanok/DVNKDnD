@@ -19,6 +19,7 @@ import kotlin.uuid.Uuid
 
 fun Character.toCharacterMin() = CharacterMin(
     id = id,
+    userId = userId,
     name = name,
     level = level,
     image = image

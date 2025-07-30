@@ -20,8 +20,8 @@ data class DnDBaseEntity(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @SerialName("parent_id")
     @ColumnInfo("parent_id", index = true) val parentId: Uuid? = null,
+    @ColumnInfo("user_id") val userId: Uuid? = null,
     @ColumnInfo(index = true) val type: DnDEntityTypes,
-    val shared: Boolean = false,
     val name: String,
     val description: String,
     val source: String

@@ -29,7 +29,6 @@ data class DnDFullEntity(
     @SerialName("user_id")
     val userId: Uuid?,
     val type: DnDEntityTypes,
-    val shared: Boolean = false,
     val name: String,
     val description: String,
     val source: String,
@@ -61,8 +60,8 @@ data class DnDFullEntity(
     fun toBaseEntity() = DnDBaseEntity(
         id = id,
         parentId = parentId,
+        userId = userId,
         type = type,
-        shared = shared,
         name = name,
         description = description,
         source = source

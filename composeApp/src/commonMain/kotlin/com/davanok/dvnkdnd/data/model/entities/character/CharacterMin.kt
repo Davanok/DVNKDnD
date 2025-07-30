@@ -6,6 +6,7 @@ import kotlin.uuid.Uuid
 
 data class CharacterMin(
     val id: Uuid,
+    val userId: Uuid?,
     val name: String,
     val level: Int,
     val image: Path?
