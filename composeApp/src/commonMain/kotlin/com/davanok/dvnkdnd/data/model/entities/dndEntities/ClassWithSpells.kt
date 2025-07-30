@@ -37,12 +37,12 @@ fun ClassSpellSlots.toSpellSlots() = SpellSlots(
 @Serializable
 data class ClassWithSpells(
     @SerialName("main_stat")
-    val mainStats: List<Stats>,
+    val primaryStats: List<Stats>,
     @SerialName("hit_dice")
     val hitDice: Dices,
 
     val spells: List<Uuid>,
     val slots: List<SpellSlots>,
 ) {
-    fun toDnDClass(entityId: Uuid) = DnDClass(entityId, mainStats, hitDice)
+    fun toDnDClass(entityId: Uuid) = DnDClass(entityId, primaryStats, hitDice)
 }

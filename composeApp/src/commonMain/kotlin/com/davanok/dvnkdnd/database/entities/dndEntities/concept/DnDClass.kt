@@ -19,7 +19,7 @@ import kotlin.uuid.Uuid
 )
 data class DnDClass( // also subclass
     @PrimaryKey val id: Uuid, // in same time is entity id
-    val mainStats: List<Stats>,
+    val primaryStats: List<Stats>,
     val hitDice: Dices,
 )
 @Serializable

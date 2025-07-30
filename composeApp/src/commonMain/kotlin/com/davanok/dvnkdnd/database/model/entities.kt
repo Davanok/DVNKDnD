@@ -124,7 +124,7 @@ data class DbClassWithSpells(
     val slots: List<ClassSpellSlots>
 ) {
     fun toClassWithSpells() = ClassWithSpells(
-        mainStats = cls.mainStats,
+        primaryStats = cls.primaryStats,
         hitDice = cls.hitDice,
         spells = spells,
         slots = slots.fastMap { it.toSpellSlots() }
