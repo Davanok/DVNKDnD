@@ -13,6 +13,8 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityAbility
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityProficiency
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntityModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntitySavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntitySkill
@@ -126,8 +128,8 @@ interface EntitiesDao : EntityInfoDao {
         fullEntity.spell?.let { insertFullSpell(it) }
         fullEntity.item?.let { insertFullItem(it) }
 
-        insertProficiencies(fullEntity.proficiencies)
-        insertAbilities(fullEntity.abilities)
+        insertProficiencies(fullEntity.proficiencies.fastMap { it.toEntityProficiency(entityId) })
+        insertAbilities(fullEntity.abilities.fastMap { it.toEntityAbility(entityId) })
     }
 
     @Query("SELECT exists(SELECT 1 FROM base_entities WHERE id == :entityId)")

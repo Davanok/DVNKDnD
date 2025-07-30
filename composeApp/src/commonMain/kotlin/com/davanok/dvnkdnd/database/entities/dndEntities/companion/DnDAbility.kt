@@ -11,10 +11,9 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "abilities",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.Companion.CASCADE)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class DnDAbility(
     @PrimaryKey val id: Uuid,
-    val level: Int
 )

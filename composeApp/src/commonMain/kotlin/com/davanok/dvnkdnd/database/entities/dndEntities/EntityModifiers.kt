@@ -54,7 +54,6 @@ data class EntitySavingThrow(
     val stat: Stats,
 )
 
-@Serializable
 @Entity(
     tableName = "entity_proficiencies",
     primaryKeys = ["entity_id", "proficiency_id"],
@@ -64,14 +63,11 @@ data class EntitySavingThrow(
     ]
 )
 data class EntityProficiency(
-    @SerialName("entity_id")
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
-    @SerialName("proficiency_id")
     @ColumnInfo("proficiency_id", index = true) val proficiencyId: Uuid,
     val level: Int
 )
 
-@Serializable
 @Entity(
     tableName = "entity_abilities",
     primaryKeys = ["entity_id", "ability_id"],
@@ -81,9 +77,7 @@ data class EntityProficiency(
     ]
 )
 data class EntityAbility(
-    @SerialName("entity_id")
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
-    @SerialName("ability_id")
     @ColumnInfo("ability_id", index = true) val abilityId: Uuid,
     val level: Int
 )

@@ -7,8 +7,6 @@ import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
@@ -39,8 +37,8 @@ data class DnDFullEntity(
     @SerialName("saving_throws")
     val savingThrows: List<DnDSavingThrow>,
 
-    val proficiencies: List<EntityProficiency>,
-    val abilities: List<EntityAbility>,
+    val proficiencies: List<ProficiencyLink>,
+    val abilities: List<AbilityLink>,
 
     @SerialName("selection_limits")
     val selectionLimits: EntitySelectionLimits?,
