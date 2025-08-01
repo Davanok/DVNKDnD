@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.data.implementations
 import com.davanok.dvnkdnd.data.model.types.CheckingDataStates
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
+import com.davanok.dvnkdnd.data.repositories.FullEntitiesRepository
 import com.davanok.dvnkdnd.data.repositories.UtilsDataRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -10,7 +11,8 @@ import kotlin.uuid.Uuid
 
 class UtilsDataRepositoryImpl(
     private val browseRepository: BrowseRepository,
-    private val entitiesRepository: EntitiesRepository
+    private val entitiesRepository: EntitiesRepository,
+    private val fullEntitiesRepository: FullEntitiesRepository
 ): UtilsDataRepository {
     override fun checkAndLoadEntities(entitiesIds: List<Uuid>): Flow<CheckingDataStates> =
         flow {
@@ -29,7 +31,7 @@ class UtilsDataRepositoryImpl(
             val entities = browseRepository.loadEntitiesFullInfo(notExistingEntities.toList()).getOrThrow()
 
             emit(CheckingDataStates.UPDATING)
-            entitiesRepository.insertFullEntities(entities)
+            fullEntitiesRepository.insertFullEntities(entities)
             emit(CheckingDataStates.FINISH)
         }
 }

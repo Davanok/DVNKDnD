@@ -2,7 +2,6 @@ package com.davanok.dvnkdnd.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,12 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.more
-import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.stringResource
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 
 @Composable

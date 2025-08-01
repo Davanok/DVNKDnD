@@ -11,7 +11,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveNavigationWrapper
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.browse

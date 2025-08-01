@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -52,13 +51,13 @@ import dvnkdnd.composeapp.generated.resources.cancel
 import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.discard_changes
 import dvnkdnd.composeapp.generated.resources.finish
+import dvnkdnd.composeapp.generated.resources.remove
 import dvnkdnd.composeapp.generated.resources.restart_alt
 import dvnkdnd.composeapp.generated.resources.rotate_90_degrees_cw
 import dvnkdnd.composeapp.generated.resources.rotate_left
 import dvnkdnd.composeapp.generated.resources.rotate_right
 import dvnkdnd.composeapp.generated.resources.zoom_in
 import dvnkdnd.composeapp.generated.resources.zoom_out
-import dvnkdnd.composeapp.generated.resources.remove
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.PI

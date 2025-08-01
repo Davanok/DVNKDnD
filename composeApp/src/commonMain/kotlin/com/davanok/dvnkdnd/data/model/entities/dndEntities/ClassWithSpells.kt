@@ -36,7 +36,7 @@ fun ClassSpellSlots.toSpellSlots() = SpellSlots(
 
 @Serializable
 data class ClassWithSpells(
-    @SerialName("main_stat")
+    @SerialName("primary_stats")
     val primaryStats: List<Stats>,
     @SerialName("hit_dice")
     val hitDice: Dices,

@@ -291,7 +291,10 @@ private fun StandardArrayModifiersSelector(
                                 .align(Alignment.CenterStart)
                                 .background(
                                     brush = Brush.horizontalGradient(
-                                        colors = listOf(Color.Black.copy(alpha = 0.4f), Color.Transparent)
+                                        colors = listOf(
+                                            Color.Black.copy(alpha = 0.4f),
+                                            Color.Transparent
+                                        )
                                     )
                                 )
                         )
@@ -303,13 +306,19 @@ private fun StandardArrayModifiersSelector(
                                 .align(Alignment.CenterEnd)
                                 .background(
                                     brush = Brush.horizontalGradient(
-                                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.4f))
+                                        colors = listOf(
+                                            Color.Transparent,
+                                            Color.Black.copy(alpha = 0.4f)
+                                        )
                                     )
                                 )
                         )
                 }
                 val windowSizeClass = LocalAdaptiveInfo.current.windowSizeClass
-                val statValue = character[stat] + entitiesWithModifiers.appliedModifiers(stat, selectedModifiersBonuses).sum()
+                val statValue = character[stat] + entitiesWithModifiers.appliedModifiers(
+                    stat,
+                    selectedModifiersBonuses
+                ).sum()
                 val modifier = calculateModifier(statValue)
                 val text =
                     if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Small)
@@ -385,7 +394,7 @@ fun ModifiersSelectionGroup(
             .toMap()
         val checkSelectionLimits = !entitiesWithModifiers
             .fastAny { it.selectionLimit == null }
-        val selectionLimitsSum = entitiesWithModifiers.fastSumBy { it.selectionLimit?: 0}
+        val selectionLimitsSum = entitiesWithModifiers.fastSumBy { it.selectionLimit ?: 0 }
 
         Triple(modBonusGroups, checkSelectionLimits, selectionLimitsSum)
     }
@@ -408,7 +417,7 @@ fun ModifiersSelectionGroup(
         }
         Spacer(Modifier.height(8.dp))
 
-        // Body: для каждого stat рисуем строку с двумя RadioButton-колонками
+
         Stats.entries.forEach { stat ->
             Row(
                 Modifier
@@ -416,7 +425,7 @@ fun ModifiersSelectionGroup(
                     .padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // 1) своё поле (Point‑Buy / Std‑Array / Manual)
+
                 Box(
                     Modifier
                         .weight(1f),

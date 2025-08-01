@@ -5,8 +5,6 @@ import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import okio.Path
 import okio.Path.Companion.toPath
-import kotlin.enums.EnumEntries
-import kotlin.enums.enumEntries
 import kotlin.uuid.Uuid
 
 @Suppress("unused")
@@ -39,13 +37,6 @@ class ListSpellComponentAdapter {
     }
 }
 class EnumListAdapters {
-//    @TypeConverter
-//    inline fun <reified E: Enum<E>>toListConverter(value: String) = value.split(';').map {
-//        enumValueOf<E>(it)
-//    }
-//    @TypeConverter
-//    fun <E: Enum<E>>toStringConverter(value: List<E>) = value.joinToString { it.name }
-
     @TypeConverter
     fun toListConverter(value: String) = value.split(';').map {
         Stats.valueOf(it)

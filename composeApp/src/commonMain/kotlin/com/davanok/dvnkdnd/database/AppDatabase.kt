@@ -4,7 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.davanok.dvnkdnd.database.daos.CharactersDao
-import com.davanok.dvnkdnd.database.daos.EntitiesDao
+import com.davanok.dvnkdnd.database.daos.entities.BaseEntityDao
+import com.davanok.dvnkdnd.database.daos.entities.FullEntitiesDao
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
@@ -96,5 +97,6 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
 )
 abstract class AppDatabase: RoomDatabase() {
     abstract fun getCharactersDao(): CharactersDao
-    abstract fun getEntitiesDao(): EntitiesDao
+    abstract fun getBaseEntityDao(): BaseEntityDao
+    abstract fun getFullEntityDao(): FullEntitiesDao
 }

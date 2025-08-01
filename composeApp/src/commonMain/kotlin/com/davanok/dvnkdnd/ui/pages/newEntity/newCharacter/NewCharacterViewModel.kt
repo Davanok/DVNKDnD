@@ -17,14 +17,14 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
-import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
+import com.davanok.dvnkdnd.data.repositories.FullEntitiesRepository
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMain
 import kotlinx.coroutines.launch
 import okio.Path
 import kotlin.uuid.Uuid
 
 class NewCharacterViewModel(
-    private val entitiesRepository: EntitiesRepository,
+    private val fullEntitiesRepository: FullEntitiesRepository,
     private val browseRepository: BrowseRepository,
     private val charactersRepository: CharactersRepository
 ) : ViewModel() {
@@ -39,12 +39,12 @@ class NewCharacterViewModel(
     }
 
     private suspend fun loadEntities(entitiesIds: List<Uuid>): List<DnDFullEntity> {
-        val entities = entitiesRepository.getFullEntities(entitiesIds).getOrThrow().toMutableList()
+        val entities = fullEntitiesRepository.getFullEntities(entitiesIds).getOrThrow().toMutableList()
         val dbEntitiesIds = entities.fastMap { it.id }
         val comparison = entitiesIds.subtract(dbEntitiesIds)
         if (comparison.isNotEmpty()) {
             val loaded = browseRepository.loadEntitiesFullInfo(comparison.toList()).getOrThrow()
-            entitiesRepository.insertFullEntities(loaded).getOrThrow()
+            fullEntitiesRepository.insertFullEntities(loaded).getOrThrow()
             entities.addAll(loaded)
         }
         return entities
