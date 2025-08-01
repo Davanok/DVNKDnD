@@ -7,10 +7,6 @@ import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -40,13 +36,13 @@ data class DnDFullEntity(
     @SerialName("selection_limits")
     val selectionLimits: DnDSelectionLimits?,
 
-    val cls: ClassWithSpells?,
-    val race: DnDRace?,
-    val background: DnDBackground?,
-    val feat: DnDFeat?,
-    val ability: DnDAbility?,
-    val spell: FullSpell?,
-    val item: FullItem?,
+    val cls: ClassWithSpells? = null,
+    val race: RaceInfo? = null,
+    val background: Nothing? = null,
+    val feat: FeatInfo? = null,
+    val ability: AbilityInfo? = null,
+    val spell: FullSpell? = null,
+    val item: FullItem? = null,
 
     @SerialName("companion_entities")
     val companionEntities: List<DnDFullEntity> = emptyList(),

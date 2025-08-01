@@ -5,10 +5,8 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.Size
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-@Serializable
 @Entity(
     tableName = "races",
     foreignKeys = [

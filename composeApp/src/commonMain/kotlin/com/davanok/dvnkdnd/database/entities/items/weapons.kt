@@ -6,7 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
-import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 
@@ -18,7 +17,6 @@ data class Weapon(
     @PrimaryKey val id: Uuid,
     val atkBonus: Int
 )
-@Serializable
 @Entity(
     tableName = "weapon_damages",
     foreignKeys = [ForeignKey(Weapon::class, ["id"], ["weapon_id"], onDelete = ForeignKey.CASCADE)]
@@ -26,8 +24,8 @@ data class Weapon(
 data class WeaponDamage(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("weapon_id", index = true) val weaponId: Uuid,
-    val damageType: DamageTypes,
-    val diceCount: Int,
+    @ColumnInfo("damage_type") val damageType: DamageTypes,
+    @ColumnInfo("dice_count") val diceCount: Int,
     val dice: Dices,
     val modifier: Int
 )

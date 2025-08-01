@@ -8,7 +8,6 @@ import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
-import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Entity(
@@ -22,7 +21,6 @@ data class DnDClass( // also subclass
     val primaryStats: List<Stats>,
     val hitDice: Dices,
 )
-@Serializable
 @Entity(
     tableName = "class_spells",
     primaryKeys = ["class_id", "spell_id"],
@@ -47,6 +45,6 @@ data class ClassSpellSlots(
     val level: Int,
     val preparedSpells: Int?,
     val cantrips: Int?,
-    val spellSlots: List<Int>
+    val spellSlots: List<Int>?
 )
 

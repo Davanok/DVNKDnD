@@ -7,7 +7,6 @@ import okio.Path
 import okio.Path.Companion.toPath
 import kotlin.uuid.Uuid
 
-@Suppress("unused")
 class MainAdapters {
     @TypeConverter
     fun stringToListConverter(value: String) = value.split(';').map { it.toInt() }

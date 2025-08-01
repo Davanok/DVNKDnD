@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.database.model
 import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Relation
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.AbilityInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ClassWithSpells
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithModifiers
@@ -16,8 +17,18 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullWeapon
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinItemProperty
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinProficiency
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toAbilityLink
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toAbilityRegain
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toArmorInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDSelectionLimits
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toFeatInfo
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toItemProperty
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toProficiency
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toRaceInfo
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellAreaInfo
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellAttackLevelModifierInfo
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellAttackSaveInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellSlots
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toWeaponDamageInfo
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSavingThrow
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSkill
@@ -34,6 +45,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbilityRegain
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
@@ -43,7 +55,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
-import com.davanok.dvnkdnd.database.entities.items.ItemProperty
+import com.davanok.dvnkdnd.database.entities.items.DnDItemProperty
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
 import com.davanok.dvnkdnd.database.entities.items.Weapon
 import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
@@ -146,13 +158,12 @@ data class DbFullSpellAttack(
 ) {
     fun toFullSpellAttack() = FullSpellAttack(
         id = attack.id,
-        spellId = attack.spellId,
         damageType = attack.damageType,
         diceCount = attack.diceCount,
         dice = attack.dice,
         modifier = attack.modifier,
-        modifiers = modifiers,
-        save = save
+        modifiers = modifiers.fastMap { it.toSpellAttackLevelModifierInfo() },
+        save = save?.toSpellAttackSaveInfo()
     )
 }
 data class DbFullSpell(
@@ -171,7 +182,6 @@ data class DbFullSpell(
     val attacks: List<DbFullSpellAttack>
 ) {
     fun toFullSpell() = FullSpell(
-        id = spell.id,
         school = spell.school,
         level = spell.level,
         castingTime = spell.castingTime,
@@ -180,7 +190,7 @@ data class DbFullSpell(
         materialComponent = spell.materialComponent,
         duration = spell.duration,
         concentration = spell.concentration,
-        area = area,
+        area = area?.toSpellAreaInfo(),
         attacks = attacks.fastMap { it.toFullSpellAttack() }
     )
 }
@@ -191,12 +201,12 @@ data class DbJoinItemProperty(
         parentColumn = "property_id",
         entityColumn = "id"
     )
-    val property: ItemProperty
+    val property: DnDItemProperty
 ) {
     fun toJoinItemProperty() = JoinItemProperty(
         itemId = link.itemId,
         propertyId = link.propertyId,
-        property = property
+        property = property.toItemProperty()
     )
 }
 data class DbFullWeapon(
@@ -209,9 +219,8 @@ data class DbFullWeapon(
     val damages: List<WeaponDamage>
 ) {
     fun toFullWeapon() = FullWeapon(
-        id = weapon.id,
         atkBonus = weapon.atkBonus,
-        damages = damages
+        damages = damages.fastMap { it.toWeaponDamageInfo() }
     )
 }
 data class DbFullItem(
@@ -236,11 +245,10 @@ data class DbFullItem(
     val weapon: DbFullWeapon?
 ) {
     fun toFullItem() = FullItem(
-        id = item.id,
         cost = item.cost,
         weight = item.weight,
         properties = properties.fastMap { it.toJoinItemProperty() },
-        armor = armor,
+        armor = armor?.toArmorInfo(),
         weapon = weapon?.toFullWeapon()
     )
 }
@@ -254,7 +262,20 @@ data class DbJoinProficiency(
 ) {
     fun toJoinProficiency() = JoinProficiency(
         level = link.level,
-        proficiency = proficiency
+        proficiency = proficiency.toProficiency()
+    )
+}
+data class DbAbilityInfo(
+    @Embedded val ability: DnDAbility,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "ability_id"
+    )
+    val regains: List<DnDAbilityRegain>
+) {
+    fun toAbilityInfo() = AbilityInfo(
+        usageLimitByLevel = ability.usageLimitByLevel,
+        regains = regains.fastMap { it.toAbilityRegain() }
     )
 }
 data class DbFullEntity(
@@ -298,10 +319,11 @@ data class DbFullEntity(
     )
     val feat: DnDFeat?,
     @Relation(
+        DnDAbility::class,
         parentColumn = "id",
         entityColumn = "id"
     )
-    val ability: DnDAbility?,
+    val ability: DbAbilityInfo?,
     @Relation(
         parentColumn = "id",
         entityColumn = "id"
@@ -335,10 +357,10 @@ data class DbFullEntity(
         abilities = abilities.fastMap { it.toAbilityLink() },
         selectionLimits = selectionLimits?.toDnDSelectionLimits(),
         cls = cls?.toClassWithSpells(),
-        race = race,
-        background = background,
-        feat = feat,
-        ability = ability,
+        race = race?.toRaceInfo(),
+        background = null,
+        feat = feat?.toFeatInfo(),
+        ability = ability?.toAbilityInfo(),
         spell = spell?.toFullSpell(),
         item = item?.toFullItem(),
         companionEntities = emptyList()

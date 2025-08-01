@@ -33,7 +33,10 @@ cls:classes(
 race:races(*),
 background:backgrounds(*),
 feat:feats(*),
-ability:abilities!abilities_id_fkey(*),
+ability:abilities!abilities_id_fkey(
+    *,
+    regains:ability_regains(*)
+),
 spell:spells(
     *,
     area:spell_areas(*),

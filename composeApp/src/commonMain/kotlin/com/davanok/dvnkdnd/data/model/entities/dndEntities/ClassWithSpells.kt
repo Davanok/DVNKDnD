@@ -16,7 +16,7 @@ data class SpellSlots(
     val preparedSpells: Int?,
     val cantrips: Int?,
     @SerialName("spell_slots")
-    val spellSlots: List<Int>
+    val spellSlots: List<Int>?
 )
 fun SpellSlots.toClassSpellSlots(classId: Uuid) = ClassSpellSlots(
     id = id,
@@ -43,6 +43,6 @@ data class ClassWithSpells(
 
     val spells: List<Uuid>,
     val slots: List<SpellSlots>,
-) {
-    fun toDnDClass(entityId: Uuid) = DnDClass(entityId, primaryStats, hitDice)
-}
+)
+
+fun ClassWithSpells.toDnDClass(entityId: Uuid) = DnDClass(entityId, primaryStats, hitDice)

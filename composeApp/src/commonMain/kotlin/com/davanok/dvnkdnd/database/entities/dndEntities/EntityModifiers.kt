@@ -8,8 +8,6 @@ import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Entity(
@@ -39,7 +37,6 @@ data class EntitySkill(
     val skill: Skills,
 )
 
-@Serializable
 @Entity(
     tableName = "entity_saving_throws",
     foreignKeys = [
@@ -48,7 +45,6 @@ data class EntitySkill(
 )
 data class EntitySavingThrow(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @SerialName("entity_id")
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     val selectable: Boolean,
     val stat: Stats,

@@ -1,9 +1,11 @@
 package com.davanok.dvnkdnd.data.model.entities.dndEntities
 
+import com.davanok.dvnkdnd.data.model.dndEnums.AreaTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.dndEnums.MagicSchools
 import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
+import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
@@ -15,7 +17,6 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class FullSpell(
-    val id: Uuid,
     val school: MagicSchools,
     val level: Int?,
     @SerialName("casting_time")
@@ -27,11 +28,11 @@ data class FullSpell(
     val duration: String,
     val concentration: Boolean,
 
-    val area: SpellArea?,
+    val area: SpellAreaInfo?,
     val attacks: List<FullSpellAttack>,
 ) {
-    fun toSpell() = DnDSpell(
-        id,
+    fun toSpell(entityId: Uuid) = DnDSpell(
+        entityId,
         school,
         level,
         castingTime,
@@ -43,10 +44,25 @@ data class FullSpell(
     )
 }
 @Serializable
+data class SpellAreaInfo(
+    val range: Int,
+    val area: Int,
+    val type: AreaTypes
+)
+fun SpellArea.toSpellAreaInfo() = SpellAreaInfo(
+    range = range,
+    area = area,
+    type = type
+)
+fun SpellAreaInfo.toSpellArea(entityId: Uuid) = SpellArea(
+    id = entityId,
+    range = range,
+    area = area,
+    type = type
+)
+@Serializable
 data class FullSpellAttack(
     val id: Uuid,
-    @SerialName("spell_id")
-    val spellId: Uuid,
     @SerialName("damage_type")
     val damageType: DamageTypes,
     @SerialName("dice_count")
@@ -54,10 +70,50 @@ data class FullSpellAttack(
     val dice: Dices,
     val modifier: Int,
 
-    val modifiers: List<SpellAttackLevelModifier>,
-    val save: SpellAttackSave?,
+    val modifiers: List<SpellAttackLevelModifierInfo>,
+    val save: SpellAttackSaveInfo?,
 ) {
-    fun toAttack() = SpellAttack(
+    fun toAttack(spellId: Uuid) = SpellAttack(
         id, spellId, damageType, diceCount, dice, modifier
     )
 }
+@Serializable
+data class SpellAttackSaveInfo(
+    @SerialName("saving_throw")
+    val savingThrow: Stats,
+    @SerialName("half_on_success")
+    val halfOnSuccess: Boolean,
+)
+fun SpellAttackSave.toSpellAttackSaveInfo() = SpellAttackSaveInfo(
+    savingThrow = savingThrow,
+    halfOnSuccess = halfOnSuccess
+)
+fun SpellAttackSaveInfo.toSpellAttackSave(attackId: Uuid) = SpellAttackSave(
+    id = attackId,
+    savingThrow = savingThrow,
+    halfOnSuccess = halfOnSuccess
+)
+@Serializable
+data class SpellAttackLevelModifierInfo(
+    val id: Uuid = Uuid.random(),
+    val level: Int,
+    @SerialName("dice_count")
+    val diceCount: Int,
+    val dice: Dices,
+    val modifier: Int,
+)
+fun SpellAttackLevelModifier.toSpellAttackLevelModifierInfo() = SpellAttackLevelModifierInfo(
+    id = id,
+    level = level,
+    diceCount = diceCount,
+    dice = dice,
+    modifier = modifier
+)
+fun SpellAttackLevelModifierInfo.toSpellAttackLevelModifier(attackId: Uuid) = SpellAttackLevelModifier(
+    id = id,
+    attackId = attackId,
+    level = level,
+    diceCount = diceCount,
+    dice = dice,
+    modifier = modifier
+)

@@ -38,17 +38,19 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbilityRegain
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
-import com.davanok.dvnkdnd.database.entities.items.ItemProperty
+import com.davanok.dvnkdnd.database.entities.items.DnDItemProperty
 import com.davanok.dvnkdnd.database.entities.items.Weapon
 import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
 
 @Database(
     entities = [
         DnDAbility::class,
+        DnDAbilityRegain::class,
         DnDProficiency::class,
         DnDSpell::class,
         SpellArea::class,
@@ -83,7 +85,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         EntitySelectionLimits::class,
         DnDItem::class,
         ItemPropertyLink::class,
-        ItemProperty::class,
+        DnDItemProperty::class,
         Armor::class,
         Weapon::class,
         WeaponDamage::class

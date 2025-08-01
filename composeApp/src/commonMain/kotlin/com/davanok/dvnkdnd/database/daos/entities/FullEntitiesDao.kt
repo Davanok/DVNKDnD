@@ -6,6 +6,9 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDFeat
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDProficiency
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDRace
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityAbility
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityProficiency
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntitySelectionLimits
@@ -33,7 +36,9 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
         fullEntity.companionEntities.fastForEach {
             insertFullEntity(it)
         }
-        insertProficiencies(fullEntity.proficiencies.fastMap { it.proficiency })
+        insertProficiencies(
+            fullEntity.proficiencies.fastMap { it.proficiency.toDnDProficiency() }
+        )
 
         insertEntity(fullEntity.toBaseEntity())
         insertModifierBonuses(fullEntity.modifierBonuses.fastMap { it.toEntityModifierBonus(entityId) })
@@ -44,12 +49,12 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
         }
 
         fullEntity.cls?.let { insertClassWithSpells(entityId, it) }
-        fullEntity.race?.let { insertRace(it) }
-        fullEntity.background?.let { insertBackground(it) }
-        fullEntity.feat?.let { insertFeat(it) }
-        fullEntity.ability?.let { insertAbility(it) }
-        fullEntity.spell?.let { insertFullSpell(it) }
-        fullEntity.item?.let { insertFullItem(it) }
+        fullEntity.race?.let { insertRace(it.toDnDRace(entityId)) }
+//        fullEntity.background?.let { insertBackground(it) }
+        fullEntity.feat?.let { insertFeat(it.toDnDFeat(entityId)) }
+        fullEntity.ability?.let { insertAbilityInfo(entityId, it) }
+        fullEntity.spell?.let { insertFullSpell(entityId, it) }
+        fullEntity.item?.let { insertFullItem(entityId, it) }
 
         insertProficiencyLinks(fullEntity.proficiencies.fastMap { it.toEntityProficiency(entityId) })
         insertAbilityLinks(fullEntity.abilities.fastMap { it.toEntityAbility(entityId) })

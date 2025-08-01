@@ -10,7 +10,6 @@ import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.dndEnums.MagicSchools
 import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
-import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 
@@ -32,7 +31,6 @@ data class DnDSpell(
     val concentration: Boolean,
 )
 
-@Serializable
 @Entity(
     tableName = "spell_areas",
     foreignKeys = [
@@ -40,7 +38,7 @@ data class DnDSpell(
     ]
 )
 data class SpellArea(
-    @PrimaryKey val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid,
     val range: Int,
     val area: Int,
     val type: AreaTypes,
@@ -61,7 +59,6 @@ data class SpellAttack(
     val modifier: Int,
 )
 
-@Serializable
 @Entity(
     tableName = "spell_attack_level_modifiers",
     foreignKeys = [
@@ -72,12 +69,11 @@ data class SpellAttackLevelModifier(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("attack_id", index = true) val attackId: Uuid,
     val level: Int,
-    val diceCount: Int,
+    @ColumnInfo("dice_count") val diceCount: Int,
     val dice: Dices,
     val modifier: Int,
 )
 
-@Serializable
 @Entity(
     tableName = "spell_attack_save",
     foreignKeys = [
@@ -85,7 +81,7 @@ data class SpellAttackLevelModifier(
     ]
 )
 data class SpellAttackSave(
-    @PrimaryKey val id: Uuid = Uuid.random(),
-    val savingThrow: Stats,
-    val halfOnSuccess: Boolean,
+    @PrimaryKey val id: Uuid,
+    @ColumnInfo("saving_throw") val savingThrow: Stats,
+    @ColumnInfo("half_on_success") val halfOnSuccess: Boolean,
 )
