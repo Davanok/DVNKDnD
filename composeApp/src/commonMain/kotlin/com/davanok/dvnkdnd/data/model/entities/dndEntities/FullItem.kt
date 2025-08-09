@@ -62,16 +62,20 @@ data class JoinItemProperty(
 @Serializable
 data class ItemProperty(
     val id: Uuid,
+    @SerialName("user_id")
+    val userId: Uuid?,
     val name: String,
     val description: String,
 )
 fun ItemProperty.toDnDItemProperty() = DnDItemProperty(
     id = id,
+    userId = userId,
     name = name,
     description = description
 )
 fun DnDItemProperty.toItemProperty() = ItemProperty(
     id = id,
+    userId = userId,
     name = name,
     description = description
 )

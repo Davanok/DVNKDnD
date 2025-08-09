@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.database.entities.dndEntities.companion
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -13,6 +14,7 @@ import kotlin.uuid.Uuid
 )
 data class DnDProficiency(
     @PrimaryKey val id: Uuid = Uuid.random(),
+    @ColumnInfo("user_id") val userId: Uuid?,
     val type: ProficiencyTypes,
     val name: String
 )

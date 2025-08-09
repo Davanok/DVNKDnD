@@ -5,6 +5,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import okio.Path
 import okio.Path.Companion.toPath
+import kotlin.enums.EnumEntries
 import kotlin.uuid.Uuid
 
 class MainAdapters {
@@ -23,23 +24,23 @@ class MainAdapters {
     @TypeConverter
     fun bytesToUuid(value: ByteArray) = Uuid.fromByteArray(value)
 }
-
-class ListSpellComponentAdapter {
-    @TypeConverter
-    fun toListConverter(value: String) = value.split(';').map { component ->
-        SpellComponents.entries.first { it.toString()[0] == component[0] }
-    }
-
-    @TypeConverter
-    fun toStringConverter(value: List<SpellComponents>) = value.joinToString(";") {
-        it.toString().first().toString()
-    }
+object GenericEnumListAdapters {
+    inline fun <reified E: Enum<E>>toListConverter(value: String): List<E> =
+        value.split(';').map { enumValueOf<E>(it) }
+    fun <E: Enum<E>>toStringConverter(value: List<E>) =
+        value.joinToString(";") { it.name }
 }
 class EnumListAdapters {
     @TypeConverter
-    fun toListConverter(value: String) = value.split(';').map {
-        Stats.valueOf(it)
-    }
+    fun spellComponentsToList(value: String): List<SpellComponents> =
+        GenericEnumListAdapters.toListConverter(value)
     @TypeConverter
-    fun toStringConverter(value: List<Stats>) = value.joinToString { it.name }
+    fun spellComponentsToString(value: List<SpellComponents>): String =
+        GenericEnumListAdapters.toStringConverter(value)
+    @TypeConverter
+    fun statsToList(value: String): List<Stats> =
+        GenericEnumListAdapters.toListConverter(value)
+    @TypeConverter
+    fun statsToString(value: List<Stats>): String =
+        GenericEnumListAdapters.toStringConverter(value)
 }

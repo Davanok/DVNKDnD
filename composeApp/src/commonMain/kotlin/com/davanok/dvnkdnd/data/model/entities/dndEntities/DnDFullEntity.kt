@@ -38,7 +38,7 @@ data class DnDFullEntity(
 
     val cls: ClassWithSpells? = null,
     val race: RaceInfo? = null,
-    val background: Nothing? = null,
+    val background: Unit? = null,
     val feat: FeatInfo? = null,
     val ability: AbilityInfo? = null,
     val spell: FullSpell? = null,

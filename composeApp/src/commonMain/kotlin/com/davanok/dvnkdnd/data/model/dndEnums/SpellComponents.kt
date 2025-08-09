@@ -5,5 +5,5 @@ enum class SpellComponents {
     SOMATIC,
     MATERIAL,
     AUTHOR,
-    CUSTOM
+    OTHER
 }

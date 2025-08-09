@@ -94,7 +94,6 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
 )
 @TypeConverters(
     MainAdapters::class,
-    ListSpellComponentAdapter::class,
     EnumListAdapters::class
 )
 abstract class AppDatabase: RoomDatabase() {

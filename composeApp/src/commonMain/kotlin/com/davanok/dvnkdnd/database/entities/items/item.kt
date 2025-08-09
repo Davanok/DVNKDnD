@@ -36,6 +36,7 @@ data class ItemPropertyLink(
 @Entity(tableName = "properties")
 data class DnDItemProperty(
     @PrimaryKey val id: Uuid = Uuid.random(),
+    @ColumnInfo("user_id") val userId: Uuid?,
     val name: String,
     val description: String,
 )

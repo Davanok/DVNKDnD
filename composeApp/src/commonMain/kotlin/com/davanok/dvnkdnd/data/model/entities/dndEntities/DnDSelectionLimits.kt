@@ -7,12 +7,12 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class DnDSelectionLimits(
-    val modifiers: Int?,
-    val skills: Int?,
+    val modifiers: Int? = null,
+    val skills: Int? = null,
     @SerialName("saving_throws")
-    val savingThrows: Int?,
-    val proficiencies: Int?,
-    val abilities: Int?,
+    val savingThrows: Int? = null,
+    val proficiencies: Int? = null,
+    val abilities: Int? = null,
 )
 
 fun EntitySelectionLimits.toDnDSelectionLimits() = DnDSelectionLimits(

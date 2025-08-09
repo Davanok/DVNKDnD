@@ -6,5 +6,5 @@ enum class Coins {
     ELECTRUM,
     GOLD,
     PLATINUM,
-    CUSTOM
+    OTHER
 }
