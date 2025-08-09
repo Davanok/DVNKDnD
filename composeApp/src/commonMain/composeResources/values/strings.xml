@@ -76,6 +76,8 @@
     <string name="continue_str">Continue</string>
     <string name="error_info">Error info</string>
     <string name="ok">Ok</string>
+    <string name="copy">Copy</string>
+    <string name="copied">Copied</string>
 
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
@@ -89,6 +91,7 @@
 
     <!--new character-->
     <!--main-->
+    <string name="new_character">New character</string>
     <string name="character_image">Character image</string>
     <string name="name">Name</string>
     <string name="description">Description</string>

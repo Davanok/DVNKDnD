@@ -108,6 +108,11 @@ private fun CommonToaster(
 sealed interface UiMessage {
     val id: Uuid
 
+    data class Info(
+        val message: String,
+        override val id: Uuid = Uuid.random(),
+    ) : UiMessage
+
     data class Success(
         val message: String,
         override val id: Uuid = Uuid.random(),
@@ -131,6 +136,13 @@ sealed interface UiMessage {
     ) : UiMessage
 }
 private fun UiMessage.toToast(): Toast = when (this) {
+    is UiMessage.Info -> Toast(
+        id = id,
+        message = message,
+        type = ToastType.Info,
+        duration = Duration.INFINITE
+    )
+
     is UiMessage.Error -> Toast(
         id = id,
         message = message,

@@ -188,6 +188,4 @@ buildConfig {
     properties.forEach { property ->
         buildConfigField(property.key.toString(), property.value.toString())
     }
-
 }
-

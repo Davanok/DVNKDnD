@@ -1,5 +1,13 @@
 package com.davanok.dvnkdnd.ui.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -9,14 +17,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.Clipboard
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalClipboardManager
+import com.davanok.dvnkdnd.data.platform.clipEntryOf
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
+import dvnkdnd.composeapp.generated.resources.copied
+import dvnkdnd.composeapp.generated.resources.copy
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.info
 import dvnkdnd.composeapp.generated.resources.ok
 import dvnkdnd.composeapp.generated.resources.refresh
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -39,7 +57,7 @@ fun ErrorCard(
     text: String,
     exception: Throwable? = null,
     onBack: (() -> Unit)? = null,
-    refresh: (() -> Unit)? = null
+    onRefresh: (() -> Unit)? = null
 ) {
     var exceptionInfo by remember { mutableStateOf<Throwable?>(null) }
     FullScreenCard(
@@ -67,9 +85,9 @@ fun ErrorCard(
                     Text(text = stringResource(Res.string.back))
                 }
             }
-            refresh?.let {
+            onRefresh?.let {
                 TextButton(
-                    onClick = refresh
+                    onClick = onRefresh
                 ) {
                     Text(text = stringResource(Res.string.refresh))
                 }
@@ -78,11 +96,44 @@ fun ErrorCard(
     )
     if (exceptionInfo != null)
         AlertDialog(
-            text = { Text(exceptionInfo.toString()) },
+            text = {
+                SelectionContainer {
+                    Text(exceptionInfo.toString())
+                }
+                   },
             onDismissRequest = { exceptionInfo = null },
             confirmButton = {
                 TextButton(onClick = { exceptionInfo = null }) {
                     Text(text = stringResource(Res.string.ok))
+                }
+            },
+            dismissButton = exception?.let {
+                {
+                    var copied by remember { mutableStateOf(false) }
+                    val clipboard = LocalClipboard.current
+                    val coroutineScope = rememberCoroutineScope()
+                    TextButton(onClick = {
+                        val clipEntry = clipEntryOf(exceptionInfo.toString())
+                        if (!copied)
+                            coroutineScope.launch {
+                                clipboard.setClipEntry(clipEntry)
+                                copied = true
+                                delay(2000)
+                                copied = false
+                            }
+                    }) {
+                        AnimatedContent(
+                            copied,
+                            transitionSpec = {
+                                fadeIn(animationSpec = tween(220, delayMillis = 90))
+                                    .togetherWith(fadeOut(animationSpec = tween(220, delayMillis = 90)))
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(if (copied) Res.string.copied else Res.string.copy)
+                            )
+                        }
+                    }
                 }
             }
         )
