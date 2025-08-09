@@ -7,9 +7,9 @@ import kotlin.uuid.Uuid
 
 
 interface BrowseRepository {
-    suspend fun loadEntityFullInfo(entityId: Uuid): Result<DnDFullEntity>
+    suspend fun loadEntityFullInfo(entityId: Uuid): Result<DnDFullEntity?>
     suspend fun loadEntitiesFullInfo(entityIds: List<Uuid>): Result<List<DnDFullEntity>>
     suspend fun loadEntitiesWithSub(entityType: DnDEntityTypes): Result<List<DnDEntityWithSubEntities>>
 
-    suspend fun getValue(key: String): Result<String>
+    suspend fun getPropertyValue(key: String): Result<String>
 }

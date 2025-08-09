@@ -9,7 +9,7 @@ class ExternalKeyValueRepositoryImpl(
     private val browseRepository: BrowseRepository
 ): ExternalKeyValueRepository {
     override suspend fun getRequiredEntities(): Result<List<Uuid>> =
-        browseRepository.getValue("primary_base_entities").mapCatching {
+        browseRepository.getPropertyValue("primary_base_entities").mapCatching {
             Json.decodeFromString(it)
         }
 }
