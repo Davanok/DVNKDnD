@@ -48,7 +48,7 @@ fun CharactersListScreen(
     if (uiState.error is UiError.Critical) ErrorCard(
         text = stringResource(uiState.error!!.message),
         exception = uiState.error!!.exception,
-        refresh = viewModel::loadCharacters
+        onRefresh = viewModel::loadCharacters
     )
     else
         TwoPane(

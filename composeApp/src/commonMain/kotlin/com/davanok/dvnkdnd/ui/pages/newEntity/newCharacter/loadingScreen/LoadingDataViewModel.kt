@@ -25,8 +25,8 @@ import kotlin.uuid.Uuid
 class LoadingDataViewModel(
     private val utilsDataRepository: UtilsDataRepository,
     private val externalKeyValueRepository: ExternalKeyValueRepository
-): ViewModel() {
-    private val _uiState = MutableStateFlow(LoadingDataUiState.LOADING)
+) : ViewModel() {
+    private val _uiState = MutableStateFlow<LoadingDataUiState>(LoadingDataUiState.Loading)
     val uiState: StateFlow<LoadingDataUiState> = _uiState
 
     // downloadable items
@@ -34,49 +34,63 @@ class LoadingDataViewModel(
     private fun setCheckingState(state: LoadingDataUiState) = _uiState.update { state }
 
     private suspend fun loadRequiredEntities(
-        requiredEntities: List<Uuid>,
-        onSuccess: () -> Unit
+        requiredEntities: List<Uuid>
     ) {
         var hasError = false
         utilsDataRepository.checkAndLoadEntities(requiredEntities)
             .catch {
                 hasError = true
-                setCheckingState(LoadingDataUiState.ERROR)
+                setCheckingState(LoadingDataUiState.Error(it))
             }.collect {
                 setCheckingState(
                     when (it) {
-                        CheckingDataStates.LOAD_FROM_DATABASE -> LoadingDataUiState.LOAD_FROM_DATABASE
-                        CheckingDataStates.CHECKING -> LoadingDataUiState.CHECKING
-                        CheckingDataStates.LOADING_DATA -> LoadingDataUiState.LOADING_DATA
-                        CheckingDataStates.UPDATING -> LoadingDataUiState.UPDATING
-                        CheckingDataStates.FINISH -> LoadingDataUiState.FINISH
+                        CheckingDataStates.LOAD_FROM_DATABASE -> LoadingDataUiState.LoadFromDatabase
+                        CheckingDataStates.CHECKING -> LoadingDataUiState.Checking
+                        CheckingDataStates.LOADING_DATA -> LoadingDataUiState.LoadingData
+                        CheckingDataStates.UPDATING -> LoadingDataUiState.Updating
+                        CheckingDataStates.FINISH -> LoadingDataUiState.Finish
                     }
                 )
             }
         if (!hasError) {
-            setCheckingState(LoadingDataUiState.FINISH)
-            onSuccess()
+            setCheckingState(LoadingDataUiState.Finish)
         }
     }
-    
-    fun checkRequiredEntities(onSuccess: () -> Unit) = viewModelScope.launch {
-        setCheckingState(LoadingDataUiState.LOAD_FROM_SERVER)
+
+    fun checkRequiredEntities() = viewModelScope.launch {
+        setCheckingState(LoadingDataUiState.LoadFromServer)
         externalKeyValueRepository.getRequiredEntities().onSuccess {
-            loadRequiredEntities(it, onSuccess)
+            loadRequiredEntities(it)
         }.onFailure {
-            setCheckingState(LoadingDataUiState.ERROR)
+            setCheckingState(LoadingDataUiState.Error(it))
         }
+    }
+
+    init {
+        checkRequiredEntities()
     }
 }
 
 
-enum class LoadingDataUiState(val text: StringResource) {
-    LOADING(Res.string.state_loading),
-    LOAD_FROM_SERVER(Res.string.state_downloading),
-    LOAD_FROM_DATABASE(Res.string.state_loading_from_database),
-    CHECKING(Res.string.state_checking_data),
-    LOADING_DATA(Res.string.state_loading_full_entities),
-    UPDATING(Res.string.state_updating_entities),
-    FINISH(Res.string.finish),
-    ERROR(Res.string.error)
+sealed class LoadingDataUiState(val stringRes: StringResource) {
+    data object Loading : LoadingDataUiState(Res.string.state_loading)
+    data object LoadFromServer : LoadingDataUiState(Res.string.state_downloading)
+    data object LoadFromDatabase : LoadingDataUiState(Res.string.state_loading_from_database)
+    data object Checking : LoadingDataUiState(Res.string.state_checking_data)
+    data object LoadingData : LoadingDataUiState(Res.string.state_loading_full_entities)
+    data object Updating : LoadingDataUiState(Res.string.state_updating_entities)
+    data object Finish : LoadingDataUiState(Res.string.finish)
+    data class Error(val exception: Throwable) : LoadingDataUiState(Res.string.error);
+
+    companion object {
+        val entries = listOf(
+            Loading,
+            LoadFromServer,
+            LoadFromDatabase,
+            Checking,
+            LoadingData,
+            Updating,
+            Finish
+        )
+    }
 }

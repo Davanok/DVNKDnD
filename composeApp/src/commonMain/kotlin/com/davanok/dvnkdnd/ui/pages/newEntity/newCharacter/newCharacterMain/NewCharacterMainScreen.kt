@@ -55,22 +55,26 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
+import com.davanok.dvnkdnd.ui.components.BackClickAction
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.NewEntityStepScaffold
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.image.toByteArray
 import com.davanok.dvnkdnd.ui.navigation.StepNavigation
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
+import dvnkdnd.composeapp.generated.resources.character
 import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.description
 import dvnkdnd.composeapp.generated.resources.drop_image
 import dvnkdnd.composeapp.generated.resources.empty_field_error
 import dvnkdnd.composeapp.generated.resources.name
+import dvnkdnd.composeapp.generated.resources.new_character
 import dvnkdnd.composeapp.generated.resources.no_character_images_yet
 import dvnkdnd.composeapp.generated.resources.race
 import dvnkdnd.composeapp.generated.resources.set_image_to_main
@@ -107,12 +111,17 @@ fun NewCharacterMainScreen(
         )
 
         else ->
-            StepNavigation(
+            NewEntityStepScaffold(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxSize(),
-                cancel = onBack,
-                next = { viewModel.commit(onContinue) }
+                entityTitle = {
+                    Text(stringResource(Res.string.new_character))
+                },
+                onNextClick = { viewModel.commit(onContinue) },
+                nextClickEnabled = true,
+                onBackClick = onBack,
+                backClickAction = BackClickAction.Cancel
             ) {
                 Content(
                     character = uiState.character,
