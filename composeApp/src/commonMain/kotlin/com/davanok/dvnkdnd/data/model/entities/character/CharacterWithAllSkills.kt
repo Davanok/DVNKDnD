@@ -1,13 +1,13 @@
 package com.davanok.dvnkdnd.data.model.entities.character
 
-import androidx.compose.ui.util.fastFlatMap
-import androidx.compose.ui.util.fastMap
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSkills
+import androidx.compose.runtime.Immutable
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
 import kotlin.uuid.Uuid
 
 data class CharacterWithAllSkills(
-    val character: CharacterMin,
+    val character: CharacterShortInfo,
 
     val selectedSkills: List<Uuid>,
 
@@ -18,17 +18,11 @@ data class CharacterWithAllSkills(
     val subBackground: DnDEntityWithSkills?
 )
 
-fun CharacterFull.toCharacterWithAllSkills() = CharacterWithAllSkills(
-    character = character,
-    selectedSkills = selectedSkills,
-    classes = classes.fastFlatMap {
-        listOfNotNull(it.cls, it.subCls)
-            .fastMap { e -> e.toEntityWithSkills() }
-                              },
-    race = race?.toEntityWithSkills(),
-    subRace = subRace?.toEntityWithSkills(),
-    background = background?.toEntityWithSkills(),
-    subBackground = subBackground?.toEntityWithSkills()
+@Immutable
+data class DnDEntityWithSkills(
+    val entity: DnDEntityMin,
+    val selectionLimit: Int?,
+    val skills: List<DnDSkill>,
 )
 
 fun DnDFullEntity.toEntityWithSkills() = DnDEntityWithSkills(

@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills
 import androidx.lifecycle.ViewModel
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSkills
+import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSkills
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res

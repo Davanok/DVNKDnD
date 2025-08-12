@@ -4,7 +4,8 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithModifiers
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
+import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.UiError
@@ -20,6 +21,7 @@ import dvnkdnd.composeapp.generated.resources.saving_data_error
 import dvnkdnd.composeapp.generated.resources.standard_array_stats_option
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.Uuid
 
@@ -57,13 +59,16 @@ class NewCharacterStatsViewModel(
                 }
             }.toMap()
 
-        _uiState.value = _uiState.value.copy(
-            modifiers = character.characterStats ?: DnDModifiersGroup.Default,
-            selectedModifiersBonuses = character.selectedModifierBonuses.toSet(),
-            allEntitiesWithModifiers = allCharacterEntities,
+        _uiState.update {
+            it.copy(
+                character = character.character,
+                modifiers = character.characterStats ?: DnDModifiersGroup.Default,
+                selectedModifiersBonuses = character.selectedModifierBonuses.toSet(),
+                allEntitiesWithModifiers = allCharacterEntities,
 
-            isLoading = false
-        )
+                isLoading = false
+            )
+        }
     }
 
     fun setModifiers(modifiers: DnDModifiersGroup) {
@@ -157,6 +162,7 @@ data class NewCharacterStatsUiState(
     val error: UiError? = null,
     val selectedCreationOptions: StatsCreationOptions = StatsCreationOptions.POINT_BUY,
 
+    val character: CharacterShortInfo = CharacterShortInfo(),
     val modifiers: DnDModifiersGroup = DnDModifiersGroup.Default,
     val selectedModifiersBonuses: Set<Uuid> = emptySet(),
     val allEntitiesWithModifiers: List<DnDEntityWithModifiers> = emptyList()

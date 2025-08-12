@@ -1,14 +1,14 @@
 package com.davanok.dvnkdnd.data.model.entities.character
 
-import androidx.compose.ui.util.fastFlatMap
-import androidx.compose.ui.util.fastMap
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithModifiers
+import androidx.compose.runtime.Immutable
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import kotlin.uuid.Uuid
 
 data class CharacterWithAllModifiers(
-    val character: CharacterMin,
+    val character: CharacterShortInfo,
     val characterStats: DnDModifiersGroup?,
 
     val selectedModifierBonuses: List<Uuid>,
@@ -19,18 +19,11 @@ data class CharacterWithAllModifiers(
     val subBackground: DnDEntityWithModifiers?,
 )
 
-fun CharacterFull.toCharacterWithAllModifiers() = CharacterWithAllModifiers(
-    character = character,
-    characterStats = stats,
-    selectedModifierBonuses = selectedModifierBonuses,
-    classes = classes.fastFlatMap {
-        listOfNotNull(it.cls, it.subCls)
-            .fastMap { e -> e.toEntityWithModifiers() }
-                                  },
-    race = race?.toEntityWithModifiers(),
-    subRace = subRace?.toEntityWithModifiers(),
-    background = background?.toEntityWithModifiers(),
-    subBackground = subBackground?.toEntityWithModifiers()
+@Immutable
+data class DnDEntityWithModifiers(
+    val entity: DnDEntityMin,
+    val selectionLimit: Int?,
+    val modifiers: List<DnDModifierBonus>,
 )
 
 fun DnDFullEntity.toEntityWithModifiers() = DnDEntityWithModifiers(

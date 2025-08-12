@@ -18,31 +18,10 @@ import kotlin.uuid.Uuid
 
 @Dao
 interface CharactersDao {
-    @Query("SELECT id, user_id as userId, name, level, image FROM characters")
-    suspend fun getCharactersMinList(): List<CharacterMin>
-
     @Transaction
     @Query("SELECT * FROM characters WHERE id == :characterId")
     suspend fun getFullCharacter(characterId: Uuid): DbFullCharacter?
 
-    @Insert
-    suspend fun insertCharacter(character: Character)
-    @Insert
-    suspend fun insertCharacterClass(cls: CharacterClass)
-
-    @Transaction
-    @Query("SELECT * FROM characters WHERE id == :characterId")
-    suspend fun getCharacterWithAllModifiers(characterId: Uuid): DbCharacterWithAllModifiers
-
-    @Transaction
-    @Query("SELECT * FROM characters WHERE id == :characterId")
-    suspend fun getCharacterWithAllSkills(characterId: Uuid): DbCharacterWithAllSkills
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCharacterStats(stats: CharacterStats)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertCharacterSelectedModifierBonuses(items: List<CharacterSelectedModifierBonus>)
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertCharacterSelectedSkills(items: List<CharacterSelectedSkill>)
+    @Query("SELECT id, user_id as userId, name, level, image FROM characters")
+    suspend fun getCharactersMinList(): List<CharacterMin>
 }

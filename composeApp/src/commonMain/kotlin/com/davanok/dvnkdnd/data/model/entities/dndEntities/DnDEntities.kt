@@ -29,17 +29,3 @@ data class DnDEntityWithSubEntities(
 ) {
     fun toDnDEntityMin() = DnDEntityMin(id, type, name, source)
 }
-
-@Immutable
-data class DnDEntityWithModifiers(
-    val entity: DnDEntityMin,
-    val selectionLimit: Int?,
-    val modifiers: List<DnDModifierBonus>,
-)
-
-@Immutable
-data class DnDEntityWithSkills(
-    val entity: DnDEntityMin,
-    val selectionLimit: Int?,
-    val skills: List<DnDSkill>,
-)

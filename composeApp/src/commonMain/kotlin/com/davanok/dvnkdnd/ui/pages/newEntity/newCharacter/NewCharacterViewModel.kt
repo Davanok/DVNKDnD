@@ -40,7 +40,8 @@ class NewCharacterViewModel(
     }
 
     private suspend fun loadEntities(entitiesIds: List<Uuid>): List<DnDFullEntity> {
-        val entities = fullEntitiesRepository.getFullEntities(entitiesIds).getOrThrow().toMutableList()
+        val entities =
+            fullEntitiesRepository.getFullEntities(entitiesIds).getOrThrow().toMutableList()
         val dbEntitiesIds = entities.fastMap { it.id }
         val comparison = entitiesIds.subtract(dbEntitiesIds)
         if (comparison.isNotEmpty()) {
@@ -73,6 +74,7 @@ class NewCharacterViewModel(
             selectedSkills = fullCharacter.getNotSelectableSkills()
         )
     }
+
     fun getCharacterShortInfo() = newCharacterState.character.run {
         CharacterShortInfo(
             name = name,
@@ -118,7 +120,7 @@ class NewCharacterViewModel(
 
     fun getCharacterWithAllModifiers() = newCharacterState.run {
         CharacterWithAllModifiers(
-            character = character.toCharacterMin(),
+            character = character.toCharacterShortInfo(),
             characterStats = characterStats,
             selectedModifierBonuses = selectedModifierBonuses,
             classes = listOfNotNull(character.cls, character.subCls)
@@ -139,7 +141,7 @@ class NewCharacterViewModel(
 
     fun getCharacterWithAllSkills() = newCharacterState.run {
         CharacterWithAllSkills(
-            character = character.toCharacterMin(),
+            character = character.toCharacterShortInfo(),
             selectedSkills = selectedSkills,
             classes = listOfNotNull(character.cls, character.subCls)
                 .fastMap { it.toEntityWithSkills() },
@@ -179,14 +181,6 @@ private data class NewCharacterWithFullEntities(
             subBackground
         )
 
-    fun toCharacterMin(id: Uuid = Uuid.NIL) = CharacterMin(
-        id = id,
-        userId = null,
-        name = name,
-        level = 1,
-        image = mainImage
-    )
-
     fun toNewCharacterMain() = NewCharacterMain(
         images = images,
         mainImage = mainImage,
@@ -211,6 +205,17 @@ private data class NewCharacterWithFullEntities(
             .fastFlatMap { it.skills }
             .fastFilter { !it.selectable }
             .fastMap { it.id }
+
+    fun toCharacterShortInfo() = CharacterShortInfo(
+        name = name,
+        image = mainImage,
+        className = cls?.name,
+        subClassName = subCls?.name,
+        raceName = race?.name,
+        subRaceName = subRace?.name,
+        backgroundName = background?.name,
+        subBackgroundName = subBackground?.name
+    )
 
     companion object {
         private fun DnDFullEntity.toEntityWithSubEntities(subEntities: List<DnDEntityMin>) =
