@@ -20,8 +20,9 @@ import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
 import com.davanok.dvnkdnd.ui.components.UiToaster
-import com.davanok.dvnkdnd.ui.navigation.StepNavigation
+import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterTopBarAdditionalContent
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -42,10 +43,19 @@ fun NewCharacterSkillsScreen(
             exception = uiState.error!!.exception,
             onBack = onBack
         )
-        else -> StepNavigation (
+        else -> NewEntityStepScaffold (
             modifier = Modifier.fillMaxSize(),
-            next = { viewModel.commit(onContinue) },
-            previous = onBack
+            title = uiState.character.name,
+            additionalContent = uiState.character
+                .takeUnless {
+                    it.className.isNullOrBlank() &&
+                            it.raceName.isNullOrBlank() &&
+                            it.backgroundName.isNullOrBlank()
+                }?.let {
+                    { NewCharacterTopBarAdditionalContent(it) }
+                       },
+            onNextClick = { viewModel.commit(onContinue) },
+            onBackClick = onBack,
         ) {
             Content(
                 displaySkills = uiState.skills,

@@ -1,10 +1,9 @@
-package com.davanok.dvnkdnd.ui.components
+package com.davanok.dvnkdnd.ui.components.newEntity
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -14,7 +13,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -24,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import com.davanok.dvnkdnd.ui.components.customToolBar.CollapsingTitle
+import com.davanok.dvnkdnd.ui.components.customToolBar.CustomTopAppBar
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.cancel
@@ -40,10 +40,10 @@ enum class BackClickAction(val icon: ImageVector, val stringRes: StringResource)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewEntityStepScaffold(
-    entityTitle: @Composable (expanded: Boolean) -> Unit,
-    entityImage: @Composable (() -> Unit)? = null,
+    title: String,
+    additionalContent: @Composable (() -> Unit)? = null,
     onNextClick: () -> Unit,
-    nextClickEnabled: Boolean,
+    nextClickEnabled: Boolean = true,
     onBackClick: () -> Unit,
     backClickAction: BackClickAction = BackClickAction.Back,
     modifier: Modifier = Modifier,
@@ -58,7 +58,7 @@ fun NewEntityStepScaffold(
             Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
         ),
         topBar = {
-            MediumTopAppBar(
+            CustomTopAppBar(
                 navigationIcon = {
                     IconButton(
                         onClick = onBackClick
@@ -69,14 +69,8 @@ fun NewEntityStepScaffold(
                         )
                     }
                 },
-                title = {
-                    Row {
-                        if (entityImage != null && topAppBarExpanded)
-                            entityImage()
-                        entityTitle(topAppBarExpanded)
-                    }
-                },
-                scrollBehavior = scrollBehavior
+                collapsingTitle = CollapsingTitle.medium(title),
+                additionalContent = additionalContent
             )
         },
         floatingActionButton = {

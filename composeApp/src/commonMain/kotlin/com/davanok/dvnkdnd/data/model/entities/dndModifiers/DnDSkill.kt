@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class DnDSkill(
-    val id: Uuid,
+    val id: Uuid = Uuid.random(),
     val selectable: Boolean,
     val skill: Skills,
 )

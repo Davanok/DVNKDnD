@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.model.entities.dndEntities
 
+import androidx.compose.ui.unit.IntSize
 import com.davanok.dvnkdnd.data.model.dndEnums.AreaTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
@@ -13,6 +14,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifie
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -46,19 +48,22 @@ data class FullSpell(
 @Serializable
 data class SpellAreaInfo(
     val range: Int,
-    val area: Int,
-    val type: AreaTypes
+    val type: AreaTypes,
+    val width: Int,
+    val height: Int
 )
 fun SpellArea.toSpellAreaInfo() = SpellAreaInfo(
     range = range,
-    area = area,
-    type = type
+    type = type,
+    width = width,
+    height = height
 )
 fun SpellAreaInfo.toSpellArea(entityId: Uuid) = SpellArea(
     id = entityId,
     range = range,
-    area = area,
-    type = type
+    type = type,
+    width = width,
+    height = height
 )
 @Serializable
 data class FullSpellAttack(

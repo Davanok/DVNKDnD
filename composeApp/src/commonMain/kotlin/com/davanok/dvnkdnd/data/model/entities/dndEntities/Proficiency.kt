@@ -19,7 +19,7 @@ fun JoinProficiency.toEntityProficiency(entityId: Uuid) = EntityProficiency(
 )
 @Serializable
 data class Proficiency(
-    val id: Uuid,
+    val id: Uuid = Uuid.random(),
     @SerialName("user_id")
     val userId: Uuid? = null,
     val type: ProficiencyTypes,

@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class DnDSavingThrow(
-    val id: Uuid,
+    val id: Uuid = Uuid.random(),
     val selectable: Boolean,
     val stat: Stats,
 )

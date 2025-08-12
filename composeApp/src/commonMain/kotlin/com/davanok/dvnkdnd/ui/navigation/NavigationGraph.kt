@@ -181,7 +181,9 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
 private fun <T : Any> NavHostController.navigateWithRemoveFromBackStack(
     destinationRoute: T
 ) = navigate(destinationRoute) {
-    popUpTo(currentDestination?.route!!) {
-        inclusive = true
+    currentDestination?.route?.let {
+        popUpTo(it) {
+            inclusive = true
+        }
     }
 }

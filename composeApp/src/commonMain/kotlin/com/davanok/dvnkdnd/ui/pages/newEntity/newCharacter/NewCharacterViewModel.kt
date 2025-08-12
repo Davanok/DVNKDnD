@@ -7,6 +7,7 @@ import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithModifiers
@@ -70,6 +71,18 @@ class NewCharacterViewModel(
             character = fullCharacter,
             selectedModifierBonuses = fullCharacter.getNotSelectableModifiers(),
             selectedSkills = fullCharacter.getNotSelectableSkills()
+        )
+    }
+    fun getCharacterShortInfo() = newCharacterState.character.run {
+        CharacterShortInfo(
+            name = name,
+            image = mainImage,
+            className = cls?.name,
+            subClassName = subCls?.name,
+            raceName = race?.name,
+            subRaceName = subRace?.name,
+            backgroundName = background?.name,
+            subBackgroundName = subBackground?.name
         )
     }
 

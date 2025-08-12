@@ -8,6 +8,7 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.rpc
 import io.github.jan.supabase.storage.Storage
+import kotlinx.serialization.json.Json
 import kotlin.uuid.Uuid
 
 class BrowseRepositoryImpl(
@@ -41,9 +42,10 @@ class BrowseRepositoryImpl(
 
     override suspend fun getPropertyValue(key: String): Result<String> =
         runCatching {
-            postgrest.rpc(
+            val raw = postgrest.rpc(
                 "get_property",
                 mapOf("field" to key)
             ).data
+            Json.decodeFromString<String>(raw)
         }
 }

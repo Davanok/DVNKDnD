@@ -272,7 +272,7 @@ class NewCharacterMainViewModel(
 
     // onCreate
 
-    private fun checkCharacter(character: NewCharacterMain): NewCharacterMainUiState.EmptyFields {
+    private fun validateCharacter(character: NewCharacterMain): NewCharacterMainUiState.EmptyFields {
         var (
             name,
             cls,
@@ -308,14 +308,12 @@ class NewCharacterMainViewModel(
     fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
         val newCharacter = _uiState.value.character
 
-        val emptyFields = checkCharacter(newCharacter)
+        val emptyFields = validateCharacter(newCharacter)
 
         if (emptyFields.hasEmptyFields())
             _uiState.update { it.copy(emptyFields = emptyFields) }
         else {
-            _uiState.update {
-                it.copy(isLoading = true)
-            }
+            _uiState.update { it.copy(isLoading = true) }
             newCharacterViewModel.setCharacterMain(newCharacter).onFailure { thr ->
                 _uiState.update {
                     it.copy(
@@ -327,9 +325,7 @@ class NewCharacterMainViewModel(
                     )
                 }
             }.onSuccess {
-                _uiState.update {
-                    it.copy(isLoading = false)
-                }
+                _uiState.update { it.copy(isLoading = false) }
                 onSuccess()
             }
         }

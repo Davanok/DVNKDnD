@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 
 @Dao
 interface CharactersDao {
-    @Query("SELECT id, name, level, image FROM characters")
+    @Query("SELECT id, user_id as userId, name, level, image FROM characters")
     suspend fun getCharactersMinList(): List<CharacterMin>
 
     @Transaction

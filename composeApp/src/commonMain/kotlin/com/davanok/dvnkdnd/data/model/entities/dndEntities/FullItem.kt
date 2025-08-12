@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.data.model.entities.dndEntities
 
-import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.database.entities.items.Armor
@@ -90,7 +89,7 @@ data class FullWeapon(
 }
 @Serializable
 data class WeaponDamageInfo(
-    @PrimaryKey val id: Uuid = Uuid.random(),
+    val id: Uuid = Uuid.random(),
     @SerialName("damage_type")
     val damageType: DamageTypes,
     @SerialName("dice_count")

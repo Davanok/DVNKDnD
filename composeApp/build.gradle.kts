@@ -71,9 +71,6 @@ kotlin {
             implementation(libs.filekit.core)
             implementation(libs.filekit.compose)
 
-//            implementation(libs.androidx.compose.material3.adaptive)
-//            implementation(libs.androidx.compose.material3.adaptive.layout)
-//            implementation(libs.androidx.compose.material3.adaptive.navigation)
             implementation(libs.jetbrains.compose.material3.adaptive)
             implementation(libs.jetbrains.compose.material3.adaptive.layout)
             implementation(libs.jetbrains.compose.material3.adaptive.navigation)

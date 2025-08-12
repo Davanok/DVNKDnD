@@ -55,19 +55,16 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
-import com.davanok.dvnkdnd.ui.components.BackClickAction
+import com.davanok.dvnkdnd.ui.components.newEntity.BackClickAction
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.LoadingCard
-import com.davanok.dvnkdnd.ui.components.NewEntityStepScaffold
+import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
 import com.davanok.dvnkdnd.ui.components.UiToaster
-import com.davanok.dvnkdnd.ui.components.image.toByteArray
-import com.davanok.dvnkdnd.ui.navigation.StepNavigation
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
-import dvnkdnd.composeapp.generated.resources.character
 import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.description
@@ -81,8 +78,9 @@ import dvnkdnd.composeapp.generated.resources.set_image_to_main
 import dvnkdnd.composeapp.generated.resources.sub_background
 import dvnkdnd.composeapp.generated.resources.sub_class
 import dvnkdnd.composeapp.generated.resources.sub_race
-import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
-import io.github.vinceglb.filekit.core.PickerType
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.launch
 import okio.Path
 import org.jetbrains.compose.resources.stringResource
@@ -115,11 +113,8 @@ fun NewCharacterMainScreen(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxSize(),
-                entityTitle = {
-                    Text(stringResource(Res.string.new_character))
-                },
+                title = stringResource(Res.string.new_character),
                 onNextClick = { viewModel.commit(onContinue) },
-                nextClickEnabled = true,
                 onBackClick = onBack,
                 backClickAction = BackClickAction.Cancel
             ) {
@@ -309,12 +304,12 @@ private fun ImageContent(
 
     var pickedImage by remember { mutableStateOf<ByteArray?>(null) }
     val imagePicker = rememberFilePickerLauncher(
-        type = PickerType.Image
+        type = FileKitType.Image
     ) { image ->
         image?.let { image ->
             scope.launch {
                 isLoading = true
-                pickedImage = image.toByteArray()
+                pickedImage = image.readBytes()
                 isLoading = false
             }
         }

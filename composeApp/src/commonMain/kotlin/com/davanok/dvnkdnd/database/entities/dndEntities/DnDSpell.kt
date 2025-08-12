@@ -40,8 +40,9 @@ data class DnDSpell(
 data class SpellArea(
     @PrimaryKey val id: Uuid,
     val range: Int,
-    val area: Int,
     val type: AreaTypes,
+    val width: Int,
+    val height: Int
 )
 
 @Entity(
