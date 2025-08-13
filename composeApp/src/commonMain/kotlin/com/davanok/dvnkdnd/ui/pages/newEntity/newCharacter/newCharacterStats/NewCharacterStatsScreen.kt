@@ -38,11 +38,14 @@ import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.append
+import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
+import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterTopBarAdditionalContent
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import com.davanok.dvnkdnd.ui.navigation.StepNavigation
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
 import dvnkdnd.composeapp.generated.resources.modifiers_selectors_hint
+import dvnkdnd.composeapp.generated.resources.new_character
 import dvnkdnd.composeapp.generated.resources.no_modifiers_for_info
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
@@ -67,10 +70,16 @@ fun NewCharacterStatsScreen(
             exception = uiState.error?.exception,
             onBack = onBack
         )
-        else -> StepNavigation (
+        else -> NewEntityStepScaffold (
             modifier = Modifier.fillMaxSize(),
-            next = { viewModel.commit(onContinue) },
-            previous = onBack
+            title = uiState.character.name
+                .ifBlank { stringResource(Res.string.new_character) },
+            additionalContent = uiState.character
+                .takeUnless { it.isBlank() }?.let {
+                    { NewCharacterTopBarAdditionalContent(it) }
+                },
+            onNextClick = { viewModel.commit(onContinue) },
+            onBackClick = onBack,
         ) {
             Content(
                 selectedCreationOption = uiState.selectedCreationOptions,

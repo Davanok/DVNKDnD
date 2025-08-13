@@ -1,5 +1,8 @@
 package com.davanok.dvnkdnd.data.model.entities.dndModifiers
 
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastSumBy
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
@@ -60,9 +63,31 @@ data class DnDModifiersGroup(
         Stats.WISDOM -> copy(wisdom = value)
         Stats.CHARISMA -> copy(charisma = value)
     }
+    operator fun plus(other: DnDModifiersGroup) = DnDModifiersGroup(
+        strength = strength + other.strength,
+        dexterity = dexterity + other.dexterity,
+        constitution = constitution + other.constitution,
+        intelligence = intelligence + other.intelligence,
+        wisdom = wisdom + other.wisdom,
+        charisma = charisma + other.charisma
+    )
     companion object {
         val Default = DnDModifiersGroup(10, 10, 10, 10, 10, 10)
     }
+}
+fun List<DnDModifierBonus>.toDnDModifiersGroup(): DnDModifiersGroup {
+    val counts = IntArray(Stats.entries.size)
+    fastForEach { bonus ->
+        counts[bonus.stat.ordinal] += bonus.modifier
+    }
+    return DnDModifiersGroup(
+        strength = counts[Stats.STRENGTH.ordinal],
+        dexterity = counts[Stats.DEXTERITY.ordinal],
+        constitution = counts[Stats.CONSTITUTION.ordinal],
+        intelligence = counts[Stats.INTELLIGENCE.ordinal],
+        wisdom = counts[Stats.WISDOM.ordinal],
+        charisma = counts[Stats.CHARISMA.ordinal]
+    )
 }
 fun CharacterStats.toModifiersGroup() = DnDModifiersGroup(
     strength = strength,

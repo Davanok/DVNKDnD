@@ -53,7 +53,7 @@ import androidx.compose.ui.util.fastMapIndexed
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.compose.ui.util.fastSumBy
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithModifiers
+import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass

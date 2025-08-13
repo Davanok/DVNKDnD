@@ -1,6 +1,9 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
+import kotlin.math.pow
+
+project.version = libs.versions.project.get()
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -76,14 +79,12 @@ kotlin {
             implementation(libs.jetbrains.compose.material3.adaptive.navigation)
 
             implementation(compose.material3AdaptiveNavigationSuite)
-//            implementation(libs.window.size)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
-//            implementation(compose.material
             implementation(compose.materialIconsExtended)
             implementation(compose.material3)
             implementation(compose.ui)
@@ -116,12 +117,19 @@ android {
     namespace = "com.davanok.dvnkdnd"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    val versionCodeValue = project.version.toString()
+        .split('.')
+        .reversed()
+        .withIndex()
+        .sumOf { (index, value) ->
+            100f.pow(index).toInt() * value.toInt()
+        }
     defaultConfig {
         applicationId = "com.davanok.dvnkdnd"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = versionCodeValue
+        versionName = project.version.toString()
     }
     packaging {
         resources {
@@ -146,7 +154,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.davanok.dvnkdnd"
-            packageVersion = "1.0.0"
+            packageVersion = project.version.toString()
 
             linux {
                 modules("jdk.security.auth")
@@ -175,13 +183,15 @@ room {
 }
 
 buildConfig {
+    buildConfigField("APP_VERSION_NAME", project.version.toString())
+    buildConfigField("PACKAGE_NAME", packageName)
+    buildConfigField("BUNDLE_ID", "com.davanok.dvnkdnd.DVNKDnD")
+
     val properties = Properties()
     packageName = "com.davanok.dvnkdnd"
     project.rootProject.file("config.properties").inputStream().use {
         properties.load(it)
     }
-    buildConfigField("PACKAGE_NAME", packageName)
-    buildConfigField("BUNDLE_ID", "com.davanok.dvnkdnd.DVNKDnD")
     properties.forEach { property ->
         buildConfigField(property.key.toString(), property.value.toString())
     }

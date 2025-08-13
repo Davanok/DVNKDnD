@@ -21,24 +21,24 @@ import dvnkdnd.composeapp.generated.resources.stealth
 import dvnkdnd.composeapp.generated.resources.survival
 import org.jetbrains.compose.resources.StringResource
 
-enum class Skills(val stringRes: StringResource) {
-    ATHLETICS(Res.string.athletics),
-    ACROBATICS(Res.string.acrobatics),
-    SLEIGHT_OF_HAND(Res.string.sleight_of_hand),
-    STEALTH(Res.string.stealth),
-    ARCANA(Res.string.arcana),
-    HISTORY(Res.string.history),
-    INVESTIGATION(Res.string.investigation),
-    NATURE(Res.string.nature),
-    RELIGION(Res.string.religion),
-    ANIMAL_HANDLING(Res.string.animal_handling),
-    INSIGHT(Res.string.insight),
-    MEDICINE(Res.string.medicine),
-    PERCEPTION(Res.string.perception),
-    SURVIVAL(Res.string.survival),
-    DECEPTION(Res.string.deception),
-    INTIMIDATION(Res.string.intimidation),
-    PERFORMANCE(Res.string.performance),
-    PERSUASION(Res.string.persuasion)
+enum class Skills(val stat: Stats, val stringRes: StringResource) {
+    ATHLETICS       (Stats.STRENGTH,     Res.string.athletics),
+    ACROBATICS      (Stats.DEXTERITY,    Res.string.acrobatics),
+    SLEIGHT_OF_HAND (Stats.DEXTERITY,    Res.string.sleight_of_hand),
+    STEALTH         (Stats.DEXTERITY,    Res.string.stealth),
+    ARCANA          (Stats.INTELLIGENCE, Res.string.arcana),
+    HISTORY         (Stats.INTELLIGENCE, Res.string.history),
+    INVESTIGATION   (Stats.INTELLIGENCE, Res.string.investigation),
+    NATURE          (Stats.INTELLIGENCE, Res.string.nature),
+    RELIGION        (Stats.INTELLIGENCE, Res.string.religion),
+    ANIMAL_HANDLING (Stats.WISDOM,       Res.string.animal_handling),
+    INSIGHT         (Stats.WISDOM,       Res.string.insight),
+    MEDICINE        (Stats.WISDOM,       Res.string.medicine),
+    PERCEPTION      (Stats.WISDOM,       Res.string.perception),
+    SURVIVAL        (Stats.WISDOM,       Res.string.survival),
+    DECEPTION       (Stats.CHARISMA,     Res.string.deception),
+    INTIMIDATION    (Stats.CHARISMA,     Res.string.intimidation),
+    PERFORMANCE     (Stats.CHARISMA,     Res.string.performance),
+    PERSUASION      (Stats.CHARISMA,     Res.string.persuasion)
 }
 

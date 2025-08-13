@@ -6,8 +6,6 @@ import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.AbilityInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ClassWithSpells
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithModifiers
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSkills
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
@@ -80,43 +78,6 @@ data class EntityWithSub(
         name = entity.name,
         source = entity.source,
         subEntities = subEntities.fastMap { it.toDnDEntityMin() }
-    )
-}
-
-data class DbEntityWithModifiers(
-    @Embedded val entity: DnDBaseEntity,
-    @Relation(
-        entity = EntitySelectionLimits::class,
-        parentColumn = "id",
-        entityColumn = "id",
-        projection = ["modifiers"]
-    )
-    val selectionLimit: Int?,
-    @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val modifiers: List<EntityModifierBonus>,
-) {
-    fun toDnDEntityWithModifiers() = DnDEntityWithModifiers(
-        entity = entity.toDnDEntityMin(),
-        selectionLimit = selectionLimit,
-        modifiers = modifiers.fastMap { it.toDnDModifier() }
-    )
-}
-data class DbEntityWithSkills(
-    @Embedded val entity: DnDBaseEntity,
-    @Relation(
-        entity = EntitySelectionLimits::class,
-        parentColumn = "id",
-        entityColumn = "id",
-        projection = ["skills"]
-    )
-    val selectionLimit: Int?,
-    @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val skills: List<EntitySkill>,
-) {
-    fun toDndEntityWithSkills() = DnDEntityWithSkills(
-        entity = entity.toDnDEntityMin(),
-        selectionLimit = selectionLimit,
-        skills = skills.fastMap { it.toDnDSkill() }
     )
 }
 data class DbClassWithSpells(

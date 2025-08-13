@@ -12,4 +12,11 @@ data class CharacterShortInfo(
     val subRaceName: String? = null,
     val backgroundName: String? = null,
     val subBackgroundName: String? = null
-)
+){
+    fun isBlank() = className.isNullOrBlank() &&
+            subClassName.isNullOrBlank() &&
+            raceName.isNullOrBlank() &&
+            subRaceName.isNullOrBlank() &&
+            backgroundName.isNullOrBlank() &&
+            subBackgroundName.isNullOrBlank()
+}

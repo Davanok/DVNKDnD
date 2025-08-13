@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSkills
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
@@ -40,6 +41,8 @@ class NewCharacterSkillsViewModel(
             it.copy(
                 isLoading = false,
                 character = newCharacterViewModel.getCharacterShortInfo(),
+                proficiencyBonus = character.proficiencyBonus,
+                stats = character.stats,
                 skills = skillsState.getDisplayItems()
             )
         }
@@ -85,5 +88,7 @@ data class NewCharacterSkillsUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
     val character: CharacterShortInfo = CharacterShortInfo(),
+    val proficiencyBonus: Int = 0,
+    val stats: DnDModifiersGroup = DnDModifiersGroup.Default,
     val skills: Map<Skills, UiSkillState> = emptyMap()
 )

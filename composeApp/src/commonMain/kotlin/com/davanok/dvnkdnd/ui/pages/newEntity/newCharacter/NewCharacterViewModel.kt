@@ -6,7 +6,6 @@ import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
@@ -16,6 +15,8 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.repositories.FullEntitiesRepository
@@ -142,6 +143,8 @@ class NewCharacterViewModel(
     fun getCharacterWithAllSkills() = newCharacterState.run {
         CharacterWithAllSkills(
             character = character.toCharacterShortInfo(),
+            proficiencyBonus = proficiencyBonusByLevel(1),
+            stats = calculateModifiersSum(),
             selectedSkills = selectedSkills,
             classes = listOfNotNull(character.cls, character.subCls)
                 .fastMap { it.toEntityWithSkills() },
@@ -236,4 +239,10 @@ private data class NewCharacter(
     val selectedModifierBonuses: List<Uuid> = emptyList(),
 
     val selectedSkills: List<Uuid> = emptyList()
-)
+) {
+    fun calculateModifiersSum(): DnDModifiersGroup =
+        characterStats + character.entities
+            .fastFlatMap { it.modifierBonuses }
+            .fastFilter { it.id in selectedModifierBonuses }
+            .toDnDModifiersGroup()
+}

@@ -17,3 +17,6 @@ fun pointBuyCost(score: Int): Int = when {
 
 fun calculateBuyingModifiersSum(scores: List<Int>) =
     scores.sumOf { pointBuyCost(it) }
+
+fun proficiencyBonusByLevel(level: Int): Int =
+    level / 5 + 2
