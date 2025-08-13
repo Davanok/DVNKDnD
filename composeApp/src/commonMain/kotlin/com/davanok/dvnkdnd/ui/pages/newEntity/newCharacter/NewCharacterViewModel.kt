@@ -93,26 +93,9 @@ class NewCharacterViewModel(
     fun setCharacterMain(
         character: NewCharacterMain
     ): Result<Unit> = runCatching {
-        val oldIds = newCharacterState.character.run {
-            listOf(
-                cls?.id,
-                subCls?.id,
-                race?.id,
-                subRace?.id,
-                background?.id,
-                subBackground?.id
-            )
-        }
-        val newIds = character.run {
-            listOf(
-                cls?.id,
-                subCls?.id,
-                race?.id,
-                subRace?.id,
-                background?.id,
-                subBackground?.id
-            )
-        }
+        val oldIds = newCharacterState.character.entities.fastMap { it.id }
+        val newIds = character.getEntitiesIds()
+
         if (oldIds != newIds) {
             clear()
             setCharacterEntities(character)
