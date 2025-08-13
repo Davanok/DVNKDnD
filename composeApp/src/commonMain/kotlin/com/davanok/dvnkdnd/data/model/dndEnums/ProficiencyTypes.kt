@@ -7,5 +7,7 @@ enum class ProficiencyTypes {
     SHIELD,
     TOOL,
     ITEM,
+    LANGUAGE,
+    VEHICLE,
     OTHER
 }

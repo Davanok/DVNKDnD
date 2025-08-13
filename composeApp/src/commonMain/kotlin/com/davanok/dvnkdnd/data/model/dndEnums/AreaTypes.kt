@@ -6,6 +6,8 @@ enum class AreaTypes {
     CYLINDER,
     LINE,
     SPHERE,
+    POINT,
+    TARGET,
     SELF,
     TOUCH,
     OTHER
