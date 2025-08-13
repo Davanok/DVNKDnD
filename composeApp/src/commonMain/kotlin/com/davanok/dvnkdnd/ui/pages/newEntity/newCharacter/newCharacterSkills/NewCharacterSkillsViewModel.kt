@@ -25,13 +25,7 @@ class NewCharacterSkillsViewModel(
 
     fun loadCharacterWithSkills() {
         val character = newCharacterViewModel.getCharacterWithAllSkills()
-        allEntitiesWithSkills = character.classes +
-                listOfNotNull(
-                    character.race,
-                    character.subRace,
-                    character.background,
-                    character.subBackground
-                )
+        allEntitiesWithSkills = character.entities
         skillsState = SkillsTableState(
             allEntitiesWithSkills,
             character.selectedSkills.toSet()

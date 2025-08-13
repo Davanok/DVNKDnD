@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
 
-import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
@@ -44,18 +43,12 @@ class NewCharacterStatsViewModel(
     fun loadCharacterWithAllModifiers() {
         val character = newCharacterViewModel.getCharacterWithAllModifiers()
 
-        val allCharacterEntities = (character.classes + listOfNotNull(
-            character.race,
-            character.subRace,
-            character.background,
-            character.subBackground
-        )).fastFilter { it.modifiers.isNotEmpty() }
+        val allCharacterEntities = character.entities
 
         modifierInfo = allCharacterEntities
             .fastFlatMap { entity ->
-                val limit = entity.selectionLimit ?: 0
                 entity.modifiers.map { mod ->
-                    mod.id to (limit to entity.modifiers.map { it.id }.toSet())
+                    mod.id to (entity.selectionLimit to entity.modifiers.map { it.id }.toSet())
                 }
             }.toMap()
 

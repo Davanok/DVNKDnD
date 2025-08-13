@@ -14,11 +14,7 @@ data class CharacterWithAllSkills(
 
     val selectedSkills: List<Uuid>,
 
-    val classes: List<DnDEntityWithSkills>,
-    val race: DnDEntityWithSkills?,
-    val subRace: DnDEntityWithSkills?,
-    val background: DnDEntityWithSkills?,
-    val subBackground: DnDEntityWithSkills?
+    val entities: List<DnDEntityWithSkills>
 )
 
 @Immutable

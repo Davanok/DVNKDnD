@@ -120,6 +120,7 @@ private fun SkillItem(
         ),
         headlineContent = {
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = stringResource(skill.stringRes))
@@ -132,7 +133,7 @@ private fun SkillItem(
                             ).toSignedString())
             }
                           },
-        leadingContent = {
+        trailingContent = {
             if (state == null) Spacer(modifier = Modifier.width(24.dp))
             else Checkbox(
                 modifier = Modifier.width(24.dp),

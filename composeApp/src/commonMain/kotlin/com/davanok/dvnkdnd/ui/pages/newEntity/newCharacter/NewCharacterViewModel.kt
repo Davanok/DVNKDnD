@@ -107,12 +107,9 @@ class NewCharacterViewModel(
             character = character.toCharacterShortInfo(),
             characterStats = characterStats,
             selectedModifierBonuses = selectedModifierBonuses,
-            classes = listOfNotNull(character.cls, character.subCls)
-                .fastMap { it.toEntityWithModifiers() },
-            race = character.race?.toEntityWithModifiers(),
-            subRace = character.subRace?.toEntityWithModifiers(),
-            background = character.background?.toEntityWithModifiers(),
-            subBackground = character.subBackground?.toEntityWithModifiers(),
+            entities = character.entities
+                .fastMap { it.toEntityWithModifiers() }
+                .fastFilter { it.modifiers.isNotEmpty() }
         )
     }
 
@@ -129,12 +126,9 @@ class NewCharacterViewModel(
             proficiencyBonus = proficiencyBonusByLevel(1),
             stats = calculateModifiersSum(),
             selectedSkills = selectedSkills,
-            classes = listOfNotNull(character.cls, character.subCls)
-                .fastMap { it.toEntityWithSkills() },
-            race = character.race?.toEntityWithSkills(),
-            subRace = character.subRace?.toEntityWithSkills(),
-            background = character.background?.toEntityWithSkills(),
-            subBackground = character.subBackground?.toEntityWithSkills(),
+            entities = character.entities
+                .fastMap { it.toEntityWithSkills() }
+                .fastFilter { it.skills.isNotEmpty() }
         )
     }
 

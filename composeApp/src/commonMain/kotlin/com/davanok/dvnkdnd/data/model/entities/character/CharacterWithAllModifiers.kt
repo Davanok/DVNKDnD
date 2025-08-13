@@ -12,11 +12,7 @@ data class CharacterWithAllModifiers(
     val characterStats: DnDModifiersGroup?,
 
     val selectedModifierBonuses: List<Uuid>,
-    val classes: List<DnDEntityWithModifiers>,
-    val race: DnDEntityWithModifiers?,
-    val subRace: DnDEntityWithModifiers?,
-    val background: DnDEntityWithModifiers?,
-    val subBackground: DnDEntityWithModifiers?,
+    val entities: List<DnDEntityWithModifiers>
 )
 
 @Immutable
