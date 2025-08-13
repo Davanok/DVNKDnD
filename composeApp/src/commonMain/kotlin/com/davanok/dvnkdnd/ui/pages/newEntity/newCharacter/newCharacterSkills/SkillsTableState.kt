@@ -35,7 +35,7 @@ class SkillsTableState(
                 val limit = column.selectionLimit
                 val selectedCount = column.skills.count { selectedEntityIds.contains(it.id) }
                 // Entity is selectable only if selection limit not yet reached or it's already selected
-                (limit == null || selectedCount < limit) && !selectedEntityIds.contains(ent.id)
+                (selectedCount < limit) && !selectedEntityIds.contains(ent.id)
             }
 
             UiSkillState(selectable = selectable, selected = selected)
@@ -53,7 +53,7 @@ class SkillsTableState(
             val col = columns.fastFirstOrNull { column -> column.skills.contains(ent) } ?: return@fastFirstOrNull false
             val limit = col.selectionLimit
             val currentlySelectedInCol = col.skills.count { selectedEntityIds.contains(it.id) }
-            limit == null || currentlySelectedInCol < limit
+            currentlySelectedInCol < limit
         } ?: return false
         selectedEntityIds.add(toSelect.id)
         return true
@@ -63,10 +63,8 @@ class SkillsTableState(
 
     fun validateSelectedSkills(): Boolean {
         return columns.fastAll { column ->
-            column.selectionLimit?.let { limit ->
-                val countSelected = column.skills.count { selectedEntityIds.contains(it.id) }
-                countSelected == limit
-            } ?: true
+            val countSelected = column.skills.count { selectedEntityIds.contains(it.id) }
+            column.selectionLimit == countSelected
         }
     }
 }

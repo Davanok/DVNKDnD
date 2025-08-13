@@ -24,12 +24,12 @@ data class CharacterWithAllSkills(
 @Immutable
 data class DnDEntityWithSkills(
     val entity: DnDEntityMin,
-    val selectionLimit: Int?,
+    val selectionLimit: Int,
     val skills: List<DnDSkill>,
 )
 
 fun DnDFullEntity.toEntityWithSkills() = DnDEntityWithSkills(
     entity = toDnDEntityMin(),
-    selectionLimit = selectionLimits?.skills,
+    selectionLimit = selectionLimits?.skills?: skills.size,
     skills = skills
 )

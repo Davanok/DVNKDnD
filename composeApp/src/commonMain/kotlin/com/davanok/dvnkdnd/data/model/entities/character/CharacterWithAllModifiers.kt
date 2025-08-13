@@ -22,12 +22,12 @@ data class CharacterWithAllModifiers(
 @Immutable
 data class DnDEntityWithModifiers(
     val entity: DnDEntityMin,
-    val selectionLimit: Int?,
+    val selectionLimit: Int,
     val modifiers: List<DnDModifierBonus>,
 )
 
 fun DnDFullEntity.toEntityWithModifiers() = DnDEntityWithModifiers(
     entity = toDnDEntityMin(),
-    selectionLimit = selectionLimits?.modifiers,
+    selectionLimit = selectionLimits?.modifiers?: modifierBonuses.size,
     modifiers = modifierBonuses
 )

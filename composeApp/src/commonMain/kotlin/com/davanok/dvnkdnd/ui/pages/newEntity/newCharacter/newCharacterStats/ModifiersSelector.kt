@@ -383,7 +383,6 @@ fun ModifiersSelectionGroup(
 ) {
     val (
         modBonusGroups,
-        checkSelectionLimits,
         selectionLimitsSum
     ) = remember(entitiesWithModifiers) {
         val modBonusGroups = entitiesWithModifiers
@@ -392,11 +391,9 @@ fun ModifiersSelectionGroup(
             .toList()
             .sortedBy { it.first }
             .toMap()
-        val checkSelectionLimits = !entitiesWithModifiers
-            .fastAny { it.selectionLimit == null }
-        val selectionLimitsSum = entitiesWithModifiers.fastSumBy { it.selectionLimit ?: 0 }
+        val selectionLimitsSum = entitiesWithModifiers.fastSumBy { it.selectionLimit }
 
-        Triple(modBonusGroups, checkSelectionLimits, selectionLimitsSum)
+        Pair(modBonusGroups, selectionLimitsSum)
     }
 
     Column(
@@ -447,11 +444,8 @@ fun ModifiersSelectionGroup(
                                     selected = mod.id in selectedModifiersBonuses,
                                     onClick = { onModifierSelected(mod) },
                                     enabled = mod.selectable &&
-                                            (
-                                                    !checkSelectionLimits ||
-                                                            selectedModifiersBonuses.size < selectionLimitsSum ||
-                                                            mod.id in selectedModifiersBonuses
-                                                    )
+                                            (selectedModifiersBonuses.size < selectionLimitsSum ||
+                                                    mod.id in selectedModifiersBonuses)
                                 )
                             }
                     }
