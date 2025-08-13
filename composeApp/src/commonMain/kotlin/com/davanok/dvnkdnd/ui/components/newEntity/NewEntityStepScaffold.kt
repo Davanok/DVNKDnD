@@ -70,7 +70,8 @@ fun NewEntityStepScaffold(
                     }
                 },
                 collapsingTitle = CollapsingTitle.medium(title),
-                additionalContent = additionalContent
+                additionalContent = additionalContent,
+                scrollBehavior = scrollBehavior
             )
         },
         floatingActionButton = {
