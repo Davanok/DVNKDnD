@@ -1,8 +1,6 @@
 package com.davanok.dvnkdnd.data.model.entities.dndModifiers
 
-import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastSumBy
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus

@@ -41,7 +41,6 @@ import com.davanok.dvnkdnd.ui.components.append
 import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
 import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterTopBarAdditionalContent
 import com.davanok.dvnkdnd.ui.components.toSignedString
-import com.davanok.dvnkdnd.ui.navigation.StepNavigation
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
 import dvnkdnd.composeapp.generated.resources.modifiers_selectors_hint
