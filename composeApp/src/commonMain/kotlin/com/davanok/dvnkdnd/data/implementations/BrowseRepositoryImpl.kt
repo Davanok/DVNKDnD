@@ -22,7 +22,7 @@ class BrowseRepositoryImpl(
             postgrest.rpc(
                 "get_full_entity_with_companion",
                 mapOf("entity_id" to entityId)
-            ).decodeSingleOrNull<DnDFullEntity>()
+            ).decodeAsOrNull<DnDFullEntity>()
         }.onFailure {
             Napier.e("Error in loadEntityFullInfo", it)
         }
