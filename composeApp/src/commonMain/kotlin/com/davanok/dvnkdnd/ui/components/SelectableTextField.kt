@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +33,8 @@ fun SelectableTextField(
     placeholder: (@Composable () -> Unit)? = null,
     isError: Boolean = false,
     supportingText: @Composable (() -> Unit)? = null,
-    dropdownMenuContent: ExposedDropdownMenuScope.() -> Unit,
+    maxLines: Int = 1,
+    dropdownMenuContent: ExposedDropdownMenuScope.() -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
@@ -40,7 +42,11 @@ fun SelectableTextField(
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            modifier = modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+            modifier = modifier
+                .menuAnchor(MenuAnchorType.PrimaryEditable)
+                .onFocusChanged { focusState ->
+                    expanded = focusState.isFocused
+                },
             value = value,
             onValueChange = onValueChange,
             label = label,
@@ -49,7 +55,8 @@ fun SelectableTextField(
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
             isError = isError,
-            supportingText = supportingText
+            supportingText = supportingText,
+            maxLines = maxLines
         )
         val content = rememberStateOfContent(dropdownMenuContent)
         ExposedDropdownMenu(

@@ -1,6 +1,12 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,28 +18,36 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFirst
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
+import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
-import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
 import com.davanok.dvnkdnd.ui.components.UiToaster
+import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
 import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterTopBarAdditionalContent
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.new_character
+import dvnkdnd.composeapp.generated.resources.proficiency_bonus_value
+import dvnkdnd.composeapp.generated.resources.selected_value
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -82,24 +96,94 @@ private fun Content(
     onSelectSkill: (Skills) -> Unit
 ) {
     val statsAsModifiers = remember(stats) { stats.toModifiersList() }
+    val skillsByStat = remember(displaySkills) {
+        Skills.entries.groupBy { it.stat }.entries.sortedBy { (stat, _) -> stat.ordinal }
+    }
+    val selectedCount = remember(displaySkills) {
+        displaySkills.count { it.value.selected }
+    }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        items(
-            Skills.entries,
-            key = { it }
-        ) { skill ->
-            SkillItem(
-                statModifier = statsAsModifiers.fastFirst { it.stat == skill.stat }.modifier,
-                proficiencyBonus = proficiencyBonus,
-                skill = skill,
-                state = displaySkills[skill],
-                onClick = onSelectSkill,
-                modifier = Modifier.fillMaxWidth()
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(
+                            Res.string.selected_value,
+                            selectedCount
+                        ),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = stringResource(
+                            Res.string.proficiency_bonus_value,
+                            proficiencyBonus.toSignedString()
+                        ),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+        skillsByStat.fastForEach { (stat, skills) ->
+            stickyHeader {
+                val statModifier = statsAsModifiers.fastFirst { it.stat == stat }.modifier
+                StatHeader(stat = stat, statModifier = statModifier)
+            }
+
+            items(
+                items = skills,
+                key = { it }
+            ) { skill ->
+                SkillItem(
+                    statModifier = statsAsModifiers.fastFirst { it.stat == skill.stat }.modifier,
+                    proficiencyBonus = proficiencyBonus,
+                    skill = skill,
+                    state = displaySkills[skill],
+                    onClick = onSelectSkill,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                VerticalDivider(Modifier.padding(start = 12.dp, end = 12.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatHeader(stat: Stats, statModifier: Int) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainer
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(stat.stringRes),
+                style = MaterialTheme.typography.titleSmall
+            )
+            Text(
+                text = statModifier.toString(),
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }
 }
+
 @Composable
 private fun SkillItem(
     statModifier: Int,
@@ -109,38 +193,49 @@ private fun SkillItem(
     onClick: (Skills) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val selected = state?.selected == true
+    val selectable = state?.selectable == true
+
     ListItem(
-        modifier = modifier.then(
-            Modifier.toggleable(
-                role = Role.Checkbox,
-                enabled = state != null,
-                value = state?.selected == true,
-                onValueChange = { onClick(skill) }
-            )
-        ),
+        modifier = modifier
+            .then(
+                Modifier
+                    .toggleable(
+                        value = selected,
+                        enabled = state != null,
+                        role = Role.Checkbox,
+                        onValueChange = { onClick(skill) }
+                    )
+            ),
         headlineContent = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = stringResource(skill.stringRes))
-                Text(
-                    modifier = Modifier.padding(end = 8.dp),
-                    text = (
-                            calculateModifier(statModifier) +
-                                    if (state?.selected == true) proficiencyBonus
-                                    else 0
-                            ).toSignedString())
-            }
-                          },
+            Text(text = stringResource(skill.stringRes))
+        },
         trailingContent = {
-            if (state == null) Spacer(modifier = Modifier.width(24.dp))
-            else Checkbox(
-                modifier = Modifier.width(24.dp),
-                onCheckedChange = { onClick(skill) },
-                checked = state.selected,
-                enabled = state.selectable
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = (
+                            calculateModifier(statModifier) + if (selected) proficiencyBonus else 0
+                            ).toSignedString(),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
+                    modifier = Modifier.width(24.dp),
+                ) {
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = selectable || selected,
+                        enter = fadeIn() + scaleIn(),
+                        exit = scaleOut() + fadeOut()
+                    ) {
+                        Checkbox(
+                            checked = selected,
+                            onCheckedChange = null
+                        )
+                    }
+                }
+            }
         }
     )
 }

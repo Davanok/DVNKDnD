@@ -49,7 +49,7 @@ fun NewEntityStepScaffold(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val topAppBarExpanded by remember(scrollBehavior.state.collapsedFraction) {
         derivedStateOf { scrollBehavior.state.collapsedFraction < 0.5 }
     }

@@ -27,7 +27,8 @@ fun <T> FiniteTextField(
     onNeedMore: ((String) -> Unit)? = null,
     label: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
-    supportingText: @Composable (() -> Unit)? = null
+    supportingText: @Composable (() -> Unit)? = null,
+    maxLines: Int = 1
 ) {
     var text by remember { mutableStateOf("") }
     val entitiesMap = remember(entities) {
@@ -51,7 +52,8 @@ fun <T> FiniteTextField(
         },
         label = label,
         isError = isError,
-        supportingText = supportingText
+        supportingText = supportingText,
+        maxLines = maxLines
     ) {
         filteredItems.forEach { (key, name) ->
             item(

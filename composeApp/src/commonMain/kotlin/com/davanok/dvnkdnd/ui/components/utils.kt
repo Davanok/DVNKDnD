@@ -10,3 +10,7 @@ fun Int.toSignedString() = if (this > 0) "+$this" else toString()
 @Composable
 fun AnnotatedString.Builder.append(res: StringResource, vararg args: Any) =
     append(stringResource(res, *args))
+@Suppress("ComposableNaming")
+@Composable
+fun StringBuilder.append(res: StringResource, vararg args: Any) =
+    append(stringResource(res, *args))
