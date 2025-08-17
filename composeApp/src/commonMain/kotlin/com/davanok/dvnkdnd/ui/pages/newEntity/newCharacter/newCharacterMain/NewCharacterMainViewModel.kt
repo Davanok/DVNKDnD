@@ -15,6 +15,7 @@ import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.searchSheet.SearchSheetViewModel
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.loading_entities_error
 import dvnkdnd.composeapp.generated.resources.saving_data_error
@@ -29,6 +30,7 @@ class NewCharacterMainViewModel(
     private val filesRepository: FilesRepository,
     private val browseRepository: BrowseRepository,
     private val entitiesRepository: EntitiesRepository,
+    val searchSheetViewModel: SearchSheetViewModel,
     private val newCharacterViewModel: NewCharacterViewModel
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
@@ -125,26 +127,21 @@ class NewCharacterMainViewModel(
             when (it) {
                 DnDEntityTypes.CLASS -> setCharacterClass(selectedEntity, selectedSubEntity)
                 DnDEntityTypes.RACE -> setCharacterRace(selectedEntity, selectedSubEntity)
-                DnDEntityTypes.BACKGROUND -> setCharacterBackground(
-                    selectedEntity,
-                    selectedSubEntity
-                )
+                DnDEntityTypes.BACKGROUND -> setCharacterBackground(selectedEntity, selectedSubEntity)
 
                 else -> throw IllegalArgumentException()
             }
         }
-        _uiState.value = _uiState.value.copy(showSearchSheet = false)
+        _uiState.value = _uiState.value.copy(
+            showSearchSheet = false
+        )
     }
 
     fun openSearchSheet(content: DnDEntityTypes, query: String) {
         _uiState.value = _uiState.value.copy(showSearchSheet = true)
-        _searchSheetState.value = _searchSheetState.value.copy(
-            searchType = content
-        )
-        setSearchQuery(query)
 
-        val needLoad = loadedEntities[content].isNullOrEmpty()
-        if (needLoad) loadSearchEntities(content)
+        searchSheetViewModel.setSearchType(content)
+        searchSheetViewModel.setSearchQuery(query)
     }
 
     // Character setters
@@ -218,57 +215,6 @@ class NewCharacterMainViewModel(
 
     fun setCharacterSubBackground(value: DnDEntityMin?) =
         updateCharacter { it.copy(subBackground = value) }
-
-    // Search content
-    private val _searchSheetState = MutableStateFlow(
-        SearchSheetUiState(
-            isLoading = true,
-            searchType = DnDEntityTypes.CLASS
-        )
-    )
-    val searchSheetState: StateFlow<SearchSheetUiState> = _searchSheetState
-    private val loadedEntities = mutableMapOf(
-        DnDEntityTypes.CLASS to emptyMap(),
-        DnDEntityTypes.RACE to emptyMap(),
-        DnDEntityTypes.BACKGROUND to emptyMap<String, List<DnDEntityWithSubEntities>>()
-    )
-
-    private fun filterEntities() {
-        val query = _searchSheetState.value.query
-        val content = _searchSheetState.value.searchType
-        val entities = loadedEntities[content]
-            ?: throw IllegalArgumentException("Illegal to search entities of $content type in search sheet")
-
-        val filteredEntities =
-            if (query.isEmpty()) entities
-            else entities.mapValues { (_, list) ->
-                list.fastFilter { it.name.startsWith(query, ignoreCase = true) }
-            }.filterValues { it.isNotEmpty() }
-
-        _searchSheetState.value = _searchSheetState.value.copy(entitiesGroups = filteredEntities)
-    }
-
-    fun loadSearchEntities(content: DnDEntityTypes) = viewModelScope.launch {
-        _searchSheetState.value = _searchSheetState.value.copy(isLoading = true)
-
-        browseRepository.loadEntitiesWithSub(content).onFailure { thr ->
-            _uiState.update {
-                it.copy(
-                    error = UiError.Critical(Res.string.loading_entities_error, thr)
-                )
-            }
-        }.onSuccess { entities ->
-            loadedEntities[content] = entities.groupBy { it.source }
-        }
-
-        _searchSheetState.value = _searchSheetState.value.copy(isLoading = false)
-        filterEntities()
-    }
-
-    fun setSearchQuery(value: String) {
-        _searchSheetState.value = _searchSheetState.value.copy(query = value)
-        filterEntities()
-    }
 
     // onCreate
 
@@ -388,10 +334,3 @@ data class NewCharacterMain(
         subBackground?.id
     )
 }
-
-data class SearchSheetUiState(
-    val isLoading: Boolean = false,
-    val searchType: DnDEntityTypes,
-    val query: String = "",
-    val entitiesGroups: Map<String, List<DnDEntityWithSubEntities>> = emptyMap(),
-)

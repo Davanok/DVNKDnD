@@ -2,8 +2,6 @@ package com.davanok.dvnkdnd.data.model.entities.dndEntities
 
 import androidx.compose.runtime.Immutable
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid

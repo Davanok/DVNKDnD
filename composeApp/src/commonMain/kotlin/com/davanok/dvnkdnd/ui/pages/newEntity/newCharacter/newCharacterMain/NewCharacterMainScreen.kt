@@ -62,6 +62,7 @@ import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
 import com.davanok.dvnkdnd.ui.components.UiToaster
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.searchSheet.SearchSheet
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
@@ -131,7 +132,7 @@ fun NewCharacterMainScreen(
         SearchSheet(
             onDismiss = viewModel::hideSearchSheet,
             onGetEntityInfo = { navigateToEntityInfo(it.id) },
-            viewModel = viewModel
+            viewModel = viewModel.searchSheetViewModel
         )
 }
 

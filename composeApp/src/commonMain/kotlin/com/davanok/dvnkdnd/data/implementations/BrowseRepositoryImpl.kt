@@ -3,10 +3,12 @@ package com.davanok.dvnkdnd.data.implementations
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.types.PagedResult
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
 import io.github.jan.supabase.storage.Storage
 import kotlinx.serialization.json.Json
@@ -48,6 +50,46 @@ class BrowseRepositoryImpl(
             }.decodeList<DnDEntityWithSubEntities>()
         }.onFailure {
             Napier.e("Error in loadEntitiesWithSub", it)
+        }
+
+    override suspend fun loadEntitiesWithSubPaged(
+        entityType: DnDEntityTypes,
+        page: Int,
+        pageSize: Int,
+        searchQuery: String?
+    ): Result<PagedResult<DnDEntityWithSubEntities>> =
+        runCatching {
+            Napier.d { "loadEntitiesWithSubPaged: type=$entityType page=$page pageSize=$pageSize query=$searchQuery" }
+
+            val offset = (page * pageSize).toLong()
+
+            val fetched = postgrest
+                .from("base_entities")
+                .select(Columns.raw("*, sub_entities:base_entities(*)")) {
+                    filter { DnDEntityWithSubEntities::type eq entityType.name }
+
+                    if (!searchQuery.isNullOrBlank()) {
+                        val safe = searchQuery.replace("%", "\\%").replace("_", "\\_")
+                        filter { DnDEntityWithSubEntities::name ilike "$safe%" }
+                    }
+
+                    order("id", Order.ASCENDING)
+                    range(offset, offset + pageSize)
+                }.decodeList<DnDEntityWithSubEntities>()
+
+            val hasNext = fetched.size > pageSize
+            val items = if (hasNext) fetched.subList(0, pageSize) else fetched
+            val hasPrevious = page > 0
+
+            PagedResult(
+                items = items,
+                page = page,
+                pageSize = pageSize,
+                hasNext = hasNext,
+                hasPrevious = hasPrevious
+            )
+        }.onFailure {
+            Napier.e("Error in loadEntitiesWithSubPaged", it)
         }
 
     override suspend fun getPropertyValue(key: String): Result<String> =
