@@ -9,12 +9,8 @@ import androidx.compose.ui.util.fastForEach
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSavingThrows
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSavingThrow
+import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import kotlin.uuid.Uuid
-
-data class UiSavingThrowState(
-    val selectable: Boolean,
-    val selected: Boolean
-)
 
 class SavingThrowsTableState(
     private val columns: List<DnDEntityWithSavingThrows>,
@@ -25,7 +21,7 @@ class SavingThrowsTableState(
         columns.fastFlatMap { it.savingThrows }
             .groupBy { it.stat }
 
-    fun getDisplayItems(): Map<Stats, UiSavingThrowState> {
+    fun getDisplayItems(): Map<Stats, UiSelectableState> {
         return savingThrowsToEntities.mapValues { (_, entities) ->
             val selected = entities.fastAny { selectedEntityIds.contains(it.id) }
 
@@ -38,7 +34,7 @@ class SavingThrowsTableState(
                 (selectedCount < limit) && !selectedEntityIds.contains(ent.id)
             }
 
-            UiSavingThrowState(selectable = selectable, selected = selected)
+            UiSelectableState(selectable = selectable, selected = selected)
         }
     }
 

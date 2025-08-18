@@ -9,12 +9,8 @@ import androidx.compose.ui.util.fastForEach
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSkills
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
+import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import kotlin.uuid.Uuid
-
-data class UiSkillState(
-    val selectable: Boolean,
-    val selected: Boolean
-)
 
 class SkillsTableState(
     private val columns: List<DnDEntityWithSkills>,
@@ -25,7 +21,7 @@ class SkillsTableState(
         columns.fastFlatMap { it.skills }
             .groupBy { it.skill }
 
-    fun getDisplayItems(): Map<Skills, UiSkillState> {
+    fun getDisplayItems(): Map<Skills, UiSelectableState> {
         return skillToEntities.mapValues { (_, entities) ->
             val selected = entities.fastAny { selectedEntityIds.contains(it.id) }
 
@@ -38,7 +34,7 @@ class SkillsTableState(
                 (selectedCount < limit) && !selectedEntityIds.contains(ent.id)
             }
 
-            UiSkillState(selectable = selectable, selected = selected)
+            UiSelectableState(selectable = selectable, selected = selected)
         }
     }
 

@@ -3,8 +3,8 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingTh
 import androidx.lifecycle.ViewModel
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
-import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSavingThrows
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
@@ -21,15 +21,12 @@ class NewCharacterSavingThrowsViewModel(
     val uiState: StateFlow<NewCharacterSavingThrowsUiState> = _uiState
 
     fun removeError() = _uiState.update { it.copy(error = null) }
-
-    private var allEntitiesWithSavingThrows = emptyList<DnDEntityWithSavingThrows>()
     private lateinit var savingThrowsState: SavingThrowsTableState
 
     fun loadCharacterWithSavingThrows() {
         val character = newCharacterViewModel.getCharacterWithAllSavingThrows()
-        allEntitiesWithSavingThrows = character.entities
         savingThrowsState = SavingThrowsTableState(
-            allEntitiesWithSavingThrows,
+            character.entities,
             character.selectedSavingThrows.toSet()
         )
 
@@ -38,7 +35,7 @@ class NewCharacterSavingThrowsViewModel(
                 isLoading = false,
                 character = newCharacterViewModel.getCharacterShortInfo(),
                 proficiencyBonus = character.proficiencyBonus,
-                selectionLimit = allEntitiesWithSavingThrows.sumOf { e -> e.selectionLimit },
+                selectionLimit = character.entities.sumOf { e -> e.selectionLimit },
                 stats = character.stats,
                 savingThrows = savingThrowsState.getDisplayItems()
             )
@@ -84,5 +81,5 @@ data class NewCharacterSavingThrowsUiState(
     val proficiencyBonus: Int = 0,
     val selectionLimit: Int = 0,
     val stats: DnDModifiersGroup = DnDModifiersGroup.Default,
-    val savingThrows: Map<Stats, UiSavingThrowState> = emptyMap()
+    val savingThrows: Map<Stats, UiSelectableState> = emptyMap()
 )

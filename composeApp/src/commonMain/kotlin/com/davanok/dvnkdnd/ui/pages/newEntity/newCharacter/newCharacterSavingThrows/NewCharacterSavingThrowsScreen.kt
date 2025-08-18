@@ -31,6 +31,7 @@ import androidx.compose.ui.util.fastFirst
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
@@ -96,7 +97,7 @@ private fun Content(
     proficiencyBonus: Int,
     stats: DnDModifiersGroup,
     selectionLimit: Int,
-    displaySavingThrows: Map<Stats, UiSavingThrowState>,
+    displaySavingThrows: Map<Stats, UiSelectableState>,
     onSelectSavingThrow: (Stats) -> Unit
 ) {
     val statsAsModifiers = remember(stats) { stats.toModifiersList() }
@@ -156,7 +157,7 @@ private fun StatItem(
     statModifier: Int,
     proficiencyBonus: Int,
     stat: Stats,
-    state: UiSavingThrowState?,
+    state: UiSelectableState?,
     onClick: (Stats) -> Unit,
     modifier: Modifier = Modifier
 ) {

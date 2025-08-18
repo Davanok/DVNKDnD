@@ -3,8 +3,8 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills
 import androidx.lifecycle.ViewModel
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
-import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSkills
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
@@ -19,15 +19,12 @@ class NewCharacterSkillsViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NewCharacterSkillsUiState(isLoading = true))
     val uiState: StateFlow<NewCharacterSkillsUiState> = _uiState
-
-    private var allEntitiesWithSkills = emptyList<DnDEntityWithSkills>()
     private lateinit var skillsState: SkillsTableState
 
     fun loadCharacterWithSkills() {
         val character = newCharacterViewModel.getCharacterWithAllSkills()
-        allEntitiesWithSkills = character.entities
         skillsState = SkillsTableState(
-            allEntitiesWithSkills,
+            character.entities,
             character.selectedSkills.toSet()
         )
 
@@ -36,7 +33,7 @@ class NewCharacterSkillsViewModel(
                 isLoading = false,
                 character = newCharacterViewModel.getCharacterShortInfo(),
                 proficiencyBonus = character.proficiencyBonus,
-                selectionLimit = allEntitiesWithSkills.sumOf { e -> e.selectionLimit },
+                selectionLimit = character.entities.sumOf { e -> e.selectionLimit },
                 stats = character.stats,
                 skills = skillsState.getDisplayItems()
             )
@@ -86,5 +83,5 @@ data class NewCharacterSkillsUiState(
     val proficiencyBonus: Int = 0,
     val selectionLimit: Int = 0,
     val stats: DnDModifiersGroup = DnDModifiersGroup.Default,
-    val skills: Map<Skills, UiSkillState> = emptyMap()
+    val skills: Map<Skills, UiSelectableState> = emptyMap()
 )

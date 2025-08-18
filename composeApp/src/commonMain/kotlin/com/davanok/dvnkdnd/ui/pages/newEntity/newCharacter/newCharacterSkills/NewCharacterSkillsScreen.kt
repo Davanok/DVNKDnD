@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
@@ -93,7 +94,7 @@ private fun Content(
     proficiencyBonus: Int,
     stats: DnDModifiersGroup,
     selectionLimit: Int,
-    displaySkills: Map<Skills, UiSkillState>,
+    displaySkills: Map<Skills, UiSelectableState>,
     onSelectSkill: (Skills) -> Unit
 ) {
     val statsAsModifiers = remember(stats) { stats.toModifiersList() }
@@ -189,7 +190,7 @@ private fun SkillItem(
     statModifier: Int,
     proficiencyBonus: Int,
     skill: Skills,
-    state: UiSkillState?,
+    state: UiSelectableState?,
     onClick: (Skills) -> Unit,
     modifier: Modifier = Modifier
 ) {
