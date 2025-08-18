@@ -128,6 +128,7 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="modifier_selection_invalid">Invalid modifier bonuses selection count</string>
     <string name="point_buy_stats_balance_invalid">Invalid point buy balance</string>
     <!--saving Throws-->
+    <string name="saving_throw">Saving throw</string>
     <string name="not_all_available_saving_throws_selected">Not all available savingThrows selected</string>
     <!--skills-->
     <string name="not_all_available_skills_selected">Not all available skills selected</string>

@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastFirst
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
@@ -100,7 +99,6 @@ private fun Content(
     displaySavingThrows: Map<Stats, UiSelectableState>,
     onSelectSavingThrow: (Stats) -> Unit
 ) {
-    val statsAsModifiers = remember(stats) { stats.toModifiersList() }
     val selectedCount = remember(displaySavingThrows) {
         displaySavingThrows.count { it.value.selected }
     }
@@ -141,7 +139,7 @@ private fun Content(
             key = { it }
         ) { stat ->
             StatItem(
-                statModifier = statsAsModifiers.fastFirst { it.stat == stat }.modifier,
+                statModifier = stats[stat],
                 proficiencyBonus = proficiencyBonus,
                 stat = stat,
                 state = displaySavingThrows[stat],

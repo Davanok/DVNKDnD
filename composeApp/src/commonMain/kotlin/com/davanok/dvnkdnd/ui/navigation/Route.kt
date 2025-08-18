@@ -18,10 +18,12 @@ sealed interface Route {
     @Serializable
     data object New : Route {
         // main
-        @Serializable data object Character : Route {
+        @Serializable
+        data object Character : Route {
             @Serializable data object LoadData : Route
             @Serializable data object Main : Route
             @Serializable data object Stats : Route
+            @Serializable data object StatsLarge : Route
             @Serializable data object SavingThrows : Route
             @Serializable data object Skills : Route
             @Serializable data object Health : Route

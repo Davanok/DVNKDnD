@@ -26,6 +26,10 @@ class WindowSizeClass(
             return WindowSizeClass(windowWidthSizeClass, windowHeightSizeClass)
         }
     }
+
+    override fun toString(): String {
+        return "$widthSizeClass x $heightSizeClass"
+    }
 }
 
 @JvmInline
@@ -75,7 +79,7 @@ value class WindowWidthSizeClass private constructor(private val value: Int) :
         ): WindowWidthSizeClass {
             require(width >= 0.dp) { "Width must not be negative" }
             require(supportedSizeClasses.isNotEmpty()) { "Must support at least one size class" }
-            var smallestSupportedSizeClass = Compact
+            var smallestSupportedSizeClass = Small
             AllSizeClassList.fastForEach {
                 if (it in supportedSizeClasses) {
                     if (width >= it.breakpoint()) {
@@ -135,7 +139,7 @@ value class WindowHeightSizeClass private constructor(private val value: Int) :
         ): WindowHeightSizeClass {
             require(height >= 0.dp) { "Width must not be negative" }
             require(supportedSizeClasses.isNotEmpty()) { "Must support at least one size class" }
-            var smallestSupportedSizeClass = Expanded
+            var smallestSupportedSizeClass = Small
             AllSizeClassList.fastForEach {
                 if (it in supportedSizeClasses) {
                     if (height >= it.breakpoint()) {

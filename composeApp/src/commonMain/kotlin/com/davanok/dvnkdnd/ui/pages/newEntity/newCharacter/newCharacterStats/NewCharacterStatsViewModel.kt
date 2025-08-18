@@ -1,7 +1,6 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
 
 import androidx.compose.ui.util.fastFlatMap
-import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
@@ -88,8 +87,7 @@ class NewCharacterStatsViewModel(
                 calculateBuyingModifiersSum(
                     state
                         .modifiers
-                        .toModifiersList()
-                        .fastMap { it.modifier }
+                        .modifiers()
                 )
             val balance = DnDConstants.BUYING_BALANCE - modifiersSum
             if (balance != 0) {

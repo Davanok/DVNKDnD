@@ -35,16 +35,23 @@ data class DnDModifiersGroup(
     val wisdom: Int,
     val charisma: Int
 ) {
-    fun toModifiersList(): List<DnDModifierBonus> {
-        return listOf(
-            DnDModifierBonus(Uuid.NIL, false, Stats.STRENGTH, strength),
-            DnDModifierBonus(Uuid.NIL, false, Stats.DEXTERITY, dexterity),
-            DnDModifierBonus(Uuid.NIL, false, Stats.CONSTITUTION, constitution),
-            DnDModifierBonus(Uuid.NIL, false, Stats.INTELLIGENCE, intelligence),
-            DnDModifierBonus(Uuid.NIL, false, Stats.WISDOM, wisdom),
-            DnDModifierBonus(Uuid.NIL, false, Stats.CHARISMA, charisma),
-        )
-    }
+    fun toMap() = mapOf(
+        Stats.STRENGTH to strength,
+        Stats.DEXTERITY to dexterity,
+        Stats.CONSTITUTION to constitution,
+        Stats.INTELLIGENCE to intelligence,
+        Stats.WISDOM to wisdom,
+        Stats.CHARISMA to charisma,
+    )
+    fun modifiers() = listOf(
+        strength,
+        dexterity,
+        constitution,
+        intelligence,
+        wisdom,
+        charisma
+    )
+
     operator fun get(stat: Stats) = when(stat) {
         Stats.STRENGTH -> strength
         Stats.DEXTERITY -> dexterity

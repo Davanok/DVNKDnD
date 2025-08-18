@@ -44,10 +44,8 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapIndexed
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.compose.ui.util.fastSumBy
@@ -165,7 +163,7 @@ private fun ColumnScope.PointBuyModifiersSelector(
     onModifierSelected: (DnDModifierBonus) -> Unit,
 ) {
     val modifiersSum =
-        calculateBuyingModifiersSum(character.toModifiersList().fastMap { it.modifier })
+        calculateBuyingModifiersSum(character.modifiers())
     Text(
         modifier = Modifier.align(Alignment.CenterHorizontally),
         text = (DnDConstants.BUYING_BALANCE - modifiersSum).toString(),
@@ -183,13 +181,10 @@ private fun ColumnScope.PointBuyModifiersSelector(
             label = stringResource(stat.stringRes),
             minValueCheck = { it >= DnDConstants.MIN_VALUE_TO_BUY },
             maxValueCheck = {
-                it <= DnDConstants.MAX_VALUE_TO_BUY &&
-                        DnDConstants.BUYING_BALANCE >= calculateBuyingModifiersSum(
-                    character
-                        .set(stat, it)
-                        .toModifiersList()
-                        .fastMap { mod -> mod.modifier }
-                )
+                it <= DnDConstants.MAX_VALUE_TO_BUY && DnDConstants.BUYING_BALANCE >=
+                        calculateBuyingModifiersSum(
+                            character.set(stat, it).modifiers()
+                        )
             },
             additionalModifiers = entitiesWithModifiers
                 .appliedModifiers(stat, selectedModifiersBonuses)
@@ -209,7 +204,7 @@ private fun StandardArrayModifiersSelector(
     LaunchedEffect(Unit) {
         onChange(approximateToDefault(character))
     }
-    val modifiers = remember(character) { character.toModifiersList().fastMap { it.modifier } }
+    val modifiers = remember(character) { character.modifiers() }
     Row(
         modifier = Modifier
             .horizontalScroll(rememberScrollState()),
@@ -267,14 +262,14 @@ private fun StandardArrayModifiersSelector(
                                             onChange(character.set(stat, value))
                                         else {
                                             val overlap = character
-                                                .toModifiersList()
-                                                .fastFirst { it.modifier == value }
-                                                .stat
-                                            onChange(
-                                                character
-                                                    .set(overlap, character[stat])
-                                                    .set(stat, value)
-                                            )
+                                                .toMap()
+                                                .filterValues { it == value }
+                                                .keys.firstOrNull()
+                                            var tmp = character
+                                            if (overlap != null) {
+                                                tmp = tmp.set(overlap, character[stat])
+                                            }
+                                            onChange(tmp.set(stat, value))
                                         }
                                     },
                                     label = { Text(text = value.toString()) }

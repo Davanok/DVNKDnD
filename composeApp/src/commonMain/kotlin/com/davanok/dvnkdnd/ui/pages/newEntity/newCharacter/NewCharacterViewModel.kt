@@ -10,6 +10,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSavingThrows
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithSavingThrowsAndSkills
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithSavingThrows
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithSkills
@@ -74,7 +75,8 @@ class NewCharacterViewModel(
         newCharacterState = newCharacterState.copy(
             character = fullCharacter,
             selectedModifierBonuses = fullCharacter.getNotSelectableModifiers(),
-            selectedSkills = fullCharacter.getNotSelectableSkills()
+            selectedSavingThrows = fullCharacter.getNotSelectableSavingThrows(),
+            selectedSkills = fullCharacter.getNotSelectableSkills(),
         )
     }
 
@@ -121,7 +123,23 @@ class NewCharacterViewModel(
             selectedModifierBonuses = selectedBonuses
         )
     }
+    fun getCharacterWithSavingThrowsAndSkills() = newCharacterState.run {
+        CharacterWithSavingThrowsAndSkills(
+            character = character.toCharacterShortInfo(),
+            proficiencyBonus = proficiencyBonusByLevel(1),
+            stats = calculateModifiersSum(),
 
+            selectedSavingThrows = selectedSavingThrows,
+            savingThrowsEntities = character.entities
+                    .fastMap { it.toEntityWithSavingThrows() }
+                    .fastFilter { it.savingThrows.isNotEmpty() },
+
+            selectedSkills = selectedSkills,
+            skillsEntities = character.entities
+                .fastMap { it.toEntityWithSkills() }
+                .fastFilter { it.skills.isNotEmpty() }
+        )
+    }
     fun getCharacterWithAllSavingThrows() = newCharacterState.run {
         CharacterWithAllSavingThrows(
             character = character.toCharacterShortInfo(),
@@ -199,7 +217,11 @@ private data class NewCharacterWithFullEntities(
             .fastFlatMap { it.modifierBonuses }
             .fastFilter { !it.selectable }
             .fastMap { it.id }
-
+    fun getNotSelectableSavingThrows(): List<Uuid> =
+        entities
+            .fastFlatMap { it.savingThrows }
+            .fastFilter { !it.selectable }
+            .fastMap { it.id }
     fun getNotSelectableSkills(): List<Uuid> =
         entities
             .fastFlatMap { it.skills }

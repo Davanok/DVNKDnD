@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
@@ -97,7 +96,6 @@ private fun Content(
     displaySkills: Map<Skills, UiSelectableState>,
     onSelectSkill: (Skills) -> Unit
 ) {
-    val statsAsModifiers = remember(stats) { stats.toModifiersList() }
     val skillsByStat = remember(displaySkills) {
         Skills.entries.groupBy { it.stat }.entries.sortedBy { (stat, _) -> stat.ordinal }
     }
@@ -138,8 +136,7 @@ private fun Content(
         }
         skillsByStat.fastForEach { (stat, skills) ->
             stickyHeader {
-                val statModifier = statsAsModifiers.fastFirst { it.stat == stat }.modifier
-                StatHeader(stat = stat, statModifier = statModifier)
+                StatHeader(stat = stat, statModifier = stats[stat])
             }
 
             items(
@@ -147,7 +144,7 @@ private fun Content(
                 key = { it }
             ) { skill ->
                 SkillItem(
-                    statModifier = statsAsModifiers.fastFirst { it.stat == skill.stat }.modifier,
+                    statModifier = stats[stat],
                     proficiencyBonus = proficiencyBonus,
                     skill = skill,
                     state = displaySkills[skill],
