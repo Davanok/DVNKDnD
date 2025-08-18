@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class NewCharacterSkillsViewModel(
-    private val newCharacterViewModel: NewCharacterViewModel,
+    private val newCharacterViewModel: NewCharacterViewModel
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NewCharacterSkillsUiState(isLoading = true))
     val uiState: StateFlow<NewCharacterSkillsUiState> = _uiState
@@ -36,6 +36,7 @@ class NewCharacterSkillsViewModel(
                 isLoading = false,
                 character = newCharacterViewModel.getCharacterShortInfo(),
                 proficiencyBonus = character.proficiencyBonus,
+                selectionLimit = allEntitiesWithSkills.sumOf { e -> e.selectionLimit },
                 stats = character.stats,
                 skills = skillsState.getDisplayItems()
             )
@@ -83,6 +84,7 @@ data class NewCharacterSkillsUiState(
     val error: UiError? = null,
     val character: CharacterShortInfo = CharacterShortInfo(),
     val proficiencyBonus: Int = 0,
+    val selectionLimit: Int = 0,
     val stats: DnDModifiersGroup = DnDModifiersGroup.Default,
     val skills: Map<Skills, UiSkillState> = emptyMap()
 )

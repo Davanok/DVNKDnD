@@ -20,6 +20,7 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen.LoadingDataScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows.NewCharacterSavingThrowsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
@@ -162,6 +163,15 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
             val newCharacterViewModel: NewCharacterViewModel =
                 backStack.sharedKoinViewModel(navController)
             NewCharacterStatsScreen(
+                onBack = navController::navigateUp,
+                onContinue = { navController.navigate(Route.New.Character.SavingThrows) },
+                viewModel = koinInject { parametersOf(newCharacterViewModel) }
+            )
+        }
+        composable<Route.New.Character.SavingThrows> { backStack ->
+            val newCharacterViewModel: NewCharacterViewModel =
+                backStack.sharedKoinViewModel(navController)
+            NewCharacterSavingThrowsScreen(
                 onBack = navController::navigateUp,
                 onContinue = { navController.navigate(Route.New.Character.Skills) },
                 viewModel = koinInject { parametersOf(newCharacterViewModel) }

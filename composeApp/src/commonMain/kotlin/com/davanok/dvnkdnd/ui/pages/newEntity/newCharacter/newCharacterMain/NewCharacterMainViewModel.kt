@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
-
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFirstOrNull

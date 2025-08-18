@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills
+package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -19,7 +19,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,9 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFirst
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.UiError
@@ -49,24 +46,29 @@ import dvnkdnd.composeapp.generated.resources.proficiency_bonus_value
 import dvnkdnd.composeapp.generated.resources.selected_value
 import org.jetbrains.compose.resources.stringResource
 
+
 @Composable
-fun NewCharacterSkillsScreen(
+fun NewCharacterSavingThrowsScreen(
     onBack: () -> Unit,
     onContinue: () -> Unit,
-    viewModel: NewCharacterSkillsViewModel
+    viewModel: NewCharacterSavingThrowsViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     UiToaster(
         message = uiState.error?.toUiMessage(),
-        onRemoveMessage = viewModel::removeWarning
+        onRemoveMessage = viewModel::removeError
     )
+
     when {
         uiState.isLoading -> LoadingCard()
-        uiState.error is UiError.Critical -> ErrorCard(
-            text = stringResource(uiState.error!!.message),
-            exception = uiState.error!!.exception,
-            onBack = onBack
-        )
+        uiState.error is UiError.Critical -> uiState.error?.let {
+            ErrorCard(
+                text = stringResource(it.message),
+                exception = it.exception,
+                onBack = onBack
+            )
+        }
         else -> NewEntityStepScaffold (
             modifier = Modifier.fillMaxSize(),
             title = uiState.character.name
@@ -74,7 +76,7 @@ fun NewCharacterSkillsScreen(
             additionalContent = uiState.character
                 .takeUnless { it.isBlank() }?.let {
                     { NewCharacterTopBarAdditionalContent(it) }
-                       },
+                },
             onNextClick = { viewModel.commit(onContinue) },
             onBackClick = onBack,
         ) {
@@ -82,26 +84,24 @@ fun NewCharacterSkillsScreen(
                 proficiencyBonus = uiState.proficiencyBonus,
                 stats = uiState.stats,
                 selectionLimit = uiState.selectionLimit,
-                displaySkills = uiState.skills,
-                onSelectSkill = viewModel::selectSkill
+                displaySavingThrows = uiState.savingThrows,
+                onSelectSavingThrow = viewModel::selectSavingThrow
             )
         }
     }
 }
+
 @Composable
 private fun Content(
     proficiencyBonus: Int,
     stats: DnDModifiersGroup,
     selectionLimit: Int,
-    displaySkills: Map<Skills, UiSkillState>,
-    onSelectSkill: (Skills) -> Unit
+    displaySavingThrows: Map<Stats, UiSavingThrowState>,
+    onSelectSavingThrow: (Stats) -> Unit
 ) {
     val statsAsModifiers = remember(stats) { stats.toModifiersList() }
-    val skillsByStat = remember(displaySkills) {
-        Skills.entries.groupBy { it.stat }.entries.sortedBy { (stat, _) -> stat.ordinal }
-    }
-    val selectedCount = remember(displaySkills) {
-        displaySkills.count { it.value.selected }
+    val selectedCount = remember(displaySavingThrows) {
+        displaySavingThrows.count { it.value.selected }
     }
 
     LazyColumn(
@@ -135,62 +135,29 @@ private fun Content(
                 }
             }
         }
-        skillsByStat.fastForEach { (stat, skills) ->
-            stickyHeader {
-                val statModifier = statsAsModifiers.fastFirst { it.stat == stat }.modifier
-                StatHeader(stat = stat, statModifier = statModifier)
-            }
-
-            items(
-                items = skills,
-                key = { it }
-            ) { skill ->
-                SkillItem(
-                    statModifier = statsAsModifiers.fastFirst { it.stat == skill.stat }.modifier,
-                    proficiencyBonus = proficiencyBonus,
-                    skill = skill,
-                    state = displaySkills[skill],
-                    onClick = onSelectSkill,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun StatHeader(stat: Stats, statModifier: Int) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surfaceContainer
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(stat.stringRes),
-                style = MaterialTheme.typography.titleSmall
-            )
-            Text(
-                text = statModifier.toString(),
-                style = MaterialTheme.typography.bodySmall
+        items(
+            items = Stats.entries,
+            key = { it }
+        ) { stat ->
+            StatItem(
+                statModifier = statsAsModifiers.fastFirst { it.stat == stat }.modifier,
+                proficiencyBonus = proficiencyBonus,
+                stat = stat,
+                state = displaySavingThrows[stat],
+                onClick = onSelectSavingThrow,
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
     }
 }
-
 @Composable
-private fun SkillItem(
+private fun StatItem(
     statModifier: Int,
     proficiencyBonus: Int,
-    skill: Skills,
-    state: UiSkillState?,
-    onClick: (Skills) -> Unit,
+    stat: Stats,
+    state: UiSavingThrowState?,
+    onClick: (Stats) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val selected = state?.selected == true
@@ -204,11 +171,11 @@ private fun SkillItem(
                         value = selected,
                         enabled = state != null,
                         role = Role.Checkbox,
-                        onValueChange = { onClick(skill) }
+                        onValueChange = { onClick(stat) }
                     )
             ),
         headlineContent = {
-            Text(text = stringResource(skill.stringRes))
+            Text(text = stringResource(stat.stringRes))
         },
         trailingContent = {
             Row(

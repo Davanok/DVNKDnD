@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSavingThrows
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithModifiers
+import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithSavingThrows
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithSkills
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
@@ -120,6 +122,24 @@ class NewCharacterViewModel(
         )
     }
 
+    fun getCharacterWithAllSavingThrows() = newCharacterState.run {
+        CharacterWithAllSavingThrows(
+            character = character.toCharacterShortInfo(),
+            proficiencyBonus = proficiencyBonusByLevel(1),
+            stats = calculateModifiersSum(),
+            selectedSavingThrows = selectedSavingThrows,
+            entities = character.entities
+                .fastMap { it.toEntityWithSavingThrows() }
+                .fastFilter { it.savingThrows.isNotEmpty() }
+        )
+    }
+
+    fun setCharacterSavingThrows(selectedSavingThrows: List<Uuid>) = runCatching {
+        newCharacterState = newCharacterState.copy(
+            selectedSavingThrows = selectedSavingThrows
+        )
+    }
+
     fun getCharacterWithAllSkills() = newCharacterState.run {
         CharacterWithAllSkills(
             character = character.toCharacterShortInfo(),
@@ -215,7 +235,8 @@ private data class NewCharacter(
     val characterStats: DnDModifiersGroup = DnDModifiersGroup.Default,
     val selectedModifierBonuses: List<Uuid> = emptyList(),
 
-    val selectedSkills: List<Uuid> = emptyList()
+    val selectedSkills: List<Uuid> = emptyList(),
+    val selectedSavingThrows: List<Uuid> = emptyList()
 ) {
     fun calculateModifiersSum(): DnDModifiersGroup =
         characterStats + character.entities
