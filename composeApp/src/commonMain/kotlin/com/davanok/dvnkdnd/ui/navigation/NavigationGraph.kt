@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.ui.navigation
 
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -13,8 +14,7 @@ import androidx.navigation.toRoute
 import androidx.savedstate.SavedState
 import androidx.savedstate.read
 import androidx.savedstate.write
-import com.davanok.dvnkdnd.data.model.ui.WindowWidthSizeClass
-import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveInfo
+import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
@@ -165,7 +165,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         composable<Route.New.Character.Stats> { backStack ->
             val newCharacterViewModel: NewCharacterViewModel =
                 backStack.sharedKoinViewModel(navController)
-            val windowSizeClass = LocalAdaptiveInfo.current.windowSizeClass
+            val windowSizeClass = calculateWindowSizeClass()
             NewCharacterStatsScreen(
                 onBack = navController::navigateUp,
                 onContinue = {

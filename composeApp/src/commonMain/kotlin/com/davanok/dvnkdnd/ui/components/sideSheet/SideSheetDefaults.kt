@@ -29,7 +29,7 @@ object SideSheetDefaults {
     val HiddenShape: Shape
         @Composable get() = RectangleShape
 
-    /** The default shape for a Side sheets in [PartiallyExpanded] and [Expanded] states. */
+    /** The default shape for a Side sheets in [Expanded] states. */
     val ExpandedShape: Shape
         @Composable get() = MaterialTheme.shapes.extraLarge.start()
 

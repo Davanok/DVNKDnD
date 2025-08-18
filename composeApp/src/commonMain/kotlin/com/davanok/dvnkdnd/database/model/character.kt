@@ -4,18 +4,25 @@ import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterClassInfo
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toModifiersGroup
-import com.davanok.dvnkdnd.database.entities.character.*
+import com.davanok.dvnkdnd.database.entities.character.Character
+import com.davanok.dvnkdnd.database.entities.character.CharacterClass
+import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
+import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
+import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.database.entities.character.CharacterImage
+import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifierBonus
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedSkill
+import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
+import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import kotlin.uuid.Uuid
 
 fun Character.toCharacterMin() = CharacterMin(
     id = id,

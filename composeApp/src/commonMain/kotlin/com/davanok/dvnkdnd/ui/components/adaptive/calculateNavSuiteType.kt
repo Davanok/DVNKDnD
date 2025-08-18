@@ -2,8 +2,8 @@ package com.davanok.dvnkdnd.ui.components.adaptive
 
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
-import com.davanok.dvnkdnd.data.model.ui.WindowSizeClass
-import com.davanok.dvnkdnd.data.model.ui.isCompact
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
 
 @Composable
@@ -12,12 +12,12 @@ fun calculateNavSuiteType(
 ): NavigationSuiteType {
     return windowSizeClass.run {
         when {
-            isCompact() -> NavigationSuiteType.NavigationBar
+            widthSizeClass <= WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationRail
 //            widthSizeClass == WindowWidthSizeClass.Medium -> NavigationSuiteType.NavigationRail
 //            widthSizeClass == WindowWidthSizeClass.Expanded -> NavigationSuiteType.NavigationRail
 //            widthSizeClass == WindowWidthSizeClass.Large -> NavigationSuiteType.NavigationDrawer
 //            else -> NavigationSuiteType.NavigationBar
-            else -> NavigationSuiteType.NavigationRail
+            else -> NavigationSuiteType.NavigationBar
         }
     }
 }

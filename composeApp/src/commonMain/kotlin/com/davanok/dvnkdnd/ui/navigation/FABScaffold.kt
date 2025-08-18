@@ -8,7 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveInfo
+import com.davanok.dvnkdnd.ui.components.adaptive.calculateNavSuiteType
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.draw
 import dvnkdnd.composeapp.generated.resources.new
@@ -21,8 +21,8 @@ fun FABScaffold(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    val layoutInfo = LocalAdaptiveInfo.current
-    val showFAB = layoutInfo.layoutType == NavigationSuiteType.NavigationBar
+    val layoutType = calculateNavSuiteType()
+    val showFAB = layoutType == NavigationSuiteType.NavigationBar
 
     if (showFAB)
         Scaffold(

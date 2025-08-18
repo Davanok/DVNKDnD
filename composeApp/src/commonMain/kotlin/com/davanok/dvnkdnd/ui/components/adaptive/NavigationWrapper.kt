@@ -45,13 +45,11 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import com.davanok.dvnkdnd.data.model.ui.WindowSizeClass
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.close_drawer
@@ -61,18 +59,9 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
-data class AdaptiveNavigationInfo(
-    val windowSizeClass: WindowSizeClass,
-    val layoutType: NavigationSuiteType
-)
-val LocalAdaptiveInfo = staticCompositionLocalOf<AdaptiveNavigationInfo> {
-    error("CompositionLocal LocalAdaptiveInfo not provided")
-}
-
 @Composable
 fun AdaptiveNavigationWrapper(
-    adaptiveInfo: AdaptiveNavigationInfo = LocalAdaptiveInfo.current,
+    layoutType: NavigationSuiteType = calculateNavSuiteType(),
     navigationItems: AdaptiveNavItemScope.() -> Unit,
     floatingActionButton: (AdaptiveFloatingActionButtonScope.() -> Unit)? = null,
     showNavigationItems: Boolean = true,
@@ -85,7 +74,7 @@ fun AdaptiveNavigationWrapper(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val gesturesEnabled =
-        drawerState.isOpen || adaptiveInfo.layoutType == NavigationSuiteType.NavigationRail
+        drawerState.isOpen || layoutType == NavigationSuiteType.NavigationRail
     val scope = rememberStateOfItems(navigationItems)
     val fabScope = if (floatingActionButton == null) null else rememberStateOfFAB(floatingActionButton)
 
@@ -111,11 +100,11 @@ fun AdaptiveNavigationWrapper(
                 modifier = Modifier.safeDrawingPadding().imePadding()
             ) {
                 NavigationSuiteScaffoldLayout(
-                    layoutType = adaptiveInfo.layoutType,
+                    layoutType = layoutType,
                     navigationSuite = {
                         if (showNavigationItems)
                             AdaptiveNavigationSuite(
-                                adaptiveInfo.layoutType,
+                                layoutType,
                                 scope.value,
                                 onDrawerClicked = {
                                     coroutineScope.launch { drawerState.open() }

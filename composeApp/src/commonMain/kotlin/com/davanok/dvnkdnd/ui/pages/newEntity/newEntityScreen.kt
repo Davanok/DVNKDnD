@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,8 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxBy
-import com.davanok.dvnkdnd.data.model.ui.isCompact
-import com.davanok.dvnkdnd.ui.components.adaptive.LocalAdaptiveInfo
+import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
 import com.davanok.dvnkdnd.ui.navigation.Route
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Ability
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Background
@@ -83,9 +83,8 @@ fun NewEntityScreen(
     onNavigateBack: () -> Unit,
     onNavigate: (Route) -> Unit
 ) {
-    val adaptiveInfo = LocalAdaptiveInfo.current
-    val windowSizeClass = adaptiveInfo.windowSizeClass
-    val isCompact = windowSizeClass.isCompact()
+    val windowSizeClass = calculateWindowSizeClass()
+    val isCompact = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Compact
 
     Scaffold(
         topBar = {

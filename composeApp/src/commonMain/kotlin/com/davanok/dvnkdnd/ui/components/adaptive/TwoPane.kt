@@ -5,10 +5,11 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.davanok.dvnkdnd.data.model.ui.isCompact
+import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
 
 @Composable
 fun TwoPane(
@@ -16,10 +17,9 @@ fun TwoPane(
     firstPane: @Composable BoxScope.(twoPane: Boolean) -> Unit,
     secondPane: @Composable BoxScope.() -> Unit,
 ) {
-    val info = LocalAdaptiveInfo.current
-    val windowSizeClass = info.windowSizeClass
+    val windowSizeClass = calculateWindowSizeClass()
 
-    if (windowSizeClass.isCompact())
+    if (windowSizeClass.widthSizeClass > WindowWidthSizeClass.Compact)
         Box(modifier = modifier) {
             firstPane(false)
         }

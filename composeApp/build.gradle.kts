@@ -74,6 +74,7 @@ kotlin {
             implementation(libs.filekit.core)
             implementation(libs.filekit.compose)
 
+            implementation(libs.window.size)
             implementation(libs.jetbrains.compose.material3.adaptive)
             implementation(libs.jetbrains.compose.material3.adaptive.layout)
             implementation(libs.jetbrains.compose.material3.adaptive.navigation)
@@ -95,7 +96,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
         androidMain.dependencies {
-            implementation(libs.androidx.window)
             implementation(libs.koin.android)
 
             implementation(libs.ktor.okhttp)
