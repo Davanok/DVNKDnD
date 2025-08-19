@@ -27,7 +27,7 @@ class EntitiesRepositoryImpl(
     }
 
     override suspend fun getEntitiesWithSubList(type: DnDEntityTypes) = runCatching {
-        Napier.d { "getEntitiesWithSubList: type: $type" }
+        Napier.d { "getEntitiesWithSubList: type: ${type.name}" }
         dao.getEntitiesWithSubList(type).fastMap { it.toEntityWithSubEntities() }
     }.onFailure {
         Napier.e("Error in getEntitiesWithSubList", it)

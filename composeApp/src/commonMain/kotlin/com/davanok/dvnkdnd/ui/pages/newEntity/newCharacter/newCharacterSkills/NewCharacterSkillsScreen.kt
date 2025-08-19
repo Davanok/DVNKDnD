@@ -6,7 +6,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,12 +40,11 @@ import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
+import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterStatsAdditionalContent
 import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterTopBarAdditionalContent
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.new_character
-import dvnkdnd.composeapp.generated.resources.proficiency_bonus_value
-import dvnkdnd.composeapp.generated.resources.selected_value
+import dvnkdnd.composeapp.generated.resources.new_character_saving_throws_screen_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -69,19 +67,25 @@ fun NewCharacterSkillsScreen(
         )
         else -> NewEntityStepScaffold (
             modifier = Modifier.fillMaxSize(),
-            title = uiState.character.name
-                .ifBlank { stringResource(Res.string.new_character) },
-            additionalContent = uiState.character
-                .takeUnless { it.isBlank() }?.let {
-                    { NewCharacterTopBarAdditionalContent(it) }
-                       },
+            title = stringResource(Res.string.new_character_saving_throws_screen_title),
+            additionalContent = {
+                NewCharacterTopBarAdditionalContent(uiState.character) {
+                    val selectedCount = remember(uiState.skills) {
+                        uiState.skills.count { it.value.selected }
+                    }
+                    NewCharacterStatsAdditionalContent(
+                        selectedCount = selectedCount,
+                        selectionLimit = uiState.selectionLimit,
+                        proficiencyBonus = uiState.proficiencyBonus
+                    )
+                }
+            },
             onNextClick = { viewModel.commit(onContinue) },
             onBackClick = onBack,
         ) {
             Content(
                 proficiencyBonus = uiState.proficiencyBonus,
                 stats = uiState.stats,
-                selectionLimit = uiState.selectionLimit,
                 displaySkills = uiState.skills,
                 onSelectSkill = viewModel::selectSkill
             )
@@ -92,48 +96,16 @@ fun NewCharacterSkillsScreen(
 private fun Content(
     proficiencyBonus: Int,
     stats: DnDModifiersGroup,
-    selectionLimit: Int,
     displaySkills: Map<Skills, UiSelectableState>,
     onSelectSkill: (Skills) -> Unit
 ) {
     val skillsByStat = remember(displaySkills) {
         Skills.entries.groupBy { it.stat }.entries.sortedBy { (stat, _) -> stat.ordinal }
     }
-    val selectedCount = remember(displaySkills) {
-        displaySkills.count { it.value.selected }
-    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(
-                            Res.string.selected_value,
-                            selectedCount, selectionLimit
-                        ),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = stringResource(
-                            Res.string.proficiency_bonus_value,
-                            proficiencyBonus.toSignedString()
-                        ),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
         skillsByStat.fastForEach { (stat, skills) ->
             stickyHeader {
                 StatHeader(stat = stat, statModifier = stats[stat])
@@ -147,7 +119,7 @@ private fun Content(
                     statModifier = stats[stat],
                     proficiencyBonus = proficiencyBonus,
                     skill = skill,
-                    state = displaySkills[skill],
+                    state = displaySkills[skill] ?: UiSelectableState.OfFalse,
                     onClick = onSelectSkill,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -187,20 +159,17 @@ private fun SkillItem(
     statModifier: Int,
     proficiencyBonus: Int,
     skill: Skills,
-    state: UiSelectableState?,
+    state: UiSelectableState,
     onClick: (Skills) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val selected = state?.selected == true
-    val selectable = state?.selectable == true
-
     ListItem(
         modifier = modifier
             .then(
                 Modifier
                     .toggleable(
-                        value = selected,
-                        enabled = state != null,
+                        value = state.selected,
+                        enabled = state.selectable,
                         role = Role.Checkbox,
                         onValueChange = { onClick(skill) }
                     )
@@ -214,7 +183,7 @@ private fun SkillItem(
             ) {
                 Text(
                     text = (
-                            calculateModifier(statModifier) + if (selected) proficiencyBonus else 0
+                            calculateModifier(statModifier) + if (state.selected) proficiencyBonus else 0
                             ).toSignedString(),
                     style = MaterialTheme.typography.bodyLarge
                 )
@@ -223,13 +192,14 @@ private fun SkillItem(
                     modifier = Modifier.width(24.dp),
                 ) {
                     androidx.compose.animation.AnimatedVisibility(
-                        visible = selectable || selected,
+                        visible = state.fixedSelection || state.selectable,
                         enter = fadeIn() + scaleIn(),
                         exit = scaleOut() + fadeOut()
                     ) {
                         Checkbox(
-                            checked = selected,
-                            onCheckedChange = null
+                            checked = state.selected,
+                            onCheckedChange = null,
+                            enabled = !state.fixedSelection
                         )
                     }
                 }

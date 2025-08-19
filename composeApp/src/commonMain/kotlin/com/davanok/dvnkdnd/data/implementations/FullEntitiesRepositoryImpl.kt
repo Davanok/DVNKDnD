@@ -18,7 +18,7 @@ class FullEntitiesRepositoryImpl(
 
     override suspend fun getFullEntities(entityIds: List<Uuid>): Result<List<DnDFullEntity>> =
         runCatching {
-            Napier.d { "getFullEntities entityIds count: ${entityIds.size}" }
+            Napier.d { "getFullEntities entityIds: $entityIds" }
             dao.getFullEntities(entityIds).fastMap { it.toDnDFullEntity() }
         }.onFailure { Napier.e("getFullEntities failed", it) }
 

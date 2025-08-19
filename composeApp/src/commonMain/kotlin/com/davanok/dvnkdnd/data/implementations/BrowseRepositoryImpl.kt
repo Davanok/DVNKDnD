@@ -42,7 +42,7 @@ class BrowseRepositoryImpl(
 
     override suspend fun loadEntitiesWithSub(entityType: DnDEntityTypes): Result<List<DnDEntityWithSubEntities>> =
         runCatching {
-            Napier.d { "loadEntitiesWithSub: entityType: $entityType" }
+            Napier.d { "loadEntitiesWithSub: entityType: ${entityType.name}" }
             postgrest.from("base_entities").select(
                 Columns.raw("*, sub_entities:base_entities(*)")
             ) {

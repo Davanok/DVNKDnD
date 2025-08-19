@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import com.davanok.dvnkdnd.data.di.commonModule
 import com.davanok.dvnkdnd.data.di.databaseModule
 import com.davanok.dvnkdnd.data.di.platformModule
 import com.davanok.dvnkdnd.data.di.viewModelsModule
 import com.davanok.dvnkdnd.data.platform.getColorScheme
+import com.davanok.dvnkdnd.ui.components.ColorScheme
+import com.davanok.dvnkdnd.ui.components.LocalColorScheme
 import com.davanok.dvnkdnd.ui.navigation.NavigationHost
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
@@ -41,10 +44,14 @@ fun App() {
         MaterialTheme(
             colorScheme = getColorScheme(darkTheme)
         ) {
-            Surface {
-                NavigationHost(
-                    modifier = Modifier.fillMaxSize()
-                )
+            CompositionLocalProvider(
+                LocalColorScheme provides ColorScheme(darkTheme)
+            ) {
+                Surface {
+                    NavigationHost(
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
     }

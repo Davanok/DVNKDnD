@@ -44,7 +44,7 @@ import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
 import dvnkdnd.composeapp.generated.resources.modifiers_selectors_hint
-import dvnkdnd.composeapp.generated.resources.new_character
+import dvnkdnd.composeapp.generated.resources.new_character_stats_screen_title
 import dvnkdnd.composeapp.generated.resources.no_modifiers_for_info
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
@@ -71,12 +71,10 @@ fun NewCharacterStatsScreen(
         )
         else -> NewEntityStepScaffold (
             modifier = Modifier.fillMaxSize(),
-            title = uiState.character.name
-                .ifBlank { stringResource(Res.string.new_character) },
-            additionalContent = uiState.character
-                .takeUnless { it.isBlank() }?.let {
-                    { NewCharacterTopBarAdditionalContent(it) }
-                },
+            title = stringResource(Res.string.new_character_stats_screen_title),
+            additionalContent = {
+                NewCharacterTopBarAdditionalContent(uiState.character)
+            },
             onNextClick = { viewModel.commit(onContinue) },
             onBackClick = onBack,
         ) {

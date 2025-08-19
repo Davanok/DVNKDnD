@@ -2,7 +2,6 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills
 
 import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastAny
-import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastForEach
@@ -21,36 +20,53 @@ class SkillsTableState(
         columns.fastFlatMap { it.skills }
             .groupBy { it.skill }
 
+    private val entityIdToColumn: Map<Uuid, DnDEntityWithSkills> =
+        columns.fastFlatMap { col -> col.skills.map { it.id to col } }
+            .toMap()
+
     fun getDisplayItems(): Map<Skills, UiSelectableState> {
         return skillToEntities.mapValues { (_, entities) ->
             val selected = entities.fastAny { selectedEntityIds.contains(it.id) }
 
-            val selectable = entities.fastAny { ent ->
-                if (!ent.selectable) return@fastAny false
-                val column = columns.firstOrNull { it.skills.contains(ent) } ?: return@fastAny false
+            val fixedSelection = entities.fastAny { !it.selectable }
+            val selectable = !fixedSelection && entities.fastAny { ent ->
+                if (ent.id in selectedEntityIds) return@fastAny true
+                val column = entityIdToColumn[ent.id] ?: return@fastAny false
                 val limit = column.selectionLimit
                 val selectedCount = column.skills.count { selectedEntityIds.contains(it.id) }
                 // Entity is selectable only if selection limit not yet reached or it's already selected
-                (selectedCount < limit) && !selectedEntityIds.contains(ent.id)
+                (selectedCount < limit)
             }
 
-            UiSelectableState(selectable = selectable, selected = selected)
+            UiSelectableState(
+                fixedSelection = fixedSelection,
+                selected = selected,
+                selectable = selectable
+            )
         }
     }
 
     fun select(skill: Skills): Boolean {
-        val entities = skillToEntities[skill].orEmpty().fastFilter { it.selectable }
-        if (entities.isEmpty()) return false
-        if (entities.fastAny { selectedEntityIds.contains(it.id) }) {
-            entities.fastForEach { selectedEntityIds.remove(it.id) }
-            return true
+        val entitiesAll = skillToEntities[skill].orEmpty()
+        if (entitiesAll.isEmpty()) return false
+
+        val alreadySelected = entitiesAll.fastAny { selectedEntityIds.contains(it.id) }
+        if (alreadySelected) {
+            var changed = false
+            entitiesAll.fastForEach { ent ->
+                if (selectedEntityIds.remove(ent.id)) changed = true
+            }
+            return changed
         }
-        val toSelect = entities.fastFirstOrNull { ent ->
-            val col = columns.fastFirstOrNull { column -> column.skills.contains(ent) } ?: return@fastFirstOrNull false
+
+        val toSelect = entitiesAll.fastFirstOrNull { ent ->
+            if (!ent.selectable) return@fastFirstOrNull false
+            val col = entityIdToColumn[ent.id] ?: return@fastFirstOrNull false
             val limit = col.selectionLimit
             val currentlySelectedInCol = col.skills.count { selectedEntityIds.contains(it.id) }
             currentlySelectedInCol < limit
         } ?: return false
+
         selectedEntityIds.add(toSelect.id)
         return true
     }

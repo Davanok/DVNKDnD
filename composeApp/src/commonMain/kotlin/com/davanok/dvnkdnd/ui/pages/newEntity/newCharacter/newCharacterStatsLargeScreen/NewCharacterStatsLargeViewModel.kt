@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStatsLargeScreen
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
@@ -72,6 +73,7 @@ class NewCharacterStatsLargeViewModel(
     }
 }
 
+@Immutable
 data class NewCharacterStatsLargeUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,

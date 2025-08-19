@@ -103,6 +103,7 @@
     <string name="confirm">Confirm</string>
     <string name="empty_field_error">This field cannot be empty</string>
     <!--stats-->
+    <string name="new_character_stats_screen_title">Character stats</string>
     <string name="standard_array_stats_option">Standard array</string>
     <string name="manual_stats_option">Manual</string>
     <string name="point_buy_stats_option">Point buy</string>
@@ -129,9 +130,11 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="modifier_selection_invalid">Invalid modifier bonuses selection count</string>
     <string name="point_buy_stats_balance_invalid">Invalid point buy balance</string>
     <!--saving Throws-->
+    <string name="new_character_saving_throws_screen_title">Saving throws</string>
     <string name="saving_throw">Saving throw</string>
     <string name="not_all_available_saving_throws_selected">Not all available savingThrows selected</string>
     <!--skills-->
+    <string name="new_character_skills_screen_title">Skills</string>
     <string name="not_all_available_skills_selected">Not all available skills selected</string>
     <string name="selected_value">Selected: %1$d / %2$d</string>
     <string name="proficiency_bonus_value">Prof. bonus: %1$d</string>

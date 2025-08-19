@@ -39,15 +39,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
-import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSavingThrows
-import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSkills
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSavingThrow
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
 import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
@@ -56,16 +50,15 @@ import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
+import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterStatsAdditionalContent
 import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterTopBarAdditionalContent
 import com.davanok.dvnkdnd.ui.components.toSignedString
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows.SavingThrowsTableState
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.SkillsTableState
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.new_character
 import dvnkdnd.composeapp.generated.resources.saving_throw
+import dvnkdnd.composeapp.generated.resources.selected_value
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.uuid.Uuid
 
 
 private val StatItemMinWidth = 200.dp
@@ -98,10 +91,29 @@ fun NewCharacterStatsLargeScreen(
             modifier = Modifier.fillMaxSize(),
             title = uiState.character.name
                 .ifBlank { stringResource(Res.string.new_character) },
-            additionalContent = uiState.character
-                .takeUnless { it.isBlank() }?.let {
-                    { NewCharacterTopBarAdditionalContent(it) }
-                },
+            additionalContent = {
+                NewCharacterTopBarAdditionalContent(uiState.character) {
+                    val savingThrowsSelectedCount = remember(uiState.savingThrows) {
+                        uiState.savingThrows.count { it.value.selected }
+                    }
+                    val skillsSelectedCount = remember(uiState.savingThrows) {
+                        uiState.savingThrows.count { it.value.selected }
+                    }
+                    NewCharacterStatsAdditionalContent(
+                        selectedCount = savingThrowsSelectedCount,
+                        selectionLimit = uiState.savingThrowsSelectionLimit,
+                        proficiencyBonus = uiState.proficiencyBonus
+                    )
+                    Text(
+                        text = stringResource(
+                            Res.string.selected_value,
+                            skillsSelectedCount,
+                            uiState.skillsSelectionLimit
+                        ),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            },
             onNextClick = { viewModel.commit(onContinue) },
             onBackClick = onBack,
         ) {
@@ -127,12 +139,12 @@ private fun Content(
     onSelectSkill: (Skills) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val statToSkillStates = remember {
+    val statToSkillStates = remember(skills) {
         Stats.entries
             .associateWith { stat ->
                 Skills.entries
                     .fastFilter { it.stat == stat }
-                    .associateWith { skills[it] }
+                    .associateWith { skills[it] ?: UiSelectableState.OfFalse }
             }
     }
     LazyVerticalGrid(
@@ -150,7 +162,7 @@ private fun Content(
                 stat = stat,
                 statModifier = stats[stat],
                 proficiencyBonus = proficiencyBonus,
-                savingThrowState = savingThrows[stat],
+                savingThrowState = savingThrows[stat] ?: UiSelectableState.OfFalse,
                 skillState = statToSkillStates[stat]!!,
                 onSelectSavingThrow = onSelectSavingThrow,
                 onSelectSkill = onSelectSkill,
@@ -166,8 +178,8 @@ fun StatItem(
     stat: Stats,
     statModifier: Int,
     proficiencyBonus: Int,
-    savingThrowState: UiSelectableState?,
-    skillState: Map<Skills, UiSelectableState?>,
+    savingThrowState: UiSelectableState,
+    skillState: Map<Skills, UiSelectableState>,
     onSelectSavingThrow: (Stats) -> Unit,
     onSelectSkill: (Skills) -> Unit,
     modifier: Modifier = Modifier
@@ -205,15 +217,14 @@ fun StatItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val sState = savingThrowState ?: UiSelectableState(selectable = false, selected = false)
                 FilterChip(
-                    selected = sState.selected,
-                    onClick = { if (sState.selectable) onSelectSavingThrow(stat) },
+                    selected = savingThrowState.selected,
+                    onClick = { if (savingThrowState.selectable) onSelectSavingThrow(stat) },
                     label = { Text(stringResource(Res.string.saving_throw)) },
                     leadingIcon = {
                         Icon(imageVector = Icons.Default.Shield, contentDescription = null)
                     },
-                    enabled = sState.selectable,
+                    enabled = savingThrowState.selectable,
                 )
                 Text(
                     text = calculatedModifier.toSignedString(),
@@ -233,17 +244,15 @@ fun StatItem(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     skillState.forEach { (skill, state) ->
-                        val selected = state?.selected == true
-                        val selectable = state?.selectable == true
-                        val finalModifier = calculatedModifier + if (selected) proficiencyBonus else 0
+                        val finalModifier = calculatedModifier + if (state.selected) proficiencyBonus else 0
 
                         Row(
                             modifier = Modifier
                                 .height(24.dp)
                                 .fillMaxWidth()
                                 .toggleable(
-                                    value = selected,
-                                    enabled = state != null,
+                                    value = state.selected,
+                                    enabled = state.selectable,
                                     role = Role.Checkbox,
                                     onValueChange = { onSelectSkill(skill) }
                                 ),
@@ -263,13 +272,14 @@ fun StatItem(
                                 modifier = Modifier.width(24.dp),
                             ) {
                                 androidx.compose.animation.AnimatedVisibility(
-                                    visible = selectable || selected,
+                                    visible = state.fixedSelection || state.selectable,
                                     enter = fadeIn() + scaleIn(),
                                     exit = scaleOut() + fadeOut()
                                 ) {
                                     Checkbox(
-                                        checked = selected,
-                                        onCheckedChange = null
+                                        checked = state.selected,
+                                        onCheckedChange = null,
+                                        enabled = !state.fixedSelection
                                     )
                                 }
                             }
@@ -279,71 +289,4 @@ fun StatItem(
             }
         }
     }
-}
-@Composable
-fun NewCharacterStatsLargeScreenPreview() {
-    val savingThrowsState = remember {
-        val savingThrows = listOf(
-            Stats.STRENGTH to UiSelectableState(false, true),
-            Stats.DEXTERITY to UiSelectableState(true, false),
-            Stats.INTELLIGENCE to UiSelectableState(true, false)
-        ).map { (stat, state) ->
-            DnDSavingThrow(
-                Uuid.random(),
-                state.selectable,
-                stat
-            )
-        }
-        SavingThrowsTableState(
-            columns = listOf(
-                DnDEntityWithSavingThrows(
-                    entity = DnDEntityMin(Uuid.NIL, DnDEntityTypes.CLASS, "123", "123"),
-                    selectionLimit = 2,
-                    savingThrows = savingThrows
-                )
-            ),
-            initialSelectedSavingThrow = savingThrows.filter { !it.selectable }.map { it.id }.toSet()
-        )
-    }
-    val skillsState = remember {
-        val skills = listOf(
-            Skills.ACROBATICS to UiSelectableState(false, true),
-            Skills.ANIMAL_HANDLING to UiSelectableState(false, true),
-            Skills.ATHLETICS to UiSelectableState(true, false),
-            Skills.HISTORY to UiSelectableState(true, false),
-            Skills.INSIGHT to UiSelectableState(true, false),
-            Skills.INTIMIDATION to UiSelectableState(true, false),
-            Skills.PERCEPTION to UiSelectableState(true, false),
-            Skills.SURVIVAL to UiSelectableState(true, false),
-        ).map { (skill, state) ->
-            DnDSkill(
-                Uuid.random(),
-                state.selectable,
-                skill
-            )
-        }
-        SkillsTableState(
-            columns = listOf(
-                DnDEntityWithSkills(
-                    entity = DnDEntityMin(Uuid.NIL, DnDEntityTypes.CLASS, "123", "123"),
-                    selectionLimit = 5,
-                    skills = skills
-                )
-            ),
-            initialSelectedSkills = skills.filter { !it.selectable }.map { it.id }.toSet()
-        )
-    }
-
-    Content(
-        stats = DnDModifiersGroup(17, 15, 14, 13, 12, 10),
-        proficiencyBonus = 2,
-        savingThrows = savingThrowsState.getDisplayItems(),
-        skills = skillsState.getDisplayItems(),
-        onSelectSavingThrow = {
-            savingThrowsState.select(it)
-        },
-        onSelectSkill = {
-            skillsState.select(it)
-        }
-    )
 }

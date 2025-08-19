@@ -6,5 +6,5 @@ data class ColorScheme(
     val darkTheme: Boolean
 )
 val LocalColorScheme = staticCompositionLocalOf<ColorScheme> {
-    error("CompositionLocal ContentType not provided")
+    error("CompositionLocal ColorScheme not provided")
 }
