@@ -19,10 +19,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun FullScreenCard(
     heroIcon: (@Composable () -> Unit)? = null,
-    content: @Composable ColumnScope.() -> Unit,
     supportContent: (@Composable () -> Unit)? = null,
     navButtons: (@Composable RowScope.() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     BoxWithConstraints(
         modifier = Modifier

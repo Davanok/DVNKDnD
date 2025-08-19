@@ -10,6 +10,7 @@ sealed class UiError(val message: StringResource, val exception: Throwable? = nu
     class Critical(message: StringResource, exception: Throwable?) : UiError(message, exception)
     class Warning(message: StringResource, exception: Throwable? = null) : UiError(message, exception)
 }
+fun UiError?.isCritical() = this is UiError.Critical
 
 @Composable
 fun UiError.toUiMessage() = when(this) {

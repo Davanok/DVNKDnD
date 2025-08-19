@@ -8,11 +8,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.davanok.dvnkdnd.ui.components.sideSheet.ModalSideSheet
 import com.davanok.dvnkdnd.ui.components.sideSheet.rememberModalSideSheetState
 import dvnkdnd.composeapp.generated.resources.Res
@@ -30,8 +30,9 @@ fun AdaptiveModalSheet(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val scope = rememberCoroutineScope()
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    if (calculateWindowSizeClass().widthSizeClass > WindowWidthSizeClass.Compact) {
+    if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT) {
         ModalBottomSheet(
             modifier = modifier,
             onDismissRequest = onDismissRequest,

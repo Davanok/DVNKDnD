@@ -82,6 +82,7 @@
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
     <string name="no_characters_yet">You haven't added any characters yet. Create your first one now!</string>
+    <string name="select_character_for_info">Select any character</string>
 
     <!--new entity screen-->
     <string name="new_entity_screen_title">New entity</string>

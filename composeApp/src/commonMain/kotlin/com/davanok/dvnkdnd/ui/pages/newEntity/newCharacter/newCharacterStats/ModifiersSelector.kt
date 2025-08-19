@@ -29,7 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,6 +50,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMapIndexed
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.compose.ui.util.fastSumBy
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
@@ -57,7 +58,6 @@ import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
-import com.davanok.dvnkdnd.data.platform.calculateWindowSizeClass
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.decrease_modifier_value
@@ -308,22 +308,18 @@ private fun StandardArrayModifiersSelector(
                                 )
                         )
                 }
-                val windowSizeClass = calculateWindowSizeClass()
                 val statValue = character[stat] + entitiesWithModifiers.appliedModifiers(
                     stat,
                     selectedModifiersBonuses
                 ).sum()
                 val modifier = calculateModifier(statValue)
-                val text =
-                    if (windowSizeClass.widthSizeClass <= WindowWidthSizeClass.Compact)
-                        modifier.toSignedString()
-                    else
-                        buildString {
-                            append(statValue)
-                            append(" (")
-                            append(modifier.toSignedString())
-                            append(')')
-                        }
+                val text = buildString {
+                    append(statValue)
+                    append(" (")
+                    append(modifier.toSignedString())
+                    append(')')
+                }
+
 
                 Text(
                     text = text,
@@ -495,7 +491,7 @@ private fun ModifiersText(
     modifier: Modifier = Modifier,
     additionalModifiers: List<Int>
 ) {
-    val windowSizeClass = calculateWindowSizeClass()
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     Column(
         modifier = modifier
     ) {
@@ -506,7 +502,7 @@ private fun ModifiersText(
             color = MaterialTheme.colorScheme.primary
         )
         val text =
-            if (windowSizeClass.widthSizeClass <= WindowWidthSizeClass.Compact)
+            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT)
                 (value + additionalModifiers.sum()).toString()
             else
                 buildString {

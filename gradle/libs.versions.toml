@@ -55,8 +55,6 @@ jetbrains-compose-material3-adaptive = { group = "org.jetbrains.compose.material
 jetbrains-compose-material3-adaptive-layout = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive-layout", version.ref = "jetbrains-adaptive" }
 jetbrains-compose-material3-adaptive-navigation = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive-navigation", version.ref = "jetbrains-adaptive" }
 
-window-size = { group = "org.jetbrains.compose.material3", name = "material3-window-size-class", version.ref = "compose-plugin" }
-
 toaster = { group = "io.github.dokar3", name = "sonner", version.ref = "toaster" }
 
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
