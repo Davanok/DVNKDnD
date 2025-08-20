@@ -11,6 +11,10 @@ import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows.SavingThrowsTableState
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.SkillsTableState
+import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.not_all_available_saving_throws_selected
+import dvnkdnd.composeapp.generated.resources.not_all_available_skills_selected
+import dvnkdnd.composeapp.generated.resources.saving_data_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -65,7 +69,42 @@ class NewCharacterStatsLargeViewModel(
     }
 
     fun commit(onSuccess: () -> Unit) {
+        val isSavingThrowsValid = savingThrowsState.validateSelectedSavingThrows()
+        val isSkillsValid = skillsState.validateSelectedSkills()
 
+        if (!isSavingThrowsValid) {
+            _uiState.update {
+                it.copy(
+                    error = UiError.Warning(
+                        Res.string.not_all_available_saving_throws_selected
+                    )
+                )
+            }
+            return
+        }
+        if (!isSkillsValid) _uiState.update {
+            it.copy(
+                error = UiError.Warning(
+                    Res.string.not_all_available_skills_selected
+                )
+            )
+            return
+        }
+        newCharacterViewModel.setCharacterSavingThrowsAndSkills(
+            selectedSavingThrows = savingThrowsState.getSelectedSavingThrows().toList(),
+            selectedSkills = skillsState.getSelectedSkills().toList()
+        ).onFailure { thr ->
+            _uiState.update {
+                it.copy(
+                    error = UiError.Critical(
+                        message = Res.string.saving_data_error,
+                        exception = thr
+                    )
+                )
+            }
+        }.onSuccess {
+            onSuccess()
+        }
     }
 
     init {

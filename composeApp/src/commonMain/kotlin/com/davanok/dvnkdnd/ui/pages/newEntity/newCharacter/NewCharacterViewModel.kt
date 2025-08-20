@@ -140,6 +140,16 @@ class NewCharacterViewModel(
                 .fastFilter { it.skills.isNotEmpty() }
         )
     }
+    fun setCharacterSavingThrowsAndSkills(
+        selectedSavingThrows: List<Uuid>,
+        selectedSkills: List<Uuid>
+    ) = runCatching {
+        newCharacterState = newCharacterState.copy(
+            selectedSavingThrows = selectedSavingThrows,
+            selectedSkills = selectedSkills
+        )
+    }
+
     fun getCharacterWithAllSavingThrows() = newCharacterState.run {
         CharacterWithAllSavingThrows(
             character = character.toCharacterShortInfo(),
