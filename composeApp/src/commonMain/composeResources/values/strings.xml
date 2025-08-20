@@ -138,6 +138,8 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="not_all_available_skills_selected">Not all available skills selected</string>
     <string name="selected_value">Selected: %1$d / %2$d</string>
     <string name="proficiency_bonus_value">Prof. bonus: %1$d</string>
+    <!--health-->
+    <string name="new_character_health_screen_title">Health</string>
     <!--common-->
     <string name="loading_character_error">Error when loading character</string>
     <string name="saving_data_error">Error when saving data</string>
