@@ -17,7 +17,7 @@ import kotlin.uuid.Uuid
     foreignKeys = [ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterStats(
-    @PrimaryKey val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid,
     val strength: Int,
     val dexterity: Int,
     val constitution: Int,
@@ -31,10 +31,12 @@ data class CharacterStats(
     foreignKeys = [ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterHealth(
-    @PrimaryKey val id: Uuid = Uuid.random(),
-    val max: Int,
+    @PrimaryKey val id: Uuid,
+    val max: Int, // without constitution bonus
     val current: Int,
     val temp: Int,
+    @ColumnInfo("max_modifier")
+    val maxModifier: Int
 )
 
 @Entity(
@@ -42,7 +44,8 @@ data class CharacterHealth(
     foreignKeys = [ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
 )
 data class CharacterSpellSlots(
-    @PrimaryKey val id: Uuid = Uuid.random(),
+    @PrimaryKey val id: Uuid,
+    @ColumnInfo("used_spells")
     val usedSpells: List<Int>, // used spells for every spell level
 )
 

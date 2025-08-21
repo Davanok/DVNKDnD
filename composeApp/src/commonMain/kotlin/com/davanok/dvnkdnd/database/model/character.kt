@@ -8,7 +8,7 @@ import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterClassInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
-import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.character.toDnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toModifiersGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
@@ -66,8 +66,13 @@ data class DbFullCharacter(
     val stats: CharacterStats?,
     @Relation(parentColumn = "id", entityColumn = "id")
     val health: CharacterHealth?,
-    @Relation(parentColumn = "id", entityColumn = "id")
-    val usedSpells: CharacterSpellSlots?,
+    @Relation(
+        CharacterSpellSlots::class,
+        parentColumn = "id",
+        entityColumn = "id",
+        projection = ["used_spells"]
+    )
+    val usedSpells: List<Int>?,
 
     @Relation(
         entity = CharacterClass::class,
@@ -133,8 +138,8 @@ data class DbFullCharacter(
         images = images.fastMap { DatabaseImage(it.id, it.path) },
         coins = coins?.toDnDCoinsGroup(),
         stats = stats?.toModifiersGroup(),
-        health = health?.let { DnDCharacterHealth(it.max, it.current, it.temp) },
-        usedSpells = usedSpells?.usedSpells.orEmpty(),
+        health = health?.toDnDCharacterHealth(),
+        usedSpells = usedSpells.orEmpty(),
         classes = classes.fastMap { it.toCharacterClassInfo() },
         race = race?.toDnDFullEntity(),
         subRace = subRace?.toDnDFullEntity(),
