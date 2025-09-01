@@ -67,19 +67,23 @@ fun CharactersListScreen(
             )
         }
         uiState.characters.isEmpty() ->
-            FullScreenCard(
-                heroIcon = {
-                    Icon(
-                        painter = painterResource(Res.drawable.sentiment_dissatisfied),
-                        contentDescription = stringResource(Res.string.no_characters_yet)
-                    )
-                },
-                content = {
-                    Text(
-                        text = stringResource(Res.string.no_characters_yet)
-                    )
-                }
-            )
+            FABScaffold(
+                onClick = onNewCharacter
+            ) {
+                FullScreenCard(
+                    heroIcon = {
+                        Icon(
+                            painter = painterResource(Res.drawable.sentiment_dissatisfied),
+                            contentDescription = stringResource(Res.string.no_characters_yet)
+                        )
+                    },
+                    content = {
+                        Text(
+                            text = stringResource(Res.string.no_characters_yet)
+                        )
+                    }
+                )
+            }
         else -> {
             val navigator = rememberListDetailPaneScaffoldNavigator()
             val coroutineScope = rememberCoroutineScope()

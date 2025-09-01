@@ -39,6 +39,7 @@ class NewCharacterViewModel(
         newCharacterState = newCharacterState.copy(
             character = NewCharacterWithFullEntities(),
             selectedModifierBonuses = emptyList(),
+            selectedSavingThrows = emptyList(),
             selectedSkills = emptyList()
         )
     }
@@ -268,7 +269,9 @@ private data class NewCharacter(
     val selectedModifierBonuses: List<Uuid> = emptyList(),
 
     val selectedSkills: List<Uuid> = emptyList(),
-    val selectedSavingThrows: List<Uuid> = emptyList()
+    val selectedSavingThrows: List<Uuid> = emptyList(),
+
+    val health: Int = 0 // without constitution bonus
 ) {
     fun calculateModifiersSum(): DnDModifiersGroup =
         characterStats + character.entities

@@ -4,7 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,14 +28,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -84,7 +80,7 @@ fun NewEntityScreen(
     onNavigate: (Route) -> Unit
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val isCompact = windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT
+    val isCompact = windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
 
     Scaffold(
         topBar = {
@@ -183,7 +179,6 @@ private fun ExpandedContent(
     modifier: Modifier = Modifier,
     onItemClick: (EntityItem) -> Unit
 ) {
-    var maxSize by remember { mutableStateOf(Int.MIN_VALUE) }
     val textMaxWidth = calculateMaxTextWidth(
         EntityItem.entries.fastMap { it.title },
         MaterialTheme.typography.headlineMedium
@@ -210,19 +205,21 @@ private fun ExpandedContent(
                 key = { it.ordinal }
             ) { item ->
                 OutlinedCard(
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = { onItemClick(item) },
                 ) {
                     Image(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
                             .clip(CardDefaults.shape),
                         painter = painterResource(item.image),
                         contentDescription = stringResource(item.title),
+                        contentScale = ContentScale.Crop
                     )
                     Text(
                         modifier = Modifier
-                            .padding(vertical = 8.dp, horizontal = 16.dp)
-                            .onSizeChanged { if (maxSize < it.width) maxSize = it.width },
+                            .padding(vertical = 8.dp, horizontal = 16.dp),
                         text = stringResource(item.title),
                         style = MaterialTheme.typography.headlineMedium
                     )

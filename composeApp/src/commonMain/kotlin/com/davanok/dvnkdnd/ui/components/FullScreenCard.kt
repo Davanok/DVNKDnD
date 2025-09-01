@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,10 +38,11 @@ fun FullScreenCard(
             modifier = Modifier
                 .fillMaxWidth(0.66f)
                 .aspectRatio(aspectRatio)
-                .padding(16.dp)
         ) {
             Column (
-                modifier = Modifier.padding(24.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -57,10 +58,10 @@ fun FullScreenCard(
                     supportContent?.invoke()
                 }
                 navButtons?.let {
-                    Row(
+                    FlowRow (
                         modifier = Modifier
                             .align(Alignment.End),
-                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp, alignment = Alignment.End),
                         content = it
                     )
                 }

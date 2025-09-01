@@ -23,5 +23,5 @@ class NewCharacterHealthViewModel(
 data class NewCharacterHealthUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
-    // TODO
+    val health: Int = 0,
 )

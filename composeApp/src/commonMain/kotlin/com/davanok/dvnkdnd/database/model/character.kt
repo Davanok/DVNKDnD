@@ -70,9 +70,8 @@ data class DbFullCharacter(
         CharacterSpellSlots::class,
         parentColumn = "id",
         entityColumn = "id",
-        projection = ["used_spells"]
     )
-    val usedSpells: List<Int>?,
+    val usedSpells: CharacterSpellSlots?,
 
     @Relation(
         entity = CharacterClass::class,
@@ -139,7 +138,7 @@ data class DbFullCharacter(
         coins = coins?.toDnDCoinsGroup(),
         stats = stats?.toModifiersGroup(),
         health = health?.toDnDCharacterHealth(),
-        usedSpells = usedSpells.orEmpty(),
+        usedSpells = usedSpells?.usedSpells.orEmpty(),
         classes = classes.fastMap { it.toCharacterClassInfo() },
         race = race?.toDnDFullEntity(),
         subRace = subRace?.toDnDFullEntity(),
