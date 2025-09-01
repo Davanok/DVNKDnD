@@ -54,6 +54,16 @@
     <string name="performance">Performance</string>
     <string name="persuasion">Persuasion</string>
 
+    <!--dices-->
+    <string name="dice_4">D4</string>
+    <string name="dice_6">D6</string>
+    <string name="dice_8">D8</string>
+    <string name="dice_10">D10</string>
+    <string name="dice_12">D12</string>
+    <string name="dice_20">D20</string>
+    <string name="dice_100">D100</string>
+    <string name="dice_other">Other</string>
+
     <!--images-->
     <string name="select_image">Select image</string>
     <string name="add_image">Add image</string>
@@ -137,9 +147,11 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="new_character_skills_screen_title">Skills</string>
     <string name="not_all_available_skills_selected">Not all available skills selected</string>
     <string name="selected_value">Selected: %1$d / %2$d</string>
-    <string name="proficiency_bonus_value">Prof. bonus: %1$d</string>
+    <string name="proficiency_bonus_value">Prof. bonus: %1$s</string>
     <!--health-->
     <string name="new_character_health_screen_title">Health</string>
+    <string name="constitution_value">Constitution: %1$d (%2$s)</string>
+    <string name="health_dice_value">Health dice: %1$s</string>
     <!--common-->
     <string name="loading_character_error">Error when loading character</string>
     <string name="saving_data_error">Error when saving data</string>

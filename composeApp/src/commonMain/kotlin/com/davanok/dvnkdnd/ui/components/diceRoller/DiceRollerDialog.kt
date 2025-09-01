@@ -1,12 +1,15 @@
 package com.davanok.dvnkdnd.ui.components.diceRoller
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,7 +20,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -60,6 +62,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -82,7 +85,7 @@ private data class AnimRequest(
     }
 }
 
-private enum class AnimationState { Idle, Running, Finished }
+enum class AnimationState { Idle, Running, Finished }
 
 private data class RotAnims(
     val x: Animatable<Float, AnimationVector1D>,
@@ -107,16 +110,32 @@ private val DEFAULT_CANVAS_SIZE = 150.dp
 
 @Composable
 fun rememberDiceRoller(
-    onRolled: (List<Pair<Dices, List<Int>>>) -> Unit
+    onRolled: (List<Pair<Dices, List<Int>>>) -> Unit,
+    diceCompanionContent: @Composable ((state: AnimationState, value: Int) -> Unit)? = 
+        { state, value ->
+            AnimatedVisibility(
+                visible = state == AnimationState.Finished,
+                enter = fadeIn() + expandVertically(),
+                exit = shrinkVertically() + fadeOut(),
+            ) {
+                Text(value.toString(), modifier = Modifier.padding(bottom = 8.dp))
+            }
+        },
+    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)? = null
 ): DiceRoller {
     var animRequest by remember { mutableStateOf<AnimRequest?>(null) }
 
     // show dialog when there is an animation request
     animRequest?.let { req ->
-        DiceDialog(animRequest = req, onDismiss = {
-            onRolled(req.dices)
-            animRequest = null
-        })
+        DiceDialog(
+            animRequest = req,
+            onDismiss = {
+                onRolled(req.dices)
+                animRequest = null
+            },
+            diceCompanionContent = diceCompanionContent,
+            groupCompanionContent = groupCompanionContent
+        )
     }
 
     return remember {
@@ -135,14 +154,16 @@ fun rememberDiceRoller(
 @Composable
 private fun DiceDialog(
     animRequest: AnimRequest,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    diceCompanionContent: @Composable ((state: AnimationState, value: Int) -> Unit)?,
+    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)?
 ) {
     var animationState by remember { mutableStateOf(AnimationState.Idle) }
     val scope = rememberCoroutineScope()
     var animationJob by remember { mutableStateOf<Job?>(null) }
 
     // create animatables per dice type (distinct Dices)
-    val rotAnimsfastMap = remember(animRequest) {
+    val rotAnimsMap = remember(animRequest) {
         animRequest.dices
             .fastMap { it.first }
             .distinct()
@@ -159,7 +180,7 @@ private fun DiceDialog(
 
             animRequest.dices.fastForEach { (dice, _) ->
                 val targetRot = dice.previewRotation()
-                val anims = rotAnimsfastMap.getValue(dice)
+                val anims = rotAnimsMap.getValue(dice)
 
                 val extraSpinsX = Random.nextInt(2, 6) * 360f + Random.nextFloat() * 90f
                 val extraSpinsY = Random.nextInt(1, 5) * 360f + Random.nextFloat() * 90f
@@ -231,7 +252,7 @@ private fun DiceDialog(
             runCatching { animationJob?.cancelAndJoin() }
             animRequest.dices.fastForEach { (dice, _) ->
                 val target = dice.previewRotation()
-                val anims = rotAnimsfastMap.getValue(dice)
+                val anims = rotAnimsMap.getValue(dice)
                 anims.x.snapTo(target.x)
                 anims.y.snapTo(target.y)
                 anims.z.snapTo(target.z)
@@ -252,16 +273,37 @@ private fun DiceDialog(
         val interactionSource = remember { MutableInteractionSource() }
         Card(modifier = Modifier.clickable(interactionSource = interactionSource, indication = null, onClick = onClick)) {
             when {
-                animRequest.dices.size > 1 -> ManyDicesDialogContent(animationState, animRequest, rotAnimsfastMap)
+                animRequest.dices.size > 1 -> 
+                    ManyDicesDialogContent(
+                        animationState = animationState, 
+                        animRequest = animRequest, 
+                        rotAnimsMap = rotAnimsMap,
+                        diceCompanionContent = diceCompanionContent,
+                        groupCompanionContent = groupCompanionContent
+                    )
                 animRequest.dices.first().second.size > 1 -> {
                     val (dice, values) = animRequest.dices.first()
-                    SomeDicesDialogContent(animationState, dice, values, rotAnimsfastMap.getValue(dice).toRotation())
+                    SomeDicesDialogContent(
+                        animationState = animationState, 
+                        dice = dice,
+                        values = values, 
+                        rotation = rotAnimsMap.getValue(dice).toRotation(),
+                        diceCompanionContent = diceCompanionContent,
+                        groupCompanionContent = groupCompanionContent
+                    )
                 }
                 else -> {
                     val dice = animRequest.dices.first().first
                     val value = animRequest.dices.first().second.first()
                     val textMeasurer = rememberTextMeasurer()
-                    SingleDiceContent(textMeasurer, animationState, dice, value, rotAnimsfastMap.getValue(dice).toRotation())
+                    SingleDiceContent(
+                        textMeasurer = textMeasurer, 
+                        animationState = animationState,
+                        dice = dice,
+                        value = value, 
+                        rotation = rotAnimsMap.getValue(dice).toRotation(),
+                        diceCompanionContent = diceCompanionContent
+                    )
                 }
             }
         }
@@ -274,7 +316,9 @@ private fun DiceDialog(
 private fun ManyDicesDialogContent(
     animationState: AnimationState,
     animRequest: AnimRequest,
-    rotAnimsList: Map<Dices, RotAnims>,
+    rotAnimsMap: Map<Dices, RotAnims>,
+    diceCompanionContent: @Composable ((state: AnimationState, value: Int) -> Unit)?,
+    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)?,
     minItemWidth: Dp = DEFAULT_MIN_ITEM_WIDTH
 ) {
     val textMeasurer = rememberTextMeasurer()
@@ -285,15 +329,12 @@ private fun ManyDicesDialogContent(
     ) {
         animRequest.dices.fastForEach { (dice, values) ->
             stickyHeader {
-                Surface(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainer) {
-                    Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                        Text(text = dice.name)
-                        Spacer(Modifier.width(16.dp))
-                        AnimatedVisibility(visible = animationState == AnimationState.Finished) {
-                            Text(values.sum().toString())
-                        }
-                    }
-                }
+                DicesGroupHeader(
+                    animationState = animationState,
+                    dice = dice,
+                    values = values,
+                    groupCompanionContent = groupCompanionContent
+                )
             }
             val diceSpan = GridItemSpan(if (dice == Dices.D100) 2 else 1)
             items(
@@ -305,7 +346,8 @@ private fun ManyDicesDialogContent(
                     animationState = animationState,
                     dice = dice,
                     value = value,
-                    rotation = rotAnimsList.getValue(dice).toRotation()
+                    rotation = rotAnimsMap.getValue(dice).toRotation(),
+                    diceCompanionContent = diceCompanionContent
                 )
             }
         }
@@ -318,6 +360,8 @@ private fun SomeDicesDialogContent(
     dice: Dices,
     values: List<Int>,
     rotation: Rotation,
+    diceCompanionContent: @Composable ((state: AnimationState, value: Int) -> Unit)?,
+    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)?,
     minItemWidth: Dp = DEFAULT_MIN_ITEM_WIDTH
 ) {
     BoxWithConstraints {
@@ -343,16 +387,13 @@ private fun SomeDicesDialogContent(
                 .align(Alignment.Center),
             columns = GridCells.Fixed(columns)
         ) {
-            stickyHeader {
-                Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
-                    Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                        Text(text = dice.name)
-                        Spacer(Modifier.width(16.dp))
-                        AnimatedVisibility(visible = animationState == AnimationState.Finished) {
-                            Text(values.sum().toString())
-                        }
-                    }
-                }
+            stickyHeader { 
+                DicesGroupHeader(
+                    animationState = animationState,
+                    dice = dice,
+                    values = values,
+                    groupCompanionContent = groupCompanionContent
+                ) 
             }
             val diceSpan = GridItemSpan(if (dice == Dices.D100) 2 else 1)
             items(
@@ -364,9 +405,33 @@ private fun SomeDicesDialogContent(
                     animationState = animationState,
                     dice = dice,
                     value = value,
-                    rotation = rotation
+                    rotation = rotation,
+                    diceCompanionContent = diceCompanionContent
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun DicesGroupHeader(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    animationState: AnimationState,
+    dice: Dices,
+    values: List<Int>,
+    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)?
+) {
+    Surface(modifier = modifier, color = backgroundColor) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Row {
+                Text(text = stringResource(dice.stringRes))
+                Spacer(Modifier.width(16.dp))
+                AnimatedVisibility(visible = animationState == AnimationState.Finished) {
+                    Text(values.sum().toString())
+                }
+            }
+            groupCompanionContent?.invoke(animationState, values)
         }
     }
 }
@@ -378,7 +443,8 @@ private fun SingleDiceContent(
     dice: Dices,
     value: Int,
     rotation: Rotation,
-    modifier: Modifier = Modifier
+    diceCompanionContent: @Composable ((state: AnimationState, value: Int) -> Unit)?,
+    modifier: Modifier = Modifier,
 ) {
     val valueToShow = when (animationState) {
         AnimationState.Idle -> dice.faces
@@ -440,14 +506,6 @@ private fun SingleDiceContent(
                 }
             }
         }
-
-        AnimatedVisibility(visible = animationState == AnimationState.Finished) {
-            Text(value.toString())
-        }
-        Spacer(
-            modifier = Modifier
-                .height(if (animationState == AnimationState.Finished) 8.dp else 0.dp)
-                .animateContentSize()
-        )
+        diceCompanionContent?.invoke(animationState, value)
     }
 }
