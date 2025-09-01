@@ -11,7 +11,7 @@ private const val DEFAULT_SCALE_FRACTION = 3f
 private const val DEFAULT_CAMERA_Z = 8f
 private const val DEFAULT_PADDING_FRACTION = 0.05f
 private const val DEFAULT_STROKE_PX = 0.5f
-private val DEFAULT_LIGHT_DIR_RAW = Vec3(0f, 0f, 1f)
+private val DEFAULT_LIGHT_DIR_RAW = Vec3(0f, 0f, -1f)
 
 private fun Float.degToRad(): Float = times(PI.toFloat() / 180f)
 
@@ -64,7 +64,7 @@ private fun DrawScope.internalDrawDice(
 fun DrawScope.drawDice(
     dice: Dices,
     rotation: Rotation = dice.previewRotation(),
-    color: Color = Color(0xFFFFFFFF),
+    color: Color = Color.White,
     closestFaceContent: (DrawScope.(faceNormal: Vec3) -> Unit)? = null
 ) {
     val vertsFaces = when (dice) {
@@ -87,7 +87,7 @@ fun DrawScope.drawDice(
 @Suppress("unused")
 fun DrawScope.drawD4(
     rotation: Rotation = Rotation.Zero,
-    color: Color = Color(0xFFFFFFFF),
+    color: Color = Color.White,
     closestFaceContent: (DrawScope.(faceNormal: Vec3) -> Unit)? = null
 ) = internalDrawDice(
     vertsFaces = makeTetrahedron(),
@@ -99,7 +99,7 @@ fun DrawScope.drawD4(
 @Suppress("unused")
 fun DrawScope.drawD6(
     rotation: Rotation = Rotation.Zero,
-    color: Color = Color(0xFFFFFFFF),
+    color: Color = Color.White,
     closestFaceContent: (DrawScope.(faceNormal: Vec3) -> Unit)? = null
 ) = internalDrawDice(
     vertsFaces = makeCube(),
@@ -111,7 +111,7 @@ fun DrawScope.drawD6(
 @Suppress("unused")
 fun DrawScope.drawD8(
     rotation: Rotation = Rotation.Zero,
-    color: Color = Color(0xFFFFFFFF),
+    color: Color = Color.White,
     closestFaceContent: (DrawScope.(faceNormal: Vec3) -> Unit)? = null
 ) = internalDrawDice(
     vertsFaces = makeOctahedron(),
@@ -123,7 +123,7 @@ fun DrawScope.drawD8(
 @Suppress("unused")
 fun DrawScope.drawD10(
     rotation: Rotation = Rotation.Zero,
-    color: Color = Color(0xFFFFFFFF),
+    color: Color = Color.White,
     closestFaceContent: (DrawScope.(faceNormal: Vec3) -> Unit)? = null
 ) = internalDrawDice(
     vertsFaces = makeD10(),
@@ -135,7 +135,7 @@ fun DrawScope.drawD10(
 @Suppress("unused")
 fun DrawScope.drawD12(
     rotation: Rotation = Rotation.Zero,
-    color: Color = Color(0xFFFFFFFF),
+    color: Color = Color.White,
     closestFaceContent: (DrawScope.(faceNormal: Vec3) -> Unit)? = null
 ) = internalDrawDice(
     vertsFaces = makeDodecahedronFromIcosahedron(),
@@ -147,7 +147,7 @@ fun DrawScope.drawD12(
 @Suppress("unused")
 fun DrawScope.drawD20(
     rotation: Rotation = Rotation.Zero,
-    color: Color = Color(0xFFFFFFFF),
+    color: Color = Color.White,
     closestFaceContent: (DrawScope.(faceNormal: Vec3) -> Unit)? = null
 ) = internalDrawDice(
     vertsFaces = makeIcosahedron(),
@@ -158,7 +158,7 @@ fun DrawScope.drawD20(
 
 fun DrawScope.drawD100(
     rotation: Rotation = Rotation.Zero,
-    color: Color = Color(0xFFFFFFFF),
+    color: Color = Color.White,
     closestFaceContent: (DrawScope.(faceNormal: Vec3) -> Unit)? = null
 ) = drawD10(rotation = rotation, color = color, closestFaceContent = closestFaceContent)
 

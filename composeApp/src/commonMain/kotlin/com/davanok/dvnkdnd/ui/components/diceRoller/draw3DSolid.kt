@@ -10,6 +10,7 @@ import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.util.fastMap
+import io.github.aakira.napier.Napier
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -137,9 +138,6 @@ fun DrawScope.draw3DSolid(
     // normalize light direction once
     val lightN = lightDir.normalized()
 
-    // optional view direction for backface culling: camera looks toward +Z, because camera positioned at z = -cameraZ
-    val viewDir = Vec3(0f, 0f, 1f)
-
     // Build face data
     val faceDraws = ArrayList<FaceDraw>(faces.size)
     faces.fastForEachIndexed { fi, faceIdxs ->
@@ -157,12 +155,7 @@ fun DrawScope.draw3DSolid(
         val edgeB = poly3[2] - poly3[0]
         var n = edgeA.cross(edgeB)
         n = if (n.length() <= EPS) Vec3(0f, 0f, 1f) else n.normalized()
-
-        if (baseColor.alpha < 0.9f) {
-            val facing = n.dot(viewDir)
-            // if facing <= 0 it is turned away from camera (sign may need tuning depending on your model orientation)
-            if (facing <= 0f) return@fastForEachIndexed
-        }
+        n *= -1f
 
         // build 2D polygon in screen space
         val poly2 = faceIdxs.fastMap { projected[it] + center }

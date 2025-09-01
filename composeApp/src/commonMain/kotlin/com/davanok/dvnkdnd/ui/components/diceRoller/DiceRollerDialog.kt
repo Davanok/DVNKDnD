@@ -110,7 +110,6 @@ private val DEFAULT_CANVAS_SIZE = 150.dp
 
 @Composable
 fun rememberDiceRoller(
-    onRolled: (List<Pair<Dices, List<Int>>>) -> Unit,
     diceCompanionContent: @Composable ((state: AnimationState, value: Int) -> Unit)? = 
         { state, value ->
             AnimatedVisibility(
@@ -121,7 +120,8 @@ fun rememberDiceRoller(
                 Text(value.toString(), modifier = Modifier.padding(bottom = 8.dp))
             }
         },
-    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)? = null
+    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)? = null,
+    onRolled: (List<Pair<Dices, List<Int>>>) -> Unit,
 ): DiceRoller {
     var animRequest by remember { mutableStateOf<AnimRequest?>(null) }
 
