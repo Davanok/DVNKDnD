@@ -218,7 +218,7 @@ fun makeD10(): Pair<List<Vec3>, List<List<Int>>> {
     val faces = mutableListOf<List<Int>>()
     for (i in 0 until n) {
         val ni = (i + 1) % n
-        faces += listOf(topPoleIndex, topOffset + i, bottomOffset + i, topOffset + ni)
+        faces += listOf(topPoleIndex, topOffset + ni, bottomOffset + i, topOffset + i)
         faces += listOf(bottomPoleIndex, bottomOffset + i, topOffset + ni, bottomOffset + ni)
     }
 

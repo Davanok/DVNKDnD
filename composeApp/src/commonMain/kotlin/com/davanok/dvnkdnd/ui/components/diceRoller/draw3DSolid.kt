@@ -12,6 +12,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.util.fastMap
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -207,6 +208,9 @@ fun DrawScope.draw3DSolid(
 
         if (glassMixGlobal < 0.01f) {
             // OPAQUE baseline
+
+            if (fd.normal.z > 0f) return@fastForEach
+
             val brightness = 0.45f + 0.55f * ((ndotl + 1f) / 2f)
             val faceColor = Color(
                 (baseColor.red * brightness).coerceIn(0f, 1f),
@@ -272,7 +276,7 @@ fun DrawScope.draw3DSolid(
             }
             val boxW = (maxX - minX).coerceAtLeast(1f)
             val boxH = (maxY - minY).coerceAtLeast(1f)
-            val radialRadius = (kotlin.math.hypot(boxW.toDouble(), boxH.toDouble()).toFloat() * 0.65f).coerceAtLeast(8f)
+            val radialRadius = (hypot(boxW.toDouble(), boxH.toDouble()).toFloat() * 0.65f).coerceAtLeast(8f)
 
             val lightShift = Offset(-lightN.x, -lightN.y) * (radialRadius * 0.25f)
             val fillCenter = fd.centroid2D + center + lightShift

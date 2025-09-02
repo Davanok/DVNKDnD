@@ -73,6 +73,13 @@ interface DiceRoller {
         require(dices.isNotEmpty())
         require(dices.all { it.second > 0 })
     }
+    suspend fun roll(dice: Dices, count: Int) {
+        require(count > 0)
+        roll(listOf(dice to count))
+    }
+    suspend fun roll(dice: Dices) {
+        roll(listOf(dice to 1))
+    }
 }
 
 @Immutable
