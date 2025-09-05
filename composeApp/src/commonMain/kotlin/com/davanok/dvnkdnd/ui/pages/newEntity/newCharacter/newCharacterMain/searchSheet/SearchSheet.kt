@@ -224,7 +224,7 @@ private fun ListContent(
                     key = "error card"
                 ) {
                     ErrorCard(
-                        text = stringResource(it.message),
+                        text = it.message,
                         exception = it.exception,
                         onRefresh = onLoadNextPage
                     )

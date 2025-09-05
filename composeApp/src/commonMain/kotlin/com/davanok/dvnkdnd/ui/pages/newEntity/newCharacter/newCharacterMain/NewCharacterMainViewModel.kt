@@ -10,7 +10,6 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.ui.UiError
-import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
 import com.davanok.dvnkdnd.data.repositories.FilesRepository
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
@@ -23,11 +22,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.Path
+import org.jetbrains.compose.resources.getString
 import kotlin.uuid.Uuid
 
 class NewCharacterMainViewModel(
     private val filesRepository: FilesRepository,
-    private val browseRepository: BrowseRepository,
     private val entitiesRepository: EntitiesRepository,
     val searchSheetViewModel: SearchSheetViewModel,
     private val newCharacterViewModel: NewCharacterViewModel
@@ -65,7 +64,10 @@ class NewCharacterMainViewModel(
             entitiesRepository.getEntitiesWithSubList(entitiesToLoad).onFailure { thr ->
                 _uiState.update {
                     it.copy(
-                        error = UiError.Critical(Res.string.loading_entities_error, thr)
+                        error = UiError.Critical(
+                            message = getString(Res.string.loading_entities_error),
+                            exception = thr
+                        )
                     )
                 }
             }.onSuccess { loaded ->
@@ -99,7 +101,10 @@ class NewCharacterMainViewModel(
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    error = UiError.Critical(Res.string.loading_entities_error, thr)
+                    error = UiError.Critical(
+                        message = getString(Res.string.loading_entities_error),
+                        exception = thr
+                    )
                 )
             }
         }.onSuccess { entities ->
@@ -264,8 +269,8 @@ class NewCharacterMainViewModel(
                     it.copy(
                         isLoading = false,
                         error = UiError.Critical(
-                            Res.string.saving_data_error,
-                            thr
+                            message = getString(Res.string.saving_data_error),
+                            exception = thr
                         )
                     )
                 }

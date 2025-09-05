@@ -61,7 +61,7 @@ fun CharactersListScreen(
         uiState.isLoading -> LoadingCard()
         uiState.error.isCritical() -> uiState.error?.let {
             ErrorCard(
-                text = stringResource(it.message),
+                text = it.message,
                 exception = it.exception,
                 onRefresh = viewModel::loadCharacters
             )

@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
-import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -82,9 +82,9 @@ fun NewCharacterHealthScreen(
 
     when {
         uiState.isLoading -> LoadingCard()
-        uiState.error is UiError.Critical -> uiState.error?.let {
+        uiState.error.isCritical() -> uiState.error?.let {
             ErrorCard(
-                text = stringResource(it.message),
+                text = it.message,
                 exception = it.exception,
                 onBack = onBack
             )

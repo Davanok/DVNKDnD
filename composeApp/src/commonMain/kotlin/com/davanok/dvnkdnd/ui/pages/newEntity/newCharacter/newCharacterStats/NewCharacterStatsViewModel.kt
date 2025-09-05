@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
 
 import androidx.compose.ui.util.fastFlatMap
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
@@ -20,7 +21,9 @@ import dvnkdnd.composeapp.generated.resources.standard_array_stats_option
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import kotlin.uuid.Uuid
 
 class NewCharacterStatsViewModel(
@@ -80,7 +83,7 @@ class NewCharacterStatsViewModel(
         _uiState.value = _uiState.value.copy(selectedModifiersBonuses = current)
     }
 
-    private fun checkSelectedModifierBonuses(): Boolean {
+    private suspend fun checkSelectedModifierBonuses(): Boolean {
         val state = _uiState.value
         if (state.selectedCreationOptions == StatsCreationOptions.POINT_BUY) {
             val modifiersSum =
@@ -92,7 +95,9 @@ class NewCharacterStatsViewModel(
             val balance = DnDConstants.BUYING_BALANCE - modifiersSum
             if (balance != 0) {
                 _uiState.value = state.copy(
-                    error = UiError.Warning(Res.string.point_buy_stats_balance_invalid)
+                    error = UiError.Warning(
+                        message = getString(Res.string.point_buy_stats_balance_invalid)
+                    )
                 )
                 return false
             }
@@ -114,7 +119,9 @@ class NewCharacterStatsViewModel(
             val countInGroup = selected.count { it in groupSet }
             if (countInGroup != limit) {
                 _uiState.value = state.copy(
-                    error = UiError.Warning(Res.string.modifier_selection_invalid)
+                    error = UiError.Warning(
+                        message = getString(Res.string.modifier_selection_invalid)
+                    )
                 )
                 return false
             }
@@ -122,18 +129,22 @@ class NewCharacterStatsViewModel(
         return true
     }
 
-    fun commit(onSuccess: () -> Unit) {
-        if (!checkSelectedModifierBonuses()) return
-        val state = _uiState.value
-        newCharacterViewModel.setCharacterModifiers(
-            stats = state.modifiers,
-            selectedBonuses = state.selectedModifiersBonuses.toList()
-        ).onFailure {
-            _uiState.value = state.copy(
-                error = UiError.Critical(Res.string.saving_data_error, it)
-            )
-        }.onSuccess {
-            onSuccess()
+    fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
+        if (checkSelectedModifierBonuses()) {
+            val state = _uiState.value
+            newCharacterViewModel.setCharacterModifiers(
+                stats = state.modifiers,
+                selectedBonuses = state.selectedModifiersBonuses.toList()
+            ).onFailure { thr ->
+                _uiState.value = state.copy(
+                    error = UiError.Critical(
+                        message = getString(Res.string.saving_data_error),
+                        exception = thr
+                    )
+                )
+            }.onSuccess {
+                onSuccess()
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import kotlin.uuid.Uuid
 
 class DnDEntityInfoViewModel(
@@ -26,7 +27,10 @@ class DnDEntityInfoViewModel(
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    error = UiError.Critical(Res.string.loading_entity_error, thr)
+                    error = UiError.Critical(
+                        message = getString(Res.string.loading_entity_error),
+                        exception = thr
+                    )
                 )
             }
         }.onSuccess { entity ->

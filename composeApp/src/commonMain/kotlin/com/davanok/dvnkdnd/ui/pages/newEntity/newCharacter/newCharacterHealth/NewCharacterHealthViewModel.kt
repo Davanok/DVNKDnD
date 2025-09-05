@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
@@ -10,6 +11,8 @@ import dvnkdnd.composeapp.generated.resources.saving_data_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class NewCharacterHealthViewModel(
     private val newCharacterViewModel: NewCharacterViewModel
@@ -33,11 +36,13 @@ class NewCharacterHealthViewModel(
 
     fun setHealth(health: Int) = _uiState.update { it.copy(baseHealth = health) }
 
-    fun commit(onSuccess: () -> Unit) {
+    fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
         val baseHealth = uiState.value.baseHealth
         if (baseHealth < 1) _uiState.update {
             it.copy(
-                error = UiError.Warning(Res.string.health_cant_be_less_than_zero)
+                error = UiError.Warning(
+                    getString(Res.string.health_cant_be_less_than_zero)
+                )
             )
         }
         else newCharacterViewModel.setCharacterHealth(baseHealth)
@@ -45,7 +50,7 @@ class NewCharacterHealthViewModel(
                 _uiState.update {
                     it.copy(
                         error = UiError.Critical(
-                            message = Res.string.saving_data_error,
+                            message = getString(Res.string.saving_data_error),
                             exception = thr
                         )
                     )

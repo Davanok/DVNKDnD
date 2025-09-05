@@ -2,12 +2,13 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStatsLar
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows.SavingThrowsTableState
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.SkillsTableState
@@ -18,6 +19,8 @@ import dvnkdnd.composeapp.generated.resources.saving_data_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class NewCharacterStatsLargeViewModel(
     private val newCharacterViewModel: NewCharacterViewModel
@@ -68,7 +71,7 @@ class NewCharacterStatsLargeViewModel(
         }
     }
 
-    fun commit(onSuccess: () -> Unit) {
+    fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
         val isSavingThrowsValid = savingThrowsState.validateSelectedSavingThrows()
         val isSkillsValid = skillsState.validateSelectedSkills()
 
@@ -76,19 +79,19 @@ class NewCharacterStatsLargeViewModel(
             _uiState.update {
                 it.copy(
                     error = UiError.Warning(
-                        Res.string.not_all_available_saving_throws_selected
+                        message = getString(Res.string.not_all_available_saving_throws_selected)
                     )
                 )
             }
-            return
+            return@launch
         }
         if (!isSkillsValid) _uiState.update {
             it.copy(
                 error = UiError.Warning(
-                    Res.string.not_all_available_skills_selected
+                    message = getString(Res.string.not_all_available_skills_selected)
                 )
             )
-            return
+            return@launch
         }
         newCharacterViewModel.setCharacterSavingThrowsAndSkills(
             selectedSavingThrows = savingThrowsState.getSelectedSavingThrows().toList(),
@@ -97,7 +100,7 @@ class NewCharacterStatsLargeViewModel(
             _uiState.update {
                 it.copy(
                     error = UiError.Critical(
-                        message = Res.string.saving_data_error,
+                        message = getString(Res.string.saving_data_error),
                         exception = thr
                     )
                 )

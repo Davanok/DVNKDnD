@@ -53,7 +53,7 @@ import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
-import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.ui.components.newEntity.BackClickAction
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -103,11 +103,13 @@ fun NewCharacterMainScreen(
     )
     when {
         uiState.isLoading -> LoadingCard()
-        uiState.error is UiError.Critical -> ErrorCard(
-            text = stringResource(uiState.error!!.message),
-            exception = uiState.error?.exception,
-            onBack = onBack
-        )
+        uiState.error.isCritical() -> uiState.error?.let {
+            ErrorCard(
+                text = it.message,
+                exception = it.exception,
+                onBack = onBack
+            )
+        }
 
         else ->
             NewEntityStepScaffold(

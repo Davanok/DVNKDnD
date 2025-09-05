@@ -31,7 +31,7 @@ import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
@@ -64,11 +64,13 @@ fun NewCharacterStatsScreen(
 
     when {
         uiState.isLoading -> LoadingCard()
-        uiState.error is UiError.Critical -> ErrorCard(
-            text = stringResource(uiState.error!!.message),
-            exception = uiState.error?.exception,
-            onBack = onBack
-        )
+        uiState.error.isCritical() -> uiState.error?.let {
+            ErrorCard(
+                text = it.message,
+                exception = it.exception,
+                onBack = onBack
+            )
+        }
         else -> NewEntityStepScaffold (
             modifier = Modifier.fillMaxSize(),
             title = stringResource(Res.string.new_character_stats_screen_title),

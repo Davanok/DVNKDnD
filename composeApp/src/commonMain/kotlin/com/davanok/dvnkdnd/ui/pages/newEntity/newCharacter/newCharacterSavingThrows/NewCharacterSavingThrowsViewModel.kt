@@ -1,11 +1,12 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.not_all_available_saving_throws_selected
@@ -13,6 +14,8 @@ import dvnkdnd.composeapp.generated.resources.saving_data_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class NewCharacterSavingThrowsViewModel(
     private val newCharacterViewModel: NewCharacterViewModel
@@ -48,14 +51,14 @@ class NewCharacterSavingThrowsViewModel(
         }
     }
 
-    fun commit(onSuccess: () -> Unit) {
+    fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
         if (savingThrowsState.validateSelectedSavingThrows())
             newCharacterViewModel.setCharacterSavingThrows(savingThrowsState.getSelectedSavingThrows().toList())
                 .onFailure { thr ->
                     _uiState.update {
                         it.copy(
                             error = UiError.Critical(
-                                message = Res.string.saving_data_error,
+                                message = getString(Res.string.saving_data_error),
                                 exception = thr
                             )
                         )
@@ -65,7 +68,11 @@ class NewCharacterSavingThrowsViewModel(
                 }
         else
             _uiState.update {
-                it.copy(error = UiError.Warning(Res.string.not_all_available_saving_throws_selected))
+                it.copy(
+                    error = UiError.Warning(
+                        message = getString(Res.string.not_all_available_saving_throws_selected)
+                    )
+                )
             }
     }
 

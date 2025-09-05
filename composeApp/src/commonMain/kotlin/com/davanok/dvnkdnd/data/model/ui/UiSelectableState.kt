@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.model.types
+package com.davanok.dvnkdnd.data.model.ui
 
 data class UiSelectableState(
     val fixedSelection: Boolean,

@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 private const val PAGE_SIZE = 100
 private const val TEXT_INPUT_DEBOUNCE = 500L
@@ -140,8 +141,8 @@ class SearchSheetViewModel(
                 cache.hasNext = false
                 _error.update {
                     UiError.Warning(
-                        Res.string.loading_entities_error,
-                        thr
+                        message = getString(Res.string.loading_entities_error),
+                        exception = thr
                     )
                 }
             }

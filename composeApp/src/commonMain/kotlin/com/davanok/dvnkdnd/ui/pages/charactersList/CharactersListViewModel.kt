@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class CharactersListViewModel(
     private val repository: CharactersRepository
@@ -25,8 +26,8 @@ class CharactersListViewModel(
                 it.copy(
                     isLoading = false,
                     error = UiError.Critical(
-                        Res.string.loading_characters_error,
-                        thr
+                        message = getString(Res.string.loading_characters_error),
+                        exception = thr
                     )
                 )
             }

@@ -15,7 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import dvnkdnd.composeapp.generated.resources.Res
@@ -68,10 +68,12 @@ fun DnDEntityInfo(
     ) {
         when {
             uiState.isLoading -> LoadingCard()
-            uiState.error is UiError.Critical -> ErrorCard(
-                text = stringResource(uiState.error!!.message),
-                exception = uiState.error!!.exception
-            )
+            uiState.error.isCritical() -> uiState.error?.let {
+                ErrorCard(
+                    text = it.message,
+                    exception = it.exception
+                )
+            }
             uiState.entity == null -> ErrorCard(
                 text = stringResource(Res.string.loading_entity_error)
             )
