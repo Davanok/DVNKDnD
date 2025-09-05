@@ -64,6 +64,8 @@
     <string name="dice_100">D100</string>
     <string name="dice_other">Other</string>
 
+    <string name="rolling_in_progress">Rolling...</string>
+
     <!--images-->
     <string name="select_image">Select image</string>
     <string name="add_image">Add image</string>
@@ -152,6 +154,10 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="new_character_health_screen_title">Health</string>
     <string name="constitution_value">Constitution: %1$d (%2$s)</string>
     <string name="health_dice_value">Health dice: %1$s</string>
+    <string name="health_points_short">HP</string>
+    <string name="enter_health">Enter health</string>
+    <string name="total_health_points_short">Total HP</string>
+    <string name="health_cant_be_less_than_zero">Health cant be less than zero</string>
     <!--common-->
     <string name="loading_character_error">Error when loading character</string>
     <string name="saving_data_error">Error when saving data</string>

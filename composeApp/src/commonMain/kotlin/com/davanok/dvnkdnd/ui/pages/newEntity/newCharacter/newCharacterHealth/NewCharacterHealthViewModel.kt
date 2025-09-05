@@ -1,8 +1,12 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth
 
 import androidx.lifecycle.ViewModel
+import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
+import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.health_cant_be_less_than_zero
+import dvnkdnd.composeapp.generated.resources.saving_data_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -15,13 +19,51 @@ class NewCharacterHealthViewModel(
 
     fun removeError() = _uiState.update { it.copy(error = null) }
 
-    fun commit(onSuccess: () -> Unit) {
+    fun loadCharacter() {
+        val character = newCharacterViewModel.getCharacterWithHealth()
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                healthDice = character.healthDice,
+                characterConstitution = character.constitution,
+                baseHealth = character.baseHealth
+            )
+        }
+    }
 
+    fun setHealth(health: Int) = _uiState.update { it.copy(baseHealth = health) }
+
+    fun commit(onSuccess: () -> Unit) {
+        val baseHealth = uiState.value.baseHealth
+        if (baseHealth < 1) _uiState.update {
+            it.copy(
+                error = UiError.Warning(Res.string.health_cant_be_less_than_zero)
+            )
+        }
+        else newCharacterViewModel.setCharacterHealth(baseHealth)
+            .onFailure { thr ->
+                _uiState.update {
+                    it.copy(
+                        error = UiError.Critical(
+                            message = Res.string.saving_data_error,
+                            exception = thr
+                        )
+                    )
+                }
+            }.onSuccess {
+                onSuccess()
+            }
+    }
+
+    init {
+        loadCharacter()
     }
 }
 
 data class NewCharacterHealthUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
-    val health: Int = 0,
+    val healthDice: Dices? = null,
+    val characterConstitution: Int = 10,
+    val baseHealth: Int = 1,
 )

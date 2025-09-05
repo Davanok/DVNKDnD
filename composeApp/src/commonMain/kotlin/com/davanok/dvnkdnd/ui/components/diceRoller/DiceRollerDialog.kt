@@ -69,15 +69,15 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 
 interface DiceRoller {
-    suspend fun roll(dices: List<Pair<Dices, Int>>) {
+    fun roll(dices: List<Pair<Dices, Int>>) {
         require(dices.isNotEmpty())
         require(dices.all { it.second > 0 })
     }
-    suspend fun roll(dice: Dices, count: Int) {
+    fun roll(dice: Dices, count: Int) {
         require(count > 0)
         roll(listOf(dice to count))
     }
-    suspend fun roll(dice: Dices) {
+    fun roll(dice: Dices) {
         roll(listOf(dice to 1))
     }
 }
@@ -122,7 +122,7 @@ fun rememberDiceRoller(
             AnimatedVisibility(
                 visible = state == AnimationState.Finished,
                 enter = fadeIn() + expandVertically(),
-                exit = shrinkVertically() + fadeOut(),
+                exit = fadeOut() + shrinkVertically(),
             ) {
                 Text(value.toString(), modifier = Modifier.padding(bottom = 8.dp))
             }
@@ -147,7 +147,7 @@ fun rememberDiceRoller(
 
     return remember {
         object : DiceRoller {
-            override suspend fun roll(dices: List<Pair<Dices, Int>>) {
+            override fun roll(dices: List<Pair<Dices, Int>>) {
                 val diceValues = dices.fastMap { (dice, count) ->
                     val maxValue = dice.faces + 1
                     dice to List(count) { Random.nextInt(1, maxValue) }
@@ -278,7 +278,10 @@ private fun DiceDialog(
 
     Dialog(onDismissRequest = onClick, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         val interactionSource = remember { MutableInteractionSource() }
-        Card(modifier = Modifier.clickable(interactionSource = interactionSource, indication = null, onClick = onClick)) {
+        Card(
+            modifier = Modifier
+                .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+        ) {
             when {
                 animRequest.dices.size > 1 -> 
                     ManyDicesDialogContent(

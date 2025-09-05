@@ -4,12 +4,15 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
+import androidx.compose.ui.util.fastSumBy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSavingThrows
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithHealth
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithSavingThrowsAndSkills
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithSavingThrows
@@ -186,6 +189,24 @@ class NewCharacterViewModel(
             selectedSkills = selectedSkills
         )
     }
+
+    fun getCharacterWithHealth() = newCharacterState.run {
+        CharacterWithHealth(
+            character = character.toCharacterShortInfo(),
+            healthDice = character.cls?.cls?.hitDice,
+            constitution = characterStats.constitution +
+                    character.entities
+                        .fastFlatMap { it.modifierBonuses }
+                        .fastFilter { it.stat == Stats.CONSTITUTION && it.id in selectedModifierBonuses }
+                        .fastSumBy { it.modifier },
+            baseHealth = baseHealth
+        )
+    }
+    fun setCharacterHealth(baseHealth: Int) = runCatching {
+        newCharacterState = newCharacterState.copy(
+            baseHealth = baseHealth
+        )
+    }
 }
 
 private data class NewCharacterWithFullEntities(
@@ -271,7 +292,7 @@ private data class NewCharacter(
     val selectedSkills: List<Uuid> = emptyList(),
     val selectedSavingThrows: List<Uuid> = emptyList(),
 
-    val health: Int = 0 // without constitution bonus
+    val baseHealth: Int = 0 // without constitution bonus
 ) {
     fun calculateModifiersSum(): DnDModifiersGroup =
         characterStats + character.entities
