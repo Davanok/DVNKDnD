@@ -64,7 +64,6 @@ import dvnkdnd.composeapp.generated.resources.rolling_in_progress
 import dvnkdnd.composeapp.generated.resources.total_health_points_short
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -126,18 +125,6 @@ fun NewCharacterHealthScreen(
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun Preview() {
-    var health by remember { mutableStateOf(10) }
-    Content(
-        health = health,
-        onHealthChange = { health = it },
-        constitutionModifier = 2,
-        healthDice = Dices.D10
-    )
 }
 
 @Composable
