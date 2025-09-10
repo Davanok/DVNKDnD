@@ -9,7 +9,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.dndEnums.MagicSchools
 import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import kotlin.uuid.Uuid
 
 
@@ -83,6 +83,6 @@ data class SpellAttackLevelModifier(
 )
 data class SpellAttackSave(
     @PrimaryKey val id: Uuid,
-    @ColumnInfo("saving_throw") val savingThrow: Stats,
+    @ColumnInfo("saving_throw") val savingThrow: Attributes,
     @ColumnInfo("half_on_success") val halfOnSuccess: Boolean,
 )

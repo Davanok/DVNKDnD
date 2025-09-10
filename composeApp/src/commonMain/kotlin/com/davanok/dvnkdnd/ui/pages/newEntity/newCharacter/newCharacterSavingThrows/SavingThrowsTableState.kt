@@ -5,7 +5,7 @@ import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastForEach
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSavingThrows
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSavingThrow
 import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
@@ -16,7 +16,7 @@ class SavingThrowsTableState(
     initialSelectedSavingThrow: Set<Uuid>
 ) {
     private val selectedEntityIds = initialSelectedSavingThrow.toMutableSet()
-    private val savingThrowsToEntities: Map<Stats, List<DnDSavingThrow>> =
+    private val savingThrowsToEntities: Map<Attributes, List<DnDSavingThrow>> =
         columns.fastFlatMap { it.savingThrows }
             .groupBy { it.stat }
 
@@ -24,7 +24,7 @@ class SavingThrowsTableState(
         columns.fastFlatMap { col -> col.savingThrows.map { it.id to col } }
             .toMap()
 
-    fun getDisplayItems(): Map<Stats, UiSelectableState> {
+    fun getDisplayItems(): Map<Attributes, UiSelectableState> {
         return savingThrowsToEntities.mapValues { (_, entities) ->
             val selected = entities.fastAny { selectedEntityIds.contains(it.id) }
 
@@ -47,7 +47,7 @@ class SavingThrowsTableState(
         }
     }
 
-    fun select(stat: Stats): Boolean {
+    fun select(stat: Attributes): Boolean {
         val entitiesAll = savingThrowsToEntities[stat].orEmpty()
         if (entitiesAll.isEmpty()) return false
 

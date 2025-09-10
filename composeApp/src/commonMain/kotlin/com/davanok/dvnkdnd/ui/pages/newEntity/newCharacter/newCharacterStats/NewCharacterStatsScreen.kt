@@ -30,7 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -99,8 +99,8 @@ private fun Content(
     onOptionSelected: (StatsCreationOptions) -> Unit,
     allEntitiesWithModifiers: List<DnDEntityWithModifiers>,
     selectedModifiersBonuses: Set<Uuid>,
-    modifiers: DnDModifiersGroup,
-    onModifiersChange: (DnDModifiersGroup) -> Unit,
+    modifiers: DnDAttributesGroup,
+    onModifiersChange: (DnDAttributesGroup) -> Unit,
     onSelectModifier: (DnDModifierBonus) -> Unit
 ) {
     var showInfoDialog by remember { mutableStateOf(false) }

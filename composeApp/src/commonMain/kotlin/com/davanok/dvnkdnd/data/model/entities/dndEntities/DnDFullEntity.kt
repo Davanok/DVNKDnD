@@ -3,9 +3,7 @@ package com.davanok.dvnkdnd.data.model.entities.dndEntities
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSavingThrow
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkill
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -24,17 +22,11 @@ data class DnDFullEntity(
     val description: String,
     val source: String,
 
-    @SerialName("modifier_bonuses")
-    val modifierBonuses: List<DnDModifierBonus>,
-    val skills: List<DnDSkill>,
-    @SerialName("saving_throws")
-    val savingThrows: List<DnDSavingThrow>,
+    @SerialName("modifiers")
+    val modifiers: List<DnDModifiersGroup>,
 
     val proficiencies: List<JoinProficiency>,
     val abilities: List<AbilityLink>,
-
-    @SerialName("selection_limits")
-    val selectionLimits: DnDSelectionLimits?,
 
     val cls: ClassWithSpells? = null,
     val race: RaceInfo? = null,

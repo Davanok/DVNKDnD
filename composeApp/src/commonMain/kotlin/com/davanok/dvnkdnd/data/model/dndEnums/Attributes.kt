@@ -9,7 +9,7 @@ import dvnkdnd.composeapp.generated.resources.strength
 import dvnkdnd.composeapp.generated.resources.wisdom
 import org.jetbrains.compose.resources.StringResource
 
-enum class Stats(val stringRes: StringResource) {
+enum class Attributes(val stringRes: StringResource) {
     STRENGTH(Res.string.strength),
     DEXTERITY(Res.string.dexterity),
     CONSTITUTION(Res.string.constitution),

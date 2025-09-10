@@ -51,10 +51,10 @@ import androidx.compose.ui.util.fastMapIndexed
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.compose.ui.util.fastSumBy
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
@@ -69,7 +69,7 @@ import kotlin.uuid.Uuid
 
 
 private fun List<DnDEntityWithModifiers>.appliedModifiers(
-    stat: Stats,
+    stat: Attributes,
     selectedModifiers: Set<Uuid>,
 ) = fastFlatMap { it.modifiers }
     .fastMapNotNull {
@@ -81,7 +81,7 @@ private fun List<DnDEntityWithModifiers>.appliedModifiers(
     }
 
 
-private fun approximateToDefault(input: DnDModifiersGroup): DnDModifiersGroup {
+private fun approximateToDefault(input: DnDAttributesGroup): DnDAttributesGroup {
     val statsList = listOf(
         input.strength,
         input.dexterity,
@@ -98,7 +98,7 @@ private fun approximateToDefault(input: DnDModifiersGroup): DnDModifiersGroup {
         }
         .toMap()
 
-    return DnDModifiersGroup(
+    return DnDAttributesGroup(
         strength = assignment.getValue(0),
         dexterity = assignment.getValue(1),
         constitution = assignment.getValue(2),
@@ -114,8 +114,8 @@ fun ModifiersSelector(
     selectedCreationOption: StatsCreationOptions,
     allEntitiesWithModifiers: List<DnDEntityWithModifiers>,
     selectedModifiersBonuses: Set<Uuid>,
-    modifiers: DnDModifiersGroup,
-    onModifiersChange: (DnDModifiersGroup) -> Unit,
+    modifiers: DnDAttributesGroup,
+    onModifiersChange: (DnDAttributesGroup) -> Unit,
     onSelectModifiers: (DnDModifierBonus) -> Unit,
 ) {
     Crossfade(
@@ -156,8 +156,8 @@ fun ModifiersSelector(
 
 @Composable
 private fun ColumnScope.PointBuyModifiersSelector(
-    character: DnDModifiersGroup,
-    onChange: (DnDModifiersGroup) -> Unit,
+    character: DnDAttributesGroup,
+    onChange: (DnDAttributesGroup) -> Unit,
     entitiesWithModifiers: List<DnDEntityWithModifiers>,
     selectedModifiersBonuses: Set<Uuid>,
     onModifierSelected: (DnDModifierBonus) -> Unit,
@@ -195,8 +195,8 @@ private fun ColumnScope.PointBuyModifiersSelector(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StandardArrayModifiersSelector(
-    character: DnDModifiersGroup,
-    onChange: (DnDModifiersGroup) -> Unit,
+    character: DnDAttributesGroup,
+    onChange: (DnDAttributesGroup) -> Unit,
     entitiesWithModifiers: List<DnDEntityWithModifiers>,
     selectedModifiersBonuses: Set<Uuid>,
     onModifierSelected: (DnDModifierBonus) -> Unit,
@@ -339,8 +339,8 @@ private fun StandardArrayModifiersSelector(
 
 @Composable
 private fun ManualModifiersSelector(
-    character: DnDModifiersGroup,
-    onChange: (DnDModifiersGroup) -> Unit,
+    character: DnDAttributesGroup,
+    onChange: (DnDAttributesGroup) -> Unit,
     entitiesWithModifiers: List<DnDEntityWithModifiers>,
     selectedModifiersBonuses: Set<Uuid>,
     onModifierSelected: (DnDModifierBonus) -> Unit,
@@ -369,7 +369,7 @@ fun ModifiersSelectionGroup(
     selectedModifiersBonuses: Set<Uuid>,
     onModifierSelected: (DnDModifierBonus) -> Unit,
     modifier: Modifier = Modifier,
-    modifierField: @Composable (stat: Stats) -> Unit,
+    modifierField: @Composable (stat: Attributes) -> Unit,
 ) {
     val (
         modBonusGroups,
@@ -405,7 +405,7 @@ fun ModifiersSelectionGroup(
         Spacer(Modifier.height(8.dp))
 
 
-        Stats.entries.forEach { stat ->
+        Attributes.entries.forEach { stat ->
             Row(
                 Modifier
                     .fillMaxWidth()

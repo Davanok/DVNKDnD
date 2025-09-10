@@ -2,9 +2,9 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingTh
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
@@ -45,7 +45,7 @@ class NewCharacterSavingThrowsViewModel(
         }
     }
 
-    fun selectSavingThrow(stat: Stats) {
+    fun selectSavingThrow(stat: Attributes) {
         if (savingThrowsState.select(stat)) _uiState.update {
             it.copy(savingThrows = savingThrowsState.getDisplayItems())
         }
@@ -87,6 +87,6 @@ data class NewCharacterSavingThrowsUiState(
     val character: CharacterShortInfo = CharacterShortInfo(),
     val proficiencyBonus: Int = 0,
     val selectionLimit: Int = 0,
-    val stats: DnDModifiersGroup = DnDModifiersGroup.Default,
-    val savingThrows: Map<Stats, UiSelectableState> = emptyMap()
+    val stats: DnDAttributesGroup = DnDAttributesGroup.Default,
+    val savingThrows: Map<Attributes, UiSelectableState> = emptyMap()
 )

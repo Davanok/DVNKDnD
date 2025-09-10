@@ -10,7 +10,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCoinsGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClass
 import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
@@ -18,8 +18,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
-import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifierBonus
-import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedSkill
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
@@ -120,12 +119,7 @@ data class DbFullCharacter(
         parentColumn = "id",
         entityColumn = "character_id",
     )
-    val selectedModifierBonuses: List<CharacterSelectedModifierBonus>,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "character_id",
-    )
-    val selectedSkills: List<CharacterSelectedSkill>,
+    val selectedModifiers: List<CharacterSelectedModifier>,
     @Relation(
         parentColumn = "id",
         entityColumn = "character_id",
@@ -136,7 +130,7 @@ data class DbFullCharacter(
         character = character.toCharacterMin(),
         images = images.fastMap { DatabaseImage(it.id, it.path) },
         coins = coins?.toDnDCoinsGroup(),
-        stats = stats?.toModifiersGroup(),
+        stats = stats?.toAttributesGroup(),
         health = health?.toDnDCharacterHealth(),
         usedSpells = usedSpells?.usedSpells.orEmpty(),
         classes = classes.fastMap { it.toCharacterClassInfo() },
@@ -145,8 +139,7 @@ data class DbFullCharacter(
         background = background?.toDnDFullEntity(),
         subBackground = subBackground?.toDnDFullEntity(),
         feats = feats.fastMap { it.toDnDFullEntity() },
-        selectedModifierBonuses = selectedModifierBonuses.fastMap { it.bonusId },
-        selectedSkills = selectedSkills.fastMap { it.skillId },
+        selectedModifiers = selectedModifiers.fastMap { it.modifierId },
         selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId }
     )
 }

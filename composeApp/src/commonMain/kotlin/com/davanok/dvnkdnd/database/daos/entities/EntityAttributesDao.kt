@@ -1,16 +1,20 @@
 package com.davanok.dvnkdnd.database.daos.entities
 
+import androidx.compose.ui.util.fastMap
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.Transaction
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntityModifier
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntityModifiersGroup
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifiersGroup
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import kotlin.uuid.Uuid
 
 @Dao
 interface EntityAttributesDao {
@@ -21,16 +25,18 @@ interface EntityAttributesDao {
     suspend fun insertProficiencies(proficiencies: List<DnDProficiency>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSelectionLimits(selectionLimit: EntitySelectionLimits)
+    suspend fun insertEntityModifiersGroup(modifiersGroup: EntityModifiersGroup)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertModifierBonuses(modifiers: List<EntityModifierBonus>)
+    suspend fun insertModifiers(modifiers: List<EntityModifier>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSkills(skills: List<EntitySkill>)
+    @Transaction
+    suspend fun insertModifiersGroup(entityId: Uuid, modifiersGroup: DnDModifiersGroup) {
+        val groupId = modifiersGroup.id
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSavingThrows(throws: List<EntitySavingThrow>)
+        insertEntityModifiersGroup(modifiersGroup.toEntityModifiersGroup(entityId))
+        insertModifiers(modifiersGroup.modifiers.fastMap { it.toEntityModifier(groupId) })
+    }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertProficiencyLinks(proficiency: List<EntityProficiency>)

@@ -2,7 +2,7 @@ package com.davanok.dvnkdnd.data.implementations
 
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
-import com.davanok.dvnkdnd.database.daos.CharactersDao
+import com.davanok.dvnkdnd.database.daos.character.CharactersDao
 import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
 

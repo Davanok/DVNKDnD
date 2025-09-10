@@ -3,27 +3,27 @@ package com.davanok.dvnkdnd.data.model.entities.character
 import androidx.compose.runtime.Immutable
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import kotlin.uuid.Uuid
 
+@Immutable
 data class CharacterWithAllModifiers(
     val character: CharacterShortInfo,
-    val characterStats: DnDModifiersGroup?,
+    val proficiencyBonus: Int,
+    val characterStats: DnDAttributesGroup?,
 
-    val selectedModifierBonuses: List<Uuid>,
+    val selectedModifiers: List<Uuid>,
     val entities: List<DnDEntityWithModifiers>
 )
 
 @Immutable
 data class DnDEntityWithModifiers(
     val entity: DnDEntityMin,
-    val selectionLimit: Int,
-    val modifiers: List<DnDModifierBonus>,
+    val modifiers: List<DnDModifiersGroup>,
 )
 
 fun DnDFullEntity.toEntityWithModifiers() = DnDEntityWithModifiers(
     entity = toDnDEntityMin(),
-    selectionLimit = selectionLimits?.modifiers?: modifierBonuses.size,
-    modifiers = modifierBonuses
+    modifiers = modifiers
 )

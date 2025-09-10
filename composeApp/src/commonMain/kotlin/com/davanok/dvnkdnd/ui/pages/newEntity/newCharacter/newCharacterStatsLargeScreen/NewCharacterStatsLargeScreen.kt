@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
@@ -131,16 +131,16 @@ fun NewCharacterStatsLargeScreen(
 
 @Composable
 private fun Content(
-    stats: DnDModifiersGroup,
+    stats: DnDAttributesGroup,
     proficiencyBonus: Int,
-    savingThrows: Map<Stats, UiSelectableState>,
+    savingThrows: Map<Attributes, UiSelectableState>,
     skills: Map<Skills, UiSelectableState>,
-    onSelectSavingThrow: (Stats) -> Unit,
+    onSelectSavingThrow: (Attributes) -> Unit,
     onSelectSkill: (Skills) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val statToSkillStates = remember(skills) {
-        Stats.entries
+        Attributes.entries
             .associateWith { stat ->
                 Skills.entries
                     .fastFilter { it.stat == stat }
@@ -155,7 +155,7 @@ private fun Content(
         contentPadding = PaddingValues(4.dp)
     ) {
         items(
-            items = Stats.entries,
+            items = Attributes.entries,
             key = { it }
         ) { stat ->
             StatItem(
@@ -175,12 +175,12 @@ private fun Content(
 
 @Composable
 fun StatItem(
-    stat: Stats,
+    stat: Attributes,
     statModifier: Int,
     proficiencyBonus: Int,
     savingThrowState: UiSelectableState,
     skillState: Map<Skills, UiSelectableState>,
-    onSelectSavingThrow: (Stats) -> Unit,
+    onSelectSavingThrow: (Attributes) -> Unit,
     onSelectSkill: (Skills) -> Unit,
     modifier: Modifier = Modifier
 ) {

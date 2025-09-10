@@ -7,7 +7,7 @@ import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastSumBy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
@@ -21,8 +21,8 @@ import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithSkills
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
@@ -122,7 +122,7 @@ class NewCharacterViewModel(
         )
     }
 
-    fun setCharacterModifiers(stats: DnDModifiersGroup, selectedBonuses: List<Uuid>) = runCatching {
+    fun setCharacterModifiers(stats: DnDAttributesGroup, selectedBonuses: List<Uuid>) = runCatching {
         newCharacterState = newCharacterState.copy(
             characterStats = stats,
             selectedModifierBonuses = selectedBonuses
@@ -198,7 +198,7 @@ class NewCharacterViewModel(
             constitution = characterStats.constitution +
                     character.entities
                         .fastFlatMap { it.modifierBonuses }
-                        .fastFilter { it.stat == Stats.CONSTITUTION && it.id in selectedModifierBonuses }
+                        .fastFilter { it.stat == Attributes.CONSTITUTION && it.id in selectedModifierBonuses }
                         .fastSumBy { it.modifier },
             baseHealth = baseHealth
         )
@@ -292,7 +292,7 @@ private data class NewCharacterWithFullEntities(
 private data class NewCharacter(
     val character: NewCharacterWithFullEntities = NewCharacterWithFullEntities(),
 
-    val characterStats: DnDModifiersGroup = DnDModifiersGroup.Default,
+    val characterStats: DnDAttributesGroup = DnDAttributesGroup.Default,
     val selectedModifierBonuses: List<Uuid> = emptyList(),
 
     val selectedSkills: List<Uuid> = emptyList(),
@@ -300,11 +300,11 @@ private data class NewCharacter(
 
     val baseHealth: Int = 0 // without constitution bonus
 ) {
-    fun calculateModifiersSum(): DnDModifiersGroup =
+    fun calculateModifiersSum(): DnDAttributesGroup =
         characterStats + character.entities
             .fastFlatMap { it.modifierBonuses }
             .fastFilter { it.id in selectedModifierBonuses }
-            .toDnDModifiersGroup()
+            .toDnDAttributesGroup()
 
     @Suppress("KotlinUnreachableCode")
     fun toCharacterFull() = CharacterFull(

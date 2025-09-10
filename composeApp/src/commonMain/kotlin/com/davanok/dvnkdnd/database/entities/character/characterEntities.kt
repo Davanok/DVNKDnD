@@ -4,8 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import okio.Path
@@ -50,30 +49,16 @@ data class CharacterSpellSlots(
 )
 
 @Entity(
-    tableName = "character_selected_modifier_bonuses",
-    primaryKeys = ["character_id", "bonus_id"],
-    foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(EntityModifierBonus::class, ["id"], ["bonus_id"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class CharacterSelectedModifierBonus(
-    @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    @ColumnInfo("bonus_id", index = true) val bonusId: Uuid,
-)
-
-// one to many
-@Entity(
-    tableName = "character_selected_skills",
+    tableName = "character_selected_modifier",
     primaryKeys = ["character_id", "skill_id"],
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(EntitySkill::class, ["id"], ["skill_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(EntityModifier::class, ["id"], ["modifier_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class CharacterSelectedSkill(
+data class CharacterSelectedModifier(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    @ColumnInfo("skill_id", index = true) val skillId: Uuid
+    @ColumnInfo("modifier_id", index = true) val modifierId: Uuid
 )
 
 // many to many

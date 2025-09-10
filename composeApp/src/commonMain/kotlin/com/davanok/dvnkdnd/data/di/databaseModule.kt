@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.data.di
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.davanok.dvnkdnd.database.AppDatabase
-import com.davanok.dvnkdnd.database.daos.CharactersDao
+import com.davanok.dvnkdnd.database.daos.character.CharactersDao
 import com.davanok.dvnkdnd.database.daos.entities.BaseEntityDao
 import com.davanok.dvnkdnd.database.daos.entities.FullEntitiesDao
 import kotlinx.coroutines.Dispatchers

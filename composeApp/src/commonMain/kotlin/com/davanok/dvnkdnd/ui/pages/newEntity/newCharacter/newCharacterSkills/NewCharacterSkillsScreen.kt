@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
@@ -97,7 +97,7 @@ fun NewCharacterSkillsScreen(
 @Composable
 private fun Content(
     proficiencyBonus: Int,
-    stats: DnDModifiersGroup,
+    stats: DnDAttributesGroup,
     displaySkills: Map<Skills, UiSelectableState>,
     onSelectSkill: (Skills) -> Unit
 ) {
@@ -132,7 +132,7 @@ private fun Content(
 }
 
 @Composable
-private fun StatHeader(stat: Stats, statModifier: Int) {
+private fun StatHeader(stat: Attributes, statModifier: Int) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surfaceContainer

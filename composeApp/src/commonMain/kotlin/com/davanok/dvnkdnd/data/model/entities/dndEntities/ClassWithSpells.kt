@@ -1,7 +1,7 @@
 package com.davanok.dvnkdnd.data.model.entities.dndEntities
 
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
 import kotlinx.serialization.SerialName
@@ -37,7 +37,7 @@ fun ClassSpellSlots.toSpellSlots() = SpellSlots(
 @Serializable
 data class ClassWithSpells(
     @SerialName("primary_stats")
-    val primaryStats: List<Stats>,
+    val primaryStats: List<Attributes>,
     @SerialName("hit_dice")
     val hitDice: Dices,
 

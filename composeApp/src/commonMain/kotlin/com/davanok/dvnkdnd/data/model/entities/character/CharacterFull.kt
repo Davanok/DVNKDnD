@@ -2,7 +2,7 @@ package com.davanok.dvnkdnd.data.model.entities.character
 
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import kotlin.uuid.Uuid
 
 data class CharacterFull(
@@ -11,7 +11,7 @@ data class CharacterFull(
     val images: List<DatabaseImage>,
     val coins: CoinsGroup?,
 
-    val stats: DnDModifiersGroup?,
+    val stats: DnDAttributesGroup?,
     val health: DnDCharacterHealth?,
     val usedSpells: List<Int>,
 
@@ -23,8 +23,7 @@ data class CharacterFull(
 
     val feats: List<DnDFullEntity>,
 
-    val selectedModifierBonuses: List<Uuid>,
-    val selectedSkills: List<Uuid>,
+    val selectedModifiers: List<Uuid>,
     val selectedProficiencies: List<Uuid>
 )
 data class CharacterClassInfo(

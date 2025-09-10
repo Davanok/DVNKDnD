@@ -1,33 +1,10 @@
 package com.davanok.dvnkdnd.data.model.entities.dndModifiers
 
 import androidx.compose.ui.util.fastForEach
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.database.entities.character.CharacterStats
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
-import kotlinx.serialization.Serializable
-import kotlin.uuid.Uuid
 
-@Serializable
-data class DnDModifierBonus(
-    val id: Uuid,
-    val selectable: Boolean,
-    val stat: Stats,
-    val modifier: Int
-)
-fun EntityModifierBonus.toDnDModifier() = DnDModifierBonus(
-    id = id,
-    selectable = selectable,
-    stat = stat,
-    modifier = modifier
-)
-fun DnDModifierBonus.toEntityModifierBonus(entityId: Uuid) = EntityModifierBonus(
-    id = id,
-    entityId = entityId,
-    selectable = selectable,
-    stat = stat,
-    modifier = modifier
-)
-data class DnDModifiersGroup(
+data class DnDAttributesGroup(
     val strength: Int,
     val dexterity: Int,
     val constitution: Int,
@@ -36,12 +13,12 @@ data class DnDModifiersGroup(
     val charisma: Int
 ) {
     fun toMap() = mapOf(
-        Stats.STRENGTH to strength,
-        Stats.DEXTERITY to dexterity,
-        Stats.CONSTITUTION to constitution,
-        Stats.INTELLIGENCE to intelligence,
-        Stats.WISDOM to wisdom,
-        Stats.CHARISMA to charisma,
+        Attributes.STRENGTH to strength,
+        Attributes.DEXTERITY to dexterity,
+        Attributes.CONSTITUTION to constitution,
+        Attributes.INTELLIGENCE to intelligence,
+        Attributes.WISDOM to wisdom,
+        Attributes.CHARISMA to charisma,
     )
     fun modifiers() = listOf(
         strength,
@@ -52,23 +29,23 @@ data class DnDModifiersGroup(
         charisma
     )
 
-    operator fun get(stat: Stats) = when(stat) {
-        Stats.STRENGTH -> strength
-        Stats.DEXTERITY -> dexterity
-        Stats.CONSTITUTION -> constitution
-        Stats.INTELLIGENCE -> intelligence
-        Stats.WISDOM -> wisdom
-        Stats.CHARISMA -> charisma
+    operator fun get(stat: Attributes) = when(stat) {
+        Attributes.STRENGTH -> strength
+        Attributes.DEXTERITY -> dexterity
+        Attributes.CONSTITUTION -> constitution
+        Attributes.INTELLIGENCE -> intelligence
+        Attributes.WISDOM -> wisdom
+        Attributes.CHARISMA -> charisma
     }
-    fun set(stat: Stats, value: Int) = when (stat) {
-        Stats.STRENGTH -> copy(strength = value)
-        Stats.DEXTERITY -> copy(dexterity = value)
-        Stats.CONSTITUTION -> copy(constitution = value)
-        Stats.INTELLIGENCE -> copy(intelligence = value)
-        Stats.WISDOM -> copy(wisdom = value)
-        Stats.CHARISMA -> copy(charisma = value)
+    fun set(stat: Attributes, value: Int) = when (stat) {
+        Attributes.STRENGTH -> copy(strength = value)
+        Attributes.DEXTERITY -> copy(dexterity = value)
+        Attributes.CONSTITUTION -> copy(constitution = value)
+        Attributes.INTELLIGENCE -> copy(intelligence = value)
+        Attributes.WISDOM -> copy(wisdom = value)
+        Attributes.CHARISMA -> copy(charisma = value)
     }
-    operator fun plus(other: DnDModifiersGroup) = DnDModifiersGroup(
+    operator fun plus(other: DnDAttributesGroup) = DnDAttributesGroup(
         strength = strength + other.strength,
         dexterity = dexterity + other.dexterity,
         constitution = constitution + other.constitution,
@@ -77,24 +54,25 @@ data class DnDModifiersGroup(
         charisma = charisma + other.charisma
     )
     companion object {
-        val Default = DnDModifiersGroup(10, 10, 10, 10, 10, 10)
+        val Default = DnDAttributesGroup(10, 10, 10, 10, 10, 10)
     }
 }
-fun List<DnDModifierBonus>.toDnDModifiersGroup(): DnDModifiersGroup {
-    val counts = IntArray(Stats.entries.size)
+fun List<DnDAttributeModifier>.toDnDAttributesGroup(): DnDAttributesGroup {
+    val floatCounts = FloatArray(Attributes.entries.size)
     fastForEach { bonus ->
-        counts[bonus.stat.ordinal] += bonus.modifier
+        floatCounts[bonus.attribute.ordinal] += bonus.value
     }
-    return DnDModifiersGroup(
-        strength = counts[Stats.STRENGTH.ordinal],
-        dexterity = counts[Stats.DEXTERITY.ordinal],
-        constitution = counts[Stats.CONSTITUTION.ordinal],
-        intelligence = counts[Stats.INTELLIGENCE.ordinal],
-        wisdom = counts[Stats.WISDOM.ordinal],
-        charisma = counts[Stats.CHARISMA.ordinal]
+    val counts = floatCounts.map { it.toInt() }
+    return DnDAttributesGroup(
+        strength = counts[Attributes.STRENGTH.ordinal],
+        dexterity = counts[Attributes.DEXTERITY.ordinal],
+        constitution = counts[Attributes.CONSTITUTION.ordinal],
+        intelligence = counts[Attributes.INTELLIGENCE.ordinal],
+        wisdom = counts[Attributes.WISDOM.ordinal],
+        charisma = counts[Attributes.CHARISMA.ordinal]
     )
 }
-fun CharacterStats.toModifiersGroup() = DnDModifiersGroup(
+fun CharacterStats.toAttributesGroup() = DnDAttributesGroup(
     strength = strength,
     dexterity = dexterity,
     constitution = constitution,

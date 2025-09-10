@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.database.daos
+package com.davanok.dvnkdnd.database.daos.character
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -19,6 +19,7 @@ interface CharactersDao {
 
     @Transaction
     suspend fun saveCharacter(character: CharacterFull): Uuid {
-        return Uuid.NIL
+        TODO()
+        return Uuid.Companion.NIL
     }
 }

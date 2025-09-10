@@ -21,24 +21,24 @@ import dvnkdnd.composeapp.generated.resources.stealth
 import dvnkdnd.composeapp.generated.resources.survival
 import org.jetbrains.compose.resources.StringResource
 
-enum class Skills(val stat: Stats, val stringRes: StringResource) {
-    ATHLETICS       (Stats.STRENGTH,     Res.string.athletics),
-    ACROBATICS      (Stats.DEXTERITY,    Res.string.acrobatics),
-    SLEIGHT_OF_HAND (Stats.DEXTERITY,    Res.string.sleight_of_hand),
-    STEALTH         (Stats.DEXTERITY,    Res.string.stealth),
-    ARCANA          (Stats.INTELLIGENCE, Res.string.arcana),
-    HISTORY         (Stats.INTELLIGENCE, Res.string.history),
-    INVESTIGATION   (Stats.INTELLIGENCE, Res.string.investigation),
-    NATURE          (Stats.INTELLIGENCE, Res.string.nature),
-    RELIGION        (Stats.INTELLIGENCE, Res.string.religion),
-    ANIMAL_HANDLING (Stats.WISDOM,       Res.string.animal_handling),
-    INSIGHT         (Stats.WISDOM,       Res.string.insight),
-    MEDICINE        (Stats.WISDOM,       Res.string.medicine),
-    PERCEPTION      (Stats.WISDOM,       Res.string.perception),
-    SURVIVAL        (Stats.WISDOM,       Res.string.survival),
-    DECEPTION       (Stats.CHARISMA,     Res.string.deception),
-    INTIMIDATION    (Stats.CHARISMA,     Res.string.intimidation),
-    PERFORMANCE     (Stats.CHARISMA,     Res.string.performance),
-    PERSUASION      (Stats.CHARISMA,     Res.string.persuasion)
+enum class Skills(val stat: Attributes, val stringRes: StringResource) {
+    ATHLETICS       (Attributes.STRENGTH,     Res.string.athletics),
+    ACROBATICS      (Attributes.DEXTERITY,    Res.string.acrobatics),
+    SLEIGHT_OF_HAND (Attributes.DEXTERITY,    Res.string.sleight_of_hand),
+    STEALTH         (Attributes.DEXTERITY,    Res.string.stealth),
+    ARCANA          (Attributes.INTELLIGENCE, Res.string.arcana),
+    HISTORY         (Attributes.INTELLIGENCE, Res.string.history),
+    INVESTIGATION   (Attributes.INTELLIGENCE, Res.string.investigation),
+    NATURE          (Attributes.INTELLIGENCE, Res.string.nature),
+    RELIGION        (Attributes.INTELLIGENCE, Res.string.religion),
+    ANIMAL_HANDLING (Attributes.WISDOM,       Res.string.animal_handling),
+    INSIGHT         (Attributes.WISDOM,       Res.string.insight),
+    MEDICINE        (Attributes.WISDOM,       Res.string.medicine),
+    PERCEPTION      (Attributes.WISDOM,       Res.string.perception),
+    SURVIVAL        (Attributes.WISDOM,       Res.string.survival),
+    DECEPTION       (Attributes.CHARISMA,     Res.string.deception),
+    INTIMIDATION    (Attributes.CHARISMA,     Res.string.intimidation),
+    PERFORMANCE     (Attributes.CHARISMA,     Res.string.performance),
+    PERSUASION      (Attributes.CHARISMA,     Res.string.persuasion)
 }
 

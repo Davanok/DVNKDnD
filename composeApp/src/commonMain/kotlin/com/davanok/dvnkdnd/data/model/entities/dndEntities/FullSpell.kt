@@ -5,7 +5,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.dndEnums.MagicSchools
 import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
@@ -83,7 +83,7 @@ data class FullSpellAttack(
 @Serializable
 data class SpellAttackSaveInfo(
     @SerialName("saving_throw")
-    val savingThrow: Stats,
+    val savingThrow: Attributes,
     @SerialName("half_on_success")
     val halfOnSuccess: Boolean,
 )

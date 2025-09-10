@@ -17,7 +17,6 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinProficiency
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toAbilityLink
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toAbilityRegain
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toArmorInfo
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDSelectionLimits
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toFeatInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toItemProperty
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toProficiency
@@ -27,17 +26,14 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellAttackLevelMod
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellAttackSaveInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellSlots
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toWeaponDamageInfo
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDModifier
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSavingThrow
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDSkill
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDGenericModifier
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifierBonus
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySavingThrow
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySelectionLimits
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntitySkill
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifiersGroup
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
@@ -239,24 +235,48 @@ data class DbAbilityInfo(
         regains = regains.fastMap { it.toAbilityRegain() }
     )
 }
+data class DbModifiersGroups(
+    @Embedded val group: EntityModifiersGroup,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "group_id"
+    )
+    val modifiers: List<EntityModifier>
+) {
+    fun toDnDModifiersGroup() = DnDModifiersGroup(
+        id = group.id,
+        type = group.type,
+        target = group.target,
+        operation = group.operation,
+        name = group.name,
+        description = group.description,
+        selectionLimit = group.selectionLimit,
+        priority = group.priority,
+        clampMax = group.clampMax,
+        clampMin = group.clampMin,
+        minBaseValue = group.minBaseValue,
+        maxBaseValue = group.maxBaseValue,
+        modifiers = modifiers.fastMap {
+            DnDGenericModifier(
+                id = it.id,
+                selectable = it.selectable,
+                value = it.value,
+                target = it.target
+            )
+        }
+    )
+}
 data class DbFullEntity(
     @Embedded
     val base: DnDBaseEntity,
 
     @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val modifierBonuses: List<EntityModifierBonus>,
-    @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val skills: List<EntitySkill>,
-    @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val savingThrows: List<EntitySavingThrow>,
+    val modifiers: List<DbModifiersGroups>,
 
     @Relation(EntityProficiency::class, parentColumn = "id", entityColumn = "entity_id")
     val proficiencies: List<DbJoinProficiency>,
     @Relation(parentColumn = "id", entityColumn = "entity_id")
     val abilities: List<EntityAbility>,
-
-    @Relation(parentColumn = "id", entityColumn = "id")
-    val selectionLimits: EntitySelectionLimits?,
 
     @Relation(
         entity = DnDClass::class,
@@ -311,12 +331,9 @@ data class DbFullEntity(
         name = base.name,
         description = base.description,
         source = base.source,
-        modifierBonuses = modifierBonuses.fastMap { it.toDnDModifier() },
-        skills = skills.fastMap { it.toDnDSkill() },
-        savingThrows = savingThrows.fastMap { it.toDnDSavingThrow() },
+        modifiers = modifiers.fastMap { it.toDnDModifiersGroup() },
         proficiencies = proficiencies.fastMap { it.toJoinProficiency() },
         abilities = abilities.fastMap { it.toAbilityLink() },
-        selectionLimits = selectionLimits?.toDnDSelectionLimits(),
         cls = cls?.toClassWithSpells(),
         race = race?.toRaceInfo(),
         background = null,

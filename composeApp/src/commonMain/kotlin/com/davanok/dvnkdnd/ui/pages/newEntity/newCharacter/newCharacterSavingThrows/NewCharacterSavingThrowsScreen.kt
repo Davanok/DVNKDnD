@@ -25,8 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
@@ -96,15 +96,15 @@ fun NewCharacterSavingThrowsScreen(
 @Composable
 private fun Content(
     proficiencyBonus: Int,
-    stats: DnDModifiersGroup,
-    displaySavingThrows: Map<Stats, UiSelectableState>,
-    onSelectSavingThrow: (Stats) -> Unit
+    stats: DnDAttributesGroup,
+    displaySavingThrows: Map<Attributes, UiSelectableState>,
+    onSelectSavingThrow: (Attributes) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
         items(
-            items = Stats.entries,
+            items = Attributes.entries,
             key = { it }
         ) { stat ->
             StatItem(
@@ -123,9 +123,9 @@ private fun Content(
 private fun StatItem(
     statModifier: Int,
     proficiencyBonus: Int,
-    stat: Stats,
+    stat: Attributes,
     state: UiSelectableState,
-    onClick: (Stats) -> Unit,
+    onClick: (Attributes) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ListItem(

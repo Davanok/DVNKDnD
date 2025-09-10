@@ -2,7 +2,7 @@ package com.davanok.dvnkdnd.database
 
 import androidx.room.TypeConverter
 import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
-import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import okio.Path
 import okio.Path.Companion.toPath
 import kotlin.uuid.Uuid
@@ -37,9 +37,9 @@ class EnumListAdapters {
     fun spellComponentsToString(value: List<SpellComponents>): String =
         GenericEnumListAdapters.toStringConverter(value)
     @TypeConverter
-    fun statsToList(value: String): List<Stats> =
+    fun statsToList(value: String): List<Attributes> =
         GenericEnumListAdapters.toListConverter(value)
     @TypeConverter
-    fun statsToString(value: List<Stats>): String =
+    fun statsToString(value: List<Attributes>): String =
         GenericEnumListAdapters.toStringConverter(value)
 }

@@ -11,10 +11,6 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDProficiency
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDRace
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityAbility
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityProficiency
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntitySelectionLimits
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntityModifierBonus
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntitySavingThrow
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntitySkill
 import com.davanok.dvnkdnd.database.model.DbFullEntity
 import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
@@ -41,12 +37,8 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
         )
 
         insertEntity(fullEntity.toBaseEntity())
-        insertModifierBonuses(fullEntity.modifierBonuses.fastMap { it.toEntityModifierBonus(entityId) })
-        insertSkills(fullEntity.skills.fastMap { it.toEntitySkill(entityId) })
-        insertSavingThrows(fullEntity.savingThrows.fastMap { it.toEntitySavingThrow(entityId) })
-        fullEntity.selectionLimits?.let {
-            insertSelectionLimits(it.toEntitySelectionLimits(entityId))
-        }
+
+        fullEntity.modifiers.fastForEach { insertModifiersGroup(entityId, it) }
 
         fullEntity.cls?.let { insertClassWithSpells(entityId, it) }
         fullEntity.race?.let { insertRace(it.toDnDRace(entityId)) }
