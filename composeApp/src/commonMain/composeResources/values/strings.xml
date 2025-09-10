@@ -158,6 +158,10 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="enter_health">Enter health</string>
     <string name="total_health_points_short">Total HP</string>
     <string name="health_cant_be_less_than_zero">Health cant be less than zero</string>
+    <!--saving-->
+    <string name="successfully_created_character">Character created successfully</string>
+    <string name="back_to_characters_list">Characters list</string>
+    <string name="go_to_character">Character</string>
     <!--common-->
     <string name="loading_character_error">Error when loading character</string>
     <string name="saving_data_error">Error when saving data</string>

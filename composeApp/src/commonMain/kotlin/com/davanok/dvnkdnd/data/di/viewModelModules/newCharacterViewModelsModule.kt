@@ -9,6 +9,7 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThr
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStatsLargeScreen.NewCharacterStatsLargeViewModel
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -21,7 +22,6 @@ fun newCharacterViewModelsModule() = module {
 
     viewModel { (vm: NewCharacterViewModel) ->
         NewCharacterMainViewModel(
-            get(),
             get(),
             get(),
             get(),
@@ -42,5 +42,8 @@ fun newCharacterViewModelsModule() = module {
     }
     viewModel { (vm: NewCharacterViewModel) ->
         NewCharacterHealthViewModel(vm)
+    }
+    viewModel { (vm: NewCharacterViewModel) ->
+        SavingNewCharacterViewModel(vm)
     }
 }

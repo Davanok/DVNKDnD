@@ -8,4 +8,6 @@ interface CharactersRepository {
     suspend fun getFullCharacter(characterId: Uuid): Result<CharacterFull?>
 
     suspend fun getCharactersMinList(): Result<List<CharacterMin>>
+
+    suspend fun saveCharacter(character: CharacterFull): Result<Uuid>
 }

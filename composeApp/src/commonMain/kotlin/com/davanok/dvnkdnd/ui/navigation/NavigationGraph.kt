@@ -27,6 +27,7 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThr
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStatsLargeScreen.NewCharacterStatsLargeScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.sharedKoinViewModel
@@ -210,7 +211,16 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
                 backStack.sharedKoinViewModel(navController)
             NewCharacterHealthScreen(
                 onBack = navController::navigateUp,
-                onContinue = { navController.navigate(Route.New.Character.Health) },
+                onContinue = { navController.navigate(Route.New.Character.Save) },
+                viewModel = koinInject { parametersOf(newCharacterViewModel) }
+            )
+        }
+        composable<Route.New.Character.Save> { backStack ->
+            val newCharacterViewModel: NewCharacterViewModel =
+                backStack.sharedKoinViewModel(navController)
+            SavingNewCharacterScreen(
+                onBack = { navController.navigateWithRemoveFromBackStack(Route.Main.CharactersList) },
+                onGoToCharacter = { navController.navigateWithRemoveFromBackStack(Route.CharacterFull(it)) },
                 viewModel = koinInject { parametersOf(newCharacterViewModel) }
             )
         }

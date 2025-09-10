@@ -24,4 +24,12 @@ class CharactersRepositoryImpl(
         }.onFailure {
             Napier.e("Error in getCharactersMinList", it)
         }
+
+    override suspend fun saveCharacter(character: CharacterFull) =
+        runCatching {
+            Napier.d { "saveCharacter" }
+            dao.saveCharacter(character)
+        }.onFailure {
+            Napier.e("Error in saveCharacter", it)
+        }
 }

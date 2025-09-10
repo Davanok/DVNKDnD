@@ -27,6 +27,7 @@ sealed interface Route {
             @Serializable data object SavingThrows : Route
             @Serializable data object Skills : Route
             @Serializable data object Health : Route
+            @Serializable data object Save : Route
         }
         @Serializable data object Item : Route
         // custom

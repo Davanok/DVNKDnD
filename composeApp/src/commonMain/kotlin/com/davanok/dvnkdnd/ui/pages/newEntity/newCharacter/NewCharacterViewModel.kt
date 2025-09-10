@@ -8,6 +8,7 @@ import androidx.compose.ui.util.fastSumBy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSavingThrows
@@ -207,6 +208,11 @@ class NewCharacterViewModel(
             baseHealth = baseHealth
         )
     }
+
+    suspend fun saveCharacter() =
+        charactersRepository.saveCharacter(newCharacterState.toCharacterFull()).onSuccess {
+            newCharacterState = NewCharacter()
+        }
 }
 
 private data class NewCharacterWithFullEntities(
@@ -299,4 +305,23 @@ private data class NewCharacter(
             .fastFlatMap { it.modifierBonuses }
             .fastFilter { it.id in selectedModifierBonuses }
             .toDnDModifiersGroup()
+
+    @Suppress("KotlinUnreachableCode")
+    fun toCharacterFull() = CharacterFull(
+        character = TODO(),
+        images = TODO(),
+        coins = TODO(),
+        stats = TODO(),
+        health = TODO(),
+        usedSpells = TODO(),
+        classes = TODO(),
+        race = TODO(),
+        subRace = TODO(),
+        background = TODO(),
+        subBackground = TODO(),
+        feats = TODO(),
+        selectedModifierBonuses = TODO(),
+        selectedSkills = TODO(),
+        selectedProficiencies = TODO()
+    )
 }

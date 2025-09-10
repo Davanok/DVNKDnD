@@ -8,7 +8,7 @@ import androidx.compose.ui.util.fastForEach
 import com.davanok.dvnkdnd.data.model.dndEnums.Stats
 import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithSavingThrows
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSavingThrow
-import com.davanok.dvnkdnd.data.model.types.UiSelectableState
+import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import kotlin.uuid.Uuid
 
 class SavingThrowsTableState(
