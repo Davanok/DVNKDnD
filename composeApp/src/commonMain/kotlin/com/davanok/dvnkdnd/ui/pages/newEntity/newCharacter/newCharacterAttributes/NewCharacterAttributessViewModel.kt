@@ -1,12 +1,15 @@
-package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
+package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes
 
+import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFlatMap
+import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
-import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
@@ -32,34 +35,37 @@ class NewCharacterStatsViewModel(
     private val _uiState = MutableStateFlow(NewCharacterStatsUiState(isLoading = true))
     val uiState: StateFlow<NewCharacterStatsUiState> = _uiState
 
+    // modifierId to (selection limit, modifierIds in group)
     private var modifierInfo: Map<Uuid, Pair<Int, Set<Uuid>>> = emptyMap()
 
     fun removeWarning() {
         _uiState.value = _uiState.value.copy(error = null)
     }
 
-    fun selectCreationOption(option: StatsCreationOptions) {
-        _uiState.value = _uiState.value.copy(selectedCreationOptions = option)
+    fun selectAttributeSelectorType(option: AttributesSelectorType) {
+        _uiState.value = _uiState.value.copy(attributesSelectorType = option)
     }
 
     fun loadCharacterWithAllModifiers() {
         val character = newCharacterViewModel.getCharacterWithAllModifiers()
 
-        val allCharacterEntities = character.entities
+        val attributeModifiersGroups = character.entities
+            .fastFlatMap { it.modifiersGroups }
+            .fastFilter { it.target == DnDModifierTargetType.ATTRIBUTE }
 
-        modifierInfo = allCharacterEntities
-            .fastFlatMap { entity ->
-                entity.modifiers.map { mod ->
-                    mod.id to (entity.selectionLimit to entity.modifiers.map { it.id }.toSet())
+        modifierInfo = attributeModifiersGroups
+            .fastFlatMap { group ->
+                group.modifiers.fastMap { mod ->
+                    mod.id to (group.selectionLimit to group.modifiers.map { it.id }.toSet())
                 }
             }.toMap()
 
         _uiState.update {
             it.copy(
                 character = character.character,
-                modifiers = character.characterStats ?: DnDAttributesGroup.Default,
-                selectedModifiersBonuses = character.selectedModifierBonuses.toSet(),
-                allEntitiesWithModifiers = allCharacterEntities,
+                modifiers = character.characterAttributes,
+                selectedAttributesBonuses = character.selectedModifiers.toSet(),
+                allModifiersGroups = attributeModifiersGroups,
 
                 isLoading = false
             )
@@ -70,8 +76,8 @@ class NewCharacterStatsViewModel(
         _uiState.value = _uiState.value.copy(modifiers = modifiers)
     }
 
-    fun selectModifier(modifier: DnDModifierBonus) {
-        val current = _uiState.value.selectedModifiersBonuses.toMutableSet()
+    fun selectModifier(modifier: DnDModifier) {
+        val current = _uiState.value.selectedAttributesBonuses.toMutableSet()
         val (limit, group) = modifierInfo[modifier.id] ?: (0 to emptySet())
 
         if (!current.remove(modifier.id)) {
@@ -80,12 +86,12 @@ class NewCharacterStatsViewModel(
                 current.add(modifier.id)
             }
         }
-        _uiState.value = _uiState.value.copy(selectedModifiersBonuses = current)
+        _uiState.value = _uiState.value.copy(selectedAttributesBonuses = current)
     }
 
     private suspend fun checkSelectedModifierBonuses(): Boolean {
         val state = _uiState.value
-        if (state.selectedCreationOptions == StatsCreationOptions.POINT_BUY) {
+        if (state.attributesSelectorType == AttributesSelectorType.POINT_BUY) {
             val modifiersSum =
                 calculateBuyingModifiersSum(
                     state
@@ -103,7 +109,7 @@ class NewCharacterStatsViewModel(
             }
         }
 
-        val selected = state.selectedModifiersBonuses
+        val selected = state.selectedAttributesBonuses
 
         val limitsByGroup: Map<Set<Uuid>, Int> = modifierInfo
             .values
@@ -133,8 +139,8 @@ class NewCharacterStatsViewModel(
         if (checkSelectedModifierBonuses()) {
             val state = _uiState.value
             newCharacterViewModel.setCharacterModifiers(
-                stats = state.modifiers,
-                selectedBonuses = state.selectedModifiersBonuses.toList()
+                attributes = state.modifiers,
+                selectedModifiers = state.selectedAttributesBonuses.toList()
             ).onFailure { thr ->
                 _uiState.value = state.copy(
                     error = UiError.Critical(
@@ -153,7 +159,7 @@ class NewCharacterStatsViewModel(
     }
 }
 
-enum class StatsCreationOptions(val title: StringResource) {
+enum class AttributesSelectorType(val title: StringResource) {
     POINT_BUY(Res.string.point_buy_stats_option),
     STANDARD_ARRAY(Res.string.standard_array_stats_option),
     MANUAL(Res.string.manual_stats_option)
@@ -162,10 +168,10 @@ enum class StatsCreationOptions(val title: StringResource) {
 data class NewCharacterStatsUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
-    val selectedCreationOptions: StatsCreationOptions = StatsCreationOptions.POINT_BUY,
+    val attributesSelectorType: AttributesSelectorType = AttributesSelectorType.POINT_BUY,
 
     val character: CharacterShortInfo = CharacterShortInfo(),
     val modifiers: DnDAttributesGroup = DnDAttributesGroup.Default,
-    val selectedModifiersBonuses: Set<Uuid> = emptySet(),
-    val allEntitiesWithModifiers: List<DnDEntityWithModifiers> = emptyList()
+    val selectedAttributesBonuses: Set<Uuid> = emptySet(),
+    val allModifiersGroups: List<DnDModifiersGroup> = emptyList()
 )

@@ -25,8 +25,8 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth.Ne
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows.NewCharacterSavingThrowsScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsScreen
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsScreen
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStatsLargeScreen.NewCharacterStatsLargeScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterAttributesScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScreen.NewCharacterStatsLargeScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
 import org.koin.compose.koinInject
@@ -167,40 +167,16 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         composable<Route.New.Character.Stats> { backStack ->
             val newCharacterViewModel: NewCharacterViewModel =
                 backStack.sharedKoinViewModel(navController)
-            val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-            NewCharacterStatsScreen(
+            NewCharacterAttributesScreen(
                 onBack = navController::navigateUp,
-                onContinue = {
-                    if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT)
-                        navController.navigate(Route.New.Character.StatsLarge)
-                    else
-                        navController.navigate(Route.New.Character.SavingThrows)
-                             },
+                onContinue = { navController.navigate(Route.New.Character.Throws) },
                 viewModel = koinInject { parametersOf(newCharacterViewModel) }
             )
         }
-        composable<Route.New.Character.StatsLarge> { backStack ->
+        composable<Route.New.Character.Throws> { backStack ->
             val newCharacterViewModel: NewCharacterViewModel =
                 backStack.sharedKoinViewModel(navController)
             NewCharacterStatsLargeScreen(
-                onBack = navController::navigateUp,
-                onContinue = { navController.navigate(Route.New.Character.Health) },
-                viewModel = koinInject { parametersOf(newCharacterViewModel) }
-            )
-        }
-        composable<Route.New.Character.SavingThrows> { backStack ->
-            val newCharacterViewModel: NewCharacterViewModel =
-                backStack.sharedKoinViewModel(navController)
-            NewCharacterSavingThrowsScreen(
-                onBack = navController::navigateUp,
-                onContinue = { navController.navigate(Route.New.Character.Skills) },
-                viewModel = koinInject { parametersOf(newCharacterViewModel) }
-            )
-        }
-        composable<Route.New.Character.Skills> { backStack ->
-            val newCharacterViewModel: NewCharacterViewModel =
-                backStack.sharedKoinViewModel(navController)
-            NewCharacterSkillsScreen(
                 onBack = navController::navigateUp,
                 onContinue = { navController.navigate(Route.New.Character.Health) },
                 viewModel = koinInject { parametersOf(newCharacterViewModel) }

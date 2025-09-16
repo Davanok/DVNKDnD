@@ -146,6 +146,7 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="saving_throw">Saving throw</string>
     <string name="not_all_available_saving_throws_selected">Not all available savingThrows selected</string>
     <!--skills-->
+    <string name="skills">Skills</string>
     <string name="new_character_skills_screen_title">Skills</string>
     <string name="not_all_available_skills_selected">Not all available skills selected</string>
     <string name="selected_value">Selected: %1$d / %2$d</string>
@@ -181,4 +182,33 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="state_checking_data">Checking data</string>
     <string name="state_loading_full_entities">Loading full entities</string>
     <string name="state_updating_entities">Updating entities</string>
+
+    <!-- operation signs -->
+    <string name="base_value_replace">Current</string>
+    <!-- type 1 (infix/unary with one param) -->
+    <string name="operation_sign_sum">+ %1$d</string>
+    <string name="operation_sign_sub">- %1$d</string>
+    <string name="operation_sign_mul">* %1$d</string>
+    <string name="operation_sign_div">/ %1$d</string>
+    <string name="operation_sign_sqrt">√(%1$s)</string>
+    <string name="operation_sign_mod">%% %1$d</string>
+    <string name="operation_sign_pow">^ %1$d</string>
+    <string name="operation_sign_other">? %1$d</string>
+    <!-- type 2 (two args) -->
+    <string name="operation_sign_min">min(%1$s, %2$s)</string>
+    <string name="operation_sign_max">max(%1$s, %2$s)</string>
+    <string name="operation_sign_avg">avg(%1$s, %2$s)</string>
+    <string name="operation_sign_root">√[%2$d](%1$s)</string>
+    <!-- type 3 (unary wrappers) -->
+    <string name="operation_sign_fact">%1$s!</string>
+    <string name="operation_sign_abs">|%1$s|</string>
+    <string name="operation_sign_round">round(%1$s)</string>
+    <string name="operation_sign_ceil">ceil(%1$s)</string>
+    <string name="operation_sign_floor">floor(%1$s)</string>
+
+    <!--value sources-->
+    <string name="value_source_const">Constant</string>
+    <string name="value_source_character_level">Character level</string>
+    <string name="value_source_entity_level">Entity level</string>
+    <string name="value_source_proficiency_bonus">Prof. bonus</string>
 </resources>

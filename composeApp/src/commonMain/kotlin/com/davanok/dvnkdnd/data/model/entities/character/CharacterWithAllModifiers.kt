@@ -11,19 +11,19 @@ import kotlin.uuid.Uuid
 data class CharacterWithAllModifiers(
     val character: CharacterShortInfo,
     val proficiencyBonus: Int,
-    val characterStats: DnDAttributesGroup?,
+    val characterAttributes: DnDAttributesGroup,
 
-    val selectedModifiers: List<Uuid>,
+    val selectedModifiers: Set<Uuid>,
     val entities: List<DnDEntityWithModifiers>
 )
 
 @Immutable
 data class DnDEntityWithModifiers(
     val entity: DnDEntityMin,
-    val modifiers: List<DnDModifiersGroup>,
+    val modifiersGroups: List<DnDModifiersGroup>,
 )
 
 fun DnDFullEntity.toEntityWithModifiers() = DnDEntityWithModifiers(
     entity = toDnDEntityMin(),
-    modifiers = modifiers
+    modifiersGroups = modifiersGroups
 )

@@ -29,7 +29,7 @@ data class Character(
     @ColumnInfo(index = true) val background: Uuid?,
     @ColumnInfo("sub_background", index = true) val subBackground: Uuid?,
     val level: Int = 1,
-    @ColumnInfo("proficiency_bonus") val proficiencyBonus: Int = 2,
+    @ColumnInfo("proficiency_bonus") val proficiencyBonus: Int? = null, // null if calculate
     val source: String? = null,
     @ColumnInfo("image") val image: Path? = null
 )

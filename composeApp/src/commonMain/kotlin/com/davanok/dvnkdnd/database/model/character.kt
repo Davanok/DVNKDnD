@@ -130,7 +130,7 @@ data class DbFullCharacter(
         character = character.toCharacterMin(),
         images = images.fastMap { DatabaseImage(it.id, it.path) },
         coins = coins?.toDnDCoinsGroup(),
-        stats = stats?.toAttributesGroup(),
+        attributes = stats?.toAttributesGroup(),
         health = health?.toDnDCharacterHealth(),
         usedSpells = usedSpells?.usedSpells.orEmpty(),
         classes = classes.fastMap { it.toCharacterClassInfo() },

@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.model.dndEnums
 
+import androidx.compose.ui.util.fastFilter
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.acrobatics
 import dvnkdnd.composeapp.generated.resources.animal_handling
@@ -21,7 +22,7 @@ import dvnkdnd.composeapp.generated.resources.stealth
 import dvnkdnd.composeapp.generated.resources.survival
 import org.jetbrains.compose.resources.StringResource
 
-enum class Skills(val stat: Attributes, val stringRes: StringResource) {
+enum class Skills(val attribute: Attributes, val stringRes: StringResource) {
     ATHLETICS       (Attributes.STRENGTH,     Res.string.athletics),
     ACROBATICS      (Attributes.DEXTERITY,    Res.string.acrobatics),
     SLEIGHT_OF_HAND (Attributes.DEXTERITY,    Res.string.sleight_of_hand),
@@ -42,3 +43,4 @@ enum class Skills(val stat: Attributes, val stringRes: StringResource) {
     PERSUASION      (Attributes.CHARISMA,     Res.string.persuasion)
 }
 
+fun Attributes.skills() = Skills.entries.fastFilter { it.attribute == this }

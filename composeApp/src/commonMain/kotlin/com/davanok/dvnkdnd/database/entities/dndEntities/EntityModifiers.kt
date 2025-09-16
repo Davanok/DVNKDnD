@@ -6,8 +6,8 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierType
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDTargetType
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import kotlin.uuid.Uuid
@@ -16,27 +16,27 @@ import kotlin.uuid.Uuid
     tableName = "entity_modifiers_groups",
     foreignKeys = [
         ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
-    ],
-    indices = [Index(value = ["entity_id", "type", "target"], unique = true)]
+    ]
 )
 data class EntityModifiersGroup(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
 
-    val type: DnDModifierType,
-    val target: DnDTargetType,
+    val target: DnDModifierTargetType,
     val operation: DnDModifierOperation,
+    @ColumnInfo("value_source")
+    val valueSource: DnDModifierValueSource,
 
     val name: String,
     val description: String?,
     @ColumnInfo("selection_limit") val selectionLimit: Int,
     val priority: Int,
 
-    @ColumnInfo(name = "clamp_min") val clampMin: Double? = null,
-    @ColumnInfo(name = "clamp_max") val clampMax: Double? = null,
+    @ColumnInfo(name = "clamp_min") val clampMin: Int? = null,
+    @ColumnInfo(name = "clamp_max") val clampMax: Int? = null,
 
-    @ColumnInfo(name = "min_base_value") val minBaseValue: Double? = null,
-    @ColumnInfo(name = "max_base_value") val maxBaseValue: Double? = null,
+    @ColumnInfo(name = "min_base_value") val minBaseValue: Int? = null,
+    @ColumnInfo(name = "max_base_value") val maxBaseValue: Int? = null,
 )
 
 @Entity(
@@ -51,7 +51,7 @@ data class EntityModifier(
     @ColumnInfo("group_id", index = true) val groupId: Uuid,
     val selectable: Boolean,
     val target: String,
-    val value: Float
+    val value: Double
 )
 
 

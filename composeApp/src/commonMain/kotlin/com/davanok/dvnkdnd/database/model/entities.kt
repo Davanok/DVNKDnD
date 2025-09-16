@@ -245,9 +245,9 @@ data class DbModifiersGroups(
 ) {
     fun toDnDModifiersGroup() = DnDModifiersGroup(
         id = group.id,
-        type = group.type,
         target = group.target,
         operation = group.operation,
+        valueSource = group.valueSource,
         name = group.name,
         description = group.description,
         selectionLimit = group.selectionLimit,
@@ -331,7 +331,7 @@ data class DbFullEntity(
         name = base.name,
         description = base.description,
         source = base.source,
-        modifiers = modifiers.fastMap { it.toDnDModifiersGroup() },
+        modifiersGroups = modifiers.fastMap { it.toDnDModifiersGroup() },
         proficiencies = proficiencies.fastMap { it.toJoinProficiency() },
         abilities = abilities.fastMap { it.toAbilityLink() },
         cls = cls?.toClassWithSpells(),

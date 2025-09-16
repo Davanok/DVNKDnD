@@ -38,7 +38,7 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
 
         insertEntity(fullEntity.toBaseEntity())
 
-        fullEntity.modifiers.fastForEach { insertModifiersGroup(entityId, it) }
+        fullEntity.modifiersGroups.fastForEach { insertModifiersGroup(entityId, it) }
 
         fullEntity.cls?.let { insertClassWithSpells(entityId, it) }
         fullEntity.race?.let { insertRace(it.toDnDRace(entityId)) }

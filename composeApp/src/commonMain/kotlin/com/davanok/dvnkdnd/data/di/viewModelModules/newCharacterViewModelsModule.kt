@@ -7,8 +7,8 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewC
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.searchSheet.SearchSheetViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows.NewCharacterSavingThrowsViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsViewModel
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats.NewCharacterStatsViewModel
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStatsLargeScreen.NewCharacterStatsLargeViewModel
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterStatsViewModel
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScreen.NewCharacterThrowsViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -38,7 +38,7 @@ fun newCharacterViewModelsModule() = module {
         NewCharacterSavingThrowsViewModel(vm)
     }
     viewModel { (vm: NewCharacterViewModel) ->
-        NewCharacterStatsLargeViewModel(vm)
+        NewCharacterThrowsViewModel(vm)
     }
     viewModel { (vm: NewCharacterViewModel) ->
         NewCharacterHealthViewModel(vm)

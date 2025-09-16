@@ -1,28 +1,25 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
 
 import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
-import androidx.compose.ui.util.fastSumBy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
+import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterClassInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSavingThrows
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllSkills
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithHealth
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithSavingThrowsAndSkills
+import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithModifiers
-import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithSavingThrows
-import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithSkills
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toDnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
@@ -42,9 +39,7 @@ class NewCharacterViewModel(
     fun clear() {
         newCharacterState = newCharacterState.copy(
             character = NewCharacterWithFullEntities(),
-            selectedModifierBonuses = emptyList(),
-            selectedSavingThrows = emptyList(),
-            selectedSkills = emptyList()
+            selectedModifiers = emptySet()
         )
     }
 
@@ -79,9 +74,7 @@ class NewCharacterViewModel(
         }
         newCharacterState = newCharacterState.copy(
             character = fullCharacter,
-            selectedModifierBonuses = fullCharacter.getNotSelectableModifiers(),
-            selectedSavingThrows = fullCharacter.getNotSelectableSavingThrows(),
-            selectedSkills = fullCharacter.getNotSelectableSkills(),
+            selectedModifiers = fullCharacter.getNotSelectableModifiers()
         )
     }
 
@@ -114,80 +107,26 @@ class NewCharacterViewModel(
     fun getCharacterWithAllModifiers() = newCharacterState.run {
         CharacterWithAllModifiers(
             character = character.toCharacterShortInfo(),
-            characterStats = characterStats,
-            selectedModifierBonuses = selectedModifierBonuses,
+            proficiencyBonus = proficiencyBonus,
+            characterAttributes = characterAttributes,
+            selectedModifiers = selectedModifiers,
             entities = character.entities
-                .fastMap { it.toEntityWithModifiers() }
-                .fastFilter { it.modifiers.isNotEmpty() }
+                .fastFilteredMap(
+                    predicate = { it.modifiersGroups.isNotEmpty() },
+                    transform = { it.toEntityWithModifiers() }
+                )
         )
     }
 
-    fun setCharacterModifiers(stats: DnDAttributesGroup, selectedBonuses: List<Uuid>) = runCatching {
+    fun setCharacterModifiers(attributes: DnDAttributesGroup, selectedModifiers: List<Uuid>) = runCatching {
         newCharacterState = newCharacterState.copy(
-            characterStats = stats,
-            selectedModifierBonuses = selectedBonuses
+            characterAttributes = attributes,
+            selectedModifiers = newCharacterState.selectedModifiers + selectedModifiers
         )
     }
-    fun getCharacterWithSavingThrowsAndSkills() = newCharacterState.run {
-        CharacterWithSavingThrowsAndSkills(
-            character = character.toCharacterShortInfo(),
-            proficiencyBonus = proficiencyBonusByLevel(1),
-            stats = calculateModifiersSum(),
-
-            selectedSavingThrows = selectedSavingThrows,
-            savingThrowsEntities = character.entities
-                    .fastMap { it.toEntityWithSavingThrows() }
-                    .fastFilter { it.savingThrows.isNotEmpty() },
-
-            selectedSkills = selectedSkills,
-            skillsEntities = character.entities
-                .fastMap { it.toEntityWithSkills() }
-                .fastFilter { it.skills.isNotEmpty() }
-        )
-    }
-    fun setCharacterSavingThrowsAndSkills(
-        selectedSavingThrows: List<Uuid>,
-        selectedSkills: List<Uuid>
-    ) = runCatching {
+    fun setCharacterSelectedModifiers(selectedModifiers: Set<Uuid>) = runCatching {
         newCharacterState = newCharacterState.copy(
-            selectedSavingThrows = selectedSavingThrows,
-            selectedSkills = selectedSkills
-        )
-    }
-
-    fun getCharacterWithAllSavingThrows() = newCharacterState.run {
-        CharacterWithAllSavingThrows(
-            character = character.toCharacterShortInfo(),
-            proficiencyBonus = proficiencyBonusByLevel(1),
-            stats = calculateModifiersSum(),
-            selectedSavingThrows = selectedSavingThrows,
-            entities = character.entities
-                .fastMap { it.toEntityWithSavingThrows() }
-                .fastFilter { it.savingThrows.isNotEmpty() }
-        )
-    }
-
-    fun setCharacterSavingThrows(selectedSavingThrows: List<Uuid>) = runCatching {
-        newCharacterState = newCharacterState.copy(
-            selectedSavingThrows = selectedSavingThrows
-        )
-    }
-
-    fun getCharacterWithAllSkills() = newCharacterState.run {
-        CharacterWithAllSkills(
-            character = character.toCharacterShortInfo(),
-            proficiencyBonus = proficiencyBonusByLevel(1),
-            stats = calculateModifiersSum(),
-            selectedSkills = selectedSkills,
-            entities = character.entities
-                .fastMap { it.toEntityWithSkills() }
-                .fastFilter { it.skills.isNotEmpty() }
-        )
-    }
-
-    fun setCharacterSkills(selectedSkills: List<Uuid>) = runCatching {
-        newCharacterState = newCharacterState.copy(
-            selectedSkills = selectedSkills
+            selectedModifiers = newCharacterState.selectedModifiers + selectedModifiers
         )
     }
 
@@ -195,11 +134,7 @@ class NewCharacterViewModel(
         CharacterWithHealth(
             character = character.toCharacterShortInfo(),
             healthDice = character.cls?.cls?.hitDice,
-            constitution = characterStats.constitution +
-                    character.entities
-                        .fastFlatMap { it.modifierBonuses }
-                        .fastFilter { it.stat == Attributes.CONSTITUTION && it.id in selectedModifierBonuses }
-                        .fastSumBy { it.modifier },
+            constitution = characterAttributes.constitution,
             baseHealth = baseHealth
         )
     }
@@ -250,21 +185,15 @@ private data class NewCharacterWithFullEntities(
         subBackground = subBackground?.toDnDEntityMin()
     )
 
-    fun getNotSelectableModifiers(): List<Uuid> =
+    fun getNotSelectableModifiers(): Set<Uuid> =
         entities
-            .fastFlatMap { it.modifierBonuses }
-            .fastFilter { !it.selectable }
-            .fastMap { it.id }
-    fun getNotSelectableSavingThrows(): List<Uuid> =
-        entities
-            .fastFlatMap { it.savingThrows }
-            .fastFilter { !it.selectable }
-            .fastMap { it.id }
-    fun getNotSelectableSkills(): List<Uuid> =
-        entities
-            .fastFlatMap { it.skills }
-            .fastFilter { !it.selectable }
-            .fastMap { it.id }
+            .fastFlatMap { it.modifiersGroups }
+            .fastFlatMap { it.modifiers }
+            .fastFilteredMap(
+                predicate = { !it.selectable },
+                transform = { it.id }
+            )
+            .toSet()
 
     fun toCharacterShortInfo() = CharacterShortInfo(
         name = name,
@@ -292,36 +221,58 @@ private data class NewCharacterWithFullEntities(
 private data class NewCharacter(
     val character: NewCharacterWithFullEntities = NewCharacterWithFullEntities(),
 
-    val characterStats: DnDAttributesGroup = DnDAttributesGroup.Default,
-    val selectedModifierBonuses: List<Uuid> = emptyList(),
+    val characterAttributes: DnDAttributesGroup = DnDAttributesGroup.Default,
+    val selectedModifiers: Set<Uuid> = emptySet(),
 
-    val selectedSkills: List<Uuid> = emptyList(),
-    val selectedSavingThrows: List<Uuid> = emptyList(),
+    val level: Int = 1,
+    val proficiencyBonus: Int = proficiencyBonusByLevel(level),
 
     val baseHealth: Int = 0 // without constitution bonus
 ) {
-    fun calculateModifiersSum(): DnDAttributesGroup =
-        characterStats + character.entities
-            .fastFlatMap { it.modifierBonuses }
-            .fastFilter { it.id in selectedModifierBonuses }
-            .toDnDAttributesGroup()
+    fun toCharacterFull(): CharacterFull {
+        val characterMin = CharacterMin(
+            id = Uuid.random(),
+            userId = null,
+            name = character.name,
+            level = 1,
+            image = character.mainImage,
+        )
 
-    @Suppress("KotlinUnreachableCode")
-    fun toCharacterFull() = CharacterFull(
-        character = TODO(),
-        images = TODO(),
-        coins = TODO(),
-        stats = TODO(),
-        health = TODO(),
-        usedSpells = TODO(),
-        classes = TODO(),
-        race = TODO(),
-        subRace = TODO(),
-        background = TODO(),
-        subBackground = TODO(),
-        feats = TODO(),
-        selectedModifierBonuses = TODO(),
-        selectedSkills = TODO(),
-        selectedProficiencies = TODO()
-    )
+        val dbImages = character.images.map { path -> DatabaseImage(Uuid.random(), path) }
+
+        val classes = character.cls?.let {
+            listOf(
+                CharacterClassInfo(
+                    level = 1,
+                    cls = it,
+                    subCls = character.subCls
+                )
+            )
+        } ?: emptyList()
+
+
+        val totalHealth = DnDCharacterHealth(
+            max = baseHealth,
+            current = baseHealth,
+            temp = 0,
+            maxModifier = 0
+        )
+
+        return CharacterFull(
+            character = characterMin,
+            images = dbImages,
+            coins = null,
+            attributes = characterAttributes,
+            health = totalHealth,
+            usedSpells = emptyList(),
+            classes = classes,
+            race = character.race,
+            subRace = character.subRace,
+            background = character.background,
+            subBackground = character.subBackground,
+            feats = emptyList(),
+            selectedModifiers = selectedModifiers.toList(),
+            selectedProficiencies = emptyList()
+        )
+    }
 }

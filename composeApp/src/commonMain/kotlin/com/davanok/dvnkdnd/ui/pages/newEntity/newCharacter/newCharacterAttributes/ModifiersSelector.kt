@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
+package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
@@ -15,10 +15,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,16 +45,20 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFlatMap
+import androidx.compose.ui.util.fastFold
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMapIndexed
-import androidx.compose.ui.util.fastMapNotNull
-import androidx.compose.ui.util.fastSumBy
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
-import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
+import com.davanok.dvnkdnd.data.model.dndEnums.applyForString
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.applyOperation
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
@@ -68,16 +72,20 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
 
-private fun List<DnDEntityWithModifiers>.appliedModifiers(
-    stat: Attributes,
-    selectedModifiers: Set<Uuid>,
-) = fastFlatMap { it.modifiers }
-    .fastMapNotNull {
-        when {
-            it.stat != stat -> null
-            it.id !in selectedModifiers -> null
-            else -> it.modifier
-        }
+private data class AppliedModifier(
+    val value: Double,
+    val operation: DnDModifierOperation
+)
+
+private fun applyModifiers(base: Int, modifiers: List<AppliedModifier>) =
+    modifiers.fastFold(base) { acc, modifier -> applyOperation(acc, modifier.value, modifier.operation) }
+
+private fun List<DnDModifiersGroup>.appliedModifiers(attribute: Attributes, selectedModifiers: Set<Uuid>) =
+    fastFlatMap { group ->
+        group.modifiers.fastFilteredMap(
+            predicate = { it.targetAs<Attributes>() == attribute && it.id in selectedModifiers },
+            transform =  { AppliedModifier(it.value, group.operation) }
+        )
     }
 
 
@@ -111,12 +119,12 @@ private fun approximateToDefault(input: DnDAttributesGroup): DnDAttributesGroup 
 
 @Composable
 fun ModifiersSelector(
-    selectedCreationOption: StatsCreationOptions,
-    allEntitiesWithModifiers: List<DnDEntityWithModifiers>,
-    selectedModifiersBonuses: Set<Uuid>,
+    selectedCreationOption: AttributesSelectorType,
+    allModifiersGroups: List<DnDModifiersGroup>,
+    selectedAttributeModifiers: Set<Uuid>,
     modifiers: DnDAttributesGroup,
     onModifiersChange: (DnDAttributesGroup) -> Unit,
-    onSelectModifiers: (DnDModifierBonus) -> Unit,
+    onSelectModifiers: (DnDModifier) -> Unit,
 ) {
     Crossfade(
         modifier = Modifier.fillMaxSize(),
@@ -126,27 +134,27 @@ fun ModifiersSelector(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (selectorType) {
-                StatsCreationOptions.POINT_BUY -> PointBuyModifiersSelector(
+                AttributesSelectorType.POINT_BUY -> PointBuyModifiersSelector(
                     character = modifiers,
                     onChange = onModifiersChange,
-                    entitiesWithModifiers = allEntitiesWithModifiers,
-                    selectedModifiersBonuses = selectedModifiersBonuses,
+                    allModifiersGroups = allModifiersGroups,
+                    selectedAttributeModifiers = selectedAttributeModifiers,
                     onModifierSelected = onSelectModifiers
                 )
 
-                StatsCreationOptions.STANDARD_ARRAY -> StandardArrayModifiersSelector(
+                AttributesSelectorType.STANDARD_ARRAY -> StandardArrayModifiersSelector(
                     character = modifiers,
                     onChange = onModifiersChange,
-                    entitiesWithModifiers = allEntitiesWithModifiers,
-                    selectedModifiersBonuses = selectedModifiersBonuses,
+                    allModifiersGroups = allModifiersGroups,
+                    selectedAttributeModifiers = selectedAttributeModifiers,
                     onModifierSelected = onSelectModifiers
                 )
 
-                StatsCreationOptions.MANUAL -> ManualModifiersSelector(
+                AttributesSelectorType.MANUAL -> ManualModifiersSelector(
                     character = modifiers,
                     onChange = onModifiersChange,
-                    entitiesWithModifiers = allEntitiesWithModifiers,
-                    selectedModifiersBonuses = selectedModifiersBonuses,
+                    allModifiersGroups = allModifiersGroups,
+                    selectedAttributeModifiers = selectedAttributeModifiers,
                     onModifierSelected = onSelectModifiers
                 )
             }
@@ -158,9 +166,9 @@ fun ModifiersSelector(
 private fun ColumnScope.PointBuyModifiersSelector(
     character: DnDAttributesGroup,
     onChange: (DnDAttributesGroup) -> Unit,
-    entitiesWithModifiers: List<DnDEntityWithModifiers>,
-    selectedModifiersBonuses: Set<Uuid>,
-    onModifierSelected: (DnDModifierBonus) -> Unit,
+    allModifiersGroups: List<DnDModifiersGroup>,
+    selectedAttributeModifiers: Set<Uuid>,
+    onModifierSelected: (DnDModifier) -> Unit,
 ) {
     val modifiersSum =
         calculateBuyingModifiersSum(character.modifiers())
@@ -171,23 +179,23 @@ private fun ColumnScope.PointBuyModifiersSelector(
     )
     ModifiersSelectionGroup(
         modifier = Modifier.fillMaxSize(),
-        entitiesWithModifiers = entitiesWithModifiers,
-        selectedModifiersBonuses = selectedModifiersBonuses,
+        allModifiersGroups = allModifiersGroups,
+        selectedAttributeModifiers = selectedAttributeModifiers,
         onModifierSelected = onModifierSelected,
-    ) { stat ->
+    ) { attribute ->
         ModifierSelectorRow(
-            value = character[stat],
-            onValueChange = { onChange(character.set(stat, it)) },
-            label = stringResource(stat.stringRes),
+            value = character[attribute],
+            onValueChange = { onChange(character.set(attribute, it)) },
+            label = stringResource(attribute.stringRes),
             minValueCheck = { it >= DnDConstants.MIN_VALUE_TO_BUY },
             maxValueCheck = {
                 it <= DnDConstants.MAX_VALUE_TO_BUY && DnDConstants.BUYING_BALANCE >=
                         calculateBuyingModifiersSum(
-                            character.set(stat, it).modifiers()
+                            character.set(attribute, it).modifiers()
                         )
             },
-            additionalModifiers = entitiesWithModifiers
-                .appliedModifiers(stat, selectedModifiersBonuses)
+            additionalModifiers = allModifiersGroups
+                .appliedModifiers(attribute, selectedAttributeModifiers)
         )
     }
 }
@@ -197,9 +205,9 @@ private fun ColumnScope.PointBuyModifiersSelector(
 private fun StandardArrayModifiersSelector(
     character: DnDAttributesGroup,
     onChange: (DnDAttributesGroup) -> Unit,
-    entitiesWithModifiers: List<DnDEntityWithModifiers>,
-    selectedModifiersBonuses: Set<Uuid>,
-    onModifierSelected: (DnDModifierBonus) -> Unit,
+    allModifiersGroups: List<DnDModifiersGroup>,
+    selectedAttributeModifiers: Set<Uuid>,
+    onModifierSelected: (DnDModifier) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         onChange(approximateToDefault(character))
@@ -227,13 +235,13 @@ private fun StandardArrayModifiersSelector(
     val commonScrollState = rememberScrollState()
     ModifiersSelectionGroup(
         modifier = Modifier.fillMaxSize(),
-        entitiesWithModifiers = entitiesWithModifiers,
-        selectedModifiersBonuses = selectedModifiersBonuses,
+        allModifiersGroups = allModifiersGroups,
+        selectedAttributeModifiers = selectedAttributeModifiers,
         onModifierSelected = onModifierSelected,
-    ) { stat ->
+    ) { attribute ->
         Column {
             Text(
-                text = stringResource(stat.stringRes),
+                text = stringResource(attribute.stringRes),
                 maxLines = 1,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
@@ -254,12 +262,12 @@ private fun StandardArrayModifiersSelector(
                         DnDConstants.DEFAULT_ARRAY.forEach { value ->
                             key(value) {
                                 InputChip(
-                                    selected = value == character[stat],
+                                    selected = value == character[attribute],
                                     onClick = {
-                                        if (value == character[stat])
+                                        if (value == character[attribute])
                                             return@InputChip
                                         if (value !in modifiers)
-                                            onChange(character.set(stat, value))
+                                            onChange(character.set(attribute, value))
                                         else {
                                             val overlap = character
                                                 .toMap()
@@ -267,9 +275,9 @@ private fun StandardArrayModifiersSelector(
                                                 .keys.firstOrNull()
                                             var tmp = character
                                             if (overlap != null) {
-                                                tmp = tmp.set(overlap, character[stat])
+                                                tmp = tmp.set(overlap, character[attribute])
                                             }
-                                            onChange(tmp.set(stat, value))
+                                            onChange(tmp.set(attribute, value))
                                         }
                                     },
                                     label = { Text(text = value.toString()) }
@@ -308,13 +316,13 @@ private fun StandardArrayModifiersSelector(
                                 )
                         )
                 }
-                val statValue = character[stat] + entitiesWithModifiers.appliedModifiers(
-                    stat,
-                    selectedModifiersBonuses
-                ).sum()
-                val modifier = calculateModifier(statValue)
+                val attributeValue = applyModifiers(
+                    character[attribute], 
+                    allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
+                )
+                val modifier = calculateModifier(attributeValue)
                 val text = buildString {
-                    append(statValue)
+                    append(attributeValue)
                     append(" (")
                     append(modifier.toSignedString())
                     append(')')
@@ -341,104 +349,69 @@ private fun StandardArrayModifiersSelector(
 private fun ManualModifiersSelector(
     character: DnDAttributesGroup,
     onChange: (DnDAttributesGroup) -> Unit,
-    entitiesWithModifiers: List<DnDEntityWithModifiers>,
-    selectedModifiersBonuses: Set<Uuid>,
-    onModifierSelected: (DnDModifierBonus) -> Unit,
+    allModifiersGroups: List<DnDModifiersGroup>,
+    selectedAttributeModifiers: Set<Uuid>,
+    onModifierSelected: (DnDModifier) -> Unit,
 ) {
     ModifiersSelectionGroup(
         modifier = Modifier.fillMaxSize(),
-        entitiesWithModifiers = entitiesWithModifiers,
-        selectedModifiersBonuses = selectedModifiersBonuses,
+        allModifiersGroups = allModifiersGroups,
+        selectedAttributeModifiers = selectedAttributeModifiers,
         onModifierSelected = onModifierSelected,
-    ) { stat ->
+    ) { attribute ->
         ModifierSelectorRow(
-            value = character[stat],
-            onValueChange = { onChange(character.set(stat, it)) },
-            label = stringResource(stat.stringRes),
+            value = character[attribute],
+            onValueChange = { onChange(character.set(attribute, it)) },
+            label = stringResource(attribute.stringRes),
             minValueCheck = { true },
             maxValueCheck = { true },
-            additionalModifiers = entitiesWithModifiers
-                .appliedModifiers(stat, selectedModifiersBonuses)
+            additionalModifiers = allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
         )
     }
 }
 
 @Composable
 fun ModifiersSelectionGroup(
-    entitiesWithModifiers: List<DnDEntityWithModifiers>,
-    selectedModifiersBonuses: Set<Uuid>,
-    onModifierSelected: (DnDModifierBonus) -> Unit,
+    allModifiersGroups: List<DnDModifiersGroup>,
+    selectedAttributeModifiers: Set<Uuid>,
+    onModifierSelected: (DnDModifier) -> Unit,
     modifier: Modifier = Modifier,
-    modifierField: @Composable (stat: Attributes) -> Unit,
+    modifierField: @Composable (attribute: Attributes) -> Unit,
 ) {
-    val (
-        modBonusGroups,
-        selectionLimitsSum
-    ) = remember(entitiesWithModifiers) {
-        val modBonusGroups = entitiesWithModifiers
-            .fastFlatMap { it.modifiers }
-            .groupBy { it.modifier }
-            .toList()
-            .sortedBy { it.first }
-            .toMap()
-        val selectionLimitsSum = entitiesWithModifiers.fastSumBy { it.selectionLimit }
-
-        Pair(modBonusGroups, selectionLimitsSum)
-    }
-
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Spacer(Modifier.weight(1f))
-            modBonusGroups.keys.forEach { bonus ->
+    Row(modifier = modifier) {
+        Column {
+            Spacer(Modifier.height(48.dp))
+            Attributes.entries.fastForEach { attribute ->
+                Box(
+                    modifier = Modifier.height(48.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    modifierField(attribute)
+                }
+            }
+        }
+        allModifiersGroups.fastForEach { group ->
+            Column {
                 Text(
-                    text = bonus.toSignedString(),
-                    modifier = Modifier.width(48.dp),
+                    modifier = Modifier.size(48.dp),
+                    text = group.name,
                     textAlign = TextAlign.Center
                 )
             }
-        }
-        Spacer(Modifier.height(8.dp))
-
-
-        Attributes.entries.forEach { stat ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
+            Attributes.entries.fastForEach { attribute ->
                 Box(
-                    Modifier
-                        .weight(1f),
-                    contentAlignment = Alignment.CenterStart
+                    Modifier.size(48.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    modifierField(stat)
-                }
-
-                modBonusGroups.values.forEach { modifiers ->
-                    Box(
-                        Modifier
-                            .width(48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        modifiers
-                            .firstOrNull { it.stat == stat }
-                            ?.let { mod ->
-                                RadioButton(
-                                    selected = mod.id in selectedModifiersBonuses,
-                                    onClick = { onModifierSelected(mod) },
-                                    enabled = mod.selectable &&
-                                            (selectedModifiersBonuses.size < selectionLimitsSum ||
-                                                    mod.id in selectedModifiersBonuses)
-                                )
-                            }
-                    }
+                    group.modifiers
+                        .fastFilter { it.targetAs<Attributes>() == attribute }
+                        .fastForEach { modifier ->
+                            RadioButton(
+                                selected = modifier.id in selectedAttributeModifiers,
+                                onClick = { onModifierSelected(modifier) },
+                                enabled = modifier.selectable && (group.modifiers.count { it.id in selectedAttributeModifiers } < group.selectionLimit || modifier.id in selectedAttributeModifiers)
+                            )
+                        }
                 }
             }
         }
@@ -452,7 +425,7 @@ private fun ModifierSelectorRow(
     onValueChange: (Int) -> Unit,
     minValueCheck: (Int) -> Boolean,
     maxValueCheck: (Int) -> Boolean,
-    additionalModifiers: List<Int>,
+    additionalModifiers: List<AppliedModifier>,
     modifier: Modifier = Modifier,
     label: String,
 ) {
@@ -469,7 +442,7 @@ private fun ModifierSelectorRow(
         ModifiersText(
             label = label,
             value = value,
-            additionalModifiers = additionalModifiers,
+            appliedModifiers = additionalModifiers,
             modifier = Modifier.weight(1f)
         )
         IconButton(
@@ -489,7 +462,7 @@ private fun ModifiersText(
     label: String,
     value: Int,
     modifier: Modifier = Modifier,
-    additionalModifiers: List<Int>
+    appliedModifiers: List<AppliedModifier>
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     Column(
@@ -501,17 +474,19 @@ private fun ModifiersText(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary
         )
+        val sum = remember(value, appliedModifiers) {
+            applyModifiers(value, appliedModifiers)
+        }
         val text =
             if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT)
-                (value + additionalModifiers.sum()).toString()
+                sum.toString()
             else
                 buildString {
-                    append(value)
-                    additionalModifiers.fastForEach {
-                        append(it.toSignedString())
+                    appliedModifiers.fastFold(value.toString()) { acc, modifier ->
+                        modifier.operation.applyForString(acc, modifier.value)
                     }
                     append(" (")
-                    append(calculateModifier(value + additionalModifiers.sum()).toSignedString())
+                    append(calculateModifier(sum).toSignedString())
                     append(')')
                 }
         Text(

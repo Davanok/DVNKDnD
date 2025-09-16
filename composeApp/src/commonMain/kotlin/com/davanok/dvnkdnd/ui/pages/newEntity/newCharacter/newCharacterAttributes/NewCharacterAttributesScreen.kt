@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterStats
+package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,19 +28,19 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
-import com.davanok.dvnkdnd.data.model.entities.character.DnDEntityWithModifiers
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifierBonus
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
+import com.davanok.dvnkdnd.data.model.dndEnums.applyForString
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
-import com.davanok.dvnkdnd.ui.components.append
 import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
 import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterTopBarAdditionalContent
-import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
 import dvnkdnd.composeapp.generated.resources.modifiers_selectors_hint
@@ -50,7 +50,7 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
 @Composable
-fun NewCharacterStatsScreen(
+fun NewCharacterAttributesScreen(
     onBack: () -> Unit,
     onContinue: () -> Unit,
     viewModel: NewCharacterStatsViewModel
@@ -81,10 +81,10 @@ fun NewCharacterStatsScreen(
             onBackClick = onBack,
         ) {
             Content(
-                selectedCreationOption = uiState.selectedCreationOptions,
-                onOptionSelected = viewModel::selectCreationOption,
-                allEntitiesWithModifiers = uiState.allEntitiesWithModifiers,
-                selectedModifiersBonuses = uiState.selectedModifiersBonuses,
+                selectedCreationOption = uiState.attributesSelectorType,
+                onOptionSelected = viewModel::selectAttributeSelectorType,
+                allModifiersGroups = uiState.allModifiersGroups,
+                selectedModifiersBonuses = uiState.selectedAttributesBonuses,
                 modifiers = uiState.modifiers,
                 onModifiersChange = viewModel::setModifiers,
                 onSelectModifier = viewModel::selectModifier
@@ -95,13 +95,13 @@ fun NewCharacterStatsScreen(
 
 @Composable
 private fun Content(
-    selectedCreationOption: StatsCreationOptions,
-    onOptionSelected: (StatsCreationOptions) -> Unit,
-    allEntitiesWithModifiers: List<DnDEntityWithModifiers>,
+    selectedCreationOption: AttributesSelectorType,
+    onOptionSelected: (AttributesSelectorType) -> Unit,
+    allModifiersGroups: List<DnDModifiersGroup>,
     selectedModifiersBonuses: Set<Uuid>,
     modifiers: DnDAttributesGroup,
     onModifiersChange: (DnDAttributesGroup) -> Unit,
-    onSelectModifier: (DnDModifierBonus) -> Unit
+    onSelectModifier: (DnDModifier) -> Unit
 ) {
     var showInfoDialog by remember { mutableStateOf(false) }
     Column(
@@ -115,8 +115,8 @@ private fun Content(
 
         ModifiersSelector(
             selectedCreationOption = selectedCreationOption,
-            allEntitiesWithModifiers = allEntitiesWithModifiers,
-            selectedModifiersBonuses = selectedModifiersBonuses,
+            allModifiersGroups = allModifiersGroups,
+            selectedAttributeModifiers = selectedModifiersBonuses,
             modifiers = modifiers,
             onModifiersChange = onModifiersChange,
             onSelectModifiers = onSelectModifier
@@ -124,28 +124,28 @@ private fun Content(
     }
     if (showInfoDialog)
         AboutModifiersSelectorsDialog(
-            allEntitiesWithModifiers = allEntitiesWithModifiers,
+            allModifiersGroups = allModifiersGroups,
             selectedModifiersBonuses = selectedModifiersBonuses,
             onDismiss = { showInfoDialog = false }
         )
 }
 @Composable
 private fun CreationOptionsSelector(
-    selectedCreationOption: StatsCreationOptions,
-    onOptionSelected: (StatsCreationOptions) -> Unit,
+    selectedCreationOption: AttributesSelectorType,
+    onOptionSelected: (AttributesSelectorType) -> Unit,
     onInfoClick: () -> Unit
 ) {
     Row {
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier.weight(1f)
         ) {
-            StatsCreationOptions.entries.forEachIndexed { index, option ->
+            AttributesSelectorType.entries.forEachIndexed { index, option ->
                 SegmentedButton(
                     selected = selectedCreationOption == option,
                     onClick = { onOptionSelected(option) },
                     shape = SegmentedButtonDefaults.itemShape(
                         index = index,
-                        count = StatsCreationOptions.entries.size
+                        count = AttributesSelectorType.entries.size
                     ),
                     label = {
                         Text(
@@ -168,7 +168,7 @@ private fun CreationOptionsSelector(
 }
 @Composable
 private fun AboutModifiersSelectorsDialog(
-    allEntitiesWithModifiers: List<DnDEntityWithModifiers>,
+    allModifiersGroups: List<DnDModifiersGroup>,
     selectedModifiersBonuses: Set<Uuid>,
     onDismiss: () -> Unit
 ) {
@@ -186,31 +186,32 @@ private fun AboutModifiersSelectorsDialog(
 
             Text(
                 text = buildAnnotatedString {
-                    allEntitiesWithModifiers.fastForEach { entity ->
-                        if (entity.modifiers.isEmpty()) return@fastForEach
+                    allModifiersGroups.sortedBy { it.priority }.fastForEach { group ->
+                        if (group.modifiers.isEmpty()) return@fastForEach
                         withStyle(MaterialTheme.typography.labelLarge.toSpanStyle()) {
-                            append(entity.entity.type.stringRes)
-                            append(' ')
-                            append(entity.entity.name)
+                            append(group.name)
                         }
-                        entity.modifiers.groupBy { it.stat }.forEach { (stat, modifiers) ->
-                            append("\n\t")
-                            append(stat.stringRes)
-                            modifiers.fastForEach {
-                                append("\n\t\t")
-                                if (it.id in selectedModifiersBonuses)
-                                    withStyle(
-                                        LocalTextStyle.current
-                                            .copy(textDecoration = TextDecoration.LineThrough)
-                                            .toSpanStyle()
-                                    ) {
-                                        append(it.modifier.toSignedString())
-                                    }
-                                else
-                                    append(it.modifier.toSignedString())
-                                append(' ')
+                        group.modifiers
+                            .groupBy { it.targetAs<Attributes>() }
+                            .forEach { (attribute, modifiers) ->
+                                val attributeStr = stringResource(attribute.stringRes)
+                                append("\n\t")
+                                append(attributeStr)
+                                modifiers.fastForEach {
+                                    append("\n\t\t")
+                                    if (it.id in selectedModifiersBonuses)
+                                        withStyle(
+                                            LocalTextStyle.current
+                                                .copy(textDecoration = TextDecoration.Underline)
+                                                .toSpanStyle()
+                                        ) {
+                                            append(group.operation.applyForString(attributeStr, it.value))
+                                        }
+                                    else
+                                        append(group.operation.applyForString(attributeStr, it.value))
+                                    append(' ')
+                                }
                             }
-                        }
                         append('\n')
                     }
                 }.let {
