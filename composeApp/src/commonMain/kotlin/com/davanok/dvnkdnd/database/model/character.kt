@@ -10,6 +10,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCoinsGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterClass
@@ -20,7 +21,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
-import com.davanok.dvnkdnd.database.entities.character.CharacterStats
+import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 
 fun Character.toCharacterMin() = CharacterMin(
@@ -62,7 +63,7 @@ data class DbFullCharacter(
     val coins: CharacterCoins?,
 
     @Relation(parentColumn = "id", entityColumn = "id")
-    val stats: CharacterStats?,
+    val attributes: CharacterAttributes?,
     @Relation(parentColumn = "id", entityColumn = "id")
     val health: CharacterHealth?,
     @Relation(
@@ -130,7 +131,7 @@ data class DbFullCharacter(
         character = character.toCharacterMin(),
         images = images.fastMap { DatabaseImage(it.id, it.path) },
         coins = coins?.toDnDCoinsGroup(),
-        attributes = stats?.toAttributesGroup(),
+        attributes = attributes?.toAttributesGroup() ?: DnDAttributesGroup.Default,
         health = health?.toDnDCharacterHealth(),
         usedSpells = usedSpells?.usedSpells.orEmpty(),
         classes = classes.fastMap { it.toCharacterClassInfo() },

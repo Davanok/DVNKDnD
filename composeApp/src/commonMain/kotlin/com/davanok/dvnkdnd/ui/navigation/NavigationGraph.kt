@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.ui.navigation
 
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -14,18 +13,15 @@ import androidx.navigation.toRoute
 import androidx.savedstate.SavedState
 import androidx.savedstate.read
 import androidx.savedstate.write
-import androidx.window.core.layout.WindowWidthSizeClass
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
 import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen.LoadingDataScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterAttributesScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth.NewCharacterHealthScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows.NewCharacterSavingThrowsScreen
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsScreen
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterAttributesScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScreen.NewCharacterStatsLargeScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen

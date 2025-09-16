@@ -22,7 +22,7 @@ data class DnDFullEntity(
     val description: String,
     val source: String,
 
-    @SerialName("modifiers")
+    @SerialName("modifier_groups")
     val modifiersGroups: List<DnDModifiersGroup>,
 
     val proficiencies: List<JoinProficiency>,

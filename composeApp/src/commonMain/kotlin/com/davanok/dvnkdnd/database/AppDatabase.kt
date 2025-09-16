@@ -15,7 +15,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
-import com.davanok.dvnkdnd.database.entities.character.CharacterStats
+import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
@@ -56,7 +56,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         SpellAttackSave::class,
         Character::class,
         CharacterClass::class,
-        CharacterStats::class,
+        CharacterAttributes::class,
         CharacterHealth::class,
         CharacterSpellSlots::class,
         CharacterSelectedModifier::class,

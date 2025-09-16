@@ -56,14 +56,16 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun ModifierExtendedInfo.buildString(): String {
-    val value = if (valueSource == DnDModifierValueSource.CONST) {
-        val unaryOperations = setOf(DnDModifierOperation.ABS, DnDModifierOperation.ROUND, DnDModifierOperation.CEIL, DnDModifierOperation.FLOOR, DnDModifierOperation.FACT)
-        if (operation in unaryOperations && modifier.value == 0.0) null
+    val valueString = if (valueSource == DnDModifierValueSource.CONST) {
+        val unaryOps = setOf(DnDModifierOperation.ABS, DnDModifierOperation.ROUND, DnDModifierOperation.CEIL, DnDModifierOperation.FLOOR, DnDModifierOperation.FACT)
+        if (operation in unaryOps && modifier.value == 0.0) null
         else modifier.value.toString()
+    } else {
+        // valueSource has a string resource; convert to the localized string
+        stringResource(valueSource.stringRes)
     }
-    else stringResource(valueSource.stringRes)
 
-    return operation.applyForStringPreview(value)
+    return operation.applyForStringPreview(valueString)
 }
 
 

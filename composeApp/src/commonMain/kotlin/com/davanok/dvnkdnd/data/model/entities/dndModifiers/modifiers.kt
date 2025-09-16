@@ -1,7 +1,7 @@
 package com.davanok.dvnkdnd.data.model.entities.dndModifiers
 
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
-import com.davanok.dvnkdnd.database.entities.character.CharacterStats
+import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 
 data class DnDAttributesGroup(
     val strength: Int,
@@ -56,7 +56,7 @@ data class DnDAttributesGroup(
         val Default = DnDAttributesGroup(10, 10, 10, 10, 10, 10)
     }
 }
-fun CharacterStats.toAttributesGroup() = DnDAttributesGroup(
+fun CharacterAttributes.toAttributesGroup() = DnDAttributesGroup(
     strength = strength,
     dexterity = dexterity,
     constitution = constitution,

@@ -37,9 +37,9 @@ class EnumListAdapters {
     fun spellComponentsToString(value: List<SpellComponents>): String =
         GenericEnumListAdapters.toStringConverter(value)
     @TypeConverter
-    fun statsToList(value: String): List<Attributes> =
+    fun attributesToList(value: String): List<Attributes> =
         GenericEnumListAdapters.toListConverter(value)
     @TypeConverter
-    fun statsToString(value: List<Attributes>): String =
+    fun attributesToString(value: List<Attributes>): String =
         GenericEnumListAdapters.toStringConverter(value)
 }

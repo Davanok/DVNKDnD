@@ -12,10 +12,10 @@ import kotlin.uuid.Uuid
 
 // one to one
 @Entity(
-    tableName = "character_stats",
+    tableName = "character_attributes",
     foreignKeys = [ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
 )
-data class CharacterStats(
+data class CharacterAttributes(
     @PrimaryKey val id: Uuid,
     val strength: Int,
     val dexterity: Int,
@@ -50,7 +50,7 @@ data class CharacterSpellSlots(
 
 @Entity(
     tableName = "character_selected_modifier",
-    primaryKeys = ["character_id", "skill_id"],
+    primaryKeys = ["character_id", "modifier_id"],
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(EntityModifier::class, ["id"], ["modifier_id"], onDelete = ForeignKey.CASCADE)

@@ -26,7 +26,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellAttackLevelMod
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellAttackSaveInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellSlots
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.toWeaponDamageInfo
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDGenericModifier
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
@@ -257,7 +257,7 @@ data class DbModifiersGroups(
         minBaseValue = group.minBaseValue,
         maxBaseValue = group.maxBaseValue,
         modifiers = modifiers.fastMap {
-            DnDGenericModifier(
+            DnDModifier(
                 id = it.id,
                 selectable = it.selectable,
                 value = it.value,
@@ -270,7 +270,7 @@ data class DbFullEntity(
     @Embedded
     val base: DnDBaseEntity,
 
-    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    @Relation(EntityModifiersGroup::class, parentColumn = "id", entityColumn = "entity_id")
     val modifiers: List<DbModifiersGroups>,
 
     @Relation(EntityProficiency::class, parentColumn = "id", entityColumn = "entity_id")

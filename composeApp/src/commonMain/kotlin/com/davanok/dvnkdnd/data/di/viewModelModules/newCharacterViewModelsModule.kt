@@ -5,8 +5,6 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen.Loading
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth.NewCharacterHealthViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.searchSheet.SearchSheetViewModel
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSavingThrows.NewCharacterSavingThrowsViewModel
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterSkills.NewCharacterSkillsViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterStatsViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScreen.NewCharacterThrowsViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterViewModel
@@ -30,12 +28,6 @@ fun newCharacterViewModelsModule() = module {
     }
     viewModel { (vm: NewCharacterViewModel) ->
         NewCharacterStatsViewModel(vm)
-    }
-    viewModel { (vm: NewCharacterViewModel) ->
-        NewCharacterSkillsViewModel(vm)
-    }
-    viewModel { (vm: NewCharacterViewModel) ->
-        NewCharacterSavingThrowsViewModel(vm)
     }
     viewModel { (vm: NewCharacterViewModel) ->
         NewCharacterThrowsViewModel(vm)
