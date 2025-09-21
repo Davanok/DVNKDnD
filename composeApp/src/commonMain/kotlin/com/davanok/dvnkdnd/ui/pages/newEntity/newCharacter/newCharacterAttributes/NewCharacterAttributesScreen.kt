@@ -3,18 +3,24 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttribut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,16 +45,17 @@ import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
-import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
-import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterTopBarAdditionalContent
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
+import dvnkdnd.composeapp.generated.resources.back
+import dvnkdnd.composeapp.generated.resources.continue_str
 import dvnkdnd.composeapp.generated.resources.modifiers_selectors_hint
-import dvnkdnd.composeapp.generated.resources.new_character_stats_screen_title
+import dvnkdnd.composeapp.generated.resources.new_character_attributes_screen_title
 import dvnkdnd.composeapp.generated.resources.no_modifiers_for_info
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewCharacterAttributesScreen(
     onBack: () -> Unit,
@@ -71,16 +78,36 @@ fun NewCharacterAttributesScreen(
                 onBack = onBack
             )
         }
-        else -> NewEntityStepScaffold (
+        else -> Scaffold (
             modifier = Modifier.fillMaxSize(),
-            title = stringResource(Res.string.new_character_stats_screen_title),
-            additionalContent = {
-                NewCharacterTopBarAdditionalContent(uiState.character)
-            },
-            onNextClick = { viewModel.commit(onContinue) },
-            onBackClick = onBack,
-        ) {
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(stringResource(Res.string.new_character_attributes_screen_title))
+                    },
+                    navigationIcon = {
+                        IconButton(onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = stringResource(Res.string.back)
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { viewModel.commit(onContinue) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = stringResource(Res.string.continue_str)
+                            )
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
             Content(
+                modifier = Modifier.padding(paddingValues).fillMaxSize(),
                 selectedCreationOption = uiState.attributesSelectorType,
                 onOptionSelected = viewModel::selectAttributeSelectorType,
                 allModifiersGroups = uiState.allModifiersGroups,
@@ -95,6 +122,7 @@ fun NewCharacterAttributesScreen(
 
 @Composable
 private fun Content(
+    modifier: Modifier = Modifier,
     selectedCreationOption: AttributesSelectorType,
     onOptionSelected: (AttributesSelectorType) -> Unit,
     allModifiersGroups: List<DnDModifiersGroup>,
@@ -105,7 +133,7 @@ private fun Content(
 ) {
     var showInfoDialog by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     ) {
         CreationOptionsSelector(
             selectedCreationOption = selectedCreationOption,

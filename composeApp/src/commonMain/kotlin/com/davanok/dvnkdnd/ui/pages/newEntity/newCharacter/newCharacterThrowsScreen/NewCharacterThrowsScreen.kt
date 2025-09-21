@@ -15,11 +15,19 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -29,10 +37,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
+import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForStringPreview
 import com.davanok.dvnkdnd.data.model.dndEnums.skills
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
@@ -42,11 +50,11 @@ import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
-import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
-import com.davanok.dvnkdnd.ui.components.newEntity.newCharacter.NewCharacterTopBarAdditionalContent
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.new_character
+import dvnkdnd.composeapp.generated.resources.back
+import dvnkdnd.composeapp.generated.resources.continue_str
+import dvnkdnd.composeapp.generated.resources.new_character_throws_screen_title
 import dvnkdnd.composeapp.generated.resources.saving_throw
 import dvnkdnd.composeapp.generated.resources.skills
 import org.jetbrains.compose.resources.stringResource
@@ -54,24 +62,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
 
 
-@Composable
-fun ModifierExtendedInfo.buildString(): String {
-    val valueString = if (valueSource == DnDModifierValueSource.CONST) {
-        val unaryOps = setOf(DnDModifierOperation.ABS, DnDModifierOperation.ROUND, DnDModifierOperation.CEIL, DnDModifierOperation.FLOOR, DnDModifierOperation.FACT)
-        if (operation in unaryOps && modifier.value == 0.0) null
-        else modifier.value.toString()
-    } else {
-        // valueSource has a string resource; convert to the localized string
-        stringResource(valueSource.stringRes)
-    }
-
-    return operation.applyForStringPreview(valueString)
-}
-
-
 private val StatItemMinWidth = 200.dp
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewCharacterStatsLargeScreen(
     onBack: () -> Unit,
@@ -95,18 +89,34 @@ fun NewCharacterStatsLargeScreen(
             )
         }
 
-        else -> NewEntityStepScaffold (
+        else -> Scaffold(
             modifier = Modifier.fillMaxSize(),
-            title = uiState.character.name
-                .ifBlank { stringResource(Res.string.new_character) },
-            additionalContent = {
-                NewCharacterTopBarAdditionalContent(uiState.character) {
-
-                }
-            },
-            onNextClick = { viewModel.commit(onContinue) },
-            onBackClick = onBack,
-        ) {
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(stringResource(Res.string.new_character_throws_screen_title))
+                    },
+                    navigationIcon = {
+                        IconButton(onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = stringResource(Res.string.back)
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { viewModel.commit(onContinue) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = stringResource(Res.string.continue_str)
+                            )
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
             Content(
                 attributes = uiState.attributes,
                 savingThrows = uiState.savingThrows.mapValues { (_, v) -> v.first },
@@ -145,8 +155,8 @@ private fun Content(
             AttributeItem(
                 attribute = attribute,
                 attributeValue = attributes[attribute],
-                savingThrowModifiers = savingThrows[attribute]?: emptyList(),
-                savingThrowValue = savingThrowValues[attribute]?: 0,
+                savingThrowModifiers = savingThrows[attribute] ?: emptyList(),
+                savingThrowValue = savingThrowValues[attribute] ?: 0,
                 skillsModifiers = skills,
                 skillsValues = skillsValues,
                 onSelectSavingThrow = onSelectSavingThrow,
@@ -166,12 +176,13 @@ fun AttributeItem(
     skillsValues: Map<Skills, Int>,
     onSelectSavingThrow: (Uuid) -> Unit,
     onSelectSkill: (Uuid) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val calculatedModifier = remember { calculateModifier(attributeValue) }
+    val calculatedModifier = remember(attributeValue) { calculateModifier(attributeValue) }
 
     val compactView = remember(skillsModifiers) { skillsModifiers.values.all { it.size <= 1 } }
 
-    OutlinedCard {
+    OutlinedCard(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -212,9 +223,9 @@ fun AttributeItem(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                savingThrowModifiers.fastForEach { modifier ->
+                savingThrowModifiers.fastForEach { modInfo ->
                     ModifierChip(
-                        modifier = modifier,
+                        info = modInfo,
                         onClick = onSelectSavingThrow
                     )
                 }
@@ -234,21 +245,21 @@ fun AttributeItem(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 attribute.skills().fastForEach { skill ->
-                    val modifiers = skillsModifiers[skill] ?: emptyList()
+                    val modifiersList = skillsModifiers[skill] ?: emptyList()
 
                     if (compactView) {
-                        val modifier = modifiers.firstOrNull()
+                        val firstModInfo = modifiersList.firstOrNull()
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(24.dp)
                                 .then(
-                                    if (modifier == null) Modifier
+                                    if (firstModInfo == null) Modifier
                                     else Modifier.toggleable(
-                                        value = modifier.state.selected,
-                                        enabled = modifier.state.selectable,
+                                        value = firstModInfo.state.selected,
+                                        enabled = firstModInfo.state.selectable,
                                         role = Role.Checkbox,
-                                        onValueChange = { onSelectSkill(modifier.modifier.id) }
+                                        onValueChange = { onSelectSkill(firstModInfo.modifier.id) }
                                     )
                                 ),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -257,17 +268,18 @@ fun AttributeItem(
                                 text = stringResource(skill.stringRes),
                                 maxLines = 1
                             )
-                            modifier?.let { modifier ->
-                                ModifierChip(modifier, onSelectSkill)
+                            firstModInfo?.let { modInfo ->
+                                ModifierChip(modInfo, onSelectSkill)
                             }
                             Text(
                                 text = skillsValues[skill]?.toSignedString() ?: "0",
                                 maxLines = 1
                             )
                         }
-                    }
-                    else {
-                        Column {
+                    } else
+                        Column(
+                            modifier = Modifier.height(24.dp)
+                        ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -288,12 +300,11 @@ fun AttributeItem(
                                     .horizontalScroll(rememberScrollState()),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                modifiers.fastForEach { modifier ->
-                                    ModifierChip(modifier, onSelectSkill)
+                                modifiersList.fastForEach { modInfo ->
+                                    ModifierChip(modInfo, onSelectSkill)
                                 }
                             }
                         }
-                    }
                 }
             }
         }
@@ -301,11 +312,30 @@ fun AttributeItem(
 }
 
 @Composable
-private fun ModifierChip(modifier: ModifierExtendedInfo, onClick: (Uuid) -> Unit) {
+private fun ModifierChip(info: ModifierExtendedInfo, onClick: (Uuid) -> Unit) {
     FilterChip(
-        selected = modifier.state.selected,
-        onClick = { if (modifier.state.selectable) onClick(modifier.modifier.id) },
-        label = { Text(modifier.buildString()) },
-        enabled = modifier.state.selectable,
+        selected = info.state.selected,
+        onClick = { if (info.state.selectable) onClick(info.modifier.id) },
+        label = { Text(info.buildString()) },
+        enabled = info.state.selectable,
     )
+}
+
+@Composable
+fun ModifierExtendedInfo.buildString(): String {
+    val valueString =
+        if (valueSource == DnDModifierValueSource.CONST) {
+            val unaryOps = setOf(
+                DnDModifierOperation.ABS,
+                DnDModifierOperation.ROUND,
+                DnDModifierOperation.CEIL,
+                DnDModifierOperation.FLOOR,
+                DnDModifierOperation.FACT
+            )
+            if (operation in unaryOps && modifier.value == 0.0) null
+            else modifier.value.toString()
+        } else
+            stringResource(valueSource.stringRes)
+
+    return operation.applyForStringPreview(valueString)
 }

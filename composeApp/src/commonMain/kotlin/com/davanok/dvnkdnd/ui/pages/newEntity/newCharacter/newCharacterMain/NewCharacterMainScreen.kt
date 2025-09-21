@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -19,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -30,7 +32,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.carousel.CarouselState
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.runtime.Composable
@@ -55,19 +59,19 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
-import com.davanok.dvnkdnd.ui.components.newEntity.BackClickAction
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.LoadingCard
-import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.searchSheet.SearchSheet
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
+import dvnkdnd.composeapp.generated.resources.cancel
 import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.cls
+import dvnkdnd.composeapp.generated.resources.continue_str
 import dvnkdnd.composeapp.generated.resources.description
 import dvnkdnd.composeapp.generated.resources.drop_image
 import dvnkdnd.composeapp.generated.resources.empty_field_error
@@ -88,6 +92,7 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewCharacterMainScreen(
     navigateToEntityInfo: (Uuid) -> Unit,
@@ -111,23 +116,42 @@ fun NewCharacterMainScreen(
             )
         }
 
-        else ->
-            NewEntityStepScaffold(
-                modifier = Modifier
-                    .imePadding()
-                    .fillMaxSize(),
-                title = stringResource(Res.string.new_character),
-                onNextClick = { viewModel.commit(onContinue) },
-                onBackClick = onBack,
-                backClickAction = BackClickAction.Cancel
-            ) {
-                Content(
-                    character = uiState.character,
-                    entities = uiState.entities,
-                    empties = uiState.emptyFields,
-                    viewModel = viewModel
+        else -> Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(stringResource(Res.string.new_character))
+                    },
+                    navigationIcon = {
+                        IconButton(onBack) {
+                            Icon(
+                                imageVector = Icons.Default.Cancel,
+                                contentDescription = stringResource(Res.string.cancel)
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { viewModel.commit(onContinue) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = stringResource(Res.string.continue_str)
+                            )
+                        }
+                    }
                 )
             }
+        ) { paddingValues ->
+            Content(
+                modifier = Modifier.padding(paddingValues),
+                character = uiState.character,
+                entities = uiState.entities,
+                empties = uiState.emptyFields,
+                viewModel = viewModel
+            )
+        }
     }
 
     if (uiState.showSearchSheet)

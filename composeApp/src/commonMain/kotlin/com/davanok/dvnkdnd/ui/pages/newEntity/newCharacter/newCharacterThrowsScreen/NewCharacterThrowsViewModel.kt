@@ -5,20 +5,20 @@ import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
+import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.calculateModifierSum
 import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
@@ -49,11 +49,7 @@ class NewCharacterThrowsViewModel(
 
     private val selectedModifiers = mutableSetOf<Uuid>()
 
-    init {
-        loadCharacter()
-    }
-
-    fun loadCharacter() {
+    fun loadCharacter() = viewModelScope.launch {
         val character = newCharacterViewModel.getCharacterWithAllModifiers()
 
         // keep selected modifiers set in sync
@@ -61,19 +57,20 @@ class NewCharacterThrowsViewModel(
         selectedModifiers.addAll(character.selectedModifiers)
 
         modifierGroups = character.entities
-            .flatMap { it.modifiersGroups }
-            .filter { it.target == DnDModifierTargetType.SAVING_THROW || it.target == DnDModifierTargetType.SKILL }
+            .fastFlatMap { it.modifiersGroups }
+            .fastFilter { it.target == DnDModifierTargetType.SAVING_THROW || it.target == DnDModifierTargetType.SKILL }
             .sortedBy { it.priority }
 
         groupIdToGroup = modifierGroups.associateBy { it.id }
         modifierIdToGroupId = modifierGroups
-            .flatMap { g -> g.modifiers.map { it.id to g.id } }
+            .fastFlatMap { g -> g.modifiers.map { it.id to g.id } }
             .toMap()
         modifierIdToModifier = modifierGroups
-            .flatMap { g -> g.modifiers.map { it.id to it } }
+            .fastFlatMap { g -> g.modifiers.map { it.id to it } }
             .toMap()
 
         val attributes = character.characterAttributes
+        val attributeModifiers = character.characterAttributes.toMap().mapValues { (_, value) -> calculateModifier(value) }
 
         // update UI state once
         _uiState.update { state ->
@@ -82,8 +79,8 @@ class NewCharacterThrowsViewModel(
                 character = character.character,
                 proficiencyBonus = character.proficiencyBonus,
                 attributes = attributes,
-                savingThrows = getModifiersInfo(DnDModifierTargetType.SAVING_THROW) { attributes[it] },
-                skills = getModifiersInfo(DnDModifierTargetType.SKILL) { attributes[it.attribute] }
+                savingThrows = getModifiersInfo(DnDModifierTargetType.SAVING_THROW) { attributeModifiers[it]!! },
+                skills = getModifiersInfo(DnDModifierTargetType.SKILL) { attributeModifiers[it.attribute]!! }
             )
         }
     }
@@ -117,16 +114,17 @@ class NewCharacterThrowsViewModel(
     fun selectSkill(modifierId: Uuid) = toggleSelectionFor(modifierId, DnDModifierTargetType.SKILL)
 
     private fun updateUiFor(target: DnDModifierTargetType) {
-        val attributesSnapshot = uiState.value.attributes
+        val attributes = uiState.value.attributes
+        val attributeModifiers = attributes.toMap().mapValues { (_, value) -> calculateModifier(value) }
 
         _uiState.update { state ->
             when (target) {
                 DnDModifierTargetType.SAVING_THROW -> state.copy(
-                    savingThrows = getModifiersInfo(DnDModifierTargetType.SAVING_THROW) { attribute -> attributesSnapshot[attribute] }
+                    savingThrows = getModifiersInfo(DnDModifierTargetType.SAVING_THROW) { attribute -> attributeModifiers[attribute]!! }
                 )
 
                 DnDModifierTargetType.SKILL -> state.copy(
-                    skills = getModifiersInfo(DnDModifierTargetType.SKILL) { skill -> attributesSnapshot[skill.attribute] }
+                    skills = getModifiersInfo(DnDModifierTargetType.SKILL) { skill -> attributeModifiers[skill.attribute]!! }
                 )
 
                 else -> state
@@ -143,13 +141,13 @@ class NewCharacterThrowsViewModel(
         // collect ModifierExtendedInfo grouped by target name
         val raw = mutableMapOf<String, MutableList<ModifierExtendedInfo>>()
 
-        modifierGroups.forEach { group ->
-            if (group.target != target) return@forEach
+        modifierGroups.fastForEach { group ->
+            if (group.target != target) return@fastForEach
 
             val selectedInGroup = group.modifiers.count { it.id in selectedModifiers }
             val groupAllowsExtra = selectedInGroup < group.selectionLimit
 
-            group.modifiers.forEach { modifier ->
+            group.modifiers.fastForEach { modifier ->
                 val selected = modifier.id in selectedModifiers
                 val selectable = modifier.selectable && (selected || groupAllowsExtra) // TODO: clampMin/clampMax checks could influence selectability
 
@@ -166,22 +164,18 @@ class NewCharacterThrowsViewModel(
 
         // For each enum entry compute the final modifier value using calculateModifierSum.
         return modifiersByEnum.mapValues { (enumKey, extList) ->
-            val groupsForTarget = modifierGroups.filter { it.target == target }
+            val groupsForTarget = modifierGroups.fastFilter { it.target == target }
 
             val value = calculateModifierSum(
                 baseValue = baseValueGetter(enumKey),
                 groups = groupsForTarget,
-                modifierFilter = { it.target == enumKey.name },
+                modifierFilter = { it.target == enumKey.name && it.id in selectedModifiers },
                 // Provide group-level value once per group (map group.valueSource -> value)
                 groupValueProvider = { group ->
                     when (group.valueSource) {
                         DnDModifierValueSource.CONST -> null
-                        DnDModifierValueSource.CHARACTER_LEVEL -> uiState.value.characterLevel?.toDouble()
-                        DnDModifierValueSource.ENTITY_LEVEL -> {
-                            // ENTITY_LEVEL requires entity context (not available here).
-                            // Fallback to null (use modifier.value). Implement lookup if entity-level is required.
-                            null
-                        }
+                        DnDModifierValueSource.CHARACTER_LEVEL -> uiState.value.characterLevel.toDouble()
+                        DnDModifierValueSource.ENTITY_LEVEL -> null
                         DnDModifierValueSource.PROFICIENCY_BONUS -> uiState.value.proficiencyBonus.toDouble()
                     }
                 }
@@ -204,12 +198,12 @@ class NewCharacterThrowsViewModel(
 
     fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
         val isSavingThrowsValid = modifierGroups
-            .filter { it.target == DnDModifierTargetType.SAVING_THROW }
-            .all { group -> group.modifiers.count { it.id in selectedModifiers } == group.selectionLimit }
+            .fastFilter { it.target == DnDModifierTargetType.SAVING_THROW }
+            .fastAll { group -> group.modifiers.count { it.id in selectedModifiers } == group.selectionLimit }
 
         val isSkillsValid = modifierGroups
-            .filter { it.target == DnDModifierTargetType.SKILL }
-            .all { group -> group.modifiers.count { it.id in selectedModifiers } == group.selectionLimit }
+            .fastFilter { it.target == DnDModifierTargetType.SKILL }
+            .fastAll { group -> group.modifiers.count { it.id in selectedModifiers } == group.selectionLimit }
 
         if (!isSavingThrowsValid) {
             _uiState.update {
@@ -230,6 +224,10 @@ class NewCharacterThrowsViewModel(
                 _uiState.update { it.copy(error = UiError.Critical(message = getString(Res.string.saving_data_error), exception = thr)) }
             }
             .onSuccess { onSuccess() }
+    }
+
+    init {
+        loadCharacter()
     }
 }
 

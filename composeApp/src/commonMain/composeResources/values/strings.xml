@@ -90,6 +90,7 @@
     <string name="ok">Ok</string>
     <string name="copy">Copy</string>
     <string name="copied">Copied</string>
+    <string name="no_internet_exception">No internet</string>
 
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
@@ -114,8 +115,8 @@
     <string name="search_in_web">Search in web</string>
     <string name="confirm">Confirm</string>
     <string name="empty_field_error">This field cannot be empty</string>
-    <!--stats-->
-    <string name="new_character_stats_screen_title">Character stats</string>
+    <!--attributes-->
+    <string name="new_character_attributes_screen_title">Character attributes</string>
     <string name="standard_array_stats_option">Standard array</string>
     <string name="manual_stats_option">Manual</string>
     <string name="point_buy_stats_option">Point buy</string>
@@ -141,13 +142,11 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     ]]></string>
     <string name="modifier_selection_invalid">Invalid modifier bonuses selection count</string>
     <string name="point_buy_stats_balance_invalid">Invalid point buy balance</string>
-    <!--saving Throws-->
-    <string name="new_character_saving_throws_screen_title">Saving throws</string>
+    <!--throws-->
+    <string name="new_character_throws_screen_title">Throws</string>
     <string name="saving_throw">Saving throw</string>
     <string name="not_all_available_saving_throws_selected">Not all available savingThrows selected</string>
-    <!--skills-->
     <string name="skills">Skills</string>
-    <string name="new_character_skills_screen_title">Skills</string>
     <string name="not_all_available_skills_selected">Not all available skills selected</string>
     <string name="selected_value">Selected: %1$d / %2$d</string>
     <string name="proficiency_bonus_value">Prof. bonus: %1$s</string>
@@ -207,8 +206,8 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="operation_sign_floor">floor(%1$s)</string>
 
     <!--value sources-->
-    <string name="value_source_const">Constant</string>
-    <string name="value_source_character_level">Character level</string>
-    <string name="value_source_entity_level">Entity level</string>
-    <string name="value_source_proficiency_bonus">Prof. bonus</string>
+    <string name="value_source_const">CONST</string>
+    <string name="value_source_character_level">LVL</string>
+    <string name="value_source_entity_level">E LVL</string>
+    <string name="value_source_proficiency_bonus">PB</string>
 </resources>

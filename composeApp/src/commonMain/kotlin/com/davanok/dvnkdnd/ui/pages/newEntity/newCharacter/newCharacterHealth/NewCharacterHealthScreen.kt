@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,18 +14,26 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,12 +59,10 @@ import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.diceRoller.rememberDiceRoller
-import com.davanok.dvnkdnd.ui.components.newEntity.NewEntityStepScaffold
-import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.constitution
+import dvnkdnd.composeapp.generated.resources.back
+import dvnkdnd.composeapp.generated.resources.continue_str
 import dvnkdnd.composeapp.generated.resources.enter_health
-import dvnkdnd.composeapp.generated.resources.health_dice_value
 import dvnkdnd.composeapp.generated.resources.health_points_short
 import dvnkdnd.composeapp.generated.resources.new_character_health_screen_title
 import dvnkdnd.composeapp.generated.resources.rolling_in_progress
@@ -66,6 +71,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewCharacterHealthScreen(
     onBack: () -> Unit,
@@ -89,35 +95,36 @@ fun NewCharacterHealthScreen(
             )
         }
 
-        else -> NewEntityStepScaffold(
-            modifier = Modifier.fillMaxSize(),
-            title = stringResource(Res.string.new_character_health_screen_title),
-            additionalContent = {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        stringResource(
-                            Res.string.constitution,
-                            uiState.characterConstitution,
-                            calculateModifier(uiState.characterConstitution).toSignedString()
-                        )
-                    )
-                    uiState.healthDice?.let {
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            stringResource(
-                                Res.string.health_dice_value,
-                                stringResource(it.stringRes)
+        else -> Scaffold (
+            modifier = Modifier.imePadding().fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(stringResource(Res.string.new_character_health_screen_title))
+                    },
+                    navigationIcon = {
+                        IconButton(onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = stringResource(Res.string.back)
                             )
-                        )
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { viewModel.commit(onContinue) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = stringResource(Res.string.continue_str)
+                            )
+                        }
                     }
-                }
-            },
-            onNextClick = { viewModel.commit(onContinue) },
-            onBackClick = onBack,
-        ) {
+                )
+            }
+        ) { paddingValues ->
             Content(
+                modifier = Modifier.padding(paddingValues).fillMaxSize(),
                 health = uiState.baseHealth,
                 onHealthChange = viewModel::setHealth,
                 constitutionModifier = calculateModifier(uiState.characterConstitution),
@@ -129,13 +136,14 @@ fun NewCharacterHealthScreen(
 
 @Composable
 private fun Content(
+    modifier: Modifier = Modifier,
     health: Int,
     onHealthChange: (Int) -> Unit,
     constitutionModifier: Int,
     healthDice: Dices?
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         var isRolling by remember { mutableStateOf(false) }
