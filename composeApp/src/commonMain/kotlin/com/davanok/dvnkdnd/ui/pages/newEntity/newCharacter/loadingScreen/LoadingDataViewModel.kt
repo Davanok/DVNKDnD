@@ -3,11 +3,13 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.types.CheckingDataStates
+import com.davanok.dvnkdnd.data.model.types.InternetConnectionException
 import com.davanok.dvnkdnd.data.repositories.ExternalKeyValueRepository
 import com.davanok.dvnkdnd.data.repositories.UtilsDataRepository
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.finish
+import dvnkdnd.composeapp.generated.resources.no_internet_exception
 import dvnkdnd.composeapp.generated.resources.state_checking_data
 import dvnkdnd.composeapp.generated.resources.state_downloading
 import dvnkdnd.composeapp.generated.resources.state_loading
@@ -62,7 +64,8 @@ class LoadingDataViewModel(
         externalKeyValueRepository.getRequiredEntities().onSuccess {
             loadRequiredEntities(it)
         }.onFailure {
-            setCheckingState(LoadingDataUiState.Error(it))
+            if (it == InternetConnectionException) setCheckingState(LoadingDataUiState.NoInternet)
+            else setCheckingState(LoadingDataUiState.Error(it))
         }
     }
 
@@ -80,7 +83,9 @@ sealed class LoadingDataUiState(val stringRes: StringResource) {
     data object LoadingData : LoadingDataUiState(Res.string.state_loading_full_entities)
     data object Updating : LoadingDataUiState(Res.string.state_updating_entities)
     data object Finish : LoadingDataUiState(Res.string.finish)
-    data class Error(val exception: Throwable) : LoadingDataUiState(Res.string.error);
+    data object NoInternet : LoadingDataUiState(Res.string.no_internet_exception)
+
+    data class Error(val exception: Throwable) : LoadingDataUiState(Res.string.error)
 
     companion object {
         val entries = listOf(

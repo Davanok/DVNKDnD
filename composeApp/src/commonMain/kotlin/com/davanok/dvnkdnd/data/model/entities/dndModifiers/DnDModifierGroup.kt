@@ -16,11 +16,13 @@ data class DnDModifiersGroup(
 
     val target: DnDModifierTargetType,
     val operation: DnDModifierOperation,
+    @SerialName("value_source")
     val valueSource: DnDModifierValueSource,
 
     val name: String,
     val description: String?,
-    @SerialName("selection_limit") val selectionLimit: Int,
+    @SerialName("selection_limit")
+    val selectionLimit: Int,
     val priority: Int,
 
     @SerialName("clamp_min") val clampMin: Int? = null,

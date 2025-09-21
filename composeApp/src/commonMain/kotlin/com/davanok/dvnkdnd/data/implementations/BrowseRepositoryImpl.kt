@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.data.implementations
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.types.InternetConnectionException
 import com.davanok.dvnkdnd.data.model.types.PagedResult
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import io.github.aakira.napier.Napier
@@ -18,37 +19,41 @@ class BrowseRepositoryImpl(
     private val postgrest: Postgrest,
     private val storage: Storage,
 ) : BrowseRepository {
+    private fun <T>Result<T>.handleFailure() = recoverCatching { exception ->
+        throw InternetConnectionException
+    }
+
     override suspend fun loadEntityFullInfo(entityId: Uuid): Result<DnDFullEntity?> =
         runCatching {
-            Napier.d { "loadEntityFullInfo: entityId: $entityId" }
+            Napier.i { "loadEntityFullInfo: entityId: $entityId" }
             postgrest.rpc(
                 "get_full_entity_with_companion",
                 mapOf("entity_id" to entityId)
             ).decodeAsOrNull<DnDFullEntity>()
-        }.onFailure {
+        }.handleFailure().onFailure {
             Napier.e("Error in loadEntityFullInfo", it)
         }
 
     override suspend fun loadEntitiesFullInfo(entityIds: List<Uuid>): Result<List<DnDFullEntity>> =
         runCatching {
-            Napier.d { "loadEntitiesFullInfo: entityIds: $entityIds" }
+            Napier.i { "loadEntitiesFullInfo: entityIds: $entityIds" }
             postgrest.rpc(
                 "get_full_entities_with_companion",
                 mapOf("entity_ids" to entityIds)
             ).decodeList<DnDFullEntity>()
-        }.onFailure {
+        }.handleFailure().onFailure {
             Napier.e("Error in loadEntitiesFullInfo", it)
         }
 
     override suspend fun loadEntitiesWithSub(entityType: DnDEntityTypes): Result<List<DnDEntityWithSubEntities>> =
         runCatching {
-            Napier.d { "loadEntitiesWithSub: entityType: ${entityType.name}" }
+            Napier.i { "loadEntitiesWithSub: entityType: ${entityType.name}" }
             postgrest.from("base_entities").select(
                 Columns.raw("*, sub_entities:base_entities(*)")
             ) {
                 filter { DnDEntityWithSubEntities::type eq entityType.name }
             }.decodeList<DnDEntityWithSubEntities>()
-        }.onFailure {
+        }.handleFailure().onFailure {
             Napier.e("Error in loadEntitiesWithSub", it)
         }
 
@@ -59,7 +64,7 @@ class BrowseRepositoryImpl(
         searchQuery: String?
     ): Result<PagedResult<DnDEntityWithSubEntities>> =
         runCatching {
-            Napier.d { "loadEntitiesWithSubPaged: type=$entityType page=$page pageSize=$pageSize query=$searchQuery" }
+            Napier.i { "loadEntitiesWithSubPaged: type=$entityType page=$page pageSize=$pageSize query=$searchQuery" }
 
             val offset = (page * pageSize).toLong()
 
@@ -88,19 +93,19 @@ class BrowseRepositoryImpl(
                 hasNext = hasNext,
                 hasPrevious = hasPrevious
             )
-        }.onFailure {
+        }.handleFailure().onFailure {
             Napier.e("Error in loadEntitiesWithSubPaged", it)
         }
 
     override suspend fun getPropertyValue(key: String): Result<String> =
         runCatching {
-            Napier.d { "getPropertyValue: key: $key" }
+            Napier.i { "getPropertyValue: key: $key" }
             val raw = postgrest.rpc(
                 "get_property",
                 mapOf("field" to key)
             ).data
             Json.decodeFromString<String>(raw)
-        }.onFailure {
+        }.handleFailure().onFailure {
             Napier.e("Error in getPropertyValue", it)
         }
 }
