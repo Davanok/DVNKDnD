@@ -7,7 +7,6 @@ import com.davanok.dvnkdnd.database.daos.character.CharactersDao
 import com.davanok.dvnkdnd.database.daos.entities.BaseEntityDao
 import com.davanok.dvnkdnd.database.daos.entities.FullEntitiesDao
 import com.davanok.dvnkdnd.database.entities.character.Character
-import com.davanok.dvnkdnd.database.entities.character.CharacterClass
 import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
@@ -16,6 +15,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
+import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
@@ -55,7 +55,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         SpellAttackLevelModifier::class,
         SpellAttackSave::class,
         Character::class,
-        CharacterClass::class,
+        CharacterMainEntity::class,
         CharacterAttributes::class,
         CharacterHealth::class,
         CharacterSpellSlots::class,

@@ -35,7 +35,7 @@ data class CharacterHealth(
     val current: Int,
     val temp: Int,
     @ColumnInfo("max_modifier")
-    val maxModifier: Int
+    val maxModified: Int
 )
 
 @Entity(

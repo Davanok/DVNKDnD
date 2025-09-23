@@ -4,48 +4,37 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import okio.Path
 import kotlin.uuid.Uuid
 
-@Entity(
-    tableName = "characters",
-    foreignKeys = [
-        ForeignKey(DnDRace::class, ["id"], ["race"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDRace::class, ["id"], ["sub_race"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDBackground::class, ["id"], ["background"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DnDBackground::class, ["id"], ["sub_background"], onDelete = ForeignKey.SET_NULL),
-    ]
-)
+@Entity(tableName = "characters")
 data class Character(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo("user_id") val userId: Uuid? = null,
+    @ColumnInfo("user_id")
+    val userId: Uuid? = null,
     val name: String,
     val description: String,
-    @ColumnInfo(index = true) val race: Uuid?,
-    @ColumnInfo("sub_race", index = true) val subRace: Uuid?,
-    @ColumnInfo(index = true) val background: Uuid?,
-    @ColumnInfo("sub_background", index = true) val subBackground: Uuid?,
     val level: Int = 1,
-    @ColumnInfo("proficiency_bonus") val proficiencyBonus: Int? = null, // null if calculate
+    @ColumnInfo("proficiency_bonus")
+    val proficiencyBonus: Int? = null, // null if calculate
     val source: String? = null,
-    @ColumnInfo("image") val image: Path? = null
+    @ColumnInfo("image")
+    val image: Path? = null
 )
 
 @Entity(
-    tableName = "character_classes",
-    primaryKeys = ["character_id", "class_id"],
+    tableName = "character_main_entities",
+    primaryKeys = ["character_id", "entity_id"],
     foreignKeys = [
         ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDClass::class, ["id"], ["sub_class_id"], onDelete = ForeignKey.SET_NULL)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DnDBaseEntity::class, ["id"], ["sub_entity_id"], onDelete = ForeignKey.SET_NULL)
     ]
 )
-data class CharacterClass(
+data class CharacterMainEntity(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    @ColumnInfo("class_id", index = true) val classId: Uuid,
-    @ColumnInfo("sub_class_id", index = true) val subClassId: Uuid?,
+    @ColumnInfo("entity_id", index = true) val entityId: Uuid,
+    @ColumnInfo("sub_entity_id", index = true) val subEntityId: Uuid?,
     val level: Int
 )

@@ -2,7 +2,9 @@ package com.davanok.dvnkdnd.data.model.entities.dndModifiers
 
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class DnDAttributesGroup(
     val strength: Int,
     val dexterity: Int,

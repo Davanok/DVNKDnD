@@ -3,15 +3,16 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFirst
+import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterClassInfo
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithHealth
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
@@ -58,36 +59,28 @@ class NewCharacterViewModel(
 
     private fun setCharacterEntities(character: NewCharacterMain) = viewModelScope.launch {
         val entities = loadEntities(character.getEntitiesIds())
+
+        val mainTypes = setOf(DnDEntityTypes.CLASS, DnDEntityTypes.RACE, DnDEntityTypes.BACKGROUND)
+        val mainEntities = entities.fastFilter { it.type in mainTypes }.fastMap { entity ->
+            CharacterMainEntityInfo(
+                level = newCharacterState.level,
+                entity = entity,
+                subEntity = entities.fastFirst { it.parentId == entity.id }
+            )
+        }
+
         val fullCharacter = character.run {
             NewCharacterWithFullEntities(
                 images = images,
                 mainImage = mainImage,
                 name = name,
                 description = description,
-                cls = cls?.let { e -> entities.fastFirst { it.id == e.id } },
-                subCls = subCls?.let { e -> entities.fastFirst { it.id == e.id } },
-                race = race?.let { e -> entities.fastFirst { it.id == e.id } },
-                subRace = subRace?.let { e -> entities.fastFirst { it.id == e.id } },
-                background = background?.let { e -> entities.fastFirst { it.id == e.id } },
-                subBackground = subBackground?.let { e -> entities.fastFirst { it.id == e.id } }
+                mainEntities = mainEntities
             )
         }
         newCharacterState = newCharacterState.copy(
             character = fullCharacter,
             selectedModifiers = fullCharacter.getNotSelectableModifiers()
-        )
-    }
-
-    fun getCharacterShortInfo() = newCharacterState.character.run {
-        CharacterShortInfo(
-            name = name,
-            image = mainImage,
-            className = cls?.name,
-            subClassName = subCls?.name,
-            raceName = race?.name,
-            subRaceName = subRace?.name,
-            backgroundName = background?.name,
-            subBackgroundName = subBackground?.name
         )
     }
 
@@ -106,7 +99,7 @@ class NewCharacterViewModel(
 
     fun getCharacterWithAllModifiers() = newCharacterState.run {
         CharacterWithAllModifiers(
-            character = character.toCharacterShortInfo(),
+            character = toCharacterMin(),
             proficiencyBonus = proficiencyBonus,
             characterAttributes = characterAttributes,
             selectedModifiers = selectedModifiers,
@@ -132,8 +125,8 @@ class NewCharacterViewModel(
 
     fun getCharacterWithHealth() = newCharacterState.run {
         CharacterWithHealth(
-            character = character.toCharacterShortInfo(),
-            healthDice = character.cls?.cls?.hitDice,
+            character = toCharacterMin(),
+            healthDice = character.mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }?.entity?.cls?.hitDice,
             constitution = characterAttributes.constitution,
             baseHealth = baseHealth
         )
@@ -155,35 +148,32 @@ private data class NewCharacterWithFullEntities(
     val mainImage: Path? = null,
     val name: String = "",
     val description: String = "",
-    val cls: DnDFullEntity? = null,
-    val subCls: DnDFullEntity? = null,
-    val race: DnDFullEntity? = null,
-    val subRace: DnDFullEntity? = null,
-    val background: DnDFullEntity? = null,
-    val subBackground: DnDFullEntity? = null
+    val mainEntities: List<CharacterMainEntityInfo> = emptyList()
 ) {
     val entities: List<DnDFullEntity>
-        get() = listOfNotNull(
-            cls,
-            subCls,
-            race,
-            subRace,
-            background,
-            subBackground
-        )
+        get() = mainEntities.fastFlatMap { listOfNotNull(it.entity, it.subEntity) }
 
-    fun toNewCharacterMain() = NewCharacterMain(
-        images = images,
-        mainImage = mainImage,
-        name = name,
-        description = description,
-        cls = cls?.toEntityWithSubEntities(listOfNotNull(subCls?.toDnDEntityMin())),
-        subCls = subCls?.toDnDEntityMin(),
-        race = race?.toEntityWithSubEntities(listOfNotNull(subRace?.toDnDEntityMin())),
-        subRace = subRace?.toDnDEntityMin(),
-        background = background?.toEntityWithSubEntities(listOfNotNull(subBackground?.toDnDEntityMin())),
-        subBackground = subBackground?.toDnDEntityMin()
-    )
+    fun toNewCharacterMain(): NewCharacterMain {
+        val clsInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }
+        val raceInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }
+        val backgroundInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }
+
+        fun CharacterMainEntityInfo.toEntityWithSubEntities() =
+            entity.toEntityWithSubEntities(listOfNotNull(subEntity?.toDnDEntityMin()))
+
+        return NewCharacterMain(
+            images = images,
+            mainImage = mainImage,
+            name = name,
+            description = description,
+            cls = clsInfo?.toEntityWithSubEntities(),
+            subCls = clsInfo?.subEntity?.toDnDEntityMin(),
+            race = raceInfo?.toEntityWithSubEntities(),
+            subRace = raceInfo?.subEntity?.toDnDEntityMin(),
+            background = backgroundInfo?.toEntityWithSubEntities(),
+            subBackground = backgroundInfo?.subEntity?.toDnDEntityMin()
+        )
+    }
 
     fun getNotSelectableModifiers(): Set<Uuid> =
         entities
@@ -194,17 +184,6 @@ private data class NewCharacterWithFullEntities(
                 transform = { it.id }
             )
             .toSet()
-
-    fun toCharacterShortInfo() = CharacterShortInfo(
-        name = name,
-        image = mainImage,
-        className = cls?.name,
-        subClassName = subCls?.name,
-        raceName = race?.name,
-        subRaceName = subRace?.name,
-        backgroundName = background?.name,
-        subBackgroundName = subBackground?.name
-    )
 
     companion object {
         private fun DnDFullEntity.toEntityWithSubEntities(subEntities: List<DnDEntityMin>) =
@@ -240,22 +219,12 @@ private data class NewCharacter(
 
         val dbImages = character.images.map { path -> DatabaseImage(Uuid.random(), path) }
 
-        val classes = character.cls?.let {
-            listOf(
-                CharacterClassInfo(
-                    level = 1,
-                    cls = it,
-                    subCls = character.subCls
-                )
-            )
-        } ?: emptyList()
-
 
         val totalHealth = DnDCharacterHealth(
             max = baseHealth,
             current = baseHealth,
             temp = 0,
-            maxModifier = 0
+            maxModified = 0
         )
 
         return CharacterFull(
@@ -265,14 +234,17 @@ private data class NewCharacter(
             attributes = characterAttributes,
             health = totalHealth,
             usedSpells = emptyList(),
-            classes = classes,
-            race = character.race,
-            subRace = character.subRace,
-            background = character.background,
-            subBackground = character.subBackground,
+            mainEntities = character.mainEntities,
             feats = emptyList(),
             selectedModifiers = selectedModifiers.toList(),
             selectedProficiencies = emptyList()
         )
     }
+
+    fun toCharacterMin() = CharacterMin(
+        id = Uuid.NIL,
+        userId = null,
+        name = character.name,
+        level = level,
+    )
 }

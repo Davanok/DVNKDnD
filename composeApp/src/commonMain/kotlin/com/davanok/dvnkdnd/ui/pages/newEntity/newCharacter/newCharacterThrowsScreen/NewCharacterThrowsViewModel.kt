@@ -12,7 +12,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
@@ -236,7 +236,7 @@ data class NewCharacterThrowsUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
 
-    val character: CharacterShortInfo = CharacterShortInfo(),
+    val character: CharacterMin? = null,
     val characterLevel: Int = 1,
     val proficiencyBonus: Int = proficiencyBonusByLevel(characterLevel),
     val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,

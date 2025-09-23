@@ -5,7 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterClassInfo
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCharacterHealth
@@ -13,7 +13,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.toDnDCoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
-import com.davanok.dvnkdnd.database.entities.character.CharacterClass
+import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
@@ -31,26 +31,26 @@ fun Character.toCharacterMin() = CharacterMin(
     level = level,
     image = image
 )
-data class DbJoinCharacterClass(
+data class DbJoinCharacterMainEntities(
     @Embedded
-    val link: CharacterClass,
+    val link: CharacterMainEntity,
     @Relation(
         DnDBaseEntity::class,
-        parentColumn = "class_id",
+        parentColumn = "entity_id",
         entityColumn = "id"
     )
-    val cls: DbFullEntity,
+    val entity: DbFullEntity,
     @Relation(
         DnDBaseEntity::class,
-        parentColumn = "sub_class_id",
+        parentColumn = "sub_entity_id",
         entityColumn = "id"
     )
-    val subCls: DbFullEntity?
+    val subEntity: DbFullEntity?
 ) {
-    fun toCharacterClassInfo() = CharacterClassInfo(
+    fun toCharacterMainEntityInfo() = CharacterMainEntityInfo(
         level = link.level,
-        cls = cls.toDnDFullEntity(),
-        subCls = subCls?.toDnDFullEntity()
+        entity = entity.toDnDFullEntity(),
+        subEntity = subEntity?.toDnDFullEntity()
     )
 }
 data class DbFullCharacter(
@@ -74,35 +74,11 @@ data class DbFullCharacter(
     val usedSpells: CharacterSpellSlots?,
 
     @Relation(
-        entity = CharacterClass::class,
+        entity = CharacterMainEntity::class,
         parentColumn = "id",
         entityColumn = "character_id"
     )
-    val classes: List<DbJoinCharacterClass>,
-    @Relation(
-        entity = DnDBaseEntity::class,
-        parentColumn = "race",
-        entityColumn = "id"
-    )
-    val race: DbFullEntity?,
-    @Relation(
-        entity = DnDBaseEntity::class,
-        parentColumn = "sub_race",
-        entityColumn = "id"
-    )
-    val subRace: DbFullEntity?,
-    @Relation(
-        entity = DnDBaseEntity::class,
-        parentColumn = "background",
-        entityColumn = "id"
-    )
-    val background: DbFullEntity?,
-    @Relation(
-        entity = DnDBaseEntity::class,
-        parentColumn = "sub_background",
-        entityColumn = "id"
-    )
-    val subBackground: DbFullEntity?,
+    val mainEntities: List<DbJoinCharacterMainEntities>,
 
     @Relation(
         entity = DnDBaseEntity::class,
@@ -134,11 +110,7 @@ data class DbFullCharacter(
         attributes = attributes?.toAttributesGroup() ?: DnDAttributesGroup.Default,
         health = health?.toDnDCharacterHealth(),
         usedSpells = usedSpells?.usedSpells.orEmpty(),
-        classes = classes.fastMap { it.toCharacterClassInfo() },
-        race = race?.toDnDFullEntity(),
-        subRace = subRace?.toDnDFullEntity(),
-        background = background?.toDnDFullEntity(),
-        subBackground = subBackground?.toDnDFullEntity(),
+        mainEntities = mainEntities.fastMap { it.toCharacterMainEntityInfo() },
         feats = feats.fastMap { it.toDnDFullEntity() },
         selectedModifiers = selectedModifiers.fastMap { it.modifierId },
         selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId }

@@ -6,26 +6,25 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkillsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toSkillsGroup
-import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.uuid.Uuid
 
+@Serializable
 data class CharacterFull(
     val character: CharacterMin,
 
-    val images: List<DatabaseImage>,
+    @Transient
+    val images: List<DatabaseImage> = emptyList(),
     val coins: CoinsGroup?,
 
     val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
-//    @Transient
+    @Transient
     val skills: DnDSkillsGroup = attributes.toSkillsGroup(),
     val health: DnDCharacterHealth?,
     val usedSpells: List<Int>,
 
-    val classes: List<CharacterClassInfo>,
-    val race: DnDFullEntity?,
-    val subRace: DnDFullEntity?,
-    val background: DnDFullEntity?,
-    val subBackground: DnDFullEntity?,
+    val mainEntities: List<CharacterMainEntityInfo>,
 
     val feats: List<DnDFullEntity>,
 
@@ -33,15 +32,12 @@ data class CharacterFull(
     val selectedProficiencies: List<Uuid>
 ) {
     val entities: List<DnDFullEntity>
-        get() = classes.fastFlatMap { listOfNotNull(it.cls, it.subCls) } +
-                listOfNotNull(race, subRace, background, subBackground) + feats
-    val proficiencyBonus: Int
-        get() = proficiencyBonusByLevel(character.level)
+        get() = mainEntities.fastFlatMap { listOfNotNull(it.entity, it.subEntity) } + feats
 }
 
-
-data class CharacterClassInfo(
+@Serializable
+data class CharacterMainEntityInfo(
     val level: Int,
-    val cls: DnDFullEntity,
-    val subCls: DnDFullEntity?
+    val entity: DnDFullEntity,
+    val subEntity: DnDFullEntity?
 )

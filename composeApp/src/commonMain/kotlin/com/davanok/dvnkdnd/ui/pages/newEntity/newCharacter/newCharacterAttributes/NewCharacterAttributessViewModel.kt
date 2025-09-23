@@ -6,7 +6,7 @@ import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterShortInfo
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
@@ -170,7 +170,7 @@ data class NewCharacterStatsUiState(
     val error: UiError? = null,
     val attributesSelectorType: AttributesSelectorType = AttributesSelectorType.POINT_BUY,
 
-    val character: CharacterShortInfo = CharacterShortInfo(),
+    val character: CharacterMin? = null,
     val modifiers: DnDAttributesGroup = DnDAttributesGroup.Default,
     val selectedAttributesBonuses: Set<Uuid> = emptySet(),
     val allModifiersGroups: List<DnDModifiersGroup> = emptyList()
