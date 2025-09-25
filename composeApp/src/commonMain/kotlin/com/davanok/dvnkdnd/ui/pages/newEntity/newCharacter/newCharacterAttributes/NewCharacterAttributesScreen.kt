@@ -1,36 +1,21 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
@@ -78,7 +63,7 @@ fun NewCharacterAttributesScreen(
                 onBack = onBack
             )
         }
-        else -> Scaffold (
+        else -> Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
                 TopAppBar(
@@ -86,7 +71,7 @@ fun NewCharacterAttributesScreen(
                         Text(stringResource(Res.string.new_character_attributes_screen_title))
                     },
                     navigationIcon = {
-                        IconButton(onBack) {
+                        IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                 contentDescription = stringResource(Res.string.back)
@@ -107,7 +92,9 @@ fun NewCharacterAttributesScreen(
             }
         ) { paddingValues ->
             Content(
-                modifier = Modifier.padding(paddingValues).fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 selectedCreationOption = uiState.attributesSelectorType,
                 onOptionSelected = viewModel::selectAttributeSelectorType,
                 allModifiersGroups = uiState.allModifiersGroups,
@@ -138,8 +125,10 @@ private fun Content(
         CreationOptionsSelector(
             selectedCreationOption = selectedCreationOption,
             onOptionSelected = onOptionSelected,
-            onInfoClick = { showInfoDialog = !showInfoDialog }
+            onInfoClick = { showInfoDialog = true }
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         ModifiersSelector(
             selectedCreationOption = selectedCreationOption,
@@ -157,15 +146,22 @@ private fun Content(
             onDismiss = { showInfoDialog = false }
         )
 }
+
 @Composable
 private fun CreationOptionsSelector(
     selectedCreationOption: AttributesSelectorType,
     onOptionSelected: (AttributesSelectorType) -> Unit,
     onInfoClick: () -> Unit
 ) {
-    Row {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         SingleChoiceSegmentedButtonRow(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
         ) {
             AttributesSelectorType.entries.forEachIndexed { index, option ->
                 SegmentedButton(
@@ -185,7 +181,8 @@ private fun CreationOptionsSelector(
             }
         }
         IconButton(
-            onClick = onInfoClick
+            onClick = onInfoClick,
+            modifier = Modifier.padding(start = 8.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Info,
@@ -194,6 +191,7 @@ private fun CreationOptionsSelector(
         }
     }
 }
+
 @Composable
 private fun AboutModifiersSelectorsDialog(
     allModifiersGroups: List<DnDModifiersGroup>,
@@ -201,50 +199,58 @@ private fun AboutModifiersSelectorsDialog(
     onDismiss: () -> Unit
 ) {
     val html = stringResource(Res.string.modifiers_selectors_hint)
+    val annotatedHtml = remember(html) { htmlToAnnotatedString(html) }
+
     AdaptiveModalSheet(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.about_modifiers_selectors)) }
     ) {
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(12.dp),
         ) {
             Text(
-                text = remember(Unit) { htmlToAnnotatedString(html) }
+                text = annotatedHtml
             )
 
-            Text(
-                text = buildAnnotatedString {
-                    allModifiersGroups.sortedBy { it.priority }.fastForEach { group ->
-                        if (group.modifiers.isEmpty()) return@fastForEach
-                        withStyle(MaterialTheme.typography.labelLarge.toSpanStyle()) {
-                            append(group.name)
-                        }
-                        group.modifiers
-                            .groupBy { it.targetAs<Attributes>() }
-                            .forEach { (attribute, modifiers) ->
-                                val attributeStr = stringResource(attribute.stringRes)
-                                append("\n\t")
-                                append(attributeStr)
-                                modifiers.fastForEach {
-                                    append("\n\t\t")
-                                    if (it.id in selectedModifiersBonuses)
-                                        withStyle(
-                                            LocalTextStyle.current
-                                                .copy(textDecoration = TextDecoration.Underline)
-                                                .toSpanStyle()
-                                        ) {
-                                            append(group.operation.applyForString(attributeStr, it.value))
-                                        }
-                                    else
-                                        append(group.operation.applyForString(attributeStr, it.value))
-                                    append(' ')
-                                }
-                            }
-                        append('\n')
+            Spacer(modifier = Modifier.height(12.dp))
+
+            val infoText = buildAnnotatedString {
+                allModifiersGroups.sortedBy { it.priority }.fastForEach { group ->
+                    if (group.modifiers.isEmpty()) return@fastForEach
+                    withStyle(MaterialTheme.typography.labelLarge.toSpanStyle()) {
+                        append(group.name)
                     }
-                }.let {
-                    it.ifBlank { AnnotatedString(stringResource(Res.string.no_modifiers_for_info)) }
+                    group.modifiers
+                        .groupBy { it.targetAs<Attributes>() }
+                        .forEach { (attribute, modifiers) ->
+                            val attributeStr = stringResource(attribute.stringRes)
+                            append("\n\t")
+                            append(attributeStr)
+                            modifiers.fastForEach {
+                                append("\n\t\t")
+                                val textToAppend = group.operation.applyForString(attributeStr, it.value)
+                                if (it.id in selectedModifiersBonuses) {
+                                    withStyle(
+                                        LocalTextStyle.current
+                                            .copy(textDecoration = TextDecoration.Underline)
+                                            .toSpanStyle()
+                                    ) {
+                                        append(textToAppend)
+                                    }
+                                } else {
+                                    append(textToAppend)
+                                }
+                                append(' ')
+                            }
+                        }
+                    append('\n')
                 }
+            }
+
+            Text(
+                text = infoText.ifBlank { AnnotatedString(stringResource(Res.string.no_modifiers_for_info)) }
             )
         }
     }

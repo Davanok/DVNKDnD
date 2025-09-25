@@ -3,7 +3,6 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFirstOrNull
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
@@ -22,8 +21,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.Path
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
-import kotlin.uuid.Uuid
 
 class NewCharacterMainViewModel(
     private val filesRepository: FilesRepository,
@@ -31,13 +30,23 @@ class NewCharacterMainViewModel(
     val searchSheetViewModel: SearchSheetViewModel,
     private val newCharacterViewModel: NewCharacterViewModel
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(
-        NewCharacterMainUiState(isLoading = true)
-    )
+    private val _uiState = MutableStateFlow(NewCharacterMainUiState(isLoading = true))
     val uiState: StateFlow<NewCharacterMainUiState> = _uiState
 
     fun removeWarning() {
-        _uiState.value = _uiState.value.copy(error = null)
+        _uiState.update { it.copy(error = null) }
+    }
+
+    private suspend fun setCriticalError(messageRes: StringResource, thr: Throwable?) {
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                error = UiError.Critical(
+                    message = getString(messageRes),
+                    exception = thr
+                )
+            )
+        }
     }
 
     private suspend fun setCharacterEntities() {
@@ -54,32 +63,26 @@ class NewCharacterMainViewModel(
             values.backgrounds.fastFirstOrNull { it.id == background.id }
         }
 
-        val entitiesToLoad = mutableListOf<Uuid>()
+        val missingIds = listOfNotNull(
+            character.cls?.id?.takeIf { characterClass == null },
+            character.race?.id?.takeIf { characterRace == null },
+            character.background?.id?.takeIf { characterBackground == null }
+        )
 
-        if (characterClass == null && character.cls != null) entitiesToLoad.add(character.cls.id)
-        if (characterRace == null && character.race != null) entitiesToLoad.add(character.race.id)
-        if (characterBackground == null && character.background != null) entitiesToLoad.add(character.background.id)
-
-        if (entitiesToLoad.isNotEmpty()) {
-            entitiesRepository.getEntitiesWithSubList(entitiesToLoad).onFailure { thr ->
-                _uiState.update {
-                    it.copy(
-                        error = UiError.Critical(
-                            message = getString(Res.string.loading_entities_error),
-                            exception = thr
-                        )
-                    )
+        if (missingIds.isNotEmpty()) {
+            entitiesRepository.getEntitiesWithSubList(missingIds)
+                .onFailure { thr ->
+                    setCriticalError(Res.string.loading_entities_error, thr)
+                    return
                 }
-            }.onSuccess { loaded ->
-                loaded.fastForEach {
-                    when (it.id) {
-                        character.cls?.id -> characterClass = it
-                        character.race?.id -> characterRace = it
-                        character.background?.id -> characterBackground = it
-                    }
+                .onSuccess { loaded ->
+                    val byId = loaded.associateBy { it.id }
+                    character.cls?.id?.let { characterClass = characterClass ?: byId[it] }
+                    character.race?.id?.let { characterRace = characterRace ?: byId[it] }
+                    character.background?.id?.let { characterBackground = characterBackground ?: byId[it] }
                 }
-            }
         }
+
         _uiState.update {
             it.copy(
                 character = character.copy(
@@ -92,34 +95,26 @@ class NewCharacterMainViewModel(
     }
 
     private fun loadMainValues() = viewModelScope.launch {
-        _uiState.update { it.copy(isLoading = true) }
+        _uiState.update { it.copy(isLoading = true, error = null) }
+
         entitiesRepository.getEntitiesWithSubList(
             DnDEntityTypes.CLASS,
             DnDEntityTypes.RACE,
             DnDEntityTypes.BACKGROUND
         ).onFailure { thr ->
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    error = UiError.Critical(
-                        message = getString(Res.string.loading_entities_error),
-                        exception = thr
-                    )
-                )
-            }
+            setCriticalError(Res.string.loading_entities_error, thr)
         }.onSuccess { entities ->
             val values = DownloadableValues(
                 classes = entities[DnDEntityTypes.CLASS] ?: emptyList(),
                 races = entities[DnDEntityTypes.RACE] ?: emptyList(),
                 backgrounds = entities[DnDEntityTypes.BACKGROUND] ?: emptyList()
             )
-            _uiState.update {
-                it.copy(entities = values)
-            }
+
+            _uiState.update { it.copy(entities = values) }
+
             setCharacterEntities()
-            _uiState.update {
-                it.copy(isLoading = false)
-            }
+
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -132,95 +127,68 @@ class NewCharacterMainViewModel(
                 DnDEntityTypes.CLASS -> setCharacterClass(selectedEntity, selectedSubEntity)
                 DnDEntityTypes.RACE -> setCharacterRace(selectedEntity, selectedSubEntity)
                 DnDEntityTypes.BACKGROUND -> setCharacterBackground(selectedEntity, selectedSubEntity)
-
                 else -> throw IllegalArgumentException()
             }
         }
-        _uiState.value = _uiState.value.copy(
-            showSearchSheet = false
-        )
+        _uiState.update { it.copy(showSearchSheet = false) }
     }
 
     fun openSearchSheet(content: DnDEntityTypes, query: String) {
-        _uiState.value = _uiState.value.copy(showSearchSheet = true)
-
+        _uiState.update { it.copy(showSearchSheet = true) }
         searchSheetViewModel.setSearchType(content)
         searchSheetViewModel.setSearchQuery(query)
     }
 
-    // Character setters
     private fun updateCharacter(update: (NewCharacterMain) -> NewCharacterMain) {
-        val character = _uiState.value.character
-        val updated = update(character)
-        _uiState.update {
-            it.copy(
-                character = updated
-            )
-        }
+        _uiState.update { it.copy(character = update(it.character)) }
     }
 
     fun addCharacterImage(value: ByteArray) = viewModelScope.launch {
-        val path = filesRepository.getFilename(
-            FilesRepository.Paths.images,
-            "png",
-            true
-        ) // png as default in ImageBitmap.toByteArray
+        val path = filesRepository.getFilename(FilesRepository.Paths.images, "png", true)
         filesRepository.write(value, path)
-
-        updateCharacter {
-            val mutable = it.images.toMutableList()
-            mutable.add(0, path)
-            it.copy(
-                images = mutable,
-                mainImage = path
-            )
-        }
+            .onSuccess {
+                updateCharacter {
+                    val mutable = it.images.toMutableList()
+                    mutable.add(0, path)
+                    it.copy(images = mutable, mainImage = path)
+                }
+            }.onFailure { thr ->
+                setCriticalError(Res.string.saving_data_error, thr)
+            }
     }
 
     fun removeCharacterImage(value: Path) = viewModelScope.launch {
         filesRepository.delete(value)
-
-        updateCharacter {
-            val images = it.images.fastFilter { path -> path != value }
-            val wasMainImage = it.mainImage == value
-            it.copy(
-                images = images,
-                mainImage = if (wasMainImage) images.firstOrNull() else it.mainImage
-            )
-        }
+            .onFailure { thr ->
+                _uiState.update {
+                    it.copy(error = UiError.Critical(getString(Res.string.saving_data_error), thr))
+                }
+            }.also {
+                updateCharacter {
+                    val images = it.images.fastFilter { path -> path != value }
+                    val wasMainImage = it.mainImage == value
+                    it.copy(
+                        images = images,
+                        mainImage = if (wasMainImage) images.firstOrNull() else it.mainImage
+                    )
+                }
+            }
     }
 
-    fun setCharacterMainImage(value: Path?) =
-        updateCharacter { it.copy(mainImage = value) }
-
-    fun setCharacterName(value: String) =
-        updateCharacter { it.copy(name = value) }
-
-    fun setCharacterDescription(value: String) =
-        updateCharacter { it.copy(description = value) }
-
+    fun setCharacterMainImage(value: Path?) = updateCharacter { it.copy(mainImage = value) }
+    fun setCharacterName(value: String) = updateCharacter { it.copy(name = value) }
+    fun setCharacterDescription(value: String) = updateCharacter { it.copy(description = value) }
     fun setCharacterClass(cls: DnDEntityWithSubEntities?, subCls: DnDEntityMin? = null) =
         updateCharacter { it.copy(cls = cls, subCls = subCls) }
-
-    fun setCharacterSubClass(value: DnDEntityMin?) =
-        updateCharacter { it.copy(subCls = value) }
-
+    fun setCharacterSubClass(value: DnDEntityMin?) = updateCharacter { it.copy(subCls = value) }
     fun setCharacterRace(race: DnDEntityWithSubEntities?, subRace: DnDEntityMin? = null) =
         updateCharacter { it.copy(race = race, subRace = subRace) }
-
-    fun setCharacterSubRace(value: DnDEntityMin?) =
-        updateCharacter { it.copy(subRace = value) }
-
+    fun setCharacterSubRace(value: DnDEntityMin?) = updateCharacter { it.copy(subRace = value) }
     fun setCharacterBackground(
         background: DnDEntityWithSubEntities?,
         subBackground: DnDEntityMin? = null,
-    ) =
-        updateCharacter { it.copy(background = background, subBackground = subBackground) }
-
-    fun setCharacterSubBackground(value: DnDEntityMin?) =
-        updateCharacter { it.copy(subBackground = value) }
-
-    // onCreate
+    ) = updateCharacter { it.copy(background = background, subBackground = subBackground) }
+    fun setCharacterSubBackground(value: DnDEntityMin?) = updateCharacter { it.copy(subBackground = value) }
 
     private fun validateCharacter(character: NewCharacterMain): NewCharacterMainUiState.EmptyFields {
         var (
@@ -263,23 +231,17 @@ class NewCharacterMainViewModel(
         if (emptyFields.hasEmptyFields())
             _uiState.update { it.copy(emptyFields = emptyFields) }
         else {
-            _uiState.update { it.copy(isLoading = true) }
-            newCharacterViewModel.setCharacterMain(newCharacter).onFailure { thr ->
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = UiError.Critical(
-                            message = getString(Res.string.saving_data_error),
-                            exception = thr
-                        )
-                    )
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            newCharacterViewModel.setCharacterMain(newCharacter)
+                .onFailure { thr ->
+                    setCriticalError(Res.string.saving_data_error, thr)
+                }.onSuccess {
+                    _uiState.update { it.copy(isLoading = false) }
+                    onSuccess()
                 }
-            }.onSuccess {
-                _uiState.update { it.copy(isLoading = false) }
-                onSuccess()
-            }
         }
     }
+
     init {
         loadMainValues()
     }

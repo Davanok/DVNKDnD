@@ -30,9 +30,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -118,6 +122,7 @@ fun NewCharacterStatsLargeScreen(
             }
         ) { paddingValues ->
             Content(
+                modifier = Modifier.padding(paddingValues),
                 attributes = uiState.attributes,
                 savingThrows = uiState.savingThrows.mapValues { (_, v) -> v.first },
                 savingThrowValues = uiState.savingThrows.mapValues { (_, v) -> v.second },
@@ -141,6 +146,8 @@ private fun Content(
     onSelectSkill: (Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var itemsMaxHeight by remember { mutableIntStateOf(0) }
+    val density = LocalDensity.current
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Adaptive(StatItemMinWidth),
@@ -153,6 +160,18 @@ private fun Content(
             key = { it }
         ) { attribute ->
             AttributeItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(
+                        if (itemsMaxHeight > 0) Modifier.height(density.run { itemsMaxHeight.toDp() })
+                        else Modifier
+                    )
+                    .onGloballyPositioned {
+                        val h = it.size.height
+                        if (h > itemsMaxHeight) {
+                            itemsMaxHeight = h
+                        }
+                    },
                 attribute = attribute,
                 attributeValue = attributes[attribute],
                 savingThrowModifiers = savingThrows[attribute] ?: emptyList(),

@@ -2,29 +2,25 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttribut
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SuggestionChip
@@ -32,21 +28,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastFold
 import androidx.compose.ui.util.fastForEach
@@ -71,7 +62,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
-
 private data class AppliedModifier(
     val value: Double,
     val operation: DnDModifierOperation
@@ -82,12 +72,9 @@ private fun applyModifiers(base: Int, modifiers: List<AppliedModifier>) =
 
 private fun List<DnDModifiersGroup>.appliedModifiers(attribute: Attributes, selectedModifiers: Set<Uuid>) =
     fastFlatMap { group ->
-        group.modifiers.fastFilteredMap(
-            predicate = { it.targetAs<Attributes>() == attribute && it.id in selectedModifiers },
-            transform =  { AppliedModifier(it.value, group.operation) }
-        )
+        group.modifiers.fastFilter { it.targetAs<Attributes>() == attribute && it.id in selectedModifiers }
+            .map { AppliedModifier(it.value, group.operation) }
     }
-
 
 private fun approximateToDefault(input: DnDAttributesGroup): DnDAttributesGroup {
     val statsList = listOf(
@@ -116,6 +103,7 @@ private fun approximateToDefault(input: DnDAttributesGroup): DnDAttributesGroup 
     )
 }
 
+private val CELL_HEIGHT = 56.dp
 
 @Composable
 fun ModifiersSelector(
@@ -131,6 +119,7 @@ fun ModifiersSelector(
         targetState = selectedCreationOption
     ) { selectorType ->
         Column(
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (selectorType) {
@@ -170,15 +159,14 @@ private fun ColumnScope.PointBuyModifiersSelector(
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
 ) {
-    val modifiersSum =
-        calculateBuyingModifiersSum(character.modifiers())
+    val modifiersSum = calculateBuyingModifiersSum(character.modifiers())
     Text(
-        modifier = Modifier.align(Alignment.CenterHorizontally),
+        modifier = Modifier.padding(top = 8.dp),
         text = (DnDConstants.BUYING_BALANCE - modifiersSum).toString(),
         style = MaterialTheme.typography.bodyLarge
     )
-    ModifiersSelectionGroup(
-        modifier = Modifier.fillMaxSize(),
+
+    ModifiersSelectionTable(
         allModifiersGroups = allModifiersGroups,
         selectedAttributeModifiers = selectedAttributeModifiers,
         onModifierSelected = onModifierSelected,
@@ -200,7 +188,6 @@ private fun ColumnScope.PointBuyModifiersSelector(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StandardArrayModifiersSelector(
     character: DnDAttributesGroup,
@@ -212,152 +199,29 @@ private fun StandardArrayModifiersSelector(
     LaunchedEffect(Unit) {
         onChange(approximateToDefault(character))
     }
+
     val modifiers = remember(character) { character.modifiers() }
     Row(
         modifier = Modifier
-            .horizontalScroll(rememberScrollState()),
+            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally)
     ) {
         DnDConstants.DEFAULT_ARRAY.forEach { value ->
             key(value) {
                 SuggestionChip(
-                    onClick = { /* nothing */ },
+                    onClick = { /* noop */ },
                     enabled = value !in modifiers,
-                    label = {
-                        Text(text = value.toString())
-                    }
+                    label = { Text(text = value.toString()) }
                 )
             }
         }
     }
-    var maxTextWidth by remember { mutableStateOf(10) }
-    val density = LocalDensity.current
-    val commonScrollState = rememberScrollState()
-    ModifiersSelectionGroup(
-        modifier = Modifier.fillMaxSize(),
+
+    ModifiersSelectionTable(
         allModifiersGroups = allModifiersGroups,
         selectedAttributeModifiers = selectedAttributeModifiers,
-        onModifierSelected = onModifierSelected,
-    ) { attribute ->
-        Column {
-            Text(
-                text = stringResource(attribute.stringRes),
-                maxLines = 1,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(IntrinsicSize.Min)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(commonScrollState)
-                    ) {
-                        DnDConstants.DEFAULT_ARRAY.forEach { value ->
-                            key(value) {
-                                InputChip(
-                                    selected = value == character[attribute],
-                                    onClick = {
-                                        if (value == character[attribute])
-                                            return@InputChip
-                                        if (value !in modifiers)
-                                            onChange(character.set(attribute, value))
-                                        else {
-                                            val overlap = character
-                                                .toMap()
-                                                .filterValues { it == value }
-                                                .keys.firstOrNull()
-                                            var tmp = character
-                                            if (overlap != null) {
-                                                tmp = tmp.set(overlap, character[attribute])
-                                            }
-                                            onChange(tmp.set(attribute, value))
-                                        }
-                                    },
-                                    label = { Text(text = value.toString()) }
-                                )
-                            }
-                        }
-                    }
-                    if (commonScrollState.canScrollBackward)
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(24.dp)
-                                .align(Alignment.CenterStart)
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(
-                                            Color.Black.copy(alpha = 0.4f),
-                                            Color.Transparent
-                                        )
-                                    )
-                                )
-                        )
-                    if (commonScrollState.canScrollForward)
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(24.dp)
-                                .align(Alignment.CenterEnd)
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(
-                                            Color.Transparent,
-                                            Color.Black.copy(alpha = 0.4f)
-                                        )
-                                    )
-                                )
-                        )
-                }
-                val attributeValue = applyModifiers(
-                    character[attribute], 
-                    allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
-                )
-                val modifier = calculateModifier(attributeValue)
-                val text = buildString {
-                    append(attributeValue)
-                    append(" (")
-                    append(modifier.toSignedString())
-                    append(')')
-                }
-
-
-                Text(
-                    text = text,
-                    modifier = Modifier
-                        .onSizeChanged {
-                            if (it.width > maxTextWidth)
-                                maxTextWidth = it.width
-                        }
-                        .widthIn(min = density.run { maxTextWidth.toDp() })
-                        .padding(horizontal = 4.dp),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ManualModifiersSelector(
-    character: DnDAttributesGroup,
-    onChange: (DnDAttributesGroup) -> Unit,
-    allModifiersGroups: List<DnDModifiersGroup>,
-    selectedAttributeModifiers: Set<Uuid>,
-    onModifierSelected: (DnDModifier) -> Unit,
-) {
-    ModifiersSelectionGroup(
-        modifier = Modifier.fillMaxSize(),
-        allModifiersGroups = allModifiersGroups,
-        selectedAttributeModifiers = selectedAttributeModifiers,
-        onModifierSelected = onModifierSelected,
+        onModifierSelected = onModifierSelected
     ) { attribute ->
         ModifierSelectorRow(
             value = character[attribute],
@@ -371,53 +235,139 @@ private fun ManualModifiersSelector(
 }
 
 @Composable
-fun ModifiersSelectionGroup(
+private fun ManualModifiersSelector(
+    character: DnDAttributesGroup,
+    onChange: (DnDAttributesGroup) -> Unit,
+    allModifiersGroups: List<DnDModifiersGroup>,
+    selectedAttributeModifiers: Set<Uuid>,
+    onModifierSelected: (DnDModifier) -> Unit,
+) {
+    ModifiersSelectionTable(
+        allModifiersGroups = allModifiersGroups,
+        selectedAttributeModifiers = selectedAttributeModifiers,
+        onModifierSelected = onModifierSelected
+    ) { attribute ->
+        ModifierSelectorRow(
+            value = character[attribute],
+            onValueChange = { onChange(character.set(attribute, it)) },
+            label = stringResource(attribute.stringRes),
+            minValueCheck = { true },
+            maxValueCheck = { true },
+            additionalModifiers = allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
+        )
+    }
+}
+
+@Composable
+fun ModifiersSelectionTable(
     allModifiersGroups: List<DnDModifiersGroup>,
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
     modifier: Modifier = Modifier,
-    modifierField: @Composable (attribute: Attributes) -> Unit,
+    cellContent: @Composable (attribute: Attributes) -> Unit
 ) {
-    Row(modifier = modifier) {
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        val maxW = maxWidth
+        val groupCount = (allModifiersGroups.size).coerceAtLeast(1)
+        val labelColumn: Dp = (maxW * 0.28f).coerceAtLeast(110.dp)
+        val remaining = (maxW - labelColumn).coerceAtLeast(1.dp)
+        val cellWidth: Dp = (remaining / groupCount).coerceAtLeast(72.dp)
+
         Column {
-            Spacer(Modifier.height(48.dp))
-            Attributes.entries.fastForEach { attribute ->
-                Box(
-                    modifier = Modifier.height(48.dp),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    modifierField(attribute)
+            // Header row (labels for groups)
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.width(labelColumn)) {
+                    // empty placeholder for attribute column header (could be filled)
                 }
-            }
-        }
-        allModifiersGroups.fastForEach { group ->
-            Column {
-                Text(
-                    modifier = Modifier.size(48.dp),
-                    text = group.name,
-                    textAlign = TextAlign.Center
-                )
-            }
-            Attributes.entries.fastForEach { attribute ->
-                Box(
-                    Modifier.size(48.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    group.modifiers
-                        .fastFilter { it.targetAs<Attributes>() == attribute }
-                        .fastForEach { modifier ->
-                            RadioButton(
-                                selected = modifier.id in selectedAttributeModifiers,
-                                onClick = { onModifierSelected(modifier) },
-                                enabled = modifier.selectable && (group.modifiers.count { it.id in selectedAttributeModifiers } < group.selectionLimit || modifier.id in selectedAttributeModifiers)
+                LazyRow(modifier = Modifier.fillMaxWidth()) {
+                    items(allModifiersGroups) { group ->
+                        Box(
+                            modifier = Modifier
+                                .width(cellWidth)
+                                .height(CELL_HEIGHT)
+                                .padding(4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = group.name,
+                                style = MaterialTheme.typography.bodySmall,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2
                             )
                         }
+                    }
                 }
             }
-        }
-    }
+
+            HorizontalDivider()
+
+            LazyColumn {
+                items(Attributes.entries.toList()) { attribute ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(CELL_HEIGHT)
+                            .padding(vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .width(labelColumn)
+                                .padding(start = 8.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            cellContent(attribute)
+                        }
+
+                        LazyRow {
+                            items(allModifiersGroups) { group ->
+                                Box(
+                                    modifier = Modifier
+                                        .width(cellWidth)
+                                        .height(CELL_HEIGHT)
+                                        .padding(4.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    val modsForAttr = group.modifiers.fastFilter { it.targetAs<Attributes>() == attribute }
+                                    if (modsForAttr.isEmpty()) {
+                                        Box(modifier = Modifier.fillMaxSize())
+                                    } else {
+                                        modsForAttr.fastForEach { mod ->
+                                            val selected = mod.id in selectedAttributeModifiers
+                                            val enabled = mod.selectable && (group.modifiers.count { it.id in selectedAttributeModifiers } < group.selectionLimit || selected)
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(2.dp)
+                                                    .clip(MaterialTheme.shapes.small)
+                                                    .background(if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f) else Color.Transparent),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                RadioButton(
+                                                    selected = selected,
+                                                    onClick = { if (enabled) onModifierSelected(mod) },
+                                                    enabled = enabled
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } // end groups LazyRow
+                    } // end attribute Row
+                    HorizontalDivider()
+                }
+            } // end LazyColumn
+        } // end Column
+    } // end BoxWithConstraints
 }
 
+
+/* ---------- helpers ---------- */
 
 @Composable
 private fun ModifierSelectorRow(
@@ -429,7 +379,7 @@ private fun ModifierSelectorRow(
     modifier: Modifier = Modifier,
     label: String,
 ) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         IconButton(
             onClick = { onValueChange(value - 1) },
             enabled = minValueCheck(value - 1)
@@ -464,31 +414,32 @@ private fun ModifiersText(
     modifier: Modifier = Modifier,
     appliedModifiers: List<AppliedModifier>
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    Column(
-        modifier = modifier
-    ) {
+    val sum = remember(value, appliedModifiers) {
+        applyModifiers(value, appliedModifiers)
+    }
+
+    Column(modifier = modifier) {
         Text(
             text = label,
             maxLines = 1,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary
         )
-        val sum = remember(value, appliedModifiers) {
-            applyModifiers(value, appliedModifiers)
-        }
-        val text =
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT)
-                sum.toString()
-            else
-                buildString {
-                    appliedModifiers.fastFold(value.toString()) { acc, modifier ->
-                        modifier.operation.applyForString(acc, modifier.value)
-                    }
-                    append(" (")
-                    append(calculateModifier(sum).toSignedString())
-                    append(')')
+        val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+        val text = if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+            sum.toString()
+        } else {
+            buildString {
+                appliedModifiers.fastFold(value.toString()) { acc, modifier ->
+                    modifier.operation.applyForString(acc, modifier.value)
                 }
+                append(sum)
+                append(" (")
+                append(calculateModifier(sum).toSignedString())
+                append(')')
+            }
+        }
+
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,

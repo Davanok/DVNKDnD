@@ -1,7 +1,11 @@
 package com.davanok.dvnkdnd.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -26,7 +30,7 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScr
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.sharedKoinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.reflect.typeOf
 import kotlin.uuid.Uuid
@@ -142,6 +146,10 @@ private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostControl
 
 private fun NavGraphBuilder.characterCreationFlow(navController: NavHostController) =
     navigation<Route.New.Character>(startDestination = Route.New.Character.LoadData) {
+        @Composable
+        fun NavBackStackEntry.getSharedViewModel(navController: NavController): NewCharacterViewModel = 
+            sharedKoinViewModel<NewCharacterViewModel, Route.New.Character>(navController)
+        
         composable<Route.New.Character.LoadData> {
             LoadingDataScreen(
                 onBack = navController::navigateUp,
@@ -151,8 +159,8 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
             )
         }
         composable<Route.New.Character.Main> { backStack ->
-            val newCharacterViewModel: NewCharacterViewModel =
-                backStack.sharedKoinViewModel(navController)
+            val newCharacterViewModel =
+                backStack.getSharedViewModel(navController)
             NewCharacterMainScreen(
                 navigateToEntityInfo = { id -> navController.navigate(Route.EntityInfo(id)) },
                 onBack = navController::navigateUp,
@@ -162,7 +170,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         }
         composable<Route.New.Character.Stats> { backStack ->
             val newCharacterViewModel: NewCharacterViewModel =
-                backStack.sharedKoinViewModel(navController)
+                backStack.getSharedViewModel(navController)
             NewCharacterAttributesScreen(
                 onBack = navController::navigateUp,
                 onContinue = { navController.navigate(Route.New.Character.Throws) },
@@ -171,7 +179,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         }
         composable<Route.New.Character.Throws> { backStack ->
             val newCharacterViewModel: NewCharacterViewModel =
-                backStack.sharedKoinViewModel(navController)
+                backStack.getSharedViewModel(navController)
             NewCharacterStatsLargeScreen(
                 onBack = navController::navigateUp,
                 onContinue = { navController.navigate(Route.New.Character.Health) },
@@ -180,7 +188,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         }
         composable<Route.New.Character.Health> { backStack ->
             val newCharacterViewModel: NewCharacterViewModel =
-                backStack.sharedKoinViewModel(navController)
+                backStack.getSharedViewModel(navController)
             NewCharacterHealthScreen(
                 onBack = navController::navigateUp,
                 onContinue = { navController.navigate(Route.New.Character.Save) },
@@ -189,7 +197,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         }
         composable<Route.New.Character.Save> { backStack ->
             val newCharacterViewModel: NewCharacterViewModel =
-                backStack.sharedKoinViewModel(navController)
+                backStack.getSharedViewModel(navController)
             SavingNewCharacterScreen(
                 onBack = { navController.navigateWithRemoveFromBackStack(Route.Main.CharactersList) },
                 onGoToCharacter = { navController.navigateWithRemoveFromBackStack(Route.CharacterFull(it)) },
@@ -201,9 +209,20 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
 private fun <T : Any> NavHostController.navigateWithRemoveFromBackStack(
     destinationRoute: T
 ) = navigate(destinationRoute) {
-    currentDestination?.route?.let {
-        popUpTo(it) {
-            inclusive = true
-        }
+    currentDestination?.id?.let {
+        popUpTo(it) { inclusive = true }
     }
+}
+
+@Composable
+inline fun <reified VM : ViewModel, reified R : Any> NavBackStackEntry.sharedKoinViewModel(
+    navController: NavController
+): VM {
+    val parentEntry = remember(this) {
+        navController.getBackStackEntry<R>()
+    }
+    @Suppress("UndeclaredKoinUsage")
+    return koinViewModel(
+        viewModelStoreOwner = parentEntry
+    )
 }

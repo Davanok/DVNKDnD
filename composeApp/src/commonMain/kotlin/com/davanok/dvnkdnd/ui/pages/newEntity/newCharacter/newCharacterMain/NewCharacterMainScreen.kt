@@ -1,9 +1,11 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -90,6 +92,9 @@ import kotlinx.coroutines.launch
 import okio.Path
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
+
+
+private val textFieldMaxWidth = 488.dp 
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -205,7 +210,7 @@ private fun Content(
 }
 
 @Composable
-private fun TextFields(
+private fun ColumnScope.TextFields(
     state: NewCharacterMain,
     empties: NewCharacterMainUiState.EmptyFields,
     entities: DownloadableValues,
@@ -220,7 +225,8 @@ private fun TextFields(
     onOpenExtendedSearch: (DnDEntityTypes, String) -> Unit,
 ) {
     val textFieldModifier = Modifier
-        .widthIn(488.dp)
+        .widthIn(max = textFieldMaxWidth)
+        .fillMaxWidth()
     val errorText: (error: Boolean) -> @Composable (() -> Unit)? = { error ->
         if (error) {
             {
@@ -259,17 +265,18 @@ private fun TextFields(
         isError = empties.cls,
         supportingText = errorText(empties.cls)
     )
-    if (!state.cls?.subEntities.isNullOrEmpty())
+    AnimatedVisibility(!state.cls?.subEntities.isNullOrEmpty()) {
         FiniteTextField(
             modifier = textFieldModifier,
             value = state.subCls,
-            entities = state.cls.subEntities,
+            entities = state.cls?.subEntities.orEmpty(),
             toString = { it.name },
             onSelected = onSubClassSelected,
             label = { Text(text = stringResource(Res.string.sub_class)) },
             isError = empties.subCls,
             supportingText = errorText(empties.subCls)
         )
+    }
     FiniteTextField(
         modifier = textFieldModifier,
         value = state.race,
@@ -281,17 +288,18 @@ private fun TextFields(
         isError = empties.race,
         supportingText = errorText(empties.race)
     )
-    if (!state.race?.subEntities.isNullOrEmpty())
+    AnimatedVisibility(!state.race?.subEntities.isNullOrEmpty()) {
         FiniteTextField(
             modifier = textFieldModifier,
             value = state.subRace,
-            entities = state.race.subEntities,
+            entities = state.race?.subEntities.orEmpty(),
             toString = { it.name },
             onSelected = onSubRaceSelected,
             label = { Text(text = stringResource(Res.string.sub_race)) },
             isError = empties.subRace,
             supportingText = errorText(empties.subRace)
         )
+    }
     FiniteTextField(
         modifier = textFieldModifier,
         value = state.background,
@@ -303,17 +311,18 @@ private fun TextFields(
         isError = empties.background,
         supportingText = errorText(empties.background)
     )
-    if (!state.background?.subEntities.isNullOrEmpty())
+    AnimatedVisibility(!state.background?.subEntities.isNullOrEmpty()) {
         FiniteTextField(
             modifier = textFieldModifier,
             value = state.subRace,
-            entities = state.background.subEntities,
+            entities = state.background?.subEntities.orEmpty(),
             toString = { it.name },
             onSelected = onSubBackgroundSelected,
             label = { Text(text = stringResource(Res.string.sub_background)) },
             isError = empties.subBackground,
             supportingText = errorText(empties.subBackground)
         )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

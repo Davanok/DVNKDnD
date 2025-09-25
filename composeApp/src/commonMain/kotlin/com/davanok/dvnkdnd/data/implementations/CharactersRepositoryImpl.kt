@@ -1,8 +1,11 @@
 package com.davanok.dvnkdnd.data.implementations
 
+import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
+import com.davanok.dvnkdnd.data.model.entities.character.toCharacterMin
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.database.daos.character.CharactersDao
+import com.davanok.dvnkdnd.database.entities.character.Character
 import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
 
@@ -20,7 +23,7 @@ class CharactersRepositoryImpl(
     override suspend fun getCharactersMinList() =
         runCatching {
             Napier.d { "getCharactersMinList" }
-            dao.getCharactersMinList()
+            dao.getCharactersMinList().fastMap(Character::toCharacterMin)
         }.onFailure {
             Napier.e("Error in getCharactersMinList", it)
         }

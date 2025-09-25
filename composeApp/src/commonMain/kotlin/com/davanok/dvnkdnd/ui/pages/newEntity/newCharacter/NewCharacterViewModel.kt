@@ -2,7 +2,6 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
 
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFilteredMap
-import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
@@ -10,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithHealth
@@ -65,7 +64,7 @@ class NewCharacterViewModel(
             CharacterMainEntityInfo(
                 level = newCharacterState.level,
                 entity = entity,
-                subEntity = entities.fastFirst { it.parentId == entity.id }
+                subEntity = entities.fastFirstOrNull { it.parentId == entity.id }
             )
         }
 
@@ -155,8 +154,8 @@ private data class NewCharacterWithFullEntities(
 
     fun toNewCharacterMain(): NewCharacterMain {
         val clsInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }
-        val raceInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }
-        val backgroundInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }
+        val raceInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.RACE }
+        val backgroundInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.BACKGROUND }
 
         fun CharacterMainEntityInfo.toEntityWithSubEntities() =
             entity.toEntityWithSubEntities(listOfNotNull(subEntity?.toDnDEntityMin()))

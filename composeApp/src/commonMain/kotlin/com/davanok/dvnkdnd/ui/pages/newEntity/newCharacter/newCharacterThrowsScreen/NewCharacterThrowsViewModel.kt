@@ -199,11 +199,11 @@ class NewCharacterThrowsViewModel(
     fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
         val isSavingThrowsValid = modifierGroups
             .fastFilter { it.target == DnDModifierTargetType.SAVING_THROW }
-            .fastAll { group -> group.modifiers.count { it.id in selectedModifiers } == group.selectionLimit }
+            .fastAll { group -> group.modifiers.count { it.id in selectedModifiers } >= group.selectionLimit }
 
         val isSkillsValid = modifierGroups
             .fastFilter { it.target == DnDModifierTargetType.SKILL }
-            .fastAll { group -> group.modifiers.count { it.id in selectedModifiers } == group.selectionLimit }
+            .fastAll { group -> group.modifiers.count { it.id in selectedModifiers } >= group.selectionLimit }
 
         if (!isSavingThrowsValid) {
             _uiState.update {
