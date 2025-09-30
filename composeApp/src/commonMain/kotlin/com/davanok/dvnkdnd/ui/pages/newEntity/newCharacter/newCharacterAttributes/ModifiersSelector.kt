@@ -1,7 +1,6 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,12 +9,13 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.HorizontalDivider
@@ -32,15 +32,13 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastFold
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapIndexed
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
@@ -54,13 +52,17 @@ import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.ui.components.toSignedString
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScreen.UiSelectableState
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.decrease_modifier_value
 import dvnkdnd.composeapp.generated.resources.increase_modifier_value
 import dvnkdnd.composeapp.generated.resources.remove
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.min
 import kotlin.uuid.Uuid
+
+private val ATTRIBUTE_FIELD_MAX_WIDTH = 488.dp
 
 private data class AppliedModifier(
     val value: Double,
@@ -102,8 +104,6 @@ private fun approximateToDefault(input: DnDAttributesGroup): DnDAttributesGroup 
         charisma = assignment.getValue(5)
     )
 }
-
-private val CELL_HEIGHT = 56.dp
 
 @Composable
 fun ModifiersSelector(
@@ -266,30 +266,59 @@ fun ModifiersSelectionTable(
     modifier: Modifier = Modifier,
     cellContent: @Composable (attribute: Attributes) -> Unit
 ) {
-    BoxWithConstraints(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        val maxW = maxWidth
-        val groupCount = (allModifiersGroups.size).coerceAtLeast(1)
-        val labelColumn: Dp = (maxW * 0.28f).coerceAtLeast(110.dp)
-        val remaining = (maxW - labelColumn).coerceAtLeast(1.dp)
-        val cellWidth: Dp = (remaining / groupCount).coerceAtLeast(72.dp)
+    val modifierGroupsByAttributes = remember(allModifiersGroups, selectedAttributeModifiers) {
+        allModifiersGroups.fastMap { group ->
+            val attributesMap = mutableMapOf<Attributes, MutableList<Pair<DnDModifier, UiSelectableState>>>()
 
-        Column {
+            val limitNotExceeded = group.modifiers.count { it.id in selectedAttributeModifiers } < group.selectionLimit
+
+            group.modifiers.fastForEach { mod ->
+                val selected = mod.id in selectedAttributeModifiers
+                val selectable = mod.selectable && (limitNotExceeded || selected)
+
+                attributesMap
+                    .getOrPut(mod.targetAs(), ::mutableListOf)
+                    .add(mod to UiSelectableState(selectable, selected))
+            }
+
+            attributesMap.mapValues { it.value.toList() }
+        }
+    }
+    BoxWithConstraints {
+        val groupsCount = allModifiersGroups.size
+        val isWideLayout = remember(maxWidth, groupsCount) {
+            maxWidth > ATTRIBUTE_FIELD_MAX_WIDTH + 48.dp * groupsCount
+        }
+
+        val columnWidth = remember(maxWidth, groupsCount) {
+            if (groupsCount == 0) 48.dp
+            else {
+                val available = if (isWideLayout) (maxWidth - ATTRIBUTE_FIELD_MAX_WIDTH) else (48.dp * min(groupsCount, 3))
+                val per = if (available > 0.dp) available / groupsCount else 48.dp
+                maxOf(48.dp, per)
+            }
+        }
+
+        val commonLazyRowState = rememberLazyListState()
+
+        Column(modifier = modifier) {
             // Header row (labels for groups)
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.width(labelColumn)) {
-                    // empty placeholder for attribute column header (could be filled)
-                }
-                LazyRow(modifier = Modifier.fillMaxWidth()) {
-                    items(allModifiersGroups) { group ->
+                val attributeFieldModifier = if (isWideLayout) Modifier.width(ATTRIBUTE_FIELD_MAX_WIDTH) else Modifier.weight(1f)
+                val groupsModifier = if (isWideLayout) Modifier.fillMaxWidth() else Modifier.width(columnWidth * min(groupsCount, 3))
+
+                Box(modifier = attributeFieldModifier)
+
+                LazyRow(
+                    modifier = groupsModifier,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    state = commonLazyRowState
+                ) {
+                    items(allModifiersGroups, key = { it.id }) { group ->
                         Box(
                             modifier = Modifier
-                                .width(cellWidth)
-                                .height(CELL_HEIGHT)
-                                .padding(4.dp),
+                                .width(columnWidth)
+                                .padding(horizontal = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -305,56 +334,49 @@ fun ModifiersSelectionTable(
 
             HorizontalDivider()
 
-            LazyColumn {
-                items(Attributes.entries.toList()) { attribute ->
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Attributes.entries.fastForEach { attribute ->
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(CELL_HEIGHT)
-                            .padding(vertical = 2.dp),
+                            .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .width(labelColumn)
-                                .padding(start = 8.dp),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            cellContent(attribute)
-                        }
+                        val attributeFieldModifier = if (isWideLayout) Modifier.width(ATTRIBUTE_FIELD_MAX_WIDTH) else Modifier.weight(1f)
+                        val groupsModifier = if (isWideLayout) Modifier.fillMaxWidth() else Modifier.width(columnWidth * min(groupsCount, 3))
 
-                        LazyRow {
-                            items(allModifiersGroups) { group ->
+                        Box(
+                            modifier = attributeFieldModifier,
+                            contentAlignment = Alignment.CenterStart
+                        ) { cellContent(attribute) }
+
+                        LazyRow(
+                            modifier = groupsModifier,
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            state = commonLazyRowState
+                        ) {
+                            items(modifierGroupsByAttributes) { attrModifiers ->
                                 Box(
                                     modifier = Modifier
-                                        .width(cellWidth)
-                                        .height(CELL_HEIGHT)
-                                        .padding(4.dp),
+                                        .width(columnWidth),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    val modsForAttr = group.modifiers.fastFilter { it.targetAs<Attributes>() == attribute }
-                                    if (modsForAttr.isEmpty()) {
+                                    val modsForAttr = remember(attrModifiers) { attrModifiers[attribute].orEmpty() }
+                                    if (modsForAttr.isEmpty())
                                         Box(modifier = Modifier.fillMaxSize())
-                                    } else {
-                                        modsForAttr.fastForEach { mod ->
-                                            val selected = mod.id in selectedAttributeModifiers
-                                            val enabled = mod.selectable && (group.modifiers.count { it.id in selectedAttributeModifiers } < group.selectionLimit || selected)
+                                    else
+                                        modsForAttr.fastForEach { (mod, state) ->
                                             Box(
                                                 modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(2.dp)
-                                                    .clip(MaterialTheme.shapes.small)
-                                                    .background(if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f) else Color.Transparent),
+                                                    .fillMaxSize(),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 RadioButton(
-                                                    selected = selected,
-                                                    onClick = { if (enabled) onModifierSelected(mod) },
-                                                    enabled = enabled
+                                                    selected = state.selected,
+                                                    onClick = { if (state.selectable) onModifierSelected(mod) },
+                                                    enabled = state.selectable
                                                 )
                                             }
                                         }
-                                    }
                                 }
                             }
                         } // end groups LazyRow
@@ -362,8 +384,8 @@ fun ModifiersSelectionTable(
                     HorizontalDivider()
                 }
             } // end LazyColumn
-        } // end Column
-    } // end BoxWithConstraints
+        }
+    }
 }
 
 
