@@ -6,12 +6,12 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDFeat
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDProficiency
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDRace
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityAbility
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toEntityProficiency
-import com.davanok.dvnkdnd.database.model.DbFullEntity
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDFeat
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDProficiency
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDRace
+import com.davanok.dvnkdnd.database.model.adapters.entities.toEntityAbility
+import com.davanok.dvnkdnd.database.model.adapters.entities.toEntityProficiency
+import com.davanok.dvnkdnd.database.model.entities.DbFullEntity
 import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
 

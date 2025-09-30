@@ -5,10 +5,6 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.character.toCharacter
-import com.davanok.dvnkdnd.data.model.entities.character.toCharacterCoins
-import com.davanok.dvnkdnd.data.model.entities.character.toCharacterHealth
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toCharacterAttributes
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
@@ -17,6 +13,10 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.model.DbFullCharacter
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacter
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterAttributes
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCoins
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterHealth
 import kotlin.uuid.Uuid
 
 @Dao

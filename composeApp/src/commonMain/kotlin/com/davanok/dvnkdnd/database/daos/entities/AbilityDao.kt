@@ -5,18 +5,20 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.AbilityInfo
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDAbility
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDAbilityRegain
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbilityRegain
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDAbility
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDAbilityRegain
 import kotlin.uuid.Uuid
 
 @Dao
 interface AbilityDao {
     @Insert
     suspend fun insertAbility(ability: DnDAbility)
+
     @Insert
     suspend fun insertAbilityRegains(regains: List<DnDAbilityRegain>)
+
     @Transaction
     suspend fun insertAbilityInfo(entityId: Uuid, ability: AbilityInfo) {
         insertAbility(ability.toDnDAbility(entityId))

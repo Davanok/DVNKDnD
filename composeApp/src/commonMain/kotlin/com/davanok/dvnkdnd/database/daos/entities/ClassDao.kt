@@ -5,11 +5,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ClassWithSpells
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toClassSpellSlots
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
+import com.davanok.dvnkdnd.database.model.adapters.entities.toClassSpellSlots
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDClass
 import kotlin.uuid.Uuid
 
 @Dao

@@ -6,14 +6,14 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntityModifier
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toEntityModifiersGroup
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifiersGroup
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.model.adapters.entities.toEntityModifier
+import com.davanok.dvnkdnd.database.model.adapters.entities.toEntityModifiersGroup
 import kotlin.uuid.Uuid
 
 @Dao

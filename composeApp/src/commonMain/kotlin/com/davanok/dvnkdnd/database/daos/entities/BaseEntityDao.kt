@@ -5,7 +5,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
-import com.davanok.dvnkdnd.database.model.EntityWithSub
+import com.davanok.dvnkdnd.database.model.entities.EntityWithSub
 import kotlin.uuid.Uuid
 
 @Dao

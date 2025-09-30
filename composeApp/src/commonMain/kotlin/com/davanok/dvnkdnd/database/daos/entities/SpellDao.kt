@@ -7,14 +7,16 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpellAttack
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellArea
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellAttackLevelModifier
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toSpellAttackSave
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDSpell
+import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellArea
+import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttack
+import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttackLevelModifier
+import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttackSave
 import kotlin.uuid.Uuid
 
 @Dao
@@ -36,14 +38,14 @@ interface SpellDao {
 
     @Transaction
     suspend fun insertFullSpell(entityId: Uuid, spell: FullSpell) {
-        insertSpell(spell.toSpell(entityId))
+        insertSpell(spell.toDnDSpell(entityId))
         spell.area?.let { insertSpellArea(it.toSpellArea(entityId)) }
         spell.attacks.forEach { insertFullSpellAttack(entityId, it) }
     }
 
     @Transaction
     suspend fun insertFullSpellAttack(spellId: Uuid, attack: FullSpellAttack) {
-        insertSpellAttack(attack.toAttack(spellId))
+        insertSpellAttack(attack.toSpellAttack(spellId))
         insertSpellAttackModifiers(
             attack.modifiers.fastMap {
                 it.toSpellAttackLevelModifier(attack.id)

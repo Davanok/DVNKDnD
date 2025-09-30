@@ -2,10 +2,10 @@ package com.davanok.dvnkdnd.data.implementations
 
 import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.character.toCharacterBase
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.database.daos.character.CharactersDao
 import com.davanok.dvnkdnd.database.entities.character.Character
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
 import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
 

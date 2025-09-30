@@ -7,11 +7,7 @@ import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.character.toCharacterBase
-import com.davanok.dvnkdnd.data.model.entities.character.toDnDCharacterHealth
-import com.davanok.dvnkdnd.data.model.entities.character.toDnDCoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
@@ -23,6 +19,11 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import com.davanok.dvnkdnd.database.model.adapters.character.toAttributesGroup
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
+import com.davanok.dvnkdnd.database.model.adapters.character.toDnDCharacterHealth
+import com.davanok.dvnkdnd.database.model.adapters.character.toDnDCoinsGroup
+import com.davanok.dvnkdnd.database.model.entities.DbFullEntity
 
 data class DbJoinCharacterMainEntities(
     @Embedded

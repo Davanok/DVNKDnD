@@ -7,15 +7,18 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullWeapon
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toArmor
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toDnDItemProperty
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.toWeaponDamage
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import com.davanok.dvnkdnd.database.entities.items.DnDItemProperty
 import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
 import com.davanok.dvnkdnd.database.entities.items.Weapon
 import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
+import com.davanok.dvnkdnd.database.model.adapters.entities.toArmor
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDItem
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDItemProperty
+import com.davanok.dvnkdnd.database.model.adapters.entities.toItemPropertyLink
+import com.davanok.dvnkdnd.database.model.adapters.entities.toWeapon
+import com.davanok.dvnkdnd.database.model.adapters.entities.toWeaponDamage
 import kotlin.uuid.Uuid
 
 @Dao
@@ -41,8 +44,8 @@ interface ItemDao {
     @Transaction
     suspend fun insertFullItem(entityId: Uuid, item: FullItem) {
         insertItem(item.toDnDItem(entityId))
-        insertItemProperties(item.properties.map { it.property.toDnDItemProperty() })
-        insertItemPropertyLinks(item.properties.map { it.toItemPropertyLink() })
+        insertItemProperties(item.properties.fastMap { it.property.toDnDItemProperty() })
+        insertItemPropertyLinks(item.properties.fastMap { it.toItemPropertyLink() })
         item.armor?.let { insertArmor(it.toArmor(entityId)) }
         item.weapon?.let { insertFullWeapon(entityId, it) }
     }
