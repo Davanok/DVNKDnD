@@ -11,7 +11,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithHealth
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
@@ -98,7 +98,7 @@ class NewCharacterViewModel(
 
     fun getCharacterWithAllModifiers() = newCharacterState.run {
         CharacterWithAllModifiers(
-            character = toCharacterMin(),
+            character = toCharacterBase(),
             proficiencyBonus = proficiencyBonus,
             characterAttributes = characterAttributes,
             selectedModifiers = selectedModifiers,
@@ -124,7 +124,7 @@ class NewCharacterViewModel(
 
     fun getCharacterWithHealth() = newCharacterState.run {
         CharacterWithHealth(
-            character = toCharacterMin(),
+            character = toCharacterBase(),
             healthDice = character.mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }?.entity?.cls?.hitDice,
             constitution = characterAttributes.constitution,
             baseHealth = baseHealth
@@ -208,13 +208,7 @@ private data class NewCharacter(
     val baseHealth: Int = 0 // without constitution bonus
 ) {
     fun toCharacterFull(): CharacterFull {
-        val characterMin = CharacterMin(
-            id = Uuid.random(),
-            userId = null,
-            name = character.name,
-            level = 1,
-            image = character.mainImage,
-        )
+        val characterBase = toCharacterBase()
 
         val dbImages = character.images.map { path -> DatabaseImage(Uuid.random(), path) }
 
@@ -227,7 +221,7 @@ private data class NewCharacter(
         )
 
         return CharacterFull(
-            character = characterMin,
+            character = characterBase,
             images = dbImages,
             coins = null,
             attributes = characterAttributes,
@@ -240,10 +234,11 @@ private data class NewCharacter(
         )
     }
 
-    fun toCharacterMin() = CharacterMin(
+    fun toCharacterBase() = CharacterBase(
         id = Uuid.NIL,
         userId = null,
         name = character.name,
+        description = character.description,
         level = level,
     )
 }

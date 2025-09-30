@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.data.model.entities.dndModifiers
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
 
 @Serializable
 data class DnDAttributesGroup(
@@ -73,4 +74,13 @@ fun Map<Attributes, Int>.toAttributesGroup() = DnDAttributesGroup(
     intelligence = get(Attributes.INTELLIGENCE) ?: 0,
     wisdom = get(Attributes.WISDOM) ?: 0,
     charisma = get(Attributes.CHARISMA) ?: 0,
+)
+fun DnDAttributesGroup.toCharacterAttributes(characterId: Uuid) = CharacterAttributes(
+    id = characterId,
+    strength = strength,
+    dexterity = dexterity,
+    constitution = constitution,
+    intelligence = intelligence,
+    wisdom = wisdom,
+    charisma = charisma
 )

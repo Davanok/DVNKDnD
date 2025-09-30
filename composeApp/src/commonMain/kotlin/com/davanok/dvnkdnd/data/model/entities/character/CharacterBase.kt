@@ -9,10 +9,11 @@ import kotlin.uuid.Uuid
 
 
 @Serializable
-data class CharacterMin(
+data class CharacterBase(
     val id: Uuid,
     val userId: Uuid?,
     val name: String,
+    val description: String,
     val level: Int,
     val proficiencyBonus: Int? = null,
     @Transient
@@ -20,10 +21,20 @@ data class CharacterMin(
 ) {
     fun getProfBonus() = proficiencyBonus ?: proficiencyBonusByLevel(level)
 }
-fun Character.toCharacterMin() = CharacterMin(
+fun Character.toCharacterBase() = CharacterBase(
     id = id,
     userId = userId,
     name = name,
+    description = description,
+    level = level,
+    proficiencyBonus = proficiencyBonus,
+    image = image
+)
+fun CharacterBase.toCharacter() = Character(
+    id = id,
+    userId = userId,
+    name = name,
+    description = description,
     level = level,
     proficiencyBonus = proficiencyBonus,
     image = image

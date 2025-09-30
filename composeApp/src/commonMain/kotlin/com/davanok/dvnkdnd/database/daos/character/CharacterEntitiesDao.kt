@@ -1,0 +1,38 @@
+package com.davanok.dvnkdnd.database.daos.character
+
+import androidx.room.Dao
+import androidx.room.Insert
+import com.davanok.dvnkdnd.database.entities.character.Character
+import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
+import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
+import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
+import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.database.entities.character.CharacterImage
+import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
+import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
+import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
+import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
+
+@Dao
+interface CharacterEntitiesDao {
+    @Insert
+    suspend fun insertCharacter(character: Character)
+    @Insert
+    suspend fun insertCharacterImages(images: List<CharacterImage>)
+    @Insert
+    suspend fun insertCharacterCoins(coins: CharacterCoins)
+    @Insert
+    suspend fun insertCharacterAttributes(attributes: CharacterAttributes)
+    @Insert
+    suspend fun insertCharacterHealth(health: CharacterHealth)
+    @Insert
+    suspend fun insertCharacterUsedSpells(usedSpells: CharacterSpellSlots)
+    @Insert
+    suspend fun insertCharacterMainEntities(entities: List<CharacterMainEntity>)
+    @Insert
+    suspend fun insertCharacterFeats(feats: List<CharacterFeat>)
+    @Insert
+    suspend fun insertCharacterSelectedModifiers(modifiers: List<CharacterSelectedModifier>)
+    @Insert
+    suspend fun insertCharacterSelectedProficiencies(proficiencies: List<CharacterProficiency>)
+}

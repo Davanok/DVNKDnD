@@ -7,7 +7,7 @@ import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
+import com.davanok.dvnkdnd.data.model.entities.character.toCharacterBase
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toDnDCoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
@@ -24,13 +24,6 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 
-fun Character.toCharacterMin() = CharacterMin(
-    id = id,
-    userId = userId,
-    name = name,
-    level = level,
-    image = image
-)
 data class DbJoinCharacterMainEntities(
     @Embedded
     val link: CharacterMainEntity,
@@ -104,7 +97,7 @@ data class DbFullCharacter(
     val selectedProficiencies: List<CharacterProficiency>
 ) {
     fun toCharacterFull(): CharacterFull = CharacterFull(
-        character = character.toCharacterMin(),
+        character = character.toCharacterBase(),
         images = images.fastMap { DatabaseImage(it.id, it.path) },
         coins = coins?.toDnDCoinsGroup(),
         attributes = attributes?.toAttributesGroup() ?: DnDAttributesGroup.Default,

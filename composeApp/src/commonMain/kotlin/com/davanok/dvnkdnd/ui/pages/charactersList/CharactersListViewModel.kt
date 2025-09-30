@@ -2,7 +2,7 @@ package com.davanok.dvnkdnd.ui.pages.charactersList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
@@ -41,7 +41,7 @@ class CharactersListViewModel(
         }
     }
 
-    fun selectCharacter(character: CharacterMin) = _uiState.update {
+    fun selectCharacter(character: CharacterBase) = _uiState.update {
         it.copy(currentCharacter = character)
     }
 
@@ -53,6 +53,6 @@ class CharactersListViewModel(
 data class CharactersListUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
-    val characters: List<CharacterMin> = emptyList(),
-    val currentCharacter: CharacterMin? = null
+    val characters: List<CharacterBase> = emptyList(),
+    val currentCharacter: CharacterBase? = null
 )

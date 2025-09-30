@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 
 @Immutable
 data class CharacterWithAllModifiers(
-    val character: CharacterMin,
+    val character: CharacterBase,
     val proficiencyBonus: Int,
     val characterAttributes: DnDAttributesGroup,
 

@@ -29,7 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterMin
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.ui.components.EmptyImage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -52,7 +52,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CharactersListScreen(
     onNewCharacter: () -> Unit,
-    navigateToCharacter: (CharacterMin) -> Unit,
+    navigateToCharacter: (CharacterBase) -> Unit,
     viewModel: CharactersListViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -135,8 +135,8 @@ fun CharactersListScreen(
 
 @Composable
 private fun CharactersList(
-    items: List<CharacterMin>,
-    onClick: (CharacterMin) -> Unit,
+    items: List<CharacterBase>,
+    onClick: (CharacterBase) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -157,8 +157,8 @@ private fun CharactersList(
 
 @Composable
 private fun CharacterCard(
-    character: CharacterMin,
-    onClick: (CharacterMin) -> Unit,
+    character: CharacterBase,
+    onClick: (CharacterBase) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ListItem(
@@ -185,7 +185,7 @@ private fun CharacterCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CharacterInfo(
-    character: CharacterMin,
+    character: CharacterBase,
     navigateBack: () -> Unit,
     viewModel: CharactersListViewModel,
 ) {

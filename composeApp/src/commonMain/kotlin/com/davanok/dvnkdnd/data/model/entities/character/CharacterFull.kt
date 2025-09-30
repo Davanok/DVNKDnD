@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class CharacterFull(
-    val character: CharacterMin,
+    val character: CharacterBase,
 
     @Transient
     val images: List<DatabaseImage> = emptyList(),
