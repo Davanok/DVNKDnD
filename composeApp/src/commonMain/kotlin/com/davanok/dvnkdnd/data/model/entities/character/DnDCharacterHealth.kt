@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DnDCharacterHealth(
-    val max: Int,
-    val current: Int,
-    val temp: Int,
+    val max: Int = 0,
+    val current: Int = max,
+    val temp: Int = 0,
     @SerialName("max_modifier")
-    val maxModified: Int // max health value with applied modifiers
+    val maxModified: Int = max // max health value with applied modifiers
 )

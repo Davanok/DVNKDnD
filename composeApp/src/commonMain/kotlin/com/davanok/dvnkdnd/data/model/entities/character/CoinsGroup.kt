@@ -4,9 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CoinsGroup(
-    val copper: Int,
-    val silver: Int,
-    val electrum: Int,
-    val gold: Int,
-    val platinum: Int
+    val copper: Int = 0,
+    val silver: Int = 0,
+    val electrum: Int = 0,
+    val gold: Int = 0,
+    val platinum: Int = 0
 )

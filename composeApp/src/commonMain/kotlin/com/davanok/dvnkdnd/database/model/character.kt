@@ -5,24 +5,28 @@ import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
+import com.davanok.dvnkdnd.data.model.entities.character.CoinsGroup
+import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
-import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
+import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
+import com.davanok.dvnkdnd.database.entities.character.CharacterCustomModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
+import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
-import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.model.adapters.character.toAttributesGroup
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
+import com.davanok.dvnkdnd.database.model.adapters.character.toCoinsGroup
+import com.davanok.dvnkdnd.database.model.adapters.character.toCustomModifier
 import com.davanok.dvnkdnd.database.model.adapters.character.toDnDCharacterHealth
-import com.davanok.dvnkdnd.database.model.adapters.character.toDnDCoinsGroup
 import com.davanok.dvnkdnd.database.model.entities.DbFullEntity
 
 data class DbJoinCharacterMainEntities(
@@ -63,7 +67,7 @@ data class DbFullCharacter(
     @Relation(
         CharacterSpellSlots::class,
         parentColumn = "id",
-        entityColumn = "id",
+        entityColumn = "id"
     )
     val usedSpells: CharacterSpellSlots?,
 
@@ -88,25 +92,32 @@ data class DbFullCharacter(
 
     @Relation(
         parentColumn = "id",
-        entityColumn = "character_id",
+        entityColumn = "character_id"
     )
     val selectedModifiers: List<CharacterSelectedModifier>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "character_id",
+        entityColumn = "character_id"
     )
-    val selectedProficiencies: List<CharacterProficiency>
+    val selectedProficiencies: List<CharacterProficiency>,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "character_id"
+    )
+    val customModifiers: List<CharacterCustomModifier>
 ) {
     fun toCharacterFull(): CharacterFull = CharacterFull(
         character = character.toCharacterBase(),
         images = images.fastMap { DatabaseImage(it.id, it.path) },
-        coins = coins?.toDnDCoinsGroup(),
+        coins = coins?.toCoinsGroup() ?: CoinsGroup(),
         attributes = attributes?.toAttributesGroup() ?: DnDAttributesGroup.Default,
-        health = health?.toDnDCharacterHealth(),
+        health = health?.toDnDCharacterHealth() ?: DnDCharacterHealth(),
         usedSpells = usedSpells?.usedSpells.orEmpty(),
-        mainEntities = mainEntities.fastMap { it.toCharacterMainEntityInfo() },
-        feats = feats.fastMap { it.toDnDFullEntity() },
+        mainEntities = mainEntities.fastMap(DbJoinCharacterMainEntities::toCharacterMainEntityInfo),
+        feats = feats.fastMap(DbFullEntity::toDnDFullEntity),
         selectedModifiers = selectedModifiers.fastMap { it.modifierId },
-        selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId }
+        selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId },
+        customModifiers = customModifiers.fastMap(CharacterCustomModifier::toCustomModifier)
     )
 }

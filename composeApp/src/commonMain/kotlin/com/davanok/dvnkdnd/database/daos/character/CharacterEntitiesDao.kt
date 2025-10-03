@@ -5,6 +5,7 @@ import androidx.room.Insert
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
+import com.davanok.dvnkdnd.database.entities.character.CharacterCustomModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
@@ -35,4 +36,6 @@ interface CharacterEntitiesDao {
     suspend fun insertCharacterSelectedModifiers(modifiers: List<CharacterSelectedModifier>)
     @Insert
     suspend fun insertCharacterSelectedProficiencies(proficiencies: List<CharacterProficiency>)
+    @Insert
+    suspend fun insertCharacterCustomModifiers(modifiers: List<CharacterCustomModifier>)
 }

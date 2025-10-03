@@ -16,6 +16,7 @@ import com.davanok.dvnkdnd.database.model.DbFullCharacter
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacter
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterAttributes
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCoins
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCustomModifier
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterHealth
 import kotlin.uuid.Uuid
 
@@ -37,9 +38,9 @@ interface CharactersDao: CharacterEntitiesDao {
         character.images
             .fastMap { CharacterImage(id = it.id, characterId = characterId, path = it.path) }
             .let { insertCharacterImages(it) }
-        character.coins?.toCharacterCoins(characterId)?.let { insertCharacterCoins(it) }
+        character.coins.toCharacterCoins(characterId).let { insertCharacterCoins(it) }
         character.attributes.toCharacterAttributes(characterId).let { insertCharacterAttributes(it) }
-        character.health?.toCharacterHealth(characterId)?.let { insertCharacterHealth(it) }
+        character.health.toCharacterHealth(characterId).let { insertCharacterHealth(it) }
 
         insertCharacterUsedSpells(CharacterSpellSlots(characterId, character.usedSpells))
 
@@ -53,6 +54,10 @@ interface CharactersDao: CharacterEntitiesDao {
         character.selectedProficiencies
             .fastMap { CharacterProficiency(characterId, it) }
             .let { insertCharacterSelectedProficiencies(it) }
+
+        character.customModifiers
+            .fastMap { it.toCharacterCustomModifier(characterId) }
+            .let { insertCharacterCustomModifiers(it) }
 
         return characterId
     }

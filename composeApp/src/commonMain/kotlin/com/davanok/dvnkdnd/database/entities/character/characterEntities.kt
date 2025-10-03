@@ -4,6 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
@@ -99,6 +102,7 @@ data class CharacterImage(
     @ColumnInfo("character_id", index = true) val characterId: Uuid?,
     val path: Path,
 )
+
 @Entity(
     tableName = "character_coins",
     foreignKeys = [
@@ -114,4 +118,31 @@ data class CharacterCoins(
     val electrum: Int,
     val gold: Int,
     val platinum: Int
+)
+
+@Entity(
+    tableName = "character_custom_modifiers",
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class CharacterCustomModifier(
+    @PrimaryKey
+    val id: Uuid,
+    @ColumnInfo("character_id")
+    val characterId: Uuid,
+
+    @ColumnInfo("target_global")
+    val targetGlobal: DnDModifierTargetType,
+    val operation: DnDModifierOperation,
+    @ColumnInfo("value_source")
+    val valueSource: DnDModifierValueSource,
+
+    val name: String,
+    val description: String?,
+    @ColumnInfo("selection_limit") val selectionLimit: Int,
+    val priority: Int,
+
+    val target: String,
+    val value: Double
 )

@@ -16,12 +16,12 @@ data class CharacterFull(
 
     @Transient
     val images: List<DatabaseImage> = emptyList(),
-    val coins: CoinsGroup?,
+    val coins: CoinsGroup,
 
     val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
     @Transient
     val skills: DnDSkillsGroup = attributes.toSkillsGroup(),
-    val health: DnDCharacterHealth?,
+    val health: DnDCharacterHealth,
     val usedSpells: List<Int>,
 
     val mainEntities: List<CharacterMainEntityInfo>,
@@ -29,7 +29,9 @@ data class CharacterFull(
     val feats: List<DnDFullEntity>,
 
     val selectedModifiers: List<Uuid>,
-    val selectedProficiencies: List<Uuid>
+    val selectedProficiencies: List<Uuid>,
+
+    val customModifiers: List<CustomModifier>
 ) {
     val entities: List<DnDFullEntity>
         get() = mainEntities.fastFlatMap { listOfNotNull(it.entity, it.subEntity) } + feats

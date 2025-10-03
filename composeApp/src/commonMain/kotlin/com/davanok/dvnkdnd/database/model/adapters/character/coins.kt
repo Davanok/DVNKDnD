@@ -5,7 +5,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
 import kotlin.uuid.Uuid
 
 
-fun CharacterCoins.toDnDCoinsGroup() = CoinsGroup(
+fun CharacterCoins.toCoinsGroup() = CoinsGroup(
     copper = copper,
     silver = silver,
     electrum = electrum,

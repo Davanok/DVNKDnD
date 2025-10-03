@@ -9,6 +9,7 @@ import com.davanok.dvnkdnd.database.daos.entities.FullEntitiesDao
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
+import com.davanok.dvnkdnd.database.entities.character.CharacterCustomModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
@@ -64,6 +65,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         CharacterCoins::class,
         CharacterProficiency::class,
         CharacterFeat::class,
+        CharacterCustomModifier::class,
         DnDBackground::class,
         DnDBaseEntity::class,
         EntityFullDescription::class,
