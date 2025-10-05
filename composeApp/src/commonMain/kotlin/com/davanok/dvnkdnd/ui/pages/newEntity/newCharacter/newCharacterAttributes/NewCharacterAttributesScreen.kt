@@ -225,6 +225,8 @@ private fun AboutModifiersSelectorsDialog(
                     group.modifiers
                         .groupBy { it.targetAs<Attributes>() }
                         .forEach { (attribute, modifiers) ->
+                            if (attribute == null) return@forEach
+
                             val attributeStr = stringResource(attribute.stringRes)
                             append("\n\t")
                             append(attributeStr)

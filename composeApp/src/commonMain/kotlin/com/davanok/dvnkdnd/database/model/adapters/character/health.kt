@@ -8,13 +8,11 @@ import kotlin.uuid.Uuid
 fun CharacterHealth.toDnDCharacterHealth() = DnDCharacterHealth(
     max = max,
     current = current,
-    temp = temp,
-    maxModified = maxModified
+    temp = temp
 )
 fun DnDCharacterHealth.toCharacterHealth(characterId: Uuid) = CharacterHealth(
     id = characterId,
     max = max,
     current = current,
-    temp = temp,
-    maxModified = maxModified
+    temp = temp
 )

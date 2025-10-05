@@ -36,9 +36,7 @@ data class CharacterHealth(
     @PrimaryKey val id: Uuid,
     val max: Int, // without constitution bonus
     val current: Int,
-    val temp: Int,
-    @ColumnInfo("max_modifier")
-    val maxModified: Int
+    val temp: Int
 )
 
 @Entity(

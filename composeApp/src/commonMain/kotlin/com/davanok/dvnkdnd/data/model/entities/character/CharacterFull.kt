@@ -5,7 +5,9 @@ import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkillsGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toSkillsGroup
+import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlin.uuid.Uuid
@@ -20,7 +22,16 @@ data class CharacterFull(
 
     val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
     @Transient
-    val skills: DnDSkillsGroup = attributes.toSkillsGroup(),
+    val savingThrows: DnDAttributesGroup = attributes
+        .toMap()
+        .mapValues { (_, value) -> calculateModifier(value) }
+        .toAttributesGroup(),
+    @Transient
+    val skillsThrows: DnDSkillsGroup = attributes
+        .toMap()
+        .mapValues { (_, value) -> calculateModifier(value) }
+        .toAttributesGroup()
+        .toSkillsGroup(),
     val health: DnDCharacterHealth,
     val usedSpells: List<Int>,
 

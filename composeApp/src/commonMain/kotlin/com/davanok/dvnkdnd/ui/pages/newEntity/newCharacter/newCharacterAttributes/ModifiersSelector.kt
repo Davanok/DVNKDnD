@@ -268,7 +268,7 @@ fun ModifiersSelectionTable(
 ) {
     val modifierGroupsByAttributes = remember(allModifiersGroups, selectedAttributeModifiers) {
         allModifiersGroups.fastMap { group ->
-            val attributesMap = mutableMapOf<Attributes, MutableList<Pair<DnDModifier, UiSelectableState>>>()
+            val attributesMap = mutableMapOf<Attributes?, MutableList<Pair<DnDModifier, UiSelectableState>>>()
 
             val limitNotExceeded = group.modifiers.count { it.id in selectedAttributeModifiers } < group.selectionLimit
 
@@ -277,11 +277,11 @@ fun ModifiersSelectionTable(
                 val selectable = mod.selectable && (limitNotExceeded || selected)
 
                 attributesMap
-                    .getOrPut(mod.targetAs(), ::mutableListOf)
+                    .getOrPut(mod.targetAs<Attributes>(), ::mutableListOf)
                     .add(mod to UiSelectableState(selectable, selected))
             }
 
-            attributesMap.mapValues { it.value.toList() }
+            attributesMap.filterKeys { it != null }.mapValues { it.value.toList() }
         }
     }
     BoxWithConstraints {

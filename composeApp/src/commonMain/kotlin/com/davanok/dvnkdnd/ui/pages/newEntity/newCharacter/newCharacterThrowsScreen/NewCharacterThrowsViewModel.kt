@@ -19,6 +19,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.calculateModifierSum
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
+import com.davanok.dvnkdnd.data.model.util.enumValueOfOrNull
 import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
@@ -159,7 +160,7 @@ class NewCharacterThrowsViewModel(
         // convert keys that match enum names to the enum
         val modifiersByEnum = mutableMapOf<E, List<ModifierExtendedInfo>>()
         raw.forEach { (k, v) ->
-            runCatching { enumValueOf<E>(k) }.getOrNull()?.let { modifiersByEnum[it] = v }
+            enumValueOfOrNull<E>(k)?.let { modifiersByEnum[it] = v }
         }
 
         // For each enum entry compute the final modifier value using calculateModifierSum.

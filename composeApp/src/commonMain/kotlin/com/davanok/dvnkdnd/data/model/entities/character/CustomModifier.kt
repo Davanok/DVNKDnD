@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.data.model.entities.character
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
+import com.davanok.dvnkdnd.data.model.util.enumValueOfOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -25,4 +26,6 @@ data class CustomModifier(
 
     val target: String,
     val value: Double
-)
+) {
+    inline fun <reified E: Enum<E>>targetAs(): E? = enumValueOfOrNull<E>(target)
+}
