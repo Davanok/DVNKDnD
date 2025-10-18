@@ -10,6 +10,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.modifiers
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
@@ -49,8 +50,8 @@ class NewCharacterStatsViewModel(
     fun loadCharacterWithAllModifiers() {
         val character = newCharacterViewModel.getCharacterWithAllModifiers()
 
-        val attributeModifiersGroups = character.entities
-            .fastFlatMap { it.modifiersGroups }
+        val attributeModifiersGroups = character.entitiesWithLevel
+            .fastFlatMap { it.first.modifiersGroups }
             .fastFilter { it.target == DnDModifierTargetType.ATTRIBUTE }
 
         modifierInfo = attributeModifiersGroups
@@ -63,7 +64,7 @@ class NewCharacterStatsViewModel(
         _uiState.update {
             it.copy(
                 character = character.character,
-                modifiers = character.characterAttributes,
+                modifiers = character.attributes,
                 selectedAttributesBonuses = character.selectedModifiers.toSet(),
                 allModifiersGroups = attributeModifiersGroups,
 

@@ -8,6 +8,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.data.model.entities.character.CustomModifier
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import kotlin.math.abs
@@ -157,11 +158,15 @@ fun CharacterFull.withAppliedModifiers(): CharacterFull {
         max = healthValues.getOrElse(DnDModifierHealthTargets.MAX) { health.max }
     )
 
-    return copy(
+
+    val appliedValues = CharacterModifiedValues(
         attributes = modifiedAttributes,
-        savingThrows = modifiedSavingThrows,
-        skillsThrows = modifiedSkills,
+        savingThrowModifiers = modifiedSavingThrows,
+        skillModifiers = modifiedSkills,
         health = modifiedHealth
+    )
+    return copy(
+        appliedValues = appliedValues
     )
 }
 
@@ -170,7 +175,7 @@ fun calculateModifierSum(
     baseValue: Int,
     groups: List<DnDModifiersGroup>,
     modifierFilter: (DnDModifier) -> Boolean,
-    groupValueProvider: (DnDModifiersGroup) -> Double?
+    groupValueProvider: (DnDModifiersGroup) -> Double
 ): Int {
     require(groups.groupBy { it.target }.size == 1) {
         "All groups must have the same target"
@@ -187,7 +192,7 @@ fun calculateModifierSum(
             group.modifiers.fastForEach modifier@{ modifier ->
                 if (!modifierFilter(modifier)) return@modifier
 
-                val value = groupValue ?: modifier.value
+                val value = groupValue + modifier.value
 
                 // skip modifier if current base (result) not in group's base range
                 if (group.minBaseValue?.let { result < it } == true) return@modifier

@@ -20,14 +20,6 @@ data class DnDAttributesGroup(
         Attributes.WISDOM to wisdom,
         Attributes.CHARISMA to charisma,
     )
-    fun modifiers() = listOf(
-        strength,
-        dexterity,
-        constitution,
-        intelligence,
-        wisdom,
-        charisma
-    )
 
     operator fun get(attribute: Attributes) = when(attribute) {
         Attributes.STRENGTH -> strength
@@ -53,6 +45,7 @@ data class DnDAttributesGroup(
         wisdom = wisdom + other.wisdom,
         charisma = charisma + other.charisma
     )
+
     companion object {
         val Default = DnDAttributesGroup(10, 10, 10, 10, 10, 10)
     }
@@ -65,4 +58,14 @@ fun Map<Attributes, Int>.toAttributesGroup() = DnDAttributesGroup(
     intelligence = get(Attributes.INTELLIGENCE) ?: 0,
     wisdom = get(Attributes.WISDOM) ?: 0,
     charisma = get(Attributes.CHARISMA) ?: 0,
+)
+
+fun DnDAttributesGroup.map(transform: (Int) -> Int) = toMap().mapValues { transform(it.value) }.toAttributesGroup()
+fun DnDAttributesGroup.modifiers() = listOf(
+    strength,
+    dexterity,
+    constitution,
+    intelligence,
+    wisdom,
+    charisma
 )

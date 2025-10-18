@@ -36,7 +36,9 @@ sealed interface Route {
     }
 
     @Serializable
-    data class CharacterFull(val characterId: Uuid) : Route
+    data class CharacterFull(val characterId: Uuid) : Route {
+        @Serializable data object Main: Route
+    }
 
     @Serializable
     data class EntityInfo(val entityId: Uuid) : Route

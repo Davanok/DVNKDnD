@@ -48,11 +48,11 @@ interface CharactersDao: CharacterEntitiesDao {
         character.feats.fastMap { CharacterFeat(characterId, it.id) }.let { insertCharacterFeats(it) }
 
         character.selectedModifiers
-            .fastMap { CharacterSelectedModifier(characterId, it) }
+            .map { CharacterSelectedModifier(characterId, it) }
             .let { insertCharacterSelectedModifiers(it) }
 
         character.selectedProficiencies
-            .fastMap { CharacterProficiency(characterId, it) }
+            .map { CharacterProficiency(characterId, it) }
             .let { insertCharacterSelectedProficiencies(it) }
 
         character.customModifiers

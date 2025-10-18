@@ -34,7 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastFold
 import androidx.compose.ui.util.fastForEach
@@ -48,11 +48,12 @@ import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.applyOperation
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.modifiers
+import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.ui.components.toSignedString
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScreen.UiSelectableState
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.decrease_modifier_value
 import dvnkdnd.composeapp.generated.resources.increase_modifier_value
@@ -74,19 +75,18 @@ private fun applyModifiers(base: Int, modifiers: List<AppliedModifier>) =
 
 private fun List<DnDModifiersGroup>.appliedModifiers(attribute: Attributes, selectedModifiers: Set<Uuid>) =
     fastFlatMap { group ->
-        group.modifiers.fastFilter { it.targetAs<Attributes>() == attribute && it.id in selectedModifiers }
-            .map { AppliedModifier(it.value, group.operation) }
+        group.modifiers.fastFilteredMap(
+            predicate = {
+                it.targetAs<Attributes>() == attribute && it.id in selectedModifiers
+            },
+            transform = {
+                AppliedModifier(it.value, group.operation)
+            }
+        )
     }
 
 private fun approximateToDefault(input: DnDAttributesGroup): DnDAttributesGroup {
-    val statsList = listOf(
-        input.strength,
-        input.dexterity,
-        input.constitution,
-        input.intelligence,
-        input.wisdom,
-        input.charisma
-    ).withIndex()
+    val statsList = input.modifiers().withIndex()
 
     val assignment = statsList
         .sortedByDescending { it.value }

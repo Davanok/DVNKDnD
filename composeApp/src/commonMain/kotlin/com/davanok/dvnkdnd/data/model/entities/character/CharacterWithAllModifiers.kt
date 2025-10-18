@@ -10,11 +10,10 @@ import kotlin.uuid.Uuid
 @Immutable
 data class CharacterWithAllModifiers(
     val character: CharacterBase,
-    val proficiencyBonus: Int,
-    val characterAttributes: DnDAttributesGroup,
+    val attributes: DnDAttributesGroup,
 
     val selectedModifiers: Set<Uuid>,
-    val entities: List<DnDEntityWithModifiers>
+    val entitiesWithLevel: List<Pair<DnDEntityWithModifiers, Int>>
 )
 
 @Immutable

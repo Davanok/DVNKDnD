@@ -9,18 +9,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithHealth
+import com.davanok.dvnkdnd.data.model.entities.character.CoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
-import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.repositories.FullEntitiesRepository
@@ -99,13 +99,12 @@ class NewCharacterViewModel(
     fun getCharacterWithAllModifiers() = newCharacterState.run {
         CharacterWithAllModifiers(
             character = toCharacterBase(),
-            proficiencyBonus = proficiencyBonus,
-            characterAttributes = characterAttributes,
+            attributes = characterAttributes,
             selectedModifiers = selectedModifiers,
-            entities = character.entities
+            entitiesWithLevel = character.entitiesWithLevel
                 .fastFilteredMap(
-                    predicate = { it.modifiersGroups.isNotEmpty() },
-                    transform = { it.toEntityWithModifiers() }
+                    predicate = { it.first.modifiersGroups.isNotEmpty() },
+                    transform = { (e, l) -> e.toEntityWithModifiers() to l }
                 )
         )
     }
@@ -151,6 +150,11 @@ private data class NewCharacterWithFullEntities(
 ) {
     val entities: List<DnDFullEntity>
         get() = mainEntities.fastFlatMap { listOfNotNull(it.entity, it.subEntity) }
+    val entitiesWithLevel: List<Pair<DnDFullEntity, Int>>
+        get() = mainEntities.fastFlatMap {
+            listOfNotNull(it.entity, it.subEntity)
+                .fastMap { e -> e to it.level }
+        }
 
     fun toNewCharacterMain(): NewCharacterMain {
         val clsInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }
@@ -203,7 +207,6 @@ private data class NewCharacter(
     val selectedModifiers: Set<Uuid> = emptySet(),
 
     val level: Int = 1,
-    val proficiencyBonus: Int = proficiencyBonusByLevel(level),
 
     val baseHealth: Int = 0 // without constitution bonus
 ) {
@@ -216,21 +219,20 @@ private data class NewCharacter(
         val totalHealth = DnDCharacterHealth(
             max = baseHealth,
             current = baseHealth,
-            temp = 0,
-            maxModified = 0
+            temp = 0
         )
 
         return CharacterFull(
             character = characterBase,
             images = dbImages,
-            coins = null,
+            coins = CoinsGroup(),
             attributes = characterAttributes,
             health = totalHealth,
             usedSpells = emptyList(),
             mainEntities = character.mainEntities,
             feats = emptyList(),
-            selectedModifiers = selectedModifiers.toList(),
-            selectedProficiencies = emptyList()
+            selectedModifiers = selectedModifiers,
+            selectedProficiencies = emptySet()
         )
     }
 

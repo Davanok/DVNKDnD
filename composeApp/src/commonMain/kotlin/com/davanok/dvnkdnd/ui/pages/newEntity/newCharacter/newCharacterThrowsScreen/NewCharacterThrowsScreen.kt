@@ -42,12 +42,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
-import com.davanok.dvnkdnd.data.model.dndEnums.applyForStringPreview
 import com.davanok.dvnkdnd.data.model.dndEnums.skills
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
+import com.davanok.dvnkdnd.data.model.types.buildPreviewString
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
@@ -335,26 +334,7 @@ private fun ModifierChip(info: ModifierExtendedInfo, onClick: (Uuid) -> Unit) {
     FilterChip(
         selected = info.state.selected,
         onClick = { if (info.state.selectable) onClick(info.modifier.id) },
-        label = { Text(info.buildString()) },
+        label = { Text(info.buildPreviewString()) },
         enabled = info.state.selectable,
     )
-}
-
-@Composable
-fun ModifierExtendedInfo.buildString(): String {
-    val valueString =
-        if (valueSource == DnDModifierValueSource.CONST) {
-            val unaryOps = setOf(
-                DnDModifierOperation.ABS,
-                DnDModifierOperation.ROUND,
-                DnDModifierOperation.CEIL,
-                DnDModifierOperation.FLOOR,
-                DnDModifierOperation.FACT
-            )
-            if (operation in unaryOps && modifier.value == 0.0) null
-            else modifier.value.toString()
-        } else
-            stringResource(valueSource.stringRes)
-
-    return operation.applyForStringPreview(valueString)
 }

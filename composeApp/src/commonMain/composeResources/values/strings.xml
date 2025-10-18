@@ -210,4 +210,12 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="value_source_character_level">LVL</string>
     <string name="value_source_entity_level">E LVL</string>
     <string name="value_source_proficiency_bonus">PB</string>
+
+    <!--character full-->
+    <string name="no_such_character_error">No such character</string>
+    <!--health dialog-->
+    <string name="character_health_dialog_title">Character health</string>
+    <string name="character_health_heal_button">Heal</string>
+    <string name="character_health_damage_button">Damage</string>
+    <string name="character_health_temp_health_button">Temp</string>
 </resources>

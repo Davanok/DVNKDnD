@@ -18,6 +18,7 @@ import androidx.savedstate.SavedState
 import androidx.savedstate.read
 import androidx.savedstate.write
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullViewModel
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
 import com.davanok.dvnkdnd.ui.pages.newEntity.NewEntityScreen
@@ -31,6 +32,7 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.Sa
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.parameter.parametersOf
 import kotlin.reflect.typeOf
 import kotlin.uuid.Uuid
@@ -79,12 +81,7 @@ fun NavigationHost(
 
         entityInfoDestinations(navController)
 
-        composable<Route.CharacterFull>(
-            typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
-        )  { backStackEntry ->
-            val route: Route.CharacterFull = backStackEntry.toRoute()
-            CharacterFullScreen(route.characterId)
-        }
+        characterFullDestinations(navController)
     }
 }
 
@@ -206,6 +203,30 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
         }
     }
 
+
+private fun NavGraphBuilder.characterFullDestinations(navController: NavHostController) =
+    navigation<Route.CharacterFull>(
+        startDestination =  Route.CharacterFull.Main,
+        typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
+    ) {
+        @Composable
+        fun NavBackStackEntry.getSharedViewModel(navController: NavController): CharacterFullViewModel =
+            sharedKoinViewModel<CharacterFullViewModel, Route.CharacterFull>(navController){
+                val route: Route.CharacterFull = navController
+                    .getBackStackEntry<Route.CharacterFull>()
+                    .toRoute()
+                parametersOf(route.characterId)
+            }
+
+        composable<Route.CharacterFull.Main> { backStackEntry ->
+            val viewModel = backStackEntry.getSharedViewModel(navController)
+            CharacterFullScreen(
+                navigateBack = navController::navigateUp,
+                viewModel = viewModel
+            )
+        }
+    }
+
 private fun <T : Any> NavHostController.navigateWithRemoveFromBackStack(
     destinationRoute: T
 ) = navigate(destinationRoute) {
@@ -216,13 +237,15 @@ private fun <T : Any> NavHostController.navigateWithRemoveFromBackStack(
 
 @Composable
 inline fun <reified VM : ViewModel, reified R : Any> NavBackStackEntry.sharedKoinViewModel(
-    navController: NavController
+    navController: NavController,
+    noinline parameters: ParametersDefinition? = null,
 ): VM {
     val parentEntry = remember(this) {
         navController.getBackStackEntry<R>()
     }
     @Suppress("UndeclaredKoinUsage")
     return koinViewModel(
-        viewModelStoreOwner = parentEntry
+        viewModelStoreOwner = parentEntry,
+        parameters = parameters
     )
 }
