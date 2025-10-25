@@ -67,13 +67,13 @@ data class CharacterFull(
         }
 
     val appliedModifiers: Map<DnDModifierTargetType, List<ModifierExtendedInfo>> by lazy {
-        val result = mutableMapOf<DnDModifierTargetType, MutableList<ModifierExtendedInfo>>()
+        val result = mutableMapOf<DnDModifierTargetType, MutableList<Pair<Int, ModifierExtendedInfo>>>()
         entities.fastForEach { entity ->
             entity.modifiersGroups.fastForEach { group ->
                 val modifiers = group.modifiers.fastFilteredMap(
                     predicate = { it.id in selectedModifiers },
                     transform = { modifier ->
-                        ModifierExtendedInfo(
+                        group.priority to ModifierExtendedInfo(
                             groupId = group.id,
                             groupName = group.name,
                             modifier = modifier,
@@ -96,7 +96,7 @@ data class CharacterFull(
                     .addAll(modifiers)
             }
         }
-        result
+        result.mapValues { modifiers -> modifiers.value.sortedBy { it.first }.map { it.second } }
     }
 }
 

@@ -4,18 +4,26 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
@@ -25,11 +33,13 @@ import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.customToolBar.CollapsingTitle
 import com.davanok.dvnkdnd.ui.components.customToolBar.CustomTopAppBar
+import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterFullAttributesScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterHealthDialog
 import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterHealthWidget
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -45,7 +55,6 @@ fun CharacterFullScreen(
             ErrorCard(
                 text = it.message,
                 exception = it.exception,
-                onRefresh = viewModel::loadCharacter,
                 onBack = navigateBack
             )
         }
@@ -53,7 +62,6 @@ fun CharacterFullScreen(
             if (character == null)
                 ErrorCard(
                     text = stringResource(Res.string.no_such_character_error),
-                    onRefresh = viewModel::loadCharacter,
                     onBack = navigateBack
                 )
             else
@@ -61,7 +69,7 @@ fun CharacterFullScreen(
                     navigateBack = navigateBack,
                     character = character,
                     dialogToDisplay = uiState.dialogToDisplay,
-                    updateHealth = viewModel::updateHealth
+                    updateHealth = viewModel::updateHealth,
                 )
         }
     }
@@ -72,8 +80,8 @@ fun CharacterFullScreen(
 private fun Content(
     navigateBack: () -> Unit,
     character: CharacterFull,
-    dialogToDisplay: CharacterFullUiState.CharacterDialog,
-    updateHealth: (DnDCharacterHealth) -> Unit,
+    dialogToDisplay: CharacterFullUiState.Dialog,
+    updateHealth: (DnDCharacterHealth) -> Unit
 ) {
     var showHealthDialog by remember { mutableStateOf(false) }
     Scaffold(
@@ -87,27 +95,39 @@ private fun Content(
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.medium(character.character.name),
-                additionalContent = {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        CharacterHealthWidget(
-                            health = character.appliedValues.health,
-                            onClick = { showHealthDialog = !showHealthDialog }
-                        )
-                    }
-                }
+                collapsingTitle = CollapsingTitle.medium(character.character.name)
             )
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                CharacterHealthWidget(
+                    health = character.appliedValues.health,
+                    onClick = { showHealthDialog = !showHealthDialog }
+                )
+            }
+            val pagerState = rememberPagerState { CharacterFullUiState.Page.entries.size }
+            CharacterFullTabsRow(pagerState)
+            HorizontalPager(
+                state = pagerState
+            ) { index ->
+                val page = CharacterFullUiState.Page.entries[index]
 
+                when (page) {
+                    CharacterFullUiState.Page.ATTRIBUTES -> CharacterFullAttributesScreen(
+                        attributes = character.appliedValues.savingThrowModifiers,
+                        savingThrows = character.appliedValues.savingThrowModifiers,
+                        skills = character.appliedValues.skillModifiers
+                    )
+                }
+            }
         }
     }
 
     when (dialogToDisplay) {
-        CharacterFullUiState.CharacterDialog.HEALTH -> CharacterHealthDialog(
+        CharacterFullUiState.Dialog.HEALTH -> CharacterHealthDialog(
             onDismissRequest = { showHealthDialog = false },
             baseHealth = character.health,
             updateHealth = updateHealth,
@@ -115,5 +135,23 @@ private fun Content(
                 .getOrElse(DnDModifierTargetType.HEALTH, ::emptyList)
         )
         else -> {  }
+    }
+}
+
+@Composable
+private fun CharacterFullTabsRow(
+    pagerState: PagerState
+) {
+    val scope = rememberCoroutineScope()
+    PrimaryScrollableTabRow(
+        selectedTabIndex = pagerState.currentPage,
+    ) {
+        CharacterFullUiState.Page.entries.fastForEachIndexed { index, page ->
+            Tab(
+                selected = pagerState.currentPage == index,
+                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                text = { Text(text = stringResource(page.stringRes)) }
+            )
+        }
     }
 }

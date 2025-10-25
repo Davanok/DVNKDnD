@@ -21,6 +21,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.util.withAppliedModifiers
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.repositories.FullEntitiesRepository
@@ -97,9 +98,10 @@ class NewCharacterViewModel(
     }
 
     fun getCharacterWithAllModifiers() = newCharacterState.run {
+        val attributesWithAppliedModifiers = toCharacterFull().withAppliedModifiers().appliedValues.attributes
         CharacterWithAllModifiers(
             character = toCharacterBase(),
-            attributes = characterAttributes,
+            attributes = attributesWithAppliedModifiers,
             selectedModifiers = selectedModifiers,
             entitiesWithLevel = character.entitiesWithLevel
                 .fastFilteredMap(

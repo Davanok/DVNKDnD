@@ -40,17 +40,17 @@ import androidx.compose.ui.util.fastFold
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapIndexed
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForString
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.applyOperation
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.modifiers
 import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
+import com.davanok.dvnkdnd.data.model.util.applyOperation
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.ui.components.toSignedString
@@ -448,9 +448,7 @@ private fun ModifiersText(
             color = MaterialTheme.colorScheme.primary
         )
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-        val text = if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-            sum.toString()
-        } else {
+        val text = if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND))
             buildString {
                 appliedModifiers.fastFold(value.toString()) { acc, modifier ->
                     modifier.operation.applyForString(acc, modifier.value)
@@ -460,7 +458,7 @@ private fun ModifiersText(
                 append(calculateModifier(sum).toSignedString())
                 append(')')
             }
-        }
+            else sum.toString()
 
         Text(
             text = text,

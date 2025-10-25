@@ -213,6 +213,7 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
 
     <!--character full-->
     <string name="no_such_character_error">No such character</string>
+    <string name="character_full_attributes_page_title">Attributes</string>
     <!--health dialog-->
     <string name="character_health_dialog_title">Character health</string>
     <string name="character_health_heal_button">Heal</string>

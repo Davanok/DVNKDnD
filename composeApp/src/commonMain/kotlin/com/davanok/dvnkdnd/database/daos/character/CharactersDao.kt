@@ -18,13 +18,15 @@ import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterAttribut
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCoins
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCustomModifier
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterHealth
+import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 @Dao
 interface CharactersDao: CharacterEntitiesDao {
-    @Transaction
     @Query("SELECT * FROM characters WHERE id == :characterId")
     suspend fun getFullCharacter(characterId: Uuid): DbFullCharacter?
+    @Query("SELECT * FROM characters WHERE id == :characterId")
+    fun getFullCharacterFlow(characterId: Uuid): Flow<DbFullCharacter?>
 
     @Query("SELECT * FROM characters")
     suspend fun getCharactersMinList(): List<Character>

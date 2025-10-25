@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScreen
+package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrows
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.util.fastAll
@@ -15,7 +15,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.calculateModifierSum
+import com.davanok.dvnkdnd.data.model.util.calculateModifierSum
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.map
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
 import com.davanok.dvnkdnd.data.model.types.UiSelectableState

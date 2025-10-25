@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScreen
+package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrows
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -185,7 +185,7 @@ private fun Content(
 }
 
 @Composable
-fun AttributeItem(
+private fun AttributeItem(
     attribute: Attributes,
     attributeValue: Int,
     savingThrowModifiers: List<ModifierExtendedInfo>,

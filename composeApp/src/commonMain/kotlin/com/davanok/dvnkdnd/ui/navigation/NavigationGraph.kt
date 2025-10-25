@@ -27,7 +27,7 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen.Loading
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterAttributesScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth.NewCharacterHealthScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrowsScreen.NewCharacterStatsLargeScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrows.NewCharacterStatsLargeScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newItem.NewItemScreen
 import org.koin.compose.koinInject
@@ -144,7 +144,7 @@ private fun NavGraphBuilder.entityInfoDestinations(navController: NavHostControl
 private fun NavGraphBuilder.characterCreationFlow(navController: NavHostController) =
     navigation<Route.New.Character>(startDestination = Route.New.Character.LoadData) {
         @Composable
-        fun NavBackStackEntry.getSharedViewModel(navController: NavController): NewCharacterViewModel = 
+        fun NavBackStackEntry.getSharedViewModel(): NewCharacterViewModel = 
             sharedKoinViewModel<NewCharacterViewModel, Route.New.Character>(navController)
         
         composable<Route.New.Character.LoadData> {
@@ -156,8 +156,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
             )
         }
         composable<Route.New.Character.Main> { backStack ->
-            val newCharacterViewModel =
-                backStack.getSharedViewModel(navController)
+            val newCharacterViewModel = backStack.getSharedViewModel()
             NewCharacterMainScreen(
                 navigateToEntityInfo = { id -> navController.navigate(Route.EntityInfo(id)) },
                 onBack = navController::navigateUp,
@@ -166,8 +165,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
             )
         }
         composable<Route.New.Character.Stats> { backStack ->
-            val newCharacterViewModel: NewCharacterViewModel =
-                backStack.getSharedViewModel(navController)
+            val newCharacterViewModel = backStack.getSharedViewModel()
             NewCharacterAttributesScreen(
                 onBack = navController::navigateUp,
                 onContinue = { navController.navigate(Route.New.Character.Throws) },
@@ -175,8 +173,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
             )
         }
         composable<Route.New.Character.Throws> { backStack ->
-            val newCharacterViewModel: NewCharacterViewModel =
-                backStack.getSharedViewModel(navController)
+            val newCharacterViewModel = backStack.getSharedViewModel()
             NewCharacterStatsLargeScreen(
                 onBack = navController::navigateUp,
                 onContinue = { navController.navigate(Route.New.Character.Health) },
@@ -184,8 +181,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
             )
         }
         composable<Route.New.Character.Health> { backStack ->
-            val newCharacterViewModel: NewCharacterViewModel =
-                backStack.getSharedViewModel(navController)
+            val newCharacterViewModel = backStack.getSharedViewModel()
             NewCharacterHealthScreen(
                 onBack = navController::navigateUp,
                 onContinue = { navController.navigate(Route.New.Character.Save) },
@@ -193,8 +189,7 @@ private fun NavGraphBuilder.characterCreationFlow(navController: NavHostControll
             )
         }
         composable<Route.New.Character.Save> { backStack ->
-            val newCharacterViewModel: NewCharacterViewModel =
-                backStack.getSharedViewModel(navController)
+            val newCharacterViewModel = backStack.getSharedViewModel()
             SavingNewCharacterScreen(
                 onBack = { navController.navigateWithRemoveFromBackStack(Route.Main.CharactersList) },
                 onGoToCharacter = { navController.navigateWithRemoveFromBackStack(Route.CharacterFull(it)) },
@@ -210,8 +205,8 @@ private fun NavGraphBuilder.characterFullDestinations(navController: NavHostCont
         typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
     ) {
         @Composable
-        fun NavBackStackEntry.getSharedViewModel(navController: NavController): CharacterFullViewModel =
-            sharedKoinViewModel<CharacterFullViewModel, Route.CharacterFull>(navController){
+        fun NavBackStackEntry.getSharedViewModel(): CharacterFullViewModel =
+            sharedKoinViewModel<CharacterFullViewModel, Route.CharacterFull>(navController) {
                 val route: Route.CharacterFull = navController
                     .getBackStackEntry<Route.CharacterFull>()
                     .toRoute()
@@ -219,7 +214,7 @@ private fun NavGraphBuilder.characterFullDestinations(navController: NavHostCont
             }
 
         composable<Route.CharacterFull.Main> { backStackEntry ->
-            val viewModel = backStackEntry.getSharedViewModel(navController)
+            val viewModel = backStackEntry.getSharedViewModel()
             CharacterFullScreen(
                 navigateBack = navController::navigateUp,
                 viewModel = viewModel

@@ -7,6 +7,10 @@ import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.database.daos.character.CharactersDao
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.mapLatest
 import kotlin.uuid.Uuid
 
 class CharactersRepositoryImpl(
@@ -16,6 +20,12 @@ class CharactersRepositoryImpl(
         runLogging("getFullCharacter") {
             dao.getFullCharacter(characterId)?.toCharacterFull()
         }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getFullCharacterFlow(characterId: Uuid): Flow<Result<CharacterFull?>> =
+        dao.getFullCharacterFlow(characterId).mapLatest {
+            Result.success(it?.toCharacterFull())
+        }.catch { thr -> emit(Result.failure(thr)) }
 
     override suspend fun getCharactersMinList() =
         runLogging("getCharactersMinList") {

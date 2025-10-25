@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.model.entities.dndModifiers
+package com.davanok.dvnkdnd.data.model.util
 
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastForEach
@@ -10,7 +10,10 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.data.model.entities.character.CustomModifier
-import com.davanok.dvnkdnd.data.model.util.calculateModifier
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toSkillsGroup
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
