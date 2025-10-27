@@ -121,7 +121,7 @@ data class CharacterCoins(
 @Entity(
     tableName = "character_custom_modifiers",
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["characterId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class CharacterCustomModifier(

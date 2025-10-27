@@ -116,8 +116,8 @@ data class DbFullCharacter(
         usedSpells = usedSpells?.usedSpells.orEmpty(),
         mainEntities = mainEntities.fastMap(DbJoinCharacterMainEntities::toCharacterMainEntityInfo),
         feats = feats.fastMap(DbFullEntity::toDnDFullEntity),
-        selectedModifiers = selectedModifiers.fastMap { it.modifierId },
-        selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId },
+        selectedModifiers = selectedModifiers.fastMap { it.modifierId }.toSet(),
+        selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId }.toSet(),
         customModifiers = customModifiers.fastMap(CharacterCustomModifier::toCustomModifier)
     )
 }

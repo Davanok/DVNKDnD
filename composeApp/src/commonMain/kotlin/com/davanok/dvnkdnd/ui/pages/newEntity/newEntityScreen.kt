@@ -102,11 +102,11 @@ fun NewEntityScreen(
         }
     ) { paddingValues ->
         if (isCompact) CompactContent(
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp),
             onItemClick = { onNavigate(it.route) }
         )
         else ExpandedContent(
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp),
             onItemClick = { onNavigate(it.route) }
         )
     }

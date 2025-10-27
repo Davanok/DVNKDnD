@@ -124,7 +124,7 @@ fun NewCharacterHealthScreen(
             }
         ) { paddingValues ->
             Content(
-                modifier = Modifier.padding(paddingValues).fillMaxSize(),
+                modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp).fillMaxSize(),
                 health = uiState.baseHealth,
                 onHealthChange = viewModel::setHealth,
                 constitutionModifier = calculateModifier(uiState.characterConstitution),

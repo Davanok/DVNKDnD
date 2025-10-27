@@ -224,21 +224,21 @@ class NewCharacterMainViewModel(
     }
 
     fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
-        _uiState.update { it.copy(isLoading = true) }
+        _uiState.update { it.copy(isNextButtonLoading = true) }
 
         val newCharacter = _uiState.value.character
 
         val emptyFields = validateCharacter(newCharacter)
 
         if (emptyFields.hasEmptyFields())
-            _uiState.update { it.copy(emptyFields = emptyFields) }
+            _uiState.update { it.copy(isNextButtonLoading = false, emptyFields = emptyFields) }
         else {
-            _uiState.update { it.copy(isLoading = true, error = null) }
             newCharacterViewModel.setCharacterMain(newCharacter)
                 .onFailure { thr ->
+                    _uiState.update { it.copy(isNextButtonLoading = false) }
                     setCriticalError(Res.string.saving_data_error, thr)
                 }.onSuccess {
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isNextButtonLoading = false) }
                     onSuccess()
                 }
         }
@@ -251,6 +251,7 @@ class NewCharacterMainViewModel(
 
 data class NewCharacterMainUiState(
     val isLoading: Boolean = false,
+    val isNextButtonLoading: Boolean = false,
     val error: UiError? = null,
     val showSearchSheet: Boolean = false,
     val emptyFields: EmptyFields = EmptyFields(),
