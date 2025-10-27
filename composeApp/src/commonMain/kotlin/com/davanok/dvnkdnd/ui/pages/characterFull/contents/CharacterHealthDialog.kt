@@ -20,8 +20,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.util.fastForEach
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
-import com.davanok.dvnkdnd.data.model.types.buildPreviewString
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
+import com.davanok.dvnkdnd.ui.components.buildPreviewString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.character_health_damage_button
 import dvnkdnd.composeapp.generated.resources.character_health_dialog_title

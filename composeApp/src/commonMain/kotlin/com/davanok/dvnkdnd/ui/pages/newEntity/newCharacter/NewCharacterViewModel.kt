@@ -21,7 +21,6 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntit
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
-import com.davanok.dvnkdnd.data.model.util.withAppliedModifiers
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.repositories.FullEntitiesRepository
@@ -97,10 +96,9 @@ class NewCharacterViewModel(
     }
 
     fun getCharacterWithAllModifiers() = newCharacterState.run {
-        val attributesWithAppliedModifiers = toCharacterFull().withAppliedModifiers().appliedValues.attributes
         CharacterWithAllModifiers(
             character = toCharacterBase(),
-            attributes = attributesWithAppliedModifiers,
+            attributes = attributes,
             selectedModifiers = selectedModifiers,
             entities = character.entities.map(DnDFullEntity::toEntityWithModifiers),
             entityIdToLevel = character.mainEntities
@@ -113,7 +111,7 @@ class NewCharacterViewModel(
 
     fun setCharacterModifiers(attributes: DnDAttributesGroup, selectedModifiers: List<Uuid>) = runCatching {
         newCharacterState = newCharacterState.copy(
-            characterAttributes = attributes,
+            attributes = attributes,
             selectedModifiers = newCharacterState.selectedModifiers + selectedModifiers
         )
     }
@@ -127,7 +125,7 @@ class NewCharacterViewModel(
         CharacterWithHealth(
             character = toCharacterBase(),
             healthDice = character.mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }?.entity?.cls?.hitDice,
-            constitution = characterAttributes.constitution,
+            constitution = attributes.constitution,
             baseHealth = baseHealth
         )
     }
@@ -200,7 +198,7 @@ private data class NewCharacterWithFullEntities(
 private data class NewCharacter(
     val character: NewCharacterWithFullEntities = NewCharacterWithFullEntities(),
 
-    val characterAttributes: DnDAttributesGroup = DnDAttributesGroup.Default,
+    val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
     val selectedModifiers: Set<Uuid> = emptySet(),
 
     val level: Int = 1,
@@ -224,7 +222,7 @@ private data class NewCharacter(
             character = characterBase,
             images = dbImages,
             coins = CoinsGroup(),
-            attributes = characterAttributes,
+            attributes = attributes,
             health = totalHealth,
             usedSpells = emptyList(),
             mainEntities = character.mainEntities,

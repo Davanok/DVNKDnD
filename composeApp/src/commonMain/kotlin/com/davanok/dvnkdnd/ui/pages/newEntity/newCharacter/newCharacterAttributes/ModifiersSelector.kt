@@ -52,7 +52,6 @@ import androidx.compose.ui.util.fastMapIndexed
 import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForString
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
@@ -63,6 +62,7 @@ import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.applyOperation
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
+import com.davanok.dvnkdnd.ui.components.buildPreviewString
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.decrease_modifier_value
@@ -366,9 +366,7 @@ fun ModifiersSelectionTable(
                                 textAlign = TextAlign.Center,
                                 maxLines = 1
                             )
-                            val value =
-                                if (group.valueSource == DnDModifierValueSource.CONSTANT) group.value.toString()
-                                else stringResource(group.valueSource.stringRes)
+                            val value = group.buildPreviewString()
                             Text(text = value)
                         }
                     }

@@ -45,13 +45,13 @@ import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.skills
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
-import com.davanok.dvnkdnd.data.model.types.buildPreviewString
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
+import com.davanok.dvnkdnd.ui.components.buildPreviewString
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
@@ -59,12 +59,13 @@ import dvnkdnd.composeapp.generated.resources.continue_str
 import dvnkdnd.composeapp.generated.resources.new_character_throws_screen_title
 import dvnkdnd.composeapp.generated.resources.saving_throw
 import dvnkdnd.composeapp.generated.resources.skills
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
 
 
-private val StatItemMinWidth = 200.dp
+private val StatItemMinWidth = 260.dp
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -194,6 +195,7 @@ private fun AttributeItem(
     onSelectSkill: (Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Napier.d { skillsModifiers.toString() }
     val compactView = remember(skillsModifiers) { skillsModifiers.values.all { it.size <= 1 } }
 
     OutlinedCard(modifier = modifier) {
@@ -265,6 +267,7 @@ private fun AttributeItem(
             ) {
                 attribute.skills().fastForEach { skill ->
                     val modifiersList = skillsModifiers[skill] ?: emptyList()
+                    Napier.d { (skill to modifiersList).toString() }
 
                     if (compactView) {
                         val firstModInfo = modifiersList.firstOrNull()
@@ -297,7 +300,7 @@ private fun AttributeItem(
                         }
                     } else
                         Column(
-                            modifier = Modifier.height(24.dp)
+                            modifier = Modifier
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
