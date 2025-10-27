@@ -224,6 +224,8 @@ class NewCharacterMainViewModel(
     }
 
     fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true) }
+
         val newCharacter = _uiState.value.character
 
         val emptyFields = validateCharacter(newCharacter)

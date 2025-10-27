@@ -12,6 +12,7 @@ data class ModifierExtendedInfo(
     val groupId: Uuid,
     val groupName: String,
     val modifier: DnDModifier,
+    val value: Double,
     val operation: DnDModifierOperation,
     val valueSource: DnDModifierValueSource,
     val state: UiSelectableState,
@@ -22,7 +23,7 @@ data class ModifierExtendedInfo(
 @Composable
 fun ModifierExtendedInfo.buildPreviewString(): String {
     val valueString =
-        if (valueSource == DnDModifierValueSource.CONST) {
+        if (valueSource == DnDModifierValueSource.CONSTANT) {
             val unaryOps = setOf(
                 DnDModifierOperation.ABS,
                 DnDModifierOperation.ROUND,
@@ -30,8 +31,8 @@ fun ModifierExtendedInfo.buildPreviewString(): String {
                 DnDModifierOperation.FLOOR,
                 DnDModifierOperation.FACT
             )
-            if (operation in unaryOps && modifier.value == 0.0) null
-            else modifier.value.toString()
+            if (operation in unaryOps && value == 0.0) null
+            else modifier.toString()
         } else
             stringResource(valueSource.stringRes)
 

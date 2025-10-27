@@ -9,6 +9,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkillsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toSkillsGroup
@@ -57,14 +58,20 @@ data class CharacterFull(
 ) {
     val entities: List<DnDFullEntity>
         get() = mainEntities.fastFlatMap { listOfNotNull(it.entity, it.subEntity) } + feats
+    val groupIdToEntityId by lazy {
+        entities.flatMap { e -> e.modifiersGroups.map { it.id to e.id } }.toMap()
+    }
 
-    private fun resolveValueSource(source: DnDModifierValueSource, entityId: Uuid?, modifierValue: Double): Double =
+    fun resolveValueSource(source: DnDModifierValueSource, entityId: Uuid?, modifierValue: Double): Double =
         when(source) {
-            DnDModifierValueSource.CONST -> modifierValue
+            DnDModifierValueSource.CONSTANT -> modifierValue
             DnDModifierValueSource.CHARACTER_LEVEL -> character.level + modifierValue
             DnDModifierValueSource.ENTITY_LEVEL -> (entityId?.let { id -> mainEntities.fastFirstOrNull { id in it }?.level } ?: 0) + modifierValue
             DnDModifierValueSource.PROFICIENCY_BONUS -> character.getProfBonus() + modifierValue
         }
+
+    fun resolveGroupValue(group: DnDModifiersGroup): Double =
+        resolveValueSource(group.valueSource, groupIdToEntityId[group.id], group.value)
 
     val appliedModifiers: Map<DnDModifierTargetType, List<ModifierExtendedInfo>> by lazy {
         val result = mutableMapOf<DnDModifierTargetType, MutableList<Pair<Int, ModifierExtendedInfo>>>()
@@ -79,6 +86,7 @@ data class CharacterFull(
                             modifier = modifier,
                             operation = group.operation,
                             valueSource = group.valueSource,
+                            value = group.value,
                             state = UiSelectableState(
                                 selectable = modifier.selectable,
                                 selected = true
@@ -86,7 +94,7 @@ data class CharacterFull(
                             resolvedValue = resolveValueSource(
                                 group.valueSource,
                                 entity.id,
-                                modifier.value
+                                group.value
                             )
                         )
                     }

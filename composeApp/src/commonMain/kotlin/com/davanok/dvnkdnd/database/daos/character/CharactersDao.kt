@@ -23,8 +23,10 @@ import kotlin.uuid.Uuid
 
 @Dao
 interface CharactersDao: CharacterEntitiesDao {
+    @Transaction
     @Query("SELECT * FROM characters WHERE id == :characterId")
     suspend fun getFullCharacter(characterId: Uuid): DbFullCharacter?
+    @Transaction
     @Query("SELECT * FROM characters WHERE id == :characterId")
     fun getFullCharacterFlow(characterId: Uuid): Flow<DbFullCharacter?>
 

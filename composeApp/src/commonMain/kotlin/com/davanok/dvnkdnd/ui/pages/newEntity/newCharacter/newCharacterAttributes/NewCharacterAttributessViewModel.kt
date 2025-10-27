@@ -67,7 +67,6 @@ class NewCharacterStatsViewModel(
                 modifiers = character.attributes,
                 selectedAttributesBonuses = character.selectedModifiers.toSet(),
                 allModifiersGroups = attributeModifiersGroups,
-
                 isLoading = false
             )
         }

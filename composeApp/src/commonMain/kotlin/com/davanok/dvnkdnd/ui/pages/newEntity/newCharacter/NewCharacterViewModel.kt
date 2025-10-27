@@ -57,7 +57,7 @@ class NewCharacterViewModel(
         return entities
     }
 
-    private fun setCharacterEntities(character: NewCharacterMain) = viewModelScope.launch {
+    private suspend fun setCharacterEntities(character: NewCharacterMain) {
         val entities = loadEntities(character.getEntitiesIds())
 
         val mainTypes = setOf(DnDEntityTypes.CLASS, DnDEntityTypes.RACE, DnDEntityTypes.BACKGROUND)
@@ -85,7 +85,7 @@ class NewCharacterViewModel(
     }
 
     fun getCharacterMain() = newCharacterState.character.toNewCharacterMain()
-    fun setCharacterMain(
+    suspend fun setCharacterMain(
         character: NewCharacterMain
     ): Result<Unit> = runCatching {
         val oldIds = newCharacterState.character.entities.fastMap { it.id }

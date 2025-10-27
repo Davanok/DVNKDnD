@@ -100,7 +100,7 @@ class NewCharacterThrowsViewModel(
         groupId: Uuid,
         modifierValue: Double
     ): Double = when(source) {
-        DnDModifierValueSource.CONST -> modifierValue
+        DnDModifierValueSource.CONSTANT -> modifierValue
         DnDModifierValueSource.CHARACTER_LEVEL -> uiState.value.characterLevel + modifierValue
         DnDModifierValueSource.ENTITY_LEVEL -> (groupIdToEntityLevel[groupId] ?: 0) + modifierValue
         DnDModifierValueSource.PROFICIENCY_BONUS -> uiState.value.proficiencyBonus + modifierValue
@@ -117,11 +117,12 @@ class NewCharacterThrowsViewModel(
         modifier = modifier,
         operation = group.operation,
         valueSource = group.valueSource,
+        value = group.value,
         state = UiSelectableState(selectable = selectable, selected = selected),
         resolvedValue = resolveValueSource(
             source = group.valueSource,
             groupId = group.id,
-            modifierValue = modifier.value
+            modifierValue = group.value
         )
     )
 

@@ -28,10 +28,10 @@ private inline fun <reified K : Enum<K>> processGroups(
     targetGroups: Map<DnDModifierTargetType, List<DnDModifiersGroup>>,
     targetType: DnDModifierTargetType,
     baseValues: MutableMap<K, Int>,
-    valueSources: Map<DnDModifierValueSource, Double?>
+    groupValueProvider: (DnDModifiersGroup) -> Double
 ) {
     targetGroups[targetType]?.fastForEach { group ->
-        val preValue = valueSources[group.valueSource]
+        val value = groupValueProvider(group)
         group.modifiers.fastForEach modifier@{ modifier ->
             val target = modifier.targetAs<K>()
             if (target == null) return@modifier
@@ -40,7 +40,6 @@ private inline fun <reified K : Enum<K>> processGroups(
             if (group.minBaseValue?.let { current < it } == true) return@modifier
             if (group.maxBaseValue?.let { current > it } == true) return@modifier
 
-            val value = preValue ?: modifier.value
             val result = applyOperation(current, value, group.operation)
 
             baseValues[target] = result.coerceIn(group.clampMin, group.clampMax)
@@ -103,7 +102,6 @@ fun CharacterFull.withAppliedModifiers(): CharacterFull {
 
     val valueSources = mapOf(
         DnDModifierValueSource.CHARACTER_LEVEL to character.level.toDouble(),
-        DnDModifierValueSource.ENTITY_LEVEL to null, // TODO
         DnDModifierValueSource.PROFICIENCY_BONUS to character.getProfBonus().toDouble()
     )
 
@@ -112,7 +110,7 @@ fun CharacterFull.withAppliedModifiers(): CharacterFull {
         targetGroups,
         DnDModifierTargetType.ATTRIBUTE,
         attributeValues,
-        valueSources
+        ::resolveGroupValue
     )
     applyCustomModifiers(customModifiersGrouped, DnDModifierTargetType.ATTRIBUTE, attributeValues, valueSources)
     val modifiedAttributes = attributeValues.toAttributesGroup()
@@ -125,7 +123,7 @@ fun CharacterFull.withAppliedModifiers(): CharacterFull {
         targetGroups,
         DnDModifierTargetType.SAVING_THROW,
         savingThrowsValues,
-        valueSources
+        ::resolveGroupValue
     )
     applyCustomModifiers(customModifiersGrouped, DnDModifierTargetType.SAVING_THROW, savingThrowsValues, valueSources)
     val modifiedSavingThrows = savingThrowsValues.toAttributesGroup()
@@ -139,7 +137,7 @@ fun CharacterFull.withAppliedModifiers(): CharacterFull {
         targetGroups,
         DnDModifierTargetType.SKILL,
         skillValues,
-        valueSources
+        ::resolveGroupValue
     )
     applyCustomModifiers(customModifiersGrouped, DnDModifierTargetType.SKILL, skillValues, valueSources)
     val modifiedSkills = skillValues.toSkillsGroup()
@@ -153,7 +151,7 @@ fun CharacterFull.withAppliedModifiers(): CharacterFull {
         targetGroups,
         DnDModifierTargetType.HEALTH,
         healthValues,
-        valueSources
+        ::resolveGroupValue
     )
     applyCustomModifiers(customModifiersGrouped, DnDModifierTargetType.HEALTH, healthValues, valueSources)
     val modifiedHealth = health.copy(
@@ -190,12 +188,10 @@ fun calculateModifierSum(
         .sortedBy { it.priority }
         .fastForEach { group ->
             // compute group-level value once (nullable => use modifier.value when null)
-            val groupValue = groupValueProvider(group)
+            val value = groupValueProvider(group)
 
             group.modifiers.fastForEach modifier@{ modifier ->
                 if (!modifierFilter(modifier)) return@modifier
-
-                val value = groupValue + modifier.value
 
                 // skip modifier if current base (result) not in group's base range
                 if (group.minBaseValue?.let { result < it } == true) return@modifier

@@ -196,8 +196,6 @@ private fun AttributeItem(
     onSelectSkill: (Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val calculatedModifier = remember(attributeValue) { calculateModifier(attributeValue) }
-
     val compactView = remember(skillsModifiers) { skillsModifiers.values.all { it.size <= 1 } }
 
     OutlinedCard(modifier = modifier) {
@@ -219,7 +217,12 @@ private fun AttributeItem(
                 )
                 Text(
                     modifier = Modifier,
-                    text = calculatedModifier.toSignedString(),
+                    text = buildString {
+                        append(attributeValue)
+                        append(" (")
+                        append(calculateModifier(attributeValue).toSignedString())
+                        append(')')
+                    },
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 1
                 )

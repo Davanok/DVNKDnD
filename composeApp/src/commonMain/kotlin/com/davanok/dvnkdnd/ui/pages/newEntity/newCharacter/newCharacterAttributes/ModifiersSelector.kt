@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,6 +20,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,8 +34,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -43,6 +52,7 @@ import androidx.compose.ui.util.fastMapIndexed
 import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
+import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForString
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
@@ -80,7 +90,7 @@ private fun List<DnDModifiersGroup>.appliedModifiers(attribute: Attributes, sele
                 it.targetAs<Attributes>() == attribute && it.id in selectedModifiers
             },
             transform = {
-                AppliedModifier(it.value, group.operation)
+                AppliedModifier(group.value, group.operation)
             }
         )
     }
@@ -131,7 +141,7 @@ fun ModifiersSelector(
                     onModifierSelected = onSelectModifiers
                 )
 
-                AttributesSelectorType.STANDARD_ARRAY -> StandardArrayModifiersSelector(
+                AttributesSelectorType.STANDARD_ARRAY -> DefaultArrayModifiersSelector(
                     character = modifiers,
                     onChange = onModifiersChange,
                     allModifiersGroups = allModifiersGroups,
@@ -182,14 +192,15 @@ private fun ColumnScope.PointBuyModifiersSelector(
                             character.set(attribute, it).modifiers()
                         )
             },
-            additionalModifiers = allModifiersGroups
+            appliedModifiers = allModifiersGroups
                 .appliedModifiers(attribute, selectedAttributeModifiers)
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun StandardArrayModifiersSelector(
+private fun DefaultArrayModifiersSelector(
     character: DnDAttributesGroup,
     onChange: (DnDAttributesGroup) -> Unit,
     allModifiersGroups: List<DnDModifiersGroup>,
@@ -223,14 +234,42 @@ private fun StandardArrayModifiersSelector(
         selectedAttributeModifiers = selectedAttributeModifiers,
         onModifierSelected = onModifierSelected
     ) { attribute ->
-        ModifierSelectorRow(
-            value = character[attribute],
-            onValueChange = { onChange(character.set(attribute, it)) },
-            label = stringResource(attribute.stringRes),
-            minValueCheck = { true },
-            maxValueCheck = { true },
-            additionalModifiers = allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
-        )
+        var selectorExpanded by remember { mutableStateOf(false) }
+
+        ExposedDropdownMenuBox(
+            expanded = selectorExpanded,
+            onExpandedChange = { selectorExpanded = it },
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { selectorExpanded = !selectorExpanded },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                ModifiersText(
+                    modifier = Modifier.padding(start = 16.dp),
+                    label = stringResource(attribute.stringRes),
+                    value = character[attribute],
+                    appliedModifiers = allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
+                )
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = selectorExpanded)
+            }
+            ExposedDropdownMenu(
+                expanded = selectorExpanded,
+                onDismissRequest = { selectorExpanded = false }
+            ) {
+                DnDConstants.DEFAULT_ARRAY.forEach { value ->
+                    DropdownMenuItem(
+                        text = { Text(value.toString()) },
+                        onClick = {
+                            onChange(character.set(attribute, value))
+                            selectorExpanded = false
+                        }
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -253,7 +292,7 @@ private fun ManualModifiersSelector(
             label = stringResource(attribute.stringRes),
             minValueCheck = { true },
             maxValueCheck = { true },
-            additionalModifiers = allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
+            appliedModifiers = allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
         )
     }
 }
@@ -315,18 +354,22 @@ fun ModifiersSelectionTable(
                     state = commonLazyRowState
                 ) {
                     items(allModifiersGroups, key = { it.id }) { group ->
-                        Box(
+                        Column(
                             modifier = Modifier
                                 .width(columnWidth)
                                 .padding(horizontal = 4.dp),
-                            contentAlignment = Alignment.Center
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
                                 text = group.name,
                                 style = MaterialTheme.typography.bodySmall,
                                 textAlign = TextAlign.Center,
-                                maxLines = 2
+                                maxLines = 1
                             )
+                            val value =
+                                if (group.valueSource == DnDModifierValueSource.CONSTANT) group.value.toString()
+                                else stringResource(group.valueSource.stringRes)
+                            Text(text = value)
                         }
                     }
                 }
@@ -338,7 +381,8 @@ fun ModifiersSelectionTable(
                 Attributes.entries.fastForEach { attribute ->
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .height(48.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         val attributeFieldModifier = if (isWideLayout) Modifier.width(ATTRIBUTE_FIELD_MAX_WIDTH) else Modifier.weight(1f)
@@ -397,7 +441,7 @@ private fun ModifierSelectorRow(
     onValueChange: (Int) -> Unit,
     minValueCheck: (Int) -> Boolean,
     maxValueCheck: (Int) -> Boolean,
-    additionalModifiers: List<AppliedModifier>,
+    appliedModifiers: List<AppliedModifier>,
     modifier: Modifier = Modifier,
     label: String,
 ) {
@@ -414,7 +458,7 @@ private fun ModifierSelectorRow(
         ModifiersText(
             label = label,
             value = value,
-            appliedModifiers = additionalModifiers,
+            appliedModifiers = appliedModifiers,
             modifier = Modifier.weight(1f)
         )
         IconButton(

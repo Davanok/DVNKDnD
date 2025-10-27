@@ -4,7 +4,6 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.window.core.layout.WindowSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
 
 @Composable
 fun calculateNavSuiteType(
@@ -12,11 +11,9 @@ fun calculateNavSuiteType(
 ): NavigationSuiteType {
     return windowSizeClass.run {
         when {
-            windowWidthSizeClass == WindowWidthSizeClass.COMPACT -> NavigationSuiteType.NavigationBar
-//            widthSizeClass == WindowWidthSizeClass.Medium -> NavigationSuiteType.NavigationRail
-//            widthSizeClass == WindowWidthSizeClass.Expanded -> NavigationSuiteType.NavigationRail
-//            else -> NavigationSuiteType.NavigationBar
-            else -> NavigationSuiteType.NavigationRail
+            isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> NavigationSuiteType.NavigationRail
+
+            else -> NavigationSuiteType.NavigationBar
         }
     }
 }

@@ -9,7 +9,6 @@ import kotlin.uuid.Uuid
 fun EntityModifier.toDnDModifier() = DnDModifier(
     id = id,
     selectable = selectable,
-    value = value,
     target = target
 )
 
@@ -17,7 +16,6 @@ fun DnDModifier.toEntityModifier(groupId: Uuid) = EntityModifier(
     id = id,
     groupId = groupId,
     selectable = selectable,
-    value = value,
     target = target
 )
 fun DnDModifiersGroup.toEntityModifiersGroup(entityId: Uuid) = EntityModifiersGroup(
@@ -26,6 +24,7 @@ fun DnDModifiersGroup.toEntityModifiersGroup(entityId: Uuid) = EntityModifiersGr
     target = target,
     operation = operation,
     valueSource = valueSource,
+    value = value,
     name = name,
     description = description,
     selectionLimit = selectionLimit,

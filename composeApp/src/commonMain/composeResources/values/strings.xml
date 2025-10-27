@@ -206,7 +206,7 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="operation_sign_floor">floor(%1$s)</string>
 
     <!--value sources-->
-    <string name="value_source_const">CONST</string>
+    <string name="value_source_constant">CONST</string>
     <string name="value_source_character_level">LVL</string>
     <string name="value_source_entity_level">E LVL</string>
     <string name="value_source_proficiency_bonus">PB</string>
