@@ -26,6 +26,7 @@ data class EntityModifiersGroup(
     val operation: DnDModifierOperation,
     @ColumnInfo("value_source")
     val valueSource: DnDModifierValueSource,
+    val value: Double,
 
     val name: String,
     val description: String?,
@@ -50,8 +51,7 @@ data class EntityModifier(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("group_id", index = true) val groupId: Uuid,
     val selectable: Boolean,
-    val target: String,
-    val value: Double
+    val target: String
 )
 
 

@@ -6,14 +6,14 @@ import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithHealth
+import com.davanok.dvnkdnd.data.model.entities.character.CoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
@@ -25,7 +25,6 @@ import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.repositories.FullEntitiesRepository
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMain
-import kotlinx.coroutines.launch
 import okio.Path
 import kotlin.uuid.Uuid
 
@@ -56,7 +55,7 @@ class NewCharacterViewModel(
         return entities
     }
 
-    private fun setCharacterEntities(character: NewCharacterMain) = viewModelScope.launch {
+    private suspend fun setCharacterEntities(character: NewCharacterMain) {
         val entities = loadEntities(character.getEntitiesIds())
 
         val mainTypes = setOf(DnDEntityTypes.CLASS, DnDEntityTypes.RACE, DnDEntityTypes.BACKGROUND)
@@ -84,7 +83,7 @@ class NewCharacterViewModel(
     }
 
     fun getCharacterMain() = newCharacterState.character.toNewCharacterMain()
-    fun setCharacterMain(
+    suspend fun setCharacterMain(
         character: NewCharacterMain
     ): Result<Unit> = runCatching {
         val oldIds = newCharacterState.character.entities.fastMap { it.id }
@@ -100,13 +99,18 @@ class NewCharacterViewModel(
         CharacterWithAllModifiers(
             character = toCharacterBase(),
             proficiencyBonus = proficiencyBonus,
-            characterAttributes = characterAttributes,
+            attributes = characterAttributes,
             selectedModifiers = selectedModifiers,
             entities = character.entities
                 .fastFilteredMap(
                     predicate = { it.modifiersGroups.isNotEmpty() },
                     transform = { it.toEntityWithModifiers() }
-                )
+                ),
+            entityIdToLevel = character.mainEntities
+                .flatMap { e ->
+                    listOfNotNull(e.entity.id, e.subEntity?.id)
+                        .map { it to e.level }
+                }.toMap()
         )
     }
 
@@ -216,21 +220,20 @@ private data class NewCharacter(
         val totalHealth = DnDCharacterHealth(
             max = baseHealth,
             current = baseHealth,
-            temp = 0,
-            maxModified = 0
+            temp = 0
         )
 
         return CharacterFull(
             character = characterBase,
             images = dbImages,
-            coins = null,
+            coins = CoinsGroup(),
             attributes = characterAttributes,
             health = totalHealth,
             usedSpells = emptyList(),
             mainEntities = character.mainEntities,
             feats = emptyList(),
-            selectedModifiers = selectedModifiers.toList(),
-            selectedProficiencies = emptyList()
+            selectedModifiers = selectedModifiers,
+            selectedProficiencies = emptySet()
         )
     }
 

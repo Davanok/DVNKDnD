@@ -63,10 +63,9 @@ class NewCharacterStatsViewModel(
         _uiState.update {
             it.copy(
                 character = character.character,
-                modifiers = character.characterAttributes,
+                modifiers = character.attributes,
                 selectedAttributesBonuses = character.selectedModifiers.toSet(),
                 allModifiersGroups = attributeModifiersGroups,
-
                 isLoading = false
             )
         }

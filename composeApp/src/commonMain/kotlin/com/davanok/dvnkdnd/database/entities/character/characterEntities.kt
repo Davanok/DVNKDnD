@@ -127,7 +127,7 @@ data class CharacterCoins(
 data class CharacterCustomModifier(
     @PrimaryKey
     val id: Uuid,
-    @ColumnInfo("character_id")
+    @ColumnInfo("character_id", index = true)
     val characterId: Uuid,
 
     @ColumnInfo("target_global")

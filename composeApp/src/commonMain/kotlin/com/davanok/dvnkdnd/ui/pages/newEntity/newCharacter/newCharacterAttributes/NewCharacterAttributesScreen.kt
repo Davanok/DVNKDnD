@@ -232,7 +232,7 @@ private fun AboutModifiersSelectorsDialog(
                             append(attributeStr)
                             modifiers.fastForEach {
                                 append("\n\t\t")
-                                val textToAppend = group.operation.applyForString(attributeStr, it.value)
+                                val textToAppend = group.operation.applyForString(attributeStr, group.value)
                                 if (it.id in selectedModifiersBonuses) {
                                     withStyle(
                                         LocalTextStyle.current

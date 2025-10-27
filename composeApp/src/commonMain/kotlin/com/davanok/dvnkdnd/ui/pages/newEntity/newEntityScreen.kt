@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxBy
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.ui.navigation.Route
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Ability
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Background
@@ -80,7 +80,7 @@ fun NewEntityScreen(
     onNavigate: (Route) -> Unit
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val isCompact = windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+    val isCompact = !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 
     Scaffold(
         topBar = {

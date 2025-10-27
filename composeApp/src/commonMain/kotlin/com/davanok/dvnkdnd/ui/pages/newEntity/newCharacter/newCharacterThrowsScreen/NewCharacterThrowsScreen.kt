@@ -48,6 +48,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForStringPreview
 import com.davanok.dvnkdnd.data.model.dndEnums.skills
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
@@ -197,8 +198,6 @@ fun AttributeItem(
     onSelectSkill: (Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val calculatedModifier = remember(attributeValue) { calculateModifier(attributeValue) }
-
     val compactView = remember(skillsModifiers) { skillsModifiers.values.all { it.size <= 1 } }
 
     OutlinedCard(modifier = modifier) {
@@ -220,7 +219,12 @@ fun AttributeItem(
                 )
                 Text(
                     modifier = Modifier,
-                    text = calculatedModifier.toSignedString(),
+                    text = buildString {
+                        append(attributeValue)
+                        append(" (")
+                        append(calculateModifier(attributeValue).toSignedString())
+                        append(')')
+                    },
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 1
                 )
@@ -343,7 +347,7 @@ private fun ModifierChip(info: ModifierExtendedInfo, onClick: (Uuid) -> Unit) {
 @Composable
 fun ModifierExtendedInfo.buildString(): String {
     val valueString =
-        if (valueSource == DnDModifierValueSource.CONST) {
+        if (valueSource == DnDModifierValueSource.CONSTANT) {
             val unaryOps = setOf(
                 DnDModifierOperation.ABS,
                 DnDModifierOperation.ROUND,
@@ -351,8 +355,8 @@ fun ModifierExtendedInfo.buildString(): String {
                 DnDModifierOperation.FLOOR,
                 DnDModifierOperation.FACT
             )
-            if (operation in unaryOps && modifier.value == 0.0) null
-            else modifier.value.toString()
+            if (operation in unaryOps && value == 0.0) null
+            else value.toString()
         } else
             stringResource(valueSource.stringRes)
 

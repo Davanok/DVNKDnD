@@ -12,7 +12,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.ui.components.sideSheet.ModalSideSheet
 import com.davanok.dvnkdnd.ui.components.sideSheet.rememberModalSideSheetState
 import dvnkdnd.composeapp.generated.resources.Res
@@ -32,14 +32,7 @@ fun AdaptiveModalSheet(
     val scope = rememberCoroutineScope()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT) {
-        ModalBottomSheet(
-            modifier = modifier,
-            onDismissRequest = onDismissRequest,
-            content = content
-        )
-    }
-    else {
+    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)) {
         val state = rememberModalSideSheetState()
         ModalSideSheet(
             sheetState = state,
@@ -61,6 +54,13 @@ fun AdaptiveModalSheet(
                 )
                 content()
             }
+        )
+    }
+    else {
+        ModalBottomSheet(
+            modifier = modifier,
+            onDismissRequest = onDismissRequest,
+            content = content
         )
     }
 }

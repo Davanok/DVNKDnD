@@ -66,3 +66,6 @@ fun Map<Attributes, Int>.toAttributesGroup() = DnDAttributesGroup(
     wisdom = get(Attributes.WISDOM) ?: 0,
     charisma = get(Attributes.CHARISMA) ?: 0,
 )
+fun DnDAttributesGroup.map(transform: (Int) -> Int) = toMap()
+    .mapValues { transform(it.value) }
+    .toAttributesGroup()
