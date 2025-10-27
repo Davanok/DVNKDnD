@@ -6,7 +6,6 @@ import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
@@ -21,12 +20,12 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.data.model.util.withAppliedModifiers
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.data.repositories.FullEntitiesRepository
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMain
-import kotlinx.coroutines.launch
 import okio.Path
 import kotlin.uuid.Uuid
 
@@ -103,11 +102,12 @@ class NewCharacterViewModel(
             character = toCharacterBase(),
             attributes = attributesWithAppliedModifiers,
             selectedModifiers = selectedModifiers,
-            entitiesWithLevel = character.entitiesWithLevel
-                .fastFilteredMap(
-                    predicate = { it.first.modifiersGroups.isNotEmpty() },
-                    transform = { (e, l) -> e.toEntityWithModifiers() to l }
-                )
+            entities = character.entities.map(DnDFullEntity::toEntityWithModifiers),
+            entityIdToLevel = character.mainEntities
+                .flatMap { e ->
+                    listOfNotNull(e.entity, e.subEntity)
+                        .map { it.id to e.level }
+                }.toMap()
         )
     }
 
@@ -152,11 +152,6 @@ private data class NewCharacterWithFullEntities(
 ) {
     val entities: List<DnDFullEntity>
         get() = mainEntities.fastFlatMap { listOfNotNull(it.entity, it.subEntity) }
-    val entitiesWithLevel: List<Pair<DnDFullEntity, Int>>
-        get() = mainEntities.fastFlatMap {
-            listOfNotNull(it.entity, it.subEntity)
-                .fastMap { e -> e to it.level }
-        }
 
     fun toNewCharacterMain(): NewCharacterMain {
         val clsInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }
@@ -209,6 +204,7 @@ private data class NewCharacter(
     val selectedModifiers: Set<Uuid> = emptySet(),
 
     val level: Int = 1,
+    val proficiencyBonus: Int = proficiencyBonusByLevel(level),
 
     val baseHealth: Int = 0 // without constitution bonus
 ) {

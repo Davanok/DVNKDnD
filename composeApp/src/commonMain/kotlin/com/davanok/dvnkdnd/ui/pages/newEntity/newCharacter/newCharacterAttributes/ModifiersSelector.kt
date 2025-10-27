@@ -58,7 +58,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.modifiers
-import com.davanok.dvnkdnd.data.model.types.UiSelectableState
+import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.applyOperation
 import com.davanok.dvnkdnd.data.model.util.calculateBuyingModifiersSum

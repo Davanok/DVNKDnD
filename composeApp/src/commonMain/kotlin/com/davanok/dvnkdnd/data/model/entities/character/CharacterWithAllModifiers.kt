@@ -13,7 +13,8 @@ data class CharacterWithAllModifiers(
     val attributes: DnDAttributesGroup,
 
     val selectedModifiers: Set<Uuid>,
-    val entitiesWithLevel: List<Pair<DnDEntityWithModifiers, Int>>
+    val entities: List<DnDEntityWithModifiers>,
+    val entityIdToLevel: Map<Uuid, Int>
 )
 
 @Immutable

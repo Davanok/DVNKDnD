@@ -93,8 +93,8 @@ fun NewCharacterAttributesScreen(
         ) { paddingValues ->
             Content(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                    .padding(paddingValues)
+                    .fillMaxSize(),
                 selectedCreationOption = uiState.attributesSelectorType,
                 onOptionSelected = viewModel::selectAttributeSelectorType,
                 allModifiersGroups = uiState.allModifiersGroups,

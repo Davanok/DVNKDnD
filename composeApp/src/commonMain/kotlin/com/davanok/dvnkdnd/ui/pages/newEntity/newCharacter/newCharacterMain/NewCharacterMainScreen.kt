@@ -138,14 +138,16 @@ fun NewCharacterMainScreen(
                         }
                     },
                     actions = {
-                        IconButton(
-                            onClick = { viewModel.commit(onContinue) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = stringResource(Res.string.continue_str)
-                            )
-                        }
+                        if (uiState.isNextButtonLoading) CircularProgressIndicator()
+                        else
+                            IconButton(
+                                onClick = { viewModel.commit(onContinue) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = stringResource(Res.string.continue_str)
+                                )
+                            }
                     }
                 )
             }

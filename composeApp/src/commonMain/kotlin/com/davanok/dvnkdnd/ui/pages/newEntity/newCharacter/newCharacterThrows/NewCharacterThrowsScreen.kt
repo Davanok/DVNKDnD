@@ -3,7 +3,6 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrows
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -121,7 +120,7 @@ fun NewCharacterStatsLargeScreen(
             }
         ) { paddingValues ->
             Content(
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp),
                 attributes = uiState.attributes,
                 savingThrows = uiState.savingThrows.mapValues { (_, v) -> v.first },
                 savingThrowValues = uiState.savingThrows.mapValues { (_, v) -> v.second },
@@ -151,8 +150,7 @@ private fun Content(
         modifier = modifier,
         columns = GridCells.Adaptive(StatItemMinWidth),
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
             items = Attributes.entries,

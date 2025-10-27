@@ -5,6 +5,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForStringPreview
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
+import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 

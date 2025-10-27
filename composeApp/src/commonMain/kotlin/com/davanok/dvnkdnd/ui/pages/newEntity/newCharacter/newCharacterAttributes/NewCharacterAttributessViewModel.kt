@@ -50,8 +50,8 @@ class NewCharacterStatsViewModel(
     fun loadCharacterWithAllModifiers() {
         val character = newCharacterViewModel.getCharacterWithAllModifiers()
 
-        val attributeModifiersGroups = character.entitiesWithLevel
-            .fastFlatMap { it.first.modifiersGroups }
+        val attributeModifiersGroups = character.entities
+            .fastFlatMap { it.modifiersGroups }
             .fastFilter { it.target == DnDModifierTargetType.ATTRIBUTE }
 
         modifierInfo = attributeModifiersGroups

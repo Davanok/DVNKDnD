@@ -15,12 +15,12 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.util.calculateModifierSum
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.map
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
-import com.davanok.dvnkdnd.data.model.types.UiSelectableState
 import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
+import com.davanok.dvnkdnd.data.model.util.calculateModifierSum
 import com.davanok.dvnkdnd.data.model.util.enumValueOfOrNull
 import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
@@ -64,15 +64,12 @@ class NewCharacterThrowsViewModel(
         selectedModifiers.clear()
         selectedModifiers.addAll(character.selectedModifiers)
 
-        modifierGroups = character.entitiesWithLevel
-            .fastFlatMap { it.first.modifiersGroups }
+        modifierGroups = character.entities
+            .fastFlatMap { it.modifiersGroups }
             .fastFilter { it.target == DnDModifierTargetType.SAVING_THROW || it.target == DnDModifierTargetType.SKILL }
             .sortedBy { it.priority }
 
         groupIdToGroup = modifierGroups.associateBy { it.id }
-        groupIdToEntityLevel = character.entitiesWithLevel
-            .fastFlatMap { (e, l) -> e.modifiersGroups.map { it.id to l } }
-            .toMap()
         modifierIdToGroupId = modifierGroups
             .fastFlatMap { g -> g.modifiers.map { it.id to g.id } }
             .toMap()
