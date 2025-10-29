@@ -50,37 +50,38 @@ fun DnDModifierOperation.applyForString(
 ): String {
     fun wrapIfExpr(s: String): String = if (s.toDoubleOrNull() == null) "($s)" else s
     val operation = this
+    val valueStr = if (value.toInt().toDouble() == value) value.toInt().toString() else value.toString()
 
     return when (operation) {
         DnDModifierOperation.SUM,
-        DnDModifierOperation.SUB -> "$base ${stringResource(operation.stringRes, value)}"
+        DnDModifierOperation.SUB -> "$base ${stringResource(operation.stringRes, valueStr)}"
 
         DnDModifierOperation.MUL,
         DnDModifierOperation.DIV,
         DnDModifierOperation.MOD,
         DnDModifierOperation.POW,
-        DnDModifierOperation.OTHER -> "${wrapIfExpr(base)} ${stringResource(operation.stringRes, value)}"
+        DnDModifierOperation.OTHER -> "${wrapIfExpr(base)} ${stringResource(operation.stringRes, valueStr)}"
 
         DnDModifierOperation.MIN,
         DnDModifierOperation.MAX,
-        DnDModifierOperation.AVG -> stringResource(operation.stringRes, base, value)
+        DnDModifierOperation.AVG -> stringResource(operation.stringRes, base, valueStr)
 
         DnDModifierOperation.ROOT -> {
             val radicand = wrapIfExpr(base)
             if (value == 2.0) stringResource(Res.string.operation_sign_sqrt, radicand)
-            else stringResource(operation.stringRes, radicand, value)
+            else stringResource(operation.stringRes, radicand, valueStr)
         }
 
         DnDModifierOperation.ABS,
         DnDModifierOperation.ROUND,
         DnDModifierOperation.CEIL,
         DnDModifierOperation.FLOOR -> {
-            val expr = if (value == 0.0) base else "$base ${stringResource(DnDModifierOperation.SUM.stringRes, value)}"
+            val expr = if (value == 0.0) base else "$base ${stringResource(DnDModifierOperation.SUM.stringRes, valueStr)}"
             stringResource(operation.stringRes, expr)
         }
 
         DnDModifierOperation.FACT -> {
-            var expr = if (value == 0.0) base else "$base ${stringResource(DnDModifierOperation.SUM.stringRes, value)}"
+            var expr = if (value == 0.0) base else "$base ${stringResource(DnDModifierOperation.SUM.stringRes, valueStr)}"
             expr = wrapIfExpr(expr)
             stringResource(operation.stringRes, expr)
         }

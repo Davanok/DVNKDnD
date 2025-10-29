@@ -27,22 +27,26 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastFold
@@ -211,7 +215,8 @@ private fun DefaultArrayModifiersSelector(
         onChange(approximateToDefault(character))
     }
 
-    val modifiers = remember(character) { character.modifiers() }
+    val attributes = remember(character) { character.modifiers() }
+    val copies = attributes.fastFilter { a -> attributes.count { it == a } > 1 }
     Row(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 6.dp)
@@ -219,13 +224,16 @@ private fun DefaultArrayModifiersSelector(
         horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally)
     ) {
         DnDConstants.DEFAULT_ARRAY.forEach { value ->
-            key(value) {
-                SuggestionChip(
-                    onClick = { /* noop */ },
-                    enabled = value !in modifiers,
-                    label = { Text(text = value.toString()) }
-                )
-            }
+            SuggestionChip(
+                onClick = { /* noop */ },
+                enabled = value !in attributes || value in copies,
+                label = { Text(text = value.toString()) },
+                colors = if (value in copies) SuggestionChipDefaults.suggestionChipColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    labelColor = MaterialTheme.colorScheme.error,
+                    iconContentColor = MaterialTheme.colorScheme.error
+                ) else SuggestionChipDefaults.suggestionChipColors()
+            )
         }
     }
 
@@ -490,17 +498,21 @@ private fun ModifiersText(
             color = MaterialTheme.colorScheme.primary
         )
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-        val text = if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND))
-            buildString {
+        val text = buildAnnotatedString {
+            if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND))
                 appliedModifiers.fastFold(value.toString()) { acc, modifier ->
                     modifier.operation.applyForString(acc, modifier.value)
-                }
-                append(sum)
-                append(" (")
-                append(calculateModifier(sum).toSignedString())
-                append(')')
+                }.let { append(it) }
+            else
+                append(value.toString())
+            append(": ")
+            withStyle(LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.tertiary).toSpanStyle()) {
+                append(sum.toString())
             }
-            else sum.toString()
+            append(" (")
+            append(calculateModifier(sum).toSignedString())
+            append(')')
+        }
 
         Text(
             text = text,
