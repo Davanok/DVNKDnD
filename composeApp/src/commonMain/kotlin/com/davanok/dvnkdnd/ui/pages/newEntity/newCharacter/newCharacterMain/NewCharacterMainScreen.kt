@@ -22,7 +22,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
@@ -132,7 +131,7 @@ fun NewCharacterMainScreen(
                     navigationIcon = {
                         IconButton(onBack) {
                             Icon(
-                                imageVector = Icons.Default.Cancel,
+                                imageVector = Icons.Default.Close,
                                 contentDescription = stringResource(Res.string.cancel)
                             )
                         }
@@ -153,7 +152,7 @@ fun NewCharacterMainScreen(
             }
         ) { paddingValues ->
             Content(
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp),
                 character = uiState.character,
                 entities = uiState.entities,
                 empties = uiState.emptyFields,

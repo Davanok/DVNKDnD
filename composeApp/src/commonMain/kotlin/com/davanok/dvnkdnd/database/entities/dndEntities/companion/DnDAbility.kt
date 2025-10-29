@@ -17,7 +17,7 @@ import kotlin.uuid.Uuid
 data class DnDAbility(
     @PrimaryKey val id: Uuid,
     @ColumnInfo("usage_limit_by_level")
-    val usageLimitByLevel: List<Int>?
+    val usageLimitByLevel: List<Int>
 )
 @Entity(
     tableName = "ability_regain",

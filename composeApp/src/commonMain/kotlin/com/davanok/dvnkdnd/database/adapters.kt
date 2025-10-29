@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 
 class MainAdapters {
     @TypeConverter
-    fun stringToListConverter(value: String) = value.split(';').map { it.toInt() }
+    fun stringToListConverter(value: String) = value.split(';').mapNotNull { it.toIntOrNull() }
     @TypeConverter
     fun listToStringConverter(value: List<Int>) = value.joinToString(";")
 

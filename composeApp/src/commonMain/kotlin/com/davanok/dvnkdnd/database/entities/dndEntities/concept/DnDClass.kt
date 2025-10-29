@@ -45,6 +45,6 @@ data class ClassSpellSlots(
     val level: Int,
     val preparedSpells: Int?,
     val cantrips: Int?,
-    val spellSlots: List<Int>?
+    val spellSlots: List<Int>
 )
 

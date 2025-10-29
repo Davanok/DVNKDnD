@@ -1,14 +1,22 @@
 package com.davanok.dvnkdnd.ui.pages.charactersList
 
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,20 +24,25 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
+import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.ui.components.EmptyImage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -37,8 +50,9 @@ import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.navigation.FABScaffold
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.app_name
+import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.character_image
-import dvnkdnd.composeapp.generated.resources.navigate_back
 import dvnkdnd.composeapp.generated.resources.no_characters_yet
 import dvnkdnd.composeapp.generated.resources.select_character_for_info
 import dvnkdnd.composeapp.generated.resources.sentiment_dissatisfied
@@ -48,7 +62,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun CharactersListScreen(
     onNewCharacter: () -> Unit,
@@ -63,7 +76,6 @@ fun CharactersListScreen(
             ErrorCard(
                 text = it.message,
                 exception = it.exception,
-                onRefresh = viewModel::loadCharacters
             )
         }
         uiState.characters.isEmpty() ->
@@ -84,52 +96,124 @@ fun CharactersListScreen(
                     }
                 )
             }
-        else -> {
-            val navigator = rememberListDetailPaneScaffoldNavigator()
-            val coroutineScope = rememberCoroutineScope()
-            ListDetailPaneScaffold(
-                directive = navigator.scaffoldDirective,
-                scaffoldState = navigator.scaffoldState,
-                listPane = {
-                    AnimatedPane {
-                        FABScaffold(
-                            onClick = onNewCharacter
+        else -> Content(
+            characters = uiState.characters,
+            onNewCharacter = onNewCharacter,
+            navigateToCharacter = navigateToCharacter,
+            onClickCharacter = viewModel::selectCharacter,
+            currentCharacter = uiState.currentCharacter,
+            isCurrentCharacterLoading = uiState.isCurrentCharacterLoading
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun Content(
+    characters: List<CharacterBase>,
+    onNewCharacter: () -> Unit,
+    onClickCharacter: (CharacterBase) -> Unit,
+    navigateToCharacter: (CharacterBase) -> Unit,
+    currentCharacter: CharacterFull?,
+    isCurrentCharacterLoading: Boolean,
+) {
+    val navigator = rememberListDetailPaneScaffoldNavigator()
+    val coroutineScope = rememberCoroutineScope()
+
+    val characterVisible = navigator.scaffoldState.currentState[ThreePaneScaffoldRole.Primary] == PaneAdaptedValue.Expanded
+    val listVisible = navigator.scaffoldState.currentState[ThreePaneScaffoldRole.Secondary] == PaneAdaptedValue.Expanded
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    AnimatedContent(
+                        targetState = !characterVisible || currentCharacter == null
+                    ) { showAppName ->
+                        if (showAppName || currentCharacter == null)
+                            Text(text = stringResource(Res.string.app_name))
+                        else
+                            Text(text = currentCharacter.character.name)
+                    }
+                },
+                navigationIcon = {
+                    AnimatedVisibility(
+                        visible = !listVisible
+                    ) {
+                        IconButton(
+                            onClick = { coroutineScope.launch { navigator.navigateBack() } },
                         ) {
-                            CharactersList(
-                                modifier = Modifier.fillMaxSize(),
-                                items = uiState.characters,
-                                onClick = { character ->
-                                    viewModel.selectCharacter(character)
-                                    coroutineScope.launch {
-                                        navigator.navigateTo(
-                                            ListDetailPaneScaffoldRole.Detail
-                                        )
-                                    }
-                                }
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = stringResource(Res.string.back)
                             )
                         }
                     }
                 },
-                detailPane = {
-                    AnimatedPane {
-                        if (uiState.currentCharacter != null)
-                            CharacterInfo(
-                                uiState.currentCharacter!!,
-                                {
-                                    coroutineScope.launch {
-                                        navigator.navigateBack()
-                                    }
-                                },
-                                viewModel
+                actions = {
+                    AnimatedVisibility(
+                        visible = !listVisible
+                    ) {
+                        IconButton(
+                            onClick = { currentCharacter?.let { navigateToCharacter(it.character) } },
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowForward,
+                                contentDescription = stringResource(Res.string.back)
                             )
-                        else
-                            FullScreenCard {
-                                Text(stringResource(Res.string.select_character_for_info))
-                            }
+                        }
                     }
                 }
             )
         }
+    ) { paddingValues ->
+        ListDetailPaneScaffold(
+            modifier = Modifier.padding(paddingValues),
+            directive = navigator.scaffoldDirective,
+            scaffoldState = navigator.scaffoldState,
+            listPane = {
+                AnimatedPane {
+                    FABScaffold(
+                        onClick = onNewCharacter
+                    ) {
+                        CharactersList(
+                            modifier = Modifier.fillMaxSize(),
+                            items = characters,
+                            onClick = { character ->
+                                onClickCharacter(character)
+                                coroutineScope.launch {
+                                    navigator.navigateTo(
+                                        ListDetailPaneScaffoldRole.Detail
+                                    )
+                                }
+                            },
+                            onLongClick = { character ->
+                                onClickCharacter(character)
+                                coroutineScope.launch {
+                                    navigator.navigateTo(
+                                        ListDetailPaneScaffoldRole.Detail
+                                    )
+                                }
+                                navigateToCharacter(character)
+                            }
+                        )
+                    }
+                }
+            },
+            detailPane = {
+                AnimatedPane {
+                    when {
+                        isCurrentCharacterLoading -> Box(modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                        currentCharacter == null -> FullScreenCard {
+                            Text(stringResource(Res.string.select_character_for_info))
+                        }
+                        else -> CharacterInfo(currentCharacter)
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -137,32 +221,43 @@ fun CharactersListScreen(
 private fun CharactersList(
     items: List<CharacterBase>,
     onClick: (CharacterBase) -> Unit,
+    onLongClick: (CharacterBase) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier
-    ) {
-        items(
-            items = items,
-            key = { it.id }
-        ) { character ->
-            CharacterCard(
-                character = character,
-                onClick = onClick,
-                modifier = Modifier.fillMaxWidth()
-            )
+    Row {
+        LazyColumn(
+            modifier = modifier
+        ) {
+            items(
+                items = items,
+                key = { it.id }
+            ) { character ->
+                CharacterItem(
+                    character = character,
+                    onClick = onClick,
+                    onLongClick = onLongClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
+        VerticalDivider(Modifier.fillMaxHeight())
     }
 }
 
 @Composable
-private fun CharacterCard(
+private fun CharacterItem(
     character: CharacterBase,
     onClick: (CharacterBase) -> Unit,
+    onLongClick: (CharacterBase) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ListItem(
-        modifier = modifier.clickable { onClick(character) },
+        modifier = modifier
+            .combinedClickable(
+                onLongClick = { onLongClick(character) },
+                onDoubleClick = { onLongClick(character) },
+                onClick = { onClick(character) }
+            ),
         headlineContent = { Text(character.name) },
         leadingContent = {
             if (character.image == null) EmptyImage(
@@ -185,27 +280,7 @@ private fun CharacterCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CharacterInfo(
-    character: CharacterBase,
-    navigateBack: () -> Unit,
-    viewModel: CharactersListViewModel,
+    character: CharacterFull
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(character.name) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = navigateBack
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(Res.string.navigate_back)
-                        )
-                    }
-                }
-            )
-        }
-    ) {
 
-    }
 }

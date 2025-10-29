@@ -14,7 +14,7 @@ data class SpellSlots(
     val preparedSpells: Int?,
     val cantrips: Int?,
     @SerialName("spell_slots")
-    val spellSlots: List<Int>?
+    val spellSlots: List<Int>
 )
 
 @Serializable

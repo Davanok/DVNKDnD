@@ -8,7 +8,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class AbilityInfo(
     @SerialName("usage_limit_by_level")
-    val usageLimitByLevel: List<Int>?,
+    val usageLimitByLevel: List<Int>,
     val regains: List<AbilityRegain>
 )
 @Serializable
