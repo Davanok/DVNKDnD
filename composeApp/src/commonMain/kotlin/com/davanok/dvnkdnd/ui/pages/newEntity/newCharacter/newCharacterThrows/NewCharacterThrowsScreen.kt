@@ -59,7 +59,6 @@ import dvnkdnd.composeapp.generated.resources.continue_str
 import dvnkdnd.composeapp.generated.resources.new_character_throws_screen_title
 import dvnkdnd.composeapp.generated.resources.saving_throw
 import dvnkdnd.composeapp.generated.resources.skills
-import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
@@ -195,7 +194,6 @@ private fun AttributeItem(
     onSelectSkill: (Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Napier.d { skillsModifiers.toString() }
     val compactView = remember(skillsModifiers) { skillsModifiers.values.all { it.size <= 1 } }
 
     OutlinedCard(modifier = modifier) {
@@ -267,7 +265,6 @@ private fun AttributeItem(
             ) {
                 attribute.skills().fastForEach { skill ->
                     val modifiersList = skillsModifiers[skill] ?: emptyList()
-                    Napier.d { (skill to modifiersList).toString() }
 
                     if (compactView) {
                         val firstModInfo = modifiersList.firstOrNull()

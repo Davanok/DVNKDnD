@@ -5,6 +5,7 @@ import kotlin.uuid.Uuid
 
 @Serializable
 sealed interface Route {
+    @Serializable data object Unknown: Route
     @Serializable
     data object Main {
         @Serializable data object CharactersList : Route

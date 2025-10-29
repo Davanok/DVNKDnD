@@ -44,6 +44,8 @@ kotlin {
         }
         val desktopMain by getting
         commonMain.dependencies {
+            implementation(libs.androidx.nav3.ui)
+
             implementation(libs.html.converter)
 
             implementation(libs.toaster)
@@ -59,7 +61,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.viewmodel)
-            implementation(libs.koin.navigation)
 
             implementation(libs.supabase.gotrue)
             implementation(libs.supabase.postgrest)
@@ -91,7 +92,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.navigation.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
         androidMain.dependencies {

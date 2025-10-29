@@ -5,12 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveNavigationWrapper
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.browse
@@ -30,19 +26,18 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DefaultNavigationWrapper(
-    navController: NavHostController,
+    currentRoute: Route,
+    navigate: (Route) -> Unit,
     content: @Composable () -> Unit
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-
     AdaptiveNavigationWrapper(
         modifier = Modifier
             .fillMaxSize(),
         navigationItems = {
             TopLevelRoute.entries.forEach {
                 item(
-                    selected = navBackStackEntry?.destination?.hasRoute(it.route::class) == true,
-                    onClick = { navController.navigate(it.route) },
+                    selected = it.route == currentRoute,
+                    onClick = { navigate(it.route) },
                     icon = {
                         Icon(
                             painter = painterResource(it.icon),
@@ -56,7 +51,7 @@ fun DefaultNavigationWrapper(
         floatingActionButton = {
             floatingActionButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { navController.navigate(Route.New) },
+                onClick = { navigate(Route.New) },
                 icon = {
                     Icon(
                         painter = painterResource(Res.drawable.draw),

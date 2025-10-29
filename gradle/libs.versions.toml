@@ -16,7 +16,6 @@ compose-plugin = "1.9.1"
 junit = "4.13.2"
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
-navigation-compose = "2.9.1"
 koin = "4.1.1"
 supabase-auth = "2.6.1"
 supabase-database = "3.2.5"
@@ -30,11 +29,12 @@ sqlite = "2.6.1"
 ksp = "2.3.0"
 uiAndroid = "1.9.4"
 napier = "2.7.1"
-jetbrains-adaptive = "1.2.0-alpha07"
+jetbrains-adaptive = "1.2.0-beta01"
 build-config = "5.7.0"
 coil = "3.3.0"
 toaster = "0.3.8"
 html-converter = "1.1.0"
+navigation3 = "1.0.0-alpha03"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -63,7 +63,6 @@ html-converter = { group = "be.digitalia.compose.htmlconverter", name = "htmlcon
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-androidx-navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 
 # data injection - koin
@@ -71,7 +70,6 @@ koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
 koin-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koin" }
-koin-navigation = { group = "io.insert-koin", name = "koin-compose-viewmodel-navigation", version.ref = "koin" }
 
 # external databse & storage - supabase
 supabase-gotrue = { group = "io.github.jan-tennert.supabase", name = "gotrue-kt", version.ref = "supabase-auth" }
@@ -100,6 +98,8 @@ androidx-datastore-preferences = { group = "androidx.datastore", name = "datasto
 
 # logging - napier
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
+
+androidx-nav3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

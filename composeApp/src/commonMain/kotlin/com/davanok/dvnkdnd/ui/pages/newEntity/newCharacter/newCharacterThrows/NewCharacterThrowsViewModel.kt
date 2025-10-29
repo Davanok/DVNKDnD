@@ -28,7 +28,6 @@ import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.not_all_available_saving_throws_selected
 import dvnkdnd.composeapp.generated.resources.not_all_available_skills_selected
 import dvnkdnd.composeapp.generated.resources.saving_data_error
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -79,8 +78,6 @@ class NewCharacterThrowsViewModel(
             .toMap()
 
         attributeModifiers = character.attributes.map(::calculateModifier)
-
-        Napier.d { modifierGroups.toString() }
 
         // update UI state once
         _uiState.update { state ->
