@@ -14,9 +14,10 @@ fun RouterEntryProvider.newEntityDestinations(
     entry<Route.New> {
         NewEntityScreen(
             onNavigateBack = onBack,
-            onNavigate = navigate
+            onNavigate = replace
         )
     }
+
     entry<Route.New.Item> {
         NewItemScreen()
     }

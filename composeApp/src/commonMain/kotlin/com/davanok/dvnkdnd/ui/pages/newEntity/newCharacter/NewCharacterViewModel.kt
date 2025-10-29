@@ -136,7 +136,9 @@ class NewCharacterViewModel(
     }
 
     suspend fun saveCharacter() =
-        charactersRepository.saveCharacter(newCharacterState.toCharacterFull()).onSuccess {
+        charactersRepository.saveCharacter(
+            newCharacterState.toCharacterFull(Uuid.random())
+        ).onSuccess {
             newCharacterState = NewCharacter()
         }
 }
@@ -206,8 +208,8 @@ private data class NewCharacter(
 
     val baseHealth: Int = 0 // without constitution bonus
 ) {
-    fun toCharacterFull(): CharacterFull {
-        val characterBase = toCharacterBase()
+    fun toCharacterFull(id: Uuid = Uuid.NIL): CharacterFull {
+        val characterBase = toCharacterBase(id)
 
         val dbImages = character.images.map { path -> DatabaseImage(Uuid.random(), path) }
 
@@ -232,8 +234,8 @@ private data class NewCharacter(
         )
     }
 
-    fun toCharacterBase() = CharacterBase(
-        id = Uuid.NIL,
+    fun toCharacterBase(id: Uuid = Uuid.NIL) = CharacterBase(
+        id = id,
         userId = null,
         name = character.name,
         description = character.description,

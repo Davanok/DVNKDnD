@@ -25,6 +25,7 @@ fun NavigationHost(
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
+        onBack = onBack,
         entryProvider = entryProvider(
             fallback = { NavEntry(Route.Unknown) { NotImplementedYetScreen(onBack) } }
         ) {
