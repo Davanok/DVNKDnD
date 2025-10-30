@@ -2,6 +2,10 @@ package com.davanok.dvnkdnd.ui.pages.charactersList
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -138,7 +142,9 @@ private fun Content(
                 },
                 navigationIcon = {
                     AnimatedVisibility(
-                        visible = !listVisible
+                        visible = !listVisible,
+                        enter = fadeIn() + expandHorizontally(expandFrom = Alignment.Start),
+                        exit = shrinkHorizontally(shrinkTowards = Alignment.Start) + fadeOut()
                     ) {
                         IconButton(
                             onClick = { coroutineScope.launch { navigator.navigateBack() } },
@@ -152,7 +158,9 @@ private fun Content(
                 },
                 actions = {
                     AnimatedVisibility(
-                        visible = !listVisible
+                        visible = characterVisible && currentCharacter != null,
+                        enter = fadeIn() + expandHorizontally(expandFrom = Alignment.End),
+                        exit = shrinkHorizontally(shrinkTowards = Alignment.End) + fadeOut()
                     ) {
                         IconButton(
                             onClick = { currentCharacter?.let { navigateToCharacter(it.character) } },
