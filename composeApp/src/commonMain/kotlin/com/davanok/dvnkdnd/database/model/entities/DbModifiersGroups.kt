@@ -21,6 +21,7 @@ data class DbModifiersGroups(
         target = group.target,
         operation = group.operation,
         valueSource = group.valueSource,
+        valueSourceTarget = group.valueSourceTarget,
         value = group.value,
         name = group.name,
         description = group.description,

@@ -24,6 +24,7 @@ fun DnDModifiersGroup.toEntityModifiersGroup(entityId: Uuid) = EntityModifiersGr
     target = target,
     operation = operation,
     valueSource = valueSource,
+    valueSourceTarget = valueSourceTarget,
     value = value,
     name = name,
     description = description,

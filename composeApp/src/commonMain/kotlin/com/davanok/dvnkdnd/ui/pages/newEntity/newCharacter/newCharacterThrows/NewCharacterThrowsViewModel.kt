@@ -92,15 +92,34 @@ class NewCharacterThrowsViewModel(
         }
     }
 
-    private fun resolveValueSource(
-        source: DnDModifierValueSource,
-        groupId: Uuid,
-        modifierValue: Double
-    ): Double = when(source) {
-        DnDModifierValueSource.CONSTANT -> modifierValue
-        DnDModifierValueSource.CHARACTER_LEVEL -> uiState.value.characterLevel + modifierValue
-        DnDModifierValueSource.ENTITY_LEVEL -> (groupIdToEntityLevel[groupId] ?: 0) + modifierValue
-        DnDModifierValueSource.PROFICIENCY_BONUS -> uiState.value.proficiencyBonus + modifierValue
+    private fun resolveValueSource(group: DnDModifiersGroup): Double {
+        val stateSnapshot = uiState.value
+
+        val value = when (group.valueSource) {
+            DnDModifierValueSource.CONSTANT -> 0
+            DnDModifierValueSource.CHARACTER_LEVEL -> stateSnapshot.characterLevel
+            DnDModifierValueSource.ENTITY_LEVEL -> groupIdToEntityLevel[group.id] ?: 0
+            DnDModifierValueSource.PROFICIENCY_BONUS -> stateSnapshot.proficiencyBonus
+
+            DnDModifierValueSource.ATTRIBUTE -> group.valueSourceTarget
+                ?.let { enumValueOfOrNull<Attributes>(it) }
+                ?.let { stateSnapshot.attributes[it] } ?: 0
+
+            DnDModifierValueSource.ATTRIBUTE_MODIFIER -> group.valueSourceTarget
+                ?.let { enumValueOfOrNull<Attributes>(it) }
+                ?.let { stateSnapshot.attributes[it] }
+                ?.let { calculateModifier(it) } ?: 0
+
+            DnDModifierValueSource.SAVING_THROW -> group.valueSourceTarget
+                ?.let { enumValueOfOrNull<Attributes>(it) }
+                ?.let { stateSnapshot.savingThrows[it]?.second } ?: 0
+
+            DnDModifierValueSource.SKILL -> group.valueSourceTarget
+                ?.let { enumValueOfOrNull<Skills>(it) }
+                ?.let { stateSnapshot.skills[it]?.second } ?: 0
+        } + group.value
+
+        return value
     }
 
     private fun buildExtInfo(
@@ -116,11 +135,7 @@ class NewCharacterThrowsViewModel(
         valueSource = group.valueSource,
         value = group.value,
         state = UiSelectableState(selectable = selectable, selected = selected),
-        resolvedValue = resolveValueSource(
-            source = group.valueSource,
-            groupId = group.id,
-            modifierValue = group.value
-        )
+        resolvedValue = resolveValueSource(group)
     )
 
     // toggle selection; returns early if not selectable
@@ -170,7 +185,7 @@ class NewCharacterThrowsViewModel(
 
             group.modifiers.fastForEach { modifier ->
                 val selected = modifier.id in selectedModifiers
-                val selectable = modifier.selectable && (selected || groupAllowsExtra) // TODO: clampMin/clampMax checks could influence selectability
+                val selectable = modifier.selectable && (selected || groupAllowsExtra)
 
                 val ext = buildExtInfo(modifier, group, selectable, selected)
                 raw.getOrPut(modifier.target, ::mutableListOf).add(ext)
@@ -190,9 +205,7 @@ class NewCharacterThrowsViewModel(
                 groups = groupsForTarget,
                 modifierFilter = { it.target == enumKey.name && it.id in selectedModifiers },
                 // Provide group-level value once per group (map group.valueSource -> value)
-                groupValueProvider = { group ->
-                    resolveValueSource(group.valueSource, group.id, 0.0)
-                }
+                groupValueProvider = ::resolveValueSource
             )
 
             extList to value

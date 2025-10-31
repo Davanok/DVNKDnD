@@ -17,6 +17,8 @@ data class CustomModifier(
     val operation: DnDModifierOperation,
     @SerialName("value_source")
     val valueSource: DnDModifierValueSource,
+    @SerialName("value_source_target")
+    val valueSourceTarget: String?,
 
     val name: String,
     val description: String?,

@@ -26,6 +26,8 @@ data class EntityModifiersGroup(
     val operation: DnDModifierOperation,
     @ColumnInfo("value_source")
     val valueSource: DnDModifierValueSource,
+    @ColumnInfo("value_source_target")
+    val valueSourceTarget: String?,
     val value: Double,
 
     val name: String,

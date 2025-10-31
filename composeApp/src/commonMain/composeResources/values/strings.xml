@@ -210,6 +210,10 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
     <string name="value_source_character_level">LVL</string>
     <string name="value_source_entity_level">E LVL</string>
     <string name="value_source_proficiency_bonus">PB</string>
+    <string name="value_source_attribute">ATTR</string>
+    <string name="value_source_attribute_modifier">ATTR MOD</string>
+    <string name="value_source_saving_throw">ST</string>
+    <string name="value_source_skill">SKILL</string>
 
     <!--character full-->
     <string name="no_such_character_error">No such character</string>

@@ -17,6 +17,7 @@ data class DnDModifiersGroup(
     val operation: DnDModifierOperation,
     @SerialName("value_source")
     val valueSource: DnDModifierValueSource,
+    val valueSourceTarget: String?,
     val value: Double,
 
     val name: String,
@@ -38,7 +39,6 @@ data class DnDModifiersGroup(
 data class DnDModifier(
     val id: Uuid,
     val selectable: Boolean,
-//    val value: Double,
     val target: String
 ) {
     inline fun <reified E: Enum<E>>targetAs(): E? = enumValueOfOrNull<E>(target)

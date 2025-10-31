@@ -135,6 +135,8 @@ data class CharacterCustomModifier(
     val operation: DnDModifierOperation,
     @ColumnInfo("value_source")
     val valueSource: DnDModifierValueSource,
+    @ColumnInfo("value_source_target")
+    val valueSourceTarget: String?,
 
     val name: String,
     val description: String?,

@@ -4,8 +4,10 @@ import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastForEach
+import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
+import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
@@ -16,6 +18,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toSkillsGroup
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
 import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
+import com.davanok.dvnkdnd.data.model.util.enumValueOfOrNull
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlin.uuid.Uuid
@@ -55,25 +58,40 @@ data class CharacterFull(
             .mapValues { (_, value) -> calculateModifier(value) }
             .toAttributesGroup()
             .toSkillsGroup(),
-        health = health
+        health = health,
+        initiative = optionalValues.initiative ?: calculateModifier(attributes[Attributes.DEXTERITY]),
+        armorClass = optionalValues.armorClass ?: /* TODO: items ?: */ (10 + calculateModifier(attributes[Attributes.CONSTITUTION]))
     )
 ) {
     val entities: List<DnDFullEntity>
         get() = mainEntities.fastFlatMap { listOfNotNull(it.entity, it.subEntity) } + feats
-    val groupIdToEntityId by lazy {
+    private val groupIdToEntityId by lazy {
         entities.flatMap { e -> e.modifiersGroups.map { it.id to e.id } }.toMap()
     }
 
-    fun resolveValueSource(source: DnDModifierValueSource, entityId: Uuid?, modifierValue: Double): Double =
+    fun resolveValueSource(source: DnDModifierValueSource, valueSourceTarget: String?, entityId: Uuid?, modifierValue: Double): Double =
         when(source) {
-            DnDModifierValueSource.CONSTANT -> modifierValue
-            DnDModifierValueSource.CHARACTER_LEVEL -> character.level + modifierValue
-            DnDModifierValueSource.ENTITY_LEVEL -> (entityId?.let { id -> mainEntities.fastFirstOrNull { id in it }?.level } ?: 0) + modifierValue
-            DnDModifierValueSource.PROFICIENCY_BONUS -> character.getProfBonus() + modifierValue
-        }
+            DnDModifierValueSource.CONSTANT -> 0
+            DnDModifierValueSource.CHARACTER_LEVEL -> character.level
+            DnDModifierValueSource.ENTITY_LEVEL -> entityId
+                ?.let { id -> mainEntities.fastFirstOrNull { id in it }?.level }
+            DnDModifierValueSource.PROFICIENCY_BONUS -> character.getProfBonus()
+            DnDModifierValueSource.ATTRIBUTE -> valueSourceTarget
+                ?.let { enumValueOfOrNull<Attributes>(it) }
+                ?.let { appliedValues.attributes[it] }
+            DnDModifierValueSource.ATTRIBUTE_MODIFIER -> valueSourceTarget
+                ?.let { enumValueOfOrNull<Attributes>(it) }
+                ?.let { calculateModifier(appliedValues.attributes[it]) }
+            DnDModifierValueSource.SAVING_THROW -> valueSourceTarget
+                ?.let { enumValueOfOrNull<Attributes>(it) }
+                ?.let { appliedValues.savingThrowModifiers[it] }
+            DnDModifierValueSource.SKILL -> valueSourceTarget
+                ?.let { enumValueOfOrNull<Skills>(it) }
+                ?.let { appliedValues.skillModifiers[it] }
+        }.let { it ?: 0 } + modifierValue
 
     fun resolveGroupValue(group: DnDModifiersGroup): Double =
-        resolveValueSource(group.valueSource, groupIdToEntityId[group.id], group.value)
+        resolveValueSource(group.valueSource, group.valueSourceTarget, groupIdToEntityId[group.id], group.value)
 
     val appliedModifiers: Map<DnDModifierTargetType, List<ModifierExtendedInfo>> by lazy {
         val result = mutableMapOf<DnDModifierTargetType, MutableList<Pair<Int, ModifierExtendedInfo>>>()
@@ -95,6 +113,7 @@ data class CharacterFull(
                             ),
                             resolvedValue = resolveValueSource(
                                 group.valueSource,
+                                group.valueSourceTarget,
                                 entity.id,
                                 group.value
                             )
@@ -115,6 +134,8 @@ data class CharacterModifiedValues(
     val savingThrowModifiers: DnDAttributesGroup,
     val skillModifiers: DnDSkillsGroup,
     val health: DnDCharacterHealth,
+    val initiative: Int,
+    val armorClass: Int
 )
 
 @Serializable
