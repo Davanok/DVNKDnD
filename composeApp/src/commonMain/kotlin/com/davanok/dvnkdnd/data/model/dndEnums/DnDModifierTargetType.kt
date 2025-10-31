@@ -4,5 +4,7 @@ enum class DnDModifierTargetType {
     ATTRIBUTE,
     SAVING_THROW,
     SKILL,
-    HEALTH
+    HEALTH,
+    INITIATIVE,
+    ARMOR_CLASS
 }

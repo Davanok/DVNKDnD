@@ -24,6 +24,8 @@ import kotlin.uuid.Uuid
 data class CharacterFull(
     val character: CharacterBase,
 
+    val optionalValues: CharacterOptionalValues = CharacterOptionalValues(),
+
     @Transient
     val images: List<DatabaseImage> = emptyList(),
     val coins: CoinsGroup = CoinsGroup(),

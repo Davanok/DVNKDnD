@@ -13,11 +13,14 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
 
 @Dao
 interface CharacterEntitiesDao {
     @Insert
     suspend fun insertCharacter(character: Character)
+    @Insert
+    suspend fun insertOptionalValues(optionalValues: DbCharacterOptionalValues)
     @Insert
     suspend fun insertCharacterImages(images: List<CharacterImage>)
     @Insert

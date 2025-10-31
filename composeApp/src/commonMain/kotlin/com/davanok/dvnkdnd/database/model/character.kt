@@ -18,12 +18,14 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.model.adapters.character.toAttributesGroup
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterOptionalValues
 import com.davanok.dvnkdnd.database.model.adapters.character.toCoinsGroup
 import com.davanok.dvnkdnd.database.model.adapters.character.toCustomModifier
 import com.davanok.dvnkdnd.database.model.adapters.character.toDnDCharacterHealth
@@ -53,6 +55,9 @@ data class DbJoinCharacterMainEntities(
 }
 data class DbFullCharacter(
     @Embedded val character: Character,
+
+    @Relation(parentColumn = "id", entityColumn = "id")
+    val optionalValues: DbCharacterOptionalValues,
 
     @Relation(parentColumn = "id", entityColumn = "character_id")
     val images: List<CharacterImage>,
@@ -109,6 +114,7 @@ data class DbFullCharacter(
 ) {
     fun toCharacterFull(): CharacterFull = CharacterFull(
         character = character.toCharacterBase(),
+        optionalValues = optionalValues.toCharacterOptionalValues(),
         images = images.fastMap { DatabaseImage(it.id, it.path) },
         coins = coins?.toCoinsGroup() ?: CoinsGroup(),
         attributes = attributes?.toAttributesGroup() ?: DnDAttributesGroup.Default,

@@ -144,3 +144,15 @@ data class CharacterCustomModifier(
     val target: String,
     val value: Double
 )
+
+@Entity(
+    tableName = "character_optional_values",
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbCharacterOptionalValues( // if value is null -> calculate
+    @PrimaryKey val id: Uuid,
+    val initiative: Int?,
+    @ColumnInfo("armor_class") val armorClass: Int?
+)

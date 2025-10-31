@@ -18,6 +18,7 @@ import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterAttribut
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCoins
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCustomModifier
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterHealth
+import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterOptionalValues
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -38,6 +39,8 @@ interface CharactersDao: CharacterEntitiesDao {
         val characterId = character.character.id
 
         insertCharacter(character.character.toCharacter())
+
+        insertOptionalValues(character.optionalValues.toDbCharacterOptionalValues(characterId))
 
         character.images
             .fastMap { CharacterImage(id = it.id, characterId = characterId, path = it.path) }
