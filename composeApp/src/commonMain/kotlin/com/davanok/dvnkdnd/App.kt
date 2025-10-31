@@ -12,7 +12,7 @@ import com.davanok.dvnkdnd.data.di.databaseModule
 import com.davanok.dvnkdnd.data.di.platformModule
 import com.davanok.dvnkdnd.data.di.viewModelsModule
 import com.davanok.dvnkdnd.data.platform.getColorScheme
-import com.davanok.dvnkdnd.ui.components.ColorScheme
+import com.davanok.dvnkdnd.ui.components.AppColorScheme
 import com.davanok.dvnkdnd.ui.components.LocalColorScheme
 import com.davanok.dvnkdnd.ui.navigation.NavigationHost
 import io.github.aakira.napier.DebugAntilog
@@ -45,7 +45,7 @@ fun App() {
             colorScheme = getColorScheme(darkTheme)
         ) {
             CompositionLocalProvider(
-                LocalColorScheme provides ColorScheme(darkTheme)
+                LocalColorScheme provides AppColorScheme(darkTheme)
             ) {
                 Surface {
                     NavigationHost(
