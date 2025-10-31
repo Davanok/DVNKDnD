@@ -81,7 +81,7 @@ class AdaptiveContentState<T>(
         composableEntries().map { it.second.content }
 }
 
-class EntryProviderBuilder<T> {
+class ContentProviderBuilder<T> {
     private val entries = mutableMapOf<T, SupportEntry>()
     fun entry(key: T, title: String? = null, ignoreWindows: Boolean = false, content: @Composable () -> Unit) {
         entries[key] = SupportEntry(
@@ -93,8 +93,8 @@ class EntryProviderBuilder<T> {
     fun build(): (T) -> SupportEntry? = { entries[it] }
 }
 
-fun <T> entryProvider(builder: EntryProviderBuilder<T>.() -> Unit): (T) -> SupportEntry? =
-    EntryProviderBuilder<T>().also(builder).build()
+fun <T> contentProvider(builder: ContentProviderBuilder<T>.() -> Unit): (T) -> SupportEntry? =
+    ContentProviderBuilder<T>().also(builder).build()
 
 @Composable
 fun <T> rememberAdaptiveContentState(
