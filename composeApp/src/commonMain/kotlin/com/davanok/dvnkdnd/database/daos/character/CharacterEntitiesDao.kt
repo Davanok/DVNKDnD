@@ -14,6 +14,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterItemLink
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
 
 @Dao
@@ -44,4 +45,6 @@ interface CharacterEntitiesDao {
     suspend fun insertCharacterSelectedProficiencies(proficiencies: List<CharacterProficiency>)
     @Insert
     suspend fun insertCharacterCustomModifiers(modifiers: List<CharacterCustomModifier>)
+    @Insert
+    suspend fun insertCharacterNotes(notes: List<DbCharacterNote>)
 }

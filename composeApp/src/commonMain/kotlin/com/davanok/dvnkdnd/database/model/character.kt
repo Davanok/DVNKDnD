@@ -25,9 +25,11 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterItemLink
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.model.adapters.character.toAttributesGroup
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterNote
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterOptionalValues
 import com.davanok.dvnkdnd.database.model.adapters.character.toCoinsGroup
 import com.davanok.dvnkdnd.database.model.adapters.character.toCustomModifier
@@ -126,7 +128,13 @@ data class DbFullCharacter(
         parentColumn = "id",
         entityColumn = "character_id"
     )
-    val customModifiers: List<CharacterCustomModifier>
+    val customModifiers: List<CharacterCustomModifier>,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "character_id"
+    )
+    val notes: List<DbCharacterNote>
 ) {
     fun toCharacterFull(): CharacterFull = CharacterFull(
         character = character.toCharacterBase(),
@@ -141,6 +149,7 @@ data class DbFullCharacter(
         feats = feats.fastMap(DbFullEntity::toDnDFullEntity),
         selectedModifiers = selectedModifiers.fastMap { it.modifierId }.toSet(),
         selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId }.toSet(),
-        customModifiers = customModifiers.fastMap(CharacterCustomModifier::toCustomModifier)
+        customModifiers = customModifiers.fastMap(CharacterCustomModifier::toCustomModifier),
+        notes = notes.map(DbCharacterNote::toCharacterNote)
     )
 }

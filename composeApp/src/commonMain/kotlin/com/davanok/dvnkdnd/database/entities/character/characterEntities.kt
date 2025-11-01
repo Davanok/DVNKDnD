@@ -174,3 +174,16 @@ data class DbCharacterItemLink(
     val equipped: Boolean,
     val attuned: Boolean
 )
+
+@Entity(
+    tableName = "character_notes",
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbCharacterNote(
+    @PrimaryKey val id: Uuid,
+    @ColumnInfo("character_id", index = true) val characterId: Uuid,
+    val tags: String,
+    val text: String,
+)

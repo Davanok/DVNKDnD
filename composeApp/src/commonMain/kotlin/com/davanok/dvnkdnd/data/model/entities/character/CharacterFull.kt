@@ -49,6 +49,8 @@ data class CharacterFull(
 
     val customModifiers: List<CustomModifier> = emptyList(),
 
+    val notes: List<CharacterNote> = emptyList(),
+
     @Transient
     val appliedValues: CharacterModifiedValues = CharacterModifiedValues(
         attributes = attributes,
