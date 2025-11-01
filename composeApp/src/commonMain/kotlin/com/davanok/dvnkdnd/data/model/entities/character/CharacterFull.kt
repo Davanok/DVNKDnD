@@ -17,6 +17,7 @@ import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toSkillsGroup
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
 import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
+import com.davanok.dvnkdnd.data.model.util.calculateArmorClass
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.data.model.util.enumValueOfOrNull
 import kotlinx.serialization.Serializable
@@ -32,6 +33,8 @@ data class CharacterFull(
     @Transient
     val images: List<DatabaseImage> = emptyList(),
     val coins: CoinsGroup = CoinsGroup(),
+
+    val items: List<CharacterItem> = emptyList(),
 
     val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
     val health: DnDCharacterHealth = DnDCharacterHealth(),
@@ -60,7 +63,10 @@ data class CharacterFull(
             .toSkillsGroup(),
         health = health,
         initiative = optionalValues.initiative ?: calculateModifier(attributes[Attributes.DEXTERITY]),
-        armorClass = optionalValues.armorClass ?: /* TODO: items ?: */ (10 + calculateModifier(attributes[Attributes.CONSTITUTION]))
+        armorClass = optionalValues.armorClass ?: calculateArmorClass(
+            attributes[Attributes.DEXTERITY],
+            items.fastFirstOrNull { it.equipped && it.item.item?.armor != null }?.item?.item?.armor
+        )
     )
 ) {
     val entities: List<DnDFullEntity>

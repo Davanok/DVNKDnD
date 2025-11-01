@@ -56,7 +56,7 @@ fun WeaponDamage.toWeaponDamageInfo() = WeaponDamageInfo(
     modifier = modifier
 )
 
-fun FullItem.toDnDItem(entityId: Uuid) = DnDItem(entityId, cost, weight)
+fun FullItem.toDnDItem(entityId: Uuid) = DnDItem(entityId, cost, weight, attunement)
 
 fun JoinItemProperty.toItemPropertyLink() = ItemPropertyLink(itemId, propertyId)
 

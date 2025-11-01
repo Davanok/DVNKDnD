@@ -10,6 +10,7 @@ import kotlin.uuid.Uuid
 data class FullItem(
     val cost: Int?, // in copper pieces
     val weight: Int?,
+    val attunement: Boolean,
 
     val properties: List<JoinItemProperty>,
     val armor: ArmorInfo?,

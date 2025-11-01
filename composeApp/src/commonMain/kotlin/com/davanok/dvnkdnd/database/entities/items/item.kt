@@ -17,6 +17,7 @@ data class DnDItem(
     @PrimaryKey val id: Uuid,
     val cost: Int?, // in copper pieces
     val weight: Int?,
+    val attunement: Boolean
 )
 
 @Entity(

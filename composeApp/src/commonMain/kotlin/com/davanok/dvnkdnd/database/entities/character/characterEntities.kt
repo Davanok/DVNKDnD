@@ -10,6 +10,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import okio.Path
 import kotlin.uuid.Uuid
 
@@ -157,4 +158,19 @@ data class DbCharacterOptionalValues( // if value is null -> calculate
     @PrimaryKey val id: Uuid,
     val initiative: Int?,
     @ColumnInfo("armor_class") val armorClass: Int?
+)
+
+@Entity(
+    tableName = "character_item",
+    primaryKeys = ["character_id", "item_id"],
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DnDItem::class, ["id"], ["item_id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbCharacterItemLink(
+    @ColumnInfo("character_id", index = true) val characterId: Uuid,
+    @ColumnInfo("item_id", index = true) val itemId: Uuid,
+    val equipped: Boolean,
+    val attuned: Boolean
 )

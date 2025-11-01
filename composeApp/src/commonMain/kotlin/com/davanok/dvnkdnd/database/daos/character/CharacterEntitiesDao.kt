@@ -13,6 +13,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
 
 @Dao
@@ -25,6 +26,8 @@ interface CharacterEntitiesDao {
     suspend fun insertCharacterImages(images: List<CharacterImage>)
     @Insert
     suspend fun insertCharacterCoins(coins: CharacterCoins)
+    @Insert
+    suspend fun insertCharacterItemLinks(items: List<DbCharacterItemLink>)
     @Insert
     suspend fun insertCharacterAttributes(attributes: CharacterAttributes)
     @Insert

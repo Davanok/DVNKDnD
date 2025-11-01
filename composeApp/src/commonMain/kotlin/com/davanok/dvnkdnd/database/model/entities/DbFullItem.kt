@@ -69,6 +69,7 @@ data class DbFullItem(
     fun toFullItem() = FullItem(
         cost = item.cost,
         weight = item.weight,
+        attunement = item.attunement,
         properties = properties.fastMap(DbJoinItemProperty::toJoinItemProperty),
         armor = armor?.toArmorInfo(),
         weapon = weapon?.toFullWeapon()
