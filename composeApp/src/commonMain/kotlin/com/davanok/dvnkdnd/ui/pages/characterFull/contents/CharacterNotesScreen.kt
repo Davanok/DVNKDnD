@@ -98,11 +98,11 @@ fun CharacterNotesScreen(
 ) {
     var filterTag by remember { mutableStateOf<String?>(null) }
 
-    val allTags by remember {
+    val allTags by remember(notes) {
         derivedStateOf { notes.fastFlatMap { it.tags }.distinct() }
     }
 
-    val filtered by remember(filterTag) {
+    val filtered by remember(filterTag, notes) {
         derivedStateOf {
             val base = if (filterTag == null) notes else notes.filter { filterTag in it.tags }
             base.sortedByDescending { it.pinned }
@@ -273,7 +273,7 @@ private fun CharacterNoteCard(
             note.title?.let {
                 Text(text = it, style = MaterialTheme.typography.titleLarge)
             }
-            Markdown(content = note.body)
+            Markdown(content = note.body, modifier = Modifier.fillMaxWidth())
         }
     }
 }

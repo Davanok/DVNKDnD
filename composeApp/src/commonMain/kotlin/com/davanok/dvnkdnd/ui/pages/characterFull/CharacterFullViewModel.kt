@@ -27,7 +27,7 @@ import org.jetbrains.compose.resources.getString
 import kotlin.uuid.Uuid
 
 class CharacterFullViewModel(
-    characterId: Uuid,
+    private val characterId: Uuid,
     private val repository: CharactersRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CharacterFullUiState(isLoading = true))
@@ -58,13 +58,13 @@ class CharacterFullViewModel(
     )
 
     fun updateHealth(health: DnDCharacterHealth) = viewModelScope.launch {
-
+        repository.setCharacterHealth(characterId, health)
     }
     fun updateOrNewNote(note: CharacterNote) = viewModelScope.launch {
-
+        repository.setCharacterNote(characterId, note)
     }
     fun deleteNote(note: CharacterNote) = viewModelScope.launch {
-
+        repository.deleteCharacterNote(note.id)
     }
 }
 

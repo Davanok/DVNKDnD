@@ -19,7 +19,7 @@ import com.davanok.dvnkdnd.database.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
 
 @Dao
-interface CharacterEntitiesDao {
+interface CharacterEntitiesSettersDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacter(character: Character)
     @Insert(onConflict = OnConflictStrategy.REPLACE)

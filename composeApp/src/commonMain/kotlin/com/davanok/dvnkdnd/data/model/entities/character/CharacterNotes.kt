@@ -16,8 +16,9 @@ data class CharacterNote(
     val text: String = ""
 ) {
     val title = text
-        .lineSequence().firstOrNull()
-        ?.takeIf { it.length in 1..MAX_TITLE_LENGTH && it.isNotBlank() }
+        .lineSequence()
+        .takeIf { it.count() > 1 }
+        ?.firstOrNull { it.length in 1..MAX_TITLE_LENGTH && it.isNotBlank() }
 
     val body =
         if (title == null) text

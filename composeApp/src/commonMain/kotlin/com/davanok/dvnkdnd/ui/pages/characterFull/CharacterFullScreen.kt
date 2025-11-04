@@ -55,6 +55,7 @@ import dvnkdnd.composeapp.generated.resources.character_initiative
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
 import dvnkdnd.composeapp.generated.resources.outline_bolt
 import dvnkdnd.composeapp.generated.resources.outline_shield
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -216,35 +217,37 @@ private fun CharacterPages(
         else CharacterFullUiState.Page.entries
     }
 
-    val pagerState = rememberPagerState { pages.size }
-    CharacterFullTabsRow(pagerState, pages)
-    HorizontalPager(
-        modifier = modifier,
-        state = pagerState
-    ) { index ->
-        val page = pages[index]
-        when (page) {
-            CharacterFullUiState.Page.ATTRIBUTES -> CharacterFullAttributesScreen(
-                attributes = character.appliedValues.savingThrowModifiers,
-                savingThrows = character.appliedValues.savingThrowModifiers,
-                skills = character.appliedValues.skillModifiers
-            )
-            CharacterFullUiState.Page.ATTACKS -> CharacterAttacksScreen(
-                items = character.items,
-                onClick = { onEntityClick(it.toBaseEntity()) }
-            )
-            CharacterFullUiState.Page.ITEMS -> CharacterItemsScreen(
-                items = character.items,
-                onClick = { onEntityClick(it.toBaseEntity()) }
-            )
-            CharacterFullUiState.Page.SPELLS -> CharacterSpellsScreen(
+    Column {
+        val pagerState = rememberPagerState { pages.size }
+        CharacterFullTabsRow(pagerState, pages)
+        HorizontalPager(
+            modifier = modifier,
+            state = pagerState
+        ) { index ->
+            val page = pages[index]
+            when (page) {
+                CharacterFullUiState.Page.ATTRIBUTES -> CharacterFullAttributesScreen(
+                    attributes = character.appliedValues.savingThrowModifiers,
+                    savingThrows = character.appliedValues.savingThrowModifiers,
+                    skills = character.appliedValues.skillModifiers
+                )
+                CharacterFullUiState.Page.ATTACKS -> CharacterAttacksScreen(
+                    items = character.items,
+                    onClick = { onEntityClick(it.toBaseEntity()) }
+                )
+                CharacterFullUiState.Page.ITEMS -> CharacterItemsScreen(
+                    items = character.items,
+                    onClick = { onEntityClick(it.toBaseEntity()) }
+                )
+                CharacterFullUiState.Page.SPELLS -> CharacterSpellsScreen(
 
-            )
-            CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(
-                notes = character.notes,
-                onUpdateOrNewNote = onUpdateOrNewNote,
-                onDeleteNote = onDeleteNote
-            )
+                )
+                CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(
+                    notes = character.notes,
+                    onUpdateOrNewNote = onUpdateOrNewNote,
+                    onDeleteNote = onDeleteNote
+                )
+            }
         }
     }
 }

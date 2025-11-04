@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.model.entities.character
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
@@ -25,6 +26,7 @@ import kotlinx.serialization.Transient
 import kotlin.uuid.Uuid
 
 @Serializable
+@Immutable
 data class CharacterFull(
     val character: CharacterBase,
 

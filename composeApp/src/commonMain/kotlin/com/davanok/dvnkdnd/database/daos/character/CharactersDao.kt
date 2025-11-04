@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 @Dao
-interface CharactersDao: CharacterEntitiesDao {
+interface CharactersDao: CharacterEntitiesSettersDao, CharacterEntitiesDeletersDao {
     @Transaction
     @Query("SELECT * FROM characters WHERE id == :characterId")
     suspend fun getFullCharacter(characterId: Uuid): DbFullCharacter
