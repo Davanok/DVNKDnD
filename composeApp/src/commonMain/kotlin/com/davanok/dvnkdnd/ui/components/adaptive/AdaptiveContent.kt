@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import com.davanok.dvnkdnd.data.platform.supportsWindows
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -16,8 +15,7 @@ import org.jetbrains.compose.resources.stringResource
  * or as a separate window, depending platform support.
  */
 data class SupportEntry(
-    val title: String? = null,
-    val titleRes: StringResource? = null,
+    val titleGetter: @Composable () -> String = { stringResource(Res.string.app_name) },
     val ignoreWindows: Boolean = false,
     val content: @Composable () -> Unit
 )
@@ -87,14 +85,12 @@ class ContentProviderBuilder<T> {
     private val entries = mutableMapOf<T, SupportEntry>()
     fun entry(
         key: T,
-        title: String? = null,
-        titleRes: StringResource? = null,
+        titleGetter: @Composable () -> String = { stringResource(Res.string.app_name) },
         ignoreWindows: Boolean = false,
         content: @Composable () -> Unit
     ) {
         entries[key] = SupportEntry(
-            title = title,
-            titleRes = titleRes,
+            titleGetter = titleGetter,
             ignoreWindows = ignoreWindows,
             content = content
         )
@@ -138,8 +134,8 @@ fun <T> AdaptiveContent(
             if (entry.ignoreWindows) return@forEach
             MaybeWindow(
                 onDismiss = { state.hideContent(key) },
+                title = entry.titleGetter(),
                 dialogElse = false,
-                title = entry.title ?: entry.titleRes?.let { stringResource(it) } ?: stringResource(Res.string.app_name),
                 content = entry.content
             )
         }

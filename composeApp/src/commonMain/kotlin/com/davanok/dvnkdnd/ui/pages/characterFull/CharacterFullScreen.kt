@@ -55,7 +55,6 @@ import dvnkdnd.composeapp.generated.resources.character_initiative
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
 import dvnkdnd.composeapp.generated.resources.outline_bolt
 import dvnkdnd.composeapp.generated.resources.outline_shield
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -109,7 +108,7 @@ private fun Content(
     val adaptiveContentState = rememberAdaptiveContentState<CharacterFullUiState.Dialog> { entry ->
         when (entry) {
             CharacterFullUiState.Dialog.HEALTH -> SupportEntry(
-                titleRes = entry.titleStringRes,
+                titleGetter = { stringResource(entry.titleStringRes) },
                 content = {
                     CharacterHealthDialogContent(
                         baseHealth = character.health,
