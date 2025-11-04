@@ -12,7 +12,8 @@ import org.koin.core.parameter.parametersOf
 
 
 fun RouterEntryProvider.characterFullDestinations(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navigate: (route: Route) -> Unit,
 ) = entry<Route.CharacterFull> { route ->
     val backStack = rememberBackStack(Route.CharacterFull.Main)
 
@@ -26,6 +27,7 @@ fun RouterEntryProvider.characterFullDestinations(
             entry<Route.CharacterFull.Main> {
                 CharacterFullScreen(
                     navigateBack = onBack,
+                    navigateToEntityInfo = { navigate(Route.EntityInfoDialog(it.id)) },
                     viewModel = sharedViewModel
                 )
             }

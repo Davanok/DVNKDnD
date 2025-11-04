@@ -14,6 +14,6 @@ actual fun MaybeWindow(
     if (dialogElse) AdaptiveModalSheet(
         onDismissRequest = onDismiss,
         title = { Text(text = title) },
-        content = { content() }
+        content = content
     )
 }

@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.database.daos.character
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
 import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
@@ -19,32 +20,32 @@ import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
 
 @Dao
 interface CharacterEntitiesDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacter(character: Character)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOptionalValues(optionalValues: DbCharacterOptionalValues)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterImages(images: List<CharacterImage>)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterCoins(coins: CharacterCoins)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterItemLinks(items: List<DbCharacterItemLink>)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterAttributes(attributes: CharacterAttributes)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterHealth(health: CharacterHealth)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterUsedSpells(usedSpells: CharacterSpellSlots)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterMainEntities(entities: List<CharacterMainEntity>)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterFeats(feats: List<CharacterFeat>)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterSelectedModifiers(modifiers: List<CharacterSelectedModifier>)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterSelectedProficiencies(proficiencies: List<CharacterProficiency>)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterCustomModifiers(modifiers: List<CharacterCustomModifier>)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterNotes(notes: List<DbCharacterNote>)
 }

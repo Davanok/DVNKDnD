@@ -166,7 +166,7 @@ fun AdaptiveWidth(
         AdaptiveModalSheet(
             onDismissRequest = onHideSupportPane,
             title = supportPaneTitle,
-            content = { supportPane() }
+            content = supportPane
         )
     }
 }

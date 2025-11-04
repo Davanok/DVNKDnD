@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,19 +23,13 @@ import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.loading
 import dvnkdnd.composeapp.generated.resources.loading_entity_error
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DnDEntityInfo(
-    entityId: Uuid,
     navigateBack: () -> Unit,
-    viewModel: DnDEntityInfoViewModel = koinViewModel(),
+    viewModel: DnDEntityInfoViewModel,
 ) {
-    LaunchedEffect(entityId) {
-        viewModel.loadEntityInfo(entityId)
-    }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         modifier = Modifier

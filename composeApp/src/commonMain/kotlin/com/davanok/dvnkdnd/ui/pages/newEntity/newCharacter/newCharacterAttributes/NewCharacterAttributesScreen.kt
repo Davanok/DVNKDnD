@@ -1,14 +1,34 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -18,7 +38,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForString
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
@@ -30,6 +49,7 @@ import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
+import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
 import dvnkdnd.composeapp.generated.resources.back
@@ -198,8 +218,7 @@ private fun AboutModifiersSelectorsDialog(
     selectedModifiersBonuses: Set<Uuid>,
     onDismiss: () -> Unit
 ) {
-    val html = stringResource(Res.string.modifiers_selectors_hint)
-    val annotatedHtml = remember(html) { htmlToAnnotatedString(html) }
+    val markdownString = stringResource(Res.string.modifiers_selectors_hint)
 
     AdaptiveModalSheet(
         onDismissRequest = onDismiss,
@@ -210,9 +229,7 @@ private fun AboutModifiersSelectorsDialog(
                 .verticalScroll(rememberScrollState())
                 .padding(12.dp),
         ) {
-            Text(
-                text = annotatedHtml
-            )
+            Markdown(content = markdownString)
 
             Spacer(modifier = Modifier.height(12.dp))
 

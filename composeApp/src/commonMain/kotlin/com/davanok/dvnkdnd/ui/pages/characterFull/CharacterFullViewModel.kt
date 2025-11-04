@@ -3,11 +3,19 @@ package com.davanok.dvnkdnd.ui.pages.characterFull
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.util.withAppliedModifiers
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.app_name
+import dvnkdnd.composeapp.generated.resources.character_full_attacks_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_attributes_page_title
+import dvnkdnd.composeapp.generated.resources.character_full_items_page_title
+import dvnkdnd.composeapp.generated.resources.character_full_notes_page_title
+import dvnkdnd.composeapp.generated.resources.character_full_spells_page_title
+import dvnkdnd.composeapp.generated.resources.character_health_dialog_title
 import dvnkdnd.composeapp.generated.resources.loading_character_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,7 +35,12 @@ class CharacterFullViewModel(
 
     val uiState = combine(_uiState, _character) { uiState, characterResult ->
         characterResult.fold(
-            onSuccess = { character -> uiState.copy(character = character, isLoading = false) },
+            onSuccess = { character ->
+                uiState.copy(
+                    character = character.withAppliedModifiers(),
+                    isLoading = false
+                )
+            },
             onFailure = { thr ->
                 uiState.copy(
                     error = UiError.Critical(
@@ -47,18 +60,28 @@ class CharacterFullViewModel(
     fun updateHealth(health: DnDCharacterHealth) = viewModelScope.launch {
 
     }
+    fun updateOrNewNote(note: CharacterNote) = viewModelScope.launch {
+
+    }
+    fun deleteNote(note: CharacterNote) = viewModelScope.launch {
+
+    }
 }
 
 data class CharacterFullUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
     val character: CharacterFull? = null,
-    val dialogToDisplay: Dialog = Dialog.NONE
 ) {
     enum class Page(val stringRes: StringResource) {
-        ATTRIBUTES(Res.string.character_full_attributes_page_title)
+        ATTRIBUTES(Res.string.character_full_attributes_page_title),
+        ATTACKS(Res.string.character_full_attacks_page_title),
+        ITEMS(Res.string.character_full_items_page_title),
+        SPELLS(Res.string.character_full_spells_page_title),
+        NOTES(Res.string.character_full_notes_page_title),
     }
-    enum class Dialog {
-        HEALTH, NONE
+    enum class Dialog(val titleStringRes: StringResource) {
+        HEALTH(Res.string.character_health_dialog_title),
+        NONE(Res.string.app_name)
     }
 }

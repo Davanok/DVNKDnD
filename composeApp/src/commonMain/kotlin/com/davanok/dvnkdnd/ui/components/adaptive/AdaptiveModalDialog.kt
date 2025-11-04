@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.ui.components.adaptive
 
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,7 +26,7 @@ fun AdaptiveModalSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     title: @Composable () -> Unit = { },
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -60,7 +59,7 @@ fun AdaptiveModalSheet(
         ModalBottomSheet(
             modifier = modifier,
             onDismissRequest = onDismissRequest,
-            content = content
+            content = { content() }
         )
     }
 }

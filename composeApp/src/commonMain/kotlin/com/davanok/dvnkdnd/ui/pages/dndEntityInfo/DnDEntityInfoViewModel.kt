@@ -15,6 +15,7 @@ import org.jetbrains.compose.resources.getString
 import kotlin.uuid.Uuid
 
 class DnDEntityInfoViewModel(
+    entityId: Uuid,
     private val repository: BrowseRepository
 ) : ViewModel() {
 
@@ -36,6 +37,10 @@ class DnDEntityInfoViewModel(
         }.onSuccess { entity ->
             _uiState.update { it.copy(isLoading = false, entity = entity) }
         }
+    }
+
+    init {
+        loadEntityInfo(entityId)
     }
 }
 

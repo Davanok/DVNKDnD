@@ -259,7 +259,8 @@ private fun DefaultArrayModifiersSelector(
                     modifier = Modifier.padding(start = 16.dp),
                     label = stringResource(attribute.stringRes),
                     value = character[attribute],
-                    appliedModifiers = allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
+                    appliedModifiers = allModifiersGroups
+                        .appliedModifiers(attribute, selectedAttributeModifiers)
                 )
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = selectorExpanded)
             }
@@ -300,7 +301,8 @@ private fun ManualModifiersSelector(
             label = stringResource(attribute.stringRes),
             minValueCheck = { true },
             maxValueCheck = { true },
-            appliedModifiers = allModifiersGroups.appliedModifiers(attribute, selectedAttributeModifiers)
+            appliedModifiers = allModifiersGroups
+                .appliedModifiers(attribute, selectedAttributeModifiers)
         )
     }
 }

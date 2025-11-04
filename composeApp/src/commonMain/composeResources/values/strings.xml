@@ -91,6 +91,8 @@
     <string name="copy">Copy</string>
     <string name="copied">Copied</string>
     <string name="no_internet_exception">No internet</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
 
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
@@ -126,20 +128,27 @@
     <string name="no_modifiers_for_info">No modifiers for info</string>
     <string name="not_selected">Not selected</string>
     <string name="about_modifiers_selectors">About modifiers selectors</string>
-    <string name="modifiers_selectors_hint"><![CDATA[
-Choose how to generate your ability modifiers based on your preferred level of customization, speed of character creation, and campaign style:<br/><br/>
+    <string name="modifiers_selectors_hint">
+## Choose how to generate your ability modifiers
 
-<b>• Point Buy:</b><br/>
-Allocate a fixed pool of points (typically 27) to spend on Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma. This method ensures balanced characters of roughly equal power and is ideal for long‐term campaigns where optimization and fairness matter.<br/><br/>
+Choose based on your preferred level of customization, speed of character creation, and campaign style.
 
-<b>• Standard Array:</b><br/>
-Use the preset scores <i>[15, 14, 13, 12, 10, 8]</i> and assign them to your abilities as you like. This approach speeds up creation—perfect for one‐shots, convention games, or groups new to the rules—while still offering meaningful choice.<br/><br/>
+### • Point Buy
+Allocate a fixed pool of points (typically **27**) to spend on Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma.
+This method ensures balanced characters of roughly equal power and is ideal for long-term campaigns where optimization and fairness matter.
 
-<b>• Manual Entry:</b><br/>
-Enter any combination of values you and your DM agree on, whether from a homebrew system, a special event, or a thematic build. This gives maximum flexibility for narrative experiments, high‐power campaigns, or strictly role-play-driven characters.<br/><br/>
+### • Standard Array
+Use the preset scores *[15, 14, 13, 12, 10, 8]* and assign them to your abilities as you like.
+This approach speeds up creation — perfect for one-shots, convention games, or groups new to the rules — while still offering meaningful choice.
 
-Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard Array</b> when you need quick, fair setup, and <b>Manual Entry</b> when you’re looking to push creative or story-driven boundaries.
-    ]]></string>
+### • Manual Entry
+Enter any combination of values you and your DM agree on, whether from a homebrew system, a special event, or a thematic build.
+This gives maximum flexibility for narrative experiments, high-power campaigns, or strictly role-play-driven characters.
+
+---
+
+Use **Point Buy** when you want balanced power and optimization, **Standard Array** for quick, fair setup, and **Manual Entry** to push creative or story-driven boundaries.
+</string>
     <string name="modifier_selection_invalid">Invalid modifier bonuses selection count</string>
     <string name="point_buy_stats_balance_invalid">Invalid point buy balance</string>
     <!--throws-->
@@ -217,10 +226,30 @@ Use <b>Point Buy</b> when you want balanced power and optimization, <b>Standard 
 
     <!--character full-->
     <string name="no_such_character_error">No such character</string>
+    <string name="character_armor_class">Armor class</string>
+    <string name="character_initiative">Initiative</string>
     <string name="character_full_attributes_page_title">Attributes</string>
+    <string name="character_full_attacks_page_title">Attacks</string>
+    <string name="character_full_items_page_title">Items</string>
+    <string name="character_full_spells_page_title">Spells</string>
+    <string name="character_full_notes_page_title">Notes</string>
     <!--health dialog-->
     <string name="character_health_dialog_title">Character health</string>
     <string name="character_health_heal_button">Heal</string>
     <string name="character_health_damage_button">Damage</string>
     <string name="character_health_temp_health_button">Temp</string>
+    <!--notes screen-->
+    <string name="delete_note">Delete note</string>
+    <string name="edit_note">Edit note</string>
+    <string name="confirm_delete_note">Confirm delete note</string>
+    <string name="cancel_delete_note">Cancel delete note</string>
+    <string name="new_note">New note</string>
+    <string name="new_note_dialog_title">New note</string>
+    <string name="edit_note_dialog_title">Edit note</string>
+    <string name="note_pinned">Note is pinned</string>
+    <string name="note_not_pinned">Note is not pinned</string>
+    <string name="no_tags_added">No tags</string>
+    <string name="add_tag">Add tag</string>
+    <string name="delete_tag">Add tag</string>
+    <string name="note_text">Note text</string>
 </resources>

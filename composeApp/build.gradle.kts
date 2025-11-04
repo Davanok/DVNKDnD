@@ -46,7 +46,8 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.androidx.nav3.ui)
 
-            implementation(libs.html.converter)
+            implementation(libs.markdown.parser.core)
+            implementation(libs.markdown.parser.m3)
 
             implementation(libs.toaster)
 
@@ -194,4 +195,8 @@ buildConfig {
     properties.forEach { property ->
         buildConfigField(property.key.toString(), property.value.toString())
     }
+}
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
 }

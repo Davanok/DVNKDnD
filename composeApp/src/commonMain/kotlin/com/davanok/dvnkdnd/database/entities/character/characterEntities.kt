@@ -184,6 +184,7 @@ data class DbCharacterItemLink(
 data class DbCharacterNote(
     @PrimaryKey val id: Uuid,
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
+    val pinned: Boolean,
     val tags: String,
     val text: String,
 )

@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.ui.pages.characterFull.contents
 
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,11 +19,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.util.fastForEach
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
-import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.buildPreviewString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.character_health_damage_button
-import dvnkdnd.composeapp.generated.resources.character_health_dialog_title
 import dvnkdnd.composeapp.generated.resources.character_health_heal_button
 import dvnkdnd.composeapp.generated.resources.character_health_temp_health_button
 import org.jetbrains.compose.resources.stringResource
@@ -37,7 +34,8 @@ fun CharacterHealthWidget(
 ) {
     val currentHealth = health.current + health.temp
 
-    val healthPercent = if (currentHealth == 0 ) 0f else health.max / currentHealth.toFloat().coerceIn(0f, 1f)
+    val healthPercent =
+        if (currentHealth == 0) 0f else health.max / currentHealth.toFloat().coerceIn(0f, 1f)
     TextButton(
         modifier = modifier,
         onClick = onClick
@@ -48,6 +46,7 @@ fun CharacterHealthWidget(
                 green = healthPercent - 0.5f,
                 blue = 0f
             )
+
             else -> Color(
                 1f - (healthPercent - 0.5f) / 0.5f,
                 green = 1f,
@@ -67,28 +66,8 @@ fun CharacterHealthWidget(
     }
 }
 
-
 @Composable
-fun CharacterHealthDialog(
-    onDismissRequest: () -> Unit,
-    baseHealth: DnDCharacterHealth,
-    updateHealth: (DnDCharacterHealth) -> Unit,
-    healthModifiers: List<ModifierExtendedInfo>,
-) = AdaptiveModalSheet(
-    onDismissRequest = onDismissRequest,
-    title = {
-        Text(text = stringResource(Res.string.character_health_dialog_title))
-    }
-) {
-    CharacterHealthDialogContent(
-        baseHealth,
-        updateHealth,
-        healthModifiers
-    )
-}
-
-@Composable
-private fun ColumnScope.CharacterHealthDialogContent(
+fun CharacterHealthDialogContent(
     baseHealth: DnDCharacterHealth,
     updateHealth: (DnDCharacterHealth) -> Unit,
     healthModifiers: List<ModifierExtendedInfo>,

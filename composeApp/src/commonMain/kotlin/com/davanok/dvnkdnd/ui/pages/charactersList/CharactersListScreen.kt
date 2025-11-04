@@ -77,15 +77,15 @@ fun CharactersListScreen(
     when {
         uiState.isLoading -> LoadingCard()
         uiState.error.isCritical() -> uiState.error?.let {
-            ErrorCard(
-                text = it.message,
-                exception = it.exception,
-            )
+            FABScaffold(onClick = onNewCharacter) {
+                ErrorCard(
+                    text = it.message,
+                    exception = it.exception,
+                )
+            }
         }
         uiState.characters.isEmpty() ->
-            FABScaffold(
-                onClick = onNewCharacter
-            ) {
+            FABScaffold(onClick = onNewCharacter) {
                 FullScreenCard(
                     heroIcon = {
                         Icon(

@@ -33,7 +33,7 @@ jetbrains-adaptive = "1.2.0-beta01"
 build-config = "5.7.0"
 coil = "3.3.0"
 toaster = "0.3.8"
-html-converter = "1.1.0"
+markdown-parser = "0.38.1"
 navigation3 = "1.0.0-alpha03"
 
 [libraries]
@@ -57,7 +57,8 @@ toaster = { group = "io.github.dokar3", name = "sonner", version.ref = "toaster"
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
 
-html-converter = { group = "be.digitalia.compose.htmlconverter", name = "htmlconverter", version.ref = "html-converter" }
+markdown-parser-core = { group = "com.mikepenz", name = "multiplatform-markdown-renderer", version.ref = "markdown-parser" }
+markdown-parser-m3 = { group = "com.mikepenz", name = "multiplatform-markdown-renderer-m3", version.ref = "markdown-parser" }
 
 # core
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }

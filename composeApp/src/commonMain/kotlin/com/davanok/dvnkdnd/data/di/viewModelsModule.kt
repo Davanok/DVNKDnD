@@ -14,7 +14,9 @@ fun viewModelsModule() = module {
 
     viewModelOf(::CharactersListViewModel)
 
-    viewModelOf(::DnDEntityInfoViewModel)
+    viewModel { (entityId: Uuid) ->
+        DnDEntityInfoViewModel(entityId, get())
+    }
 
     viewModel { (characterId: Uuid) ->
         CharacterFullViewModel(characterId, get())

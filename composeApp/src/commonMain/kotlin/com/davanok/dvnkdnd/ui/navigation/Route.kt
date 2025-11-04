@@ -42,5 +42,5 @@ sealed interface Route {
     }
 
     @Serializable
-    data class EntityInfo(val entityId: Uuid) : Route
+    data class EntityInfoDialog(val entityId: Uuid) : Route
 }

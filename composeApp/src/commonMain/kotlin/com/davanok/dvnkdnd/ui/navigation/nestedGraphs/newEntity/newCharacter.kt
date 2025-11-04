@@ -39,8 +39,8 @@ fun RouterEntryProvider.characterCreationFlow(
             }
             entry<Route.New.Character.Main> {
                 NewCharacterMainScreen(
-                    navigateToEntityInfo = { id -> nestedNavigate(Route.EntityInfo(id)) },
-                    onBack = nestedOnBack,
+                    navigateToEntityInfo = { id -> nestedNavigate(Route.EntityInfoDialog(id)) },
+                    onBack = onBack,
                     onContinue = { nestedNavigate(Route.New.Character.Stats) },
                     viewModel = koinViewModel { parametersOf(sharedViewModel) }
                 )

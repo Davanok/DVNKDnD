@@ -35,7 +35,7 @@ fun NavigationHost(
 
             newEntityDestinations(onBack, navigate, replace)
 
-            characterFullDestinations(onBack)
+            characterFullDestinations(onBack, navigate)
         }
     )
 }

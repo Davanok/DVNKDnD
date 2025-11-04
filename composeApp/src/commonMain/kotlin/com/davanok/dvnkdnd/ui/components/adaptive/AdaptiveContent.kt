@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import com.davanok.dvnkdnd.data.platform.supportsWindows
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -16,6 +17,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 data class SupportEntry(
     val title: String? = null,
+    val titleRes: StringResource? = null,
     val ignoreWindows: Boolean = false,
     val content: @Composable () -> Unit
 )
@@ -83,9 +85,16 @@ class AdaptiveContentState<T>(
 
 class ContentProviderBuilder<T> {
     private val entries = mutableMapOf<T, SupportEntry>()
-    fun entry(key: T, title: String? = null, ignoreWindows: Boolean = false, content: @Composable () -> Unit) {
+    fun entry(
+        key: T,
+        title: String? = null,
+        titleRes: StringResource? = null,
+        ignoreWindows: Boolean = false,
+        content: @Composable () -> Unit
+    ) {
         entries[key] = SupportEntry(
             title = title,
+            titleRes = titleRes,
             ignoreWindows = ignoreWindows,
             content = content
         )
@@ -114,7 +123,7 @@ fun <T> AdaptiveContent(
     val showWindows = state.useWindows && supportsWindows()
     val showSupportPane = !showWindows || entries.any { it.second.ignoreWindows }
 
-    // If windows are not used, show supportPane (first item) inside adaptive width
+    // If windows are not used or pane ignore them, show supportPane (first item) inside adaptive width
     AdaptiveWidth(
         modifier = modifier,
         singlePaneContent = singlePaneContent,
@@ -123,14 +132,14 @@ fun <T> AdaptiveContent(
         onHideSupportPane = { state.clear() }
     )
 
-    // When windows are available and entries prefer windows, open them as separate windows
+    // When windows are available and entries don't ignore windows, open them as separate windows
     if (showWindows) {
         entries.forEach { (key, entry) ->
             if (entry.ignoreWindows) return@forEach
             MaybeWindow(
                 onDismiss = { state.hideContent(key) },
                 dialogElse = false,
-                title = entry.title ?: stringResource(Res.string.app_name),
+                title = entry.title ?: entry.titleRes?.let { stringResource(it) } ?: stringResource(Res.string.app_name),
                 content = entry.content
             )
         }

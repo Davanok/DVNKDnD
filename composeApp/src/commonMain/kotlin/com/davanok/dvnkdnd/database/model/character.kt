@@ -10,7 +10,6 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterItem
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
@@ -66,7 +65,7 @@ data class DbJoinCharacterItem(
         parentColumn = "item_id",
         entityColumn = "id"
     )
-    val item: DnDFullEntity
+    val item: DbFullEntity
 )
 data class DbFullCharacter(
     @Embedded val character: Character,
@@ -80,7 +79,7 @@ data class DbFullCharacter(
     @Relation(parentColumn = "id", entityColumn = "character_id")
     val coins: CharacterCoins?,
 
-    @Relation(parentColumn = "id", entityColumn = "character_id")
+    @Relation(DbCharacterItemLink::class, parentColumn = "id", entityColumn = "character_id")
     val items: List<DbJoinCharacterItem>,
 
     @Relation(parentColumn = "id", entityColumn = "id")
@@ -141,7 +140,7 @@ data class DbFullCharacter(
         optionalValues = optionalValues.toCharacterOptionalValues(),
         images = images.fastMap { DatabaseImage(it.id, it.path) },
         coins = coins?.toCoinsGroup() ?: CoinsGroup(),
-        items = items.fastMap { CharacterItem(it.link.attuned, it.link.equipped, it.item) },
+        items = items.fastMap { CharacterItem(it.link.attuned, it.link.equipped, it.item.toDnDFullEntity()) },
         attributes = attributes?.toAttributesGroup() ?: DnDAttributesGroup.Default,
         health = health?.toDnDCharacterHealth() ?: DnDCharacterHealth(),
         usedSpells = usedSpells?.usedSpells.orEmpty(),
