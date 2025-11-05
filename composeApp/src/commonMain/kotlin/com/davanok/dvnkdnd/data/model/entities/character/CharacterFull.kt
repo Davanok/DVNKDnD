@@ -37,6 +37,7 @@ data class CharacterFull(
     val coins: CoinsGroup = CoinsGroup(),
 
     val items: List<CharacterItem> = emptyList(),
+    val spells: List<CharacterSpell> = emptyList(),
 
     val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
     val health: DnDCharacterHealth = DnDCharacterHealth(),

@@ -10,6 +10,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.dndEnums.MagicSchools
 import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
+import com.davanok.dvnkdnd.data.model.dndEnums.CastingTime
 import kotlin.uuid.Uuid
 
 
@@ -23,9 +24,13 @@ data class DnDSpell(
     @PrimaryKey val id: Uuid = Uuid.random(),
     val school: MagicSchools,
     val level: Int?,
-    val castingTime: String,
+    @ColumnInfo("casting_time")
+    val castingTime: CastingTime,
+    @ColumnInfo("casting_time_other")
+    val castingTimeOther: String?,
     val components: List<SpellComponents>,
     val ritual: Boolean,
+    @ColumnInfo("material_component")
     val materialComponent: String?,
     val duration: String,
     val concentration: Boolean,

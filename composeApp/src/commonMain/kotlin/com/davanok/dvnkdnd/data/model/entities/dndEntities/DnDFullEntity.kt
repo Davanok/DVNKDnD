@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.util.wordInTextLevenshtein
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -58,4 +59,9 @@ data class DnDFullEntity(
 
     fun getSubEntitiesIds() =
         abilities.fastMap { it.abilityId } + cls?.spells.orEmpty()
+
+    fun getDistance(s: String) = minOf(
+        wordInTextLevenshtein(s, name),
+        wordInTextLevenshtein(s, description)
+    )
 }

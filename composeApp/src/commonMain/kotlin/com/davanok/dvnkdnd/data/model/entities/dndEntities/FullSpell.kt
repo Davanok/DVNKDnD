@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.data.model.entities.dndEntities
 
 import com.davanok.dvnkdnd.data.model.dndEnums.AreaTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
+import com.davanok.dvnkdnd.data.model.dndEnums.CastingTime
 import com.davanok.dvnkdnd.data.model.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.dndEnums.MagicSchools
@@ -15,7 +16,9 @@ data class FullSpell(
     val school: MagicSchools,
     val level: Int?,
     @SerialName("casting_time")
-    val castingTime: String,
+    val castingTime: CastingTime,
+    @SerialName("casting_time_other")
+    val castingTimeOther: String?,
     val components: List<SpellComponents>,
     val ritual: Boolean,
     @SerialName("material_component")

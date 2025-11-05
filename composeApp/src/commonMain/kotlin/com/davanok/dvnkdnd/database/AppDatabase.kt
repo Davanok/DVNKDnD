@@ -20,6 +20,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterNote
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterSpellLink
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
@@ -71,6 +72,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         CharacterCustomModifier::class,
         DbCharacterOptionalValues::class,
         DbCharacterItemLink::class,
+        DbCharacterSpellLink::class,
         DbCharacterNote::class,
         DnDBackground::class,
         DnDBaseEntity::class,

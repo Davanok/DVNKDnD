@@ -8,6 +8,7 @@ import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterItem
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterSpell
 import com.davanok.dvnkdnd.data.model.entities.character.CoinsGroup
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
@@ -25,6 +26,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterNote
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterSpellLink
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.model.adapters.character.toAttributesGroup
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
@@ -67,6 +69,16 @@ data class DbJoinCharacterItem(
     )
     val item: DbFullEntity
 )
+data class DbJoinCharacterSpell(
+    @Embedded
+    val link: DbCharacterSpellLink,
+    @Relation(
+        DnDBaseEntity::class,
+        parentColumn = "spell_id",
+        entityColumn = "id"
+    )
+    val spell: DbFullEntity
+)
 data class DbFullCharacter(
     @Embedded val character: Character,
 
@@ -81,6 +93,8 @@ data class DbFullCharacter(
 
     @Relation(DbCharacterItemLink::class, parentColumn = "id", entityColumn = "character_id")
     val items: List<DbJoinCharacterItem>,
+    @Relation(DbCharacterSpellLink::class, parentColumn = "id", entityColumn = "character_id")
+    val spells: List<DbJoinCharacterSpell>,
 
     @Relation(parentColumn = "id", entityColumn = "id")
     val attributes: CharacterAttributes?,
@@ -141,6 +155,7 @@ data class DbFullCharacter(
         images = images.fastMap { DatabaseImage(it.id, it.path) },
         coins = coins?.toCoinsGroup() ?: CoinsGroup(),
         items = items.fastMap { CharacterItem(it.link.attuned, it.link.equipped, it.item.toDnDFullEntity()) },
+        spells = spells.fastMap { CharacterSpell(it.link.ready, it.spell.toDnDFullEntity()) },
         attributes = attributes?.toAttributesGroup() ?: DnDAttributesGroup.Default,
         health = health?.toDnDCharacterHealth() ?: DnDCharacterHealth(),
         usedSpells = usedSpells?.usedSpells.orEmpty(),

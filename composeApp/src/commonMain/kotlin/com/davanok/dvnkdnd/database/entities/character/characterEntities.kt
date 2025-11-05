@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
+import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
@@ -173,6 +174,19 @@ data class DbCharacterItemLink(
     @ColumnInfo("item_id", index = true) val itemId: Uuid,
     val equipped: Boolean,
     val attuned: Boolean
+)
+@Entity(
+    tableName = "character_spell_link",
+    primaryKeys = ["character_id", "spell_id"],
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DnDSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbCharacterSpellLink(
+    @ColumnInfo("character_id", index = true) val characterId: Uuid,
+    @ColumnInfo("spell_id", index = true) val spellId: Uuid,
+    val ready: Boolean
 )
 
 @Entity(

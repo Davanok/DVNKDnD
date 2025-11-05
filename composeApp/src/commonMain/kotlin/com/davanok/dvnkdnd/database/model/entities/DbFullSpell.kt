@@ -59,6 +59,7 @@ data class DbFullSpell(
         school = spell.school,
         level = spell.level,
         castingTime = spell.castingTime,
+        castingTimeOther = spell.castingTimeOther,
         components = spell.components,
         ritual = spell.ritual,
         materialComponent = spell.materialComponent,

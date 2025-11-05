@@ -92,23 +92,22 @@ fun DnDModifierOperation.applyForStringPreview(
     value: String?
 ): String {
     fun wrapIfExpr(s: String): String = if (s.toDoubleOrNull() == null) "($s)" else s
-    val operation = this
 
-    return when (operation) {
+    return when (this) {
         DnDModifierOperation.SUM,
-        DnDModifierOperation.SUB -> stringResource(operation.stringRes, value.toString())
+        DnDModifierOperation.SUB -> stringResource(stringRes, value.toString())
 
         DnDModifierOperation.MUL,
         DnDModifierOperation.DIV,
         DnDModifierOperation.MOD,
         DnDModifierOperation.POW,
-        DnDModifierOperation.OTHER -> stringResource(operation.stringRes, value.toString())
+        DnDModifierOperation.OTHER -> stringResource(stringRes, value.toString())
 
         DnDModifierOperation.MIN,
         DnDModifierOperation.MAX,
         DnDModifierOperation.AVG,
         DnDModifierOperation.ROOT -> stringResource(
-            operation.stringRes,
+            stringRes,
             stringResource(Res.string.base_value_replace),
             value.toString()
         )
@@ -119,14 +118,14 @@ fun DnDModifierOperation.applyForStringPreview(
         DnDModifierOperation.FLOOR -> {
             val base = stringResource(Res.string.base_value_replace)
             val expr = if (value == null) base else "$base ${stringResource(DnDModifierOperation.SUM.stringRes, value)}"
-            stringResource(operation.stringRes, expr)
+            stringResource(stringRes, expr)
         }
 
         DnDModifierOperation.FACT -> {
             val base = stringResource(Res.string.base_value_replace)
             var expr = if (value == null) base else "$base ${stringResource(DnDModifierOperation.SUM.stringRes, value)}"
             expr = wrapIfExpr(expr)
-            stringResource(operation.stringRes, expr)
+            stringResource(stringRes, expr)
         }
     }
 }
