@@ -60,7 +60,7 @@ data class DbFullSpell(
         level = spell.level,
         castingTime = spell.castingTime,
         castingTimeOther = spell.castingTimeOther,
-        components = spell.components,
+        components = spell.components.toSet(),
         ritual = spell.ritual,
         materialComponent = spell.materialComponent,
         duration = spell.duration,

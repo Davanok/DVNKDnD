@@ -3,8 +3,8 @@ package com.davanok.dvnkdnd.ui.pages.characterFull.contents
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +27,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -74,7 +73,6 @@ import dvnkdnd.composeapp.generated.resources.confirm_delete_note
 import dvnkdnd.composeapp.generated.resources.delete
 import dvnkdnd.composeapp.generated.resources.delete_note
 import dvnkdnd.composeapp.generated.resources.delete_tag
-import dvnkdnd.composeapp.generated.resources.edit_note
 import dvnkdnd.composeapp.generated.resources.edit_note_dialog_title
 import dvnkdnd.composeapp.generated.resources.new_note
 import dvnkdnd.composeapp.generated.resources.new_note_dialog_title
@@ -203,7 +201,8 @@ private fun CharacterNoteCard(
         border = if (note.pinned)
             CardDefaults.outlinedCardBorder()
                 .copy(brush = SolidColor(MaterialTheme.colorScheme.primaryContainer))
-        else CardDefaults.outlinedCardBorder()
+        else CardDefaults.outlinedCardBorder(),
+        onClick = { onEdit(note) }
     ) {
         Column(
             modifier = Modifier
@@ -234,7 +233,7 @@ private fun CharacterNoteCard(
                         .align(Alignment.CenterEnd)
                         .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
                     targetState = deleteConfirm,
-                    transitionSpec = { slideInVertically { -it } + fadeIn() togetherWith slideOutVertically { it } + fadeOut() }
+                    transitionSpec = { slideInHorizontally{ -it } + fadeIn() togetherWith slideOutHorizontally { it } + fadeOut() }
                 ) {
                     Row {
                         if (deleteConfirm) {
@@ -255,12 +254,6 @@ private fun CharacterNoteCard(
                                 Icon(
                                     imageVector = Icons.Default.Delete,
                                     contentDescription = stringResource(Res.string.delete_note)
-                                )
-                            }
-                            IconButton(onClick = { onEdit(note) }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Default.OpenInNew,
-                                    contentDescription = stringResource(Res.string.edit_note)
                                 )
                             }
                         }

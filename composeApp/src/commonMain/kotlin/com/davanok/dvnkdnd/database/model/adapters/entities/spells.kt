@@ -59,15 +59,16 @@ fun SpellAttackLevelModifierInfo.toSpellAttackLevelModifier(attackId: Uuid) =
 
 
 fun FullSpell.toDnDSpell(entityId: Uuid) = DnDSpell(
-    entityId,
-    school,
-    level,
-    castingTime,
-    components,
-    ritual,
-    materialComponent,
-    duration,
-    concentration
+    id = entityId,
+    school = school,
+    level = level,
+    castingTime = castingTime,
+    castingTimeOther = castingTimeOther,
+    components = components.toList(),
+    ritual = ritual,
+    materialComponent = materialComponent,
+    duration = duration,
+    concentration = concentration
 )
 
 fun FullSpellAttack.toSpellAttack(spellId: Uuid) = SpellAttack(

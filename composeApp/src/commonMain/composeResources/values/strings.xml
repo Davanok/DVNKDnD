@@ -224,6 +224,9 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="value_source_saving_throw">ST</string>
     <string name="value_source_skill">SKILL</string>
 
+    <string name="spell_cantrip">Cantrip</string>
+    <string name="spell_level">Lvl %1$d</string>
+
     <!--casting time-->
     <string name="casting_time_action">Action</string>
     <string name="casting_time_bonus_action">Bonus action</string>
@@ -231,6 +234,30 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="casting_time_minute">Minute</string>
     <string name="casting_time_ten_minutes">Ten minutes</string>
     <string name="casting_time_other">Casting time other</string>
+
+    <!--spell components-->
+    <string name="spell_component_verbal">Verbal</string>
+    <string name="spell_component_somatic">Somatic</string>
+    <string name="spell_component_material">Material</string>
+    <string name="spell_component_author">Author</string>
+    <string name="spell_component_other">Other</string>
+    <!--spell components short-->
+    <string name="spell_component_verbal_short">V</string>
+    <string name="spell_component_somatic_short">S</string>
+    <string name="spell_component_material_short">M</string>
+    <string name="spell_component_author_short">A</string>
+    <string name="spell_component_other_short">O</string>
+
+    <!--magic schools-->
+    <string name="magic_school_abjuration">Abjuration</string>
+    <string name="magic_school_conjuration">Conjuration</string>
+    <string name="magic_school_divination">Divination</string>
+    <string name="magic_school_enchantment">Enchantment</string>
+    <string name="magic_school_evocation">Evocation</string>
+    <string name="magic_school_illusion">Illusion</string>
+    <string name="magic_school_necromancy">Necromancy</string>
+    <string name="magic_school_transmutation">Transmutation</string>
+    <string name="magic_school_other">Other</string>
 
     <!--character full-->
     <string name="no_such_character_error">No such character</string>

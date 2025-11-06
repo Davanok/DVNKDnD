@@ -239,7 +239,8 @@ private fun CharacterPages(
                     onClick = { onEntityClick(it.toBaseEntity()) }
                 )
                 CharacterFullUiState.Page.SPELLS -> CharacterSpellsScreen(
-
+                    spells = character.spells,
+                    onClick = {  }
                 )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(
                     notes = character.notes,

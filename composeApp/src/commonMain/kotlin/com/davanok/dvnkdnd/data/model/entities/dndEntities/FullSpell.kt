@@ -19,7 +19,7 @@ data class FullSpell(
     val castingTime: CastingTime,
     @SerialName("casting_time_other")
     val castingTimeOther: String?,
-    val components: List<SpellComponents>,
+    val components: Set<SpellComponents>,
     val ritual: Boolean,
     @SerialName("material_component")
     val materialComponent: String?,
