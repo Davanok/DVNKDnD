@@ -29,7 +29,7 @@ class FullEntitiesRepositoryImpl(
 
     override suspend fun insertFullEntities(fullEntities: List<DnDFullEntity>): Result<Unit> =
         runLogging("insertFullEntities") {
-            fullEntities.partition { it.parentId == null }.let { (withoutParent, withParent) ->
+            fullEntities.partition { it.entity.parentId == null }.let { (withoutParent, withParent) ->
                 withoutParent.fastForEach { insertFullEntity(it).getOrThrow() }
                 withParent.fastForEach { insertFullEntity(it).getOrThrow() }
             }

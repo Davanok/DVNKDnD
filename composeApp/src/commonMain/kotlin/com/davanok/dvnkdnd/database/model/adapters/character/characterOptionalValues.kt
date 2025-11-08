@@ -5,11 +5,13 @@ import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
 import kotlin.uuid.Uuid
 
 fun DbCharacterOptionalValues.toCharacterOptionalValues() = CharacterOptionalValues(
+    proficiencyBonus = proficiencyBonus,
     initiative = initiative,
     armorClass = armorClass
 )
 fun CharacterOptionalValues.toDbCharacterOptionalValues(characterId: Uuid) = DbCharacterOptionalValues(
     id = characterId,
+    proficiencyBonus = proficiencyBonus,
     initiative = initiative,
     armorClass = armorClass
 )

@@ -32,7 +32,6 @@ data class CharacterFull(
 
     val optionalValues: CharacterOptionalValues = CharacterOptionalValues(),
 
-    @Transient
     val images: List<DatabaseImage> = emptyList(),
     val coins: CoinsGroup = CoinsGroup(),
 
@@ -77,7 +76,7 @@ data class CharacterFull(
     val entities: List<DnDFullEntity>
         get() = mainEntities.fastFlatMap { listOfNotNull(it.entity, it.subEntity) } + feats
     private val groupIdToEntityId by lazy {
-        entities.flatMap { e -> e.modifiersGroups.map { it.id to e.id } }.toMap()
+        entities.flatMap { e -> e.modifiersGroups.map { it.id to e.entity.id } }.toMap()
     }
 
     fun resolveValueSource(source: DnDModifierValueSource, valueSourceTarget: String?, entityId: Uuid?, modifierValue: Double): Double =
@@ -125,7 +124,7 @@ data class CharacterFull(
                             resolvedValue = resolveValueSource(
                                 group.valueSource,
                                 group.valueSourceTarget,
-                                entity.id,
+                                entity.entity.id,
                                 group.value
                             )
                         )
@@ -155,5 +154,5 @@ data class CharacterMainEntityInfo(
     val entity: DnDFullEntity,
     val subEntity: DnDFullEntity?
 ) {
-    operator fun contains(element: Uuid) = entity.id == element || subEntity?.id == element
+    operator fun contains(element: Uuid) = entity.entity.id == element || subEntity?.entity?.id == element
 }

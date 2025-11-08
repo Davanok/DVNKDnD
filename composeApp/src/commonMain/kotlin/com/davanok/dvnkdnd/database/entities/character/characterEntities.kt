@@ -12,7 +12,6 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
-import okio.Path
 import kotlin.uuid.Uuid
 
 // one to one
@@ -100,7 +99,7 @@ data class CharacterFeat(
 data class CharacterImage(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("character_id", index = true) val characterId: Uuid?,
-    val path: Path,
+    val path: String,
 )
 
 @Entity(
@@ -155,8 +154,9 @@ data class CharacterCustomModifier(
         ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DbCharacterOptionalValues( // if value is null -> calculate
+data class DbCharacterOptionalValues( // if value is null: calculate
     @PrimaryKey val id: Uuid,
+    @ColumnInfo("proficiency_bonus") val proficiencyBonus: Int?,
     val initiative: Int?,
     @ColumnInfo("armor_class") val armorClass: Int?
 )

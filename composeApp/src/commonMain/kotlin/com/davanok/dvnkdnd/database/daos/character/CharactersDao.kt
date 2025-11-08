@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.daos.character
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
@@ -8,7 +7,6 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.database.entities.character.Character
 import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
-import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
 import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
@@ -18,6 +16,7 @@ import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterAttribut
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCoins
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCustomModifier
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterHealth
+import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterMainEntity
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterItemLink
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterNote
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterOptionalValues
@@ -45,19 +44,25 @@ interface CharactersDao: CharacterEntitiesSettersDao, CharacterEntitiesDeletersD
         insertOptionalValues(character.optionalValues.toDbCharacterOptionalValues(characterId))
 
         character.images
-            .fastMap { CharacterImage(id = it.id, characterId = characterId, path = it.path) }
+            .map { CharacterImage(id = it.id, characterId = characterId, path = it.path) }
             .let { insertCharacterImages(it) }
         character.coins.toCharacterCoins(characterId).let { insertCharacterCoins(it) }
         character.items
-            .fastMap { it.toDbCharacterItemLink(characterId) }
+            .map { it.toDbCharacterItemLink(characterId) }
             .let { insertCharacterItemLinks(it) }
-        character.attributes.toCharacterAttributes(characterId).let { insertCharacterAttributes(it) }
-        character.health.toCharacterHealth(characterId).let { insertCharacterHealth(it) }
+        character.attributes.toCharacterAttributes(characterId)
+            .let { insertCharacterAttributes(it) }
+        character.health.toCharacterHealth(characterId)
+            .let { insertCharacterHealth(it) }
 
         insertCharacterUsedSpells(CharacterSpellSlots(characterId, character.usedSpells))
 
-        character.mainEntities.fastMap { CharacterMainEntity(characterId, it.entity.id, it.subEntity?.id, it.level) }.let { insertCharacterMainEntities(it) }
-        character.feats.fastMap { CharacterFeat(characterId, it.id) }.let { insertCharacterFeats(it) }
+        character.mainEntities
+            .map { it.toCharacterMainEntity(characterId) }
+            .let { insertCharacterMainEntities(it) }
+        character.feats
+            .map { CharacterFeat(characterId, it.entity.id) }
+            .let { insertCharacterFeats(it) }
 
         character.selectedModifiers
             .map { CharacterSelectedModifier(characterId, it) }
@@ -68,10 +73,10 @@ interface CharactersDao: CharacterEntitiesSettersDao, CharacterEntitiesDeletersD
             .let { insertCharacterSelectedProficiencies(it) }
 
         character.customModifiers
-            .fastMap { it.toCharacterCustomModifier(characterId) }
+            .map { it.toCharacterCustomModifier(characterId) }
             .let { insertCharacterCustomModifiers(it) }
         character.notes
-            .fastMap { it.toDbCharacterNote(characterId) }
+            .map { it.toDbCharacterNote(characterId) }
             .let { insertCharacterNotes(it) }
 
         return characterId

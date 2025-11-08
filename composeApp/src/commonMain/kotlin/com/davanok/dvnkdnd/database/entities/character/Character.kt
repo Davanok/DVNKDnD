@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import okio.Path
 import kotlin.uuid.Uuid
 
 @Entity(tableName = "characters")
@@ -16,11 +15,9 @@ data class Character(
     val name: String,
     val description: String,
     val level: Int = 1,
-    @ColumnInfo("proficiency_bonus")
-    val proficiencyBonus: Int? = null, // null if calculate
     val source: String? = null,
     @ColumnInfo("image")
-    val image: Path? = null
+    val image: String? = null
 )
 
 @Entity(

@@ -3,10 +3,12 @@ package com.davanok.dvnkdnd.database.model.entities
 import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Relation
+import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.EntityImage
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifiersGroup
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
@@ -22,7 +24,10 @@ import com.davanok.dvnkdnd.database.model.adapters.entities.toRaceInfo
 
 data class DbFullEntity(
     @Embedded
-    val base: DnDBaseEntity,
+    val entity: DnDBaseEntity,
+
+    @Relation(EntityImage::class, parentColumn = "id", entityColumn = "entity_id")
+    val images: List<EntityImage>,
 
     @Relation(EntityModifiersGroup::class, parentColumn = "id", entityColumn = "entity_id")
     val modifiers: List<DbModifiersGroups>,
@@ -78,13 +83,8 @@ data class DbFullEntity(
     val item: DbFullItem?
 ) {
     fun toDnDFullEntity(): DnDFullEntity = DnDFullEntity(
-        id = base.id,
-        parentId = base.parentId,
-        userId = base.userId,
-        type = base.type,
-        name = base.name,
-        description = base.description,
-        source = base.source,
+        entity = entity.toEntityBase(),
+        images = images.map { DatabaseImage(it.id, it.path) },
         modifiersGroups = modifiers.fastMap(DbModifiersGroups::toDnDModifiersGroup),
         proficiencies = proficiencies.fastMap(DbJoinProficiency::toJoinProficiency),
         abilities = abilities.fastMap(EntityAbility::toAbilityLink),

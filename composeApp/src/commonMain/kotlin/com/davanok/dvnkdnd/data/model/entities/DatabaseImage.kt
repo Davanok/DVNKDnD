@@ -1,9 +1,10 @@
 package com.davanok.dvnkdnd.data.model.entities
 
-import okio.Path
+import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
+@Serializable
 data class DatabaseImage(
     val id: Uuid,
-    val path: Path
+    val path: String
 )

@@ -2,8 +2,6 @@ package com.davanok.dvnkdnd.data.model.entities.character
 
 import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import okio.Path
 import kotlin.uuid.Uuid
 
 
@@ -15,7 +13,7 @@ data class CharacterBase(
     val description: String,
     val level: Int,
     val proficiencyBonus: Int? = null,
-    @Transient val image: Path? = null
+    val image: String? = null
 ) {
     fun getProfBonus() = proficiencyBonus ?: proficiencyBonusByLevel(level)
 }

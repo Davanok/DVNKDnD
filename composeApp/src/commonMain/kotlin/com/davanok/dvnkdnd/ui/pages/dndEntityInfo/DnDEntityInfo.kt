@@ -50,7 +50,7 @@ fun DnDEntityInfo(
                     Text(
                         text = when {
                             uiState.isLoading -> stringResource(Res.string.loading)
-                            uiState.entity != null -> uiState.entity!!.name
+                            uiState.entity != null -> uiState.entity!!.entity.name
                             else -> stringResource(Res.string.error)
                         }
                     )

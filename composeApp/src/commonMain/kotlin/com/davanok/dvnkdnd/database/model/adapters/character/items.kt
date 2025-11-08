@@ -6,7 +6,7 @@ import kotlin.uuid.Uuid
 
 fun CharacterItem.toDbCharacterItemLink(characterId: Uuid) = DbCharacterItemLink(
     characterId = characterId,
-    itemId = item.id,
+    itemId = item.entity.id,
     equipped = equipped,
     attuned = attuned
 )

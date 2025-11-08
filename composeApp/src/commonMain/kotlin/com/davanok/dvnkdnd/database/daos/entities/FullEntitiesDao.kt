@@ -12,6 +12,7 @@ import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDRace
 import com.davanok.dvnkdnd.database.model.adapters.entities.toEntityAbility
 import com.davanok.dvnkdnd.database.model.adapters.entities.toEntityProficiency
 import com.davanok.dvnkdnd.database.model.entities.DbFullEntity
+import com.davanok.dvnkdnd.database.model.entities.toDnDBaseEntity
 import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
 
@@ -27,8 +28,8 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
 
     @Transaction
     suspend fun insertFullEntity(fullEntity: DnDFullEntity) {
-        Napier.i { "insert full entity (${fullEntity.type}) with id: ${fullEntity.id}" }
-        val entityId = fullEntity.id
+        Napier.i { "insert full entity (${fullEntity.entity.type}) with id: ${fullEntity.entity.id}" }
+        val entityId = fullEntity.entity.id
         fullEntity.companionEntities.fastForEach {
             insertFullEntity(it)
         }
@@ -36,7 +37,7 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
             fullEntity.proficiencies.fastMap { it.proficiency.toDnDProficiency() }
         )
 
-        insertEntity(fullEntity.toBaseEntity())
+        insertEntity(fullEntity.entity.toDnDBaseEntity())
 
         fullEntity.modifiersGroups.fastForEach { insertModifiersGroup(entityId, it) }
 

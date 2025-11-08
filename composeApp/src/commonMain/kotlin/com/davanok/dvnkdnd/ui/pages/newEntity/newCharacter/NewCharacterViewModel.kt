@@ -19,6 +19,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.EntityBase
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
@@ -45,7 +46,7 @@ class NewCharacterViewModel(
     private suspend fun loadEntities(entitiesIds: List<Uuid>): List<DnDFullEntity> {
         val entities =
             fullEntitiesRepository.getFullEntities(entitiesIds).getOrThrow().toMutableList()
-        val dbEntitiesIds = entities.fastMap { it.id }
+        val dbEntitiesIds = entities.fastMap { it.entity.id }.toSet()
         val comparison = entitiesIds.subtract(dbEntitiesIds)
         if (comparison.isNotEmpty()) {
             val loaded = browseRepository.loadEntitiesFullInfo(comparison.toList()).getOrThrow()
@@ -59,11 +60,11 @@ class NewCharacterViewModel(
         val entities = loadEntities(character.getEntitiesIds())
 
         val mainTypes = setOf(DnDEntityTypes.CLASS, DnDEntityTypes.RACE, DnDEntityTypes.BACKGROUND)
-        val mainEntities = entities.fastFilter { it.type in mainTypes }.fastMap { entity ->
+        val mainEntities = entities.fastFilter { it.entity.type in mainTypes }.fastMap { entity ->
             CharacterMainEntityInfo(
                 level = newCharacterState.level,
                 entity = entity,
-                subEntity = entities.fastFirstOrNull { it.parentId == entity.id }
+                subEntity = entities.fastFirstOrNull { it.entity.parentId == entity.entity.id }
             )
         }
 
@@ -86,7 +87,7 @@ class NewCharacterViewModel(
     suspend fun setCharacterMain(
         character: NewCharacterMain
     ): Result<Unit> = runCatching {
-        val oldIds = newCharacterState.character.entities.fastMap { it.id }
+        val oldIds = newCharacterState.character.entities.fastMap { it.entity.id }
         val newIds = character.getEntitiesIds()
 
         if (oldIds != newIds) {
@@ -104,7 +105,7 @@ class NewCharacterViewModel(
             entityIdToLevel = character.mainEntities
                 .flatMap { e ->
                     listOfNotNull(e.entity, e.subEntity)
-                        .map { it.id to e.level }
+                        .map { it.entity.id to e.level }
                 }.toMap()
         )
     }
@@ -124,7 +125,7 @@ class NewCharacterViewModel(
     fun getCharacterWithHealth() = newCharacterState.run {
         CharacterWithHealth(
             character = toCharacterBase(),
-            healthDice = character.mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }?.entity?.cls?.hitDice,
+            healthDice = character.mainEntities.fastFirstOrNull { it.entity.entity.type == DnDEntityTypes.CLASS }?.entity?.cls?.hitDice,
             constitution = attributes.constitution,
             baseHealth = baseHealth
         )
@@ -154,12 +155,12 @@ private data class NewCharacterWithFullEntities(
         get() = mainEntities.fastFlatMap { listOfNotNull(it.entity, it.subEntity) }
 
     fun toNewCharacterMain(): NewCharacterMain {
-        val clsInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.CLASS }
-        val raceInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.RACE }
-        val backgroundInfo = mainEntities.fastFirstOrNull { it.entity.type == DnDEntityTypes.BACKGROUND }
+        val clsInfo = mainEntities.fastFirstOrNull { it.entity.entity.type == DnDEntityTypes.CLASS }
+        val raceInfo = mainEntities.fastFirstOrNull { it.entity.entity.type == DnDEntityTypes.RACE }
+        val backgroundInfo = mainEntities.fastFirstOrNull { it.entity.entity.type == DnDEntityTypes.BACKGROUND }
 
         fun CharacterMainEntityInfo.toEntityWithSubEntities() =
-            entity.toEntityWithSubEntities(listOfNotNull(subEntity?.toDnDEntityMin()))
+            entity.entity.toEntityWithSubEntities(listOfNotNull(subEntity?.toDnDEntityMin()))
 
         return NewCharacterMain(
             images = images,
@@ -186,7 +187,7 @@ private data class NewCharacterWithFullEntities(
             .toSet()
 
     companion object {
-        private fun DnDFullEntity.toEntityWithSubEntities(subEntities: List<DnDEntityMin>) =
+        private fun EntityBase.toEntityWithSubEntities(subEntities: List<DnDEntityMin>) =
             DnDEntityWithSubEntities(
                 id = id,
                 type = type,
@@ -211,7 +212,7 @@ private data class NewCharacter(
     fun toCharacterFull(id: Uuid = Uuid.NIL): CharacterFull {
         val characterBase = toCharacterBase(id)
 
-        val dbImages = character.images.map { path -> DatabaseImage(Uuid.random(), path) }
+        val dbImages = character.images.map { path -> DatabaseImage(Uuid.random(), path.toString()) }
 
 
         val totalHealth = DnDCharacterHealth(

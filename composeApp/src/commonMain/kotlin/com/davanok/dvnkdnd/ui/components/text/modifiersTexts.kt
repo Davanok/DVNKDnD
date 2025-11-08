@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.components
+package com.davanok.dvnkdnd.ui.components.text
 
 import androidx.compose.runtime.Composable
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation

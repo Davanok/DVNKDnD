@@ -31,8 +31,8 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
 import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.ui.isCritical
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveContent
@@ -62,7 +62,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CharacterFullScreen(
     navigateBack: () -> Unit,
-    navigateToEntityInfo: (DnDBaseEntity) -> Unit,
+    navigateToEntityInfo: (DnDEntityMin) -> Unit,
     viewModel: CharacterFullViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -99,7 +99,7 @@ fun CharacterFullScreen(
 @Composable
 private fun Content(
     navigateBack: () -> Unit,
-    navigateToEntityInfo: (DnDBaseEntity) -> Unit,
+    navigateToEntityInfo: (DnDEntityMin) -> Unit,
     character: CharacterFull,
     updateHealth: (DnDCharacterHealth) -> Unit,
     onUpdateOrNewNote: (CharacterNote) -> Unit,
@@ -206,7 +206,7 @@ private fun CharacterFullTabsRow(
 private fun CharacterPages(
     character: CharacterFull,
     skipAttributes: Boolean,
-    onEntityClick: (DnDBaseEntity) -> Unit,
+    onEntityClick: (DnDEntityMin) -> Unit,
     onUpdateOrNewNote: (CharacterNote) -> Unit,
     onDeleteNote: (CharacterNote) -> Unit,
     modifier: Modifier = Modifier
@@ -232,11 +232,11 @@ private fun CharacterPages(
                 )
                 CharacterFullUiState.Page.ATTACKS -> CharacterAttacksScreen(
                     items = character.items,
-                    onClick = { onEntityClick(it.toBaseEntity()) }
+                    onClick = { onEntityClick(it.toDnDEntityMin()) }
                 )
                 CharacterFullUiState.Page.ITEMS -> CharacterItemsScreen(
                     items = character.items,
-                    onClick = { onEntityClick(it.toBaseEntity()) }
+                    onClick = { onEntityClick(it.toDnDEntityMin()) }
                 )
                 CharacterFullUiState.Page.SPELLS -> CharacterSpellsScreen(
                     spells = character.spells,

@@ -9,7 +9,6 @@ fun Character.toCharacterBase() = CharacterBase(
     name = name,
     description = description,
     level = level,
-    proficiencyBonus = proficiencyBonus,
     image = image
 )
 fun CharacterBase.toCharacter() = Character(
@@ -18,6 +17,5 @@ fun CharacterBase.toCharacter() = Character(
     name = name,
     description = description,
     level = level,
-    proficiencyBonus = proficiencyBonus,
     image = image
 )

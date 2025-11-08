@@ -248,6 +248,21 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="spell_component_author_short">A</string>
     <string name="spell_component_other_short">O</string>
 
+    <string name="damage_type_acid">Acid</string>
+    <string name="damage_type_bludgeoning">Bludgeoning</string>
+    <string name="damage_type_cold">Cold</string>
+    <string name="damage_type_fire">Fire</string>
+    <string name="damage_type_force">Force</string>
+    <string name="damage_type_lightning">Lighting</string>
+    <string name="damage_type_necrotic">Necrotic</string>
+    <string name="damage_type_piercing">Piercing</string>
+    <string name="damage_type_poison">Poison</string>
+    <string name="damage_type_psychic">Psychic</string>
+    <string name="damage_type_radiant">Radiant</string>
+    <string name="damage_type_slashing">Slashing</string>
+    <string name="damage_type_thunder">Thunder</string>
+    <string name="damage_type_other">Other</string>
+
     <!--magic schools-->
     <string name="magic_school_abjuration">Abjuration</string>
     <string name="magic_school_conjuration">Conjuration</string>
@@ -287,4 +302,6 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="add_tag">Add tag</string>
     <string name="delete_tag">Add tag</string>
     <string name="note_text">Note text</string>
+    <!--spells screen-->
+    <string name="ritual">Ritual</string>
 </resources>

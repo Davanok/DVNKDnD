@@ -18,7 +18,7 @@ fun CharacterItemsScreen(
     ) {
         items(
             items = items,
-            key = { it.item.id }
+            key = { it.item.entity.id }
         ) {
 
         }

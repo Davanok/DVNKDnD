@@ -20,7 +20,9 @@ data class DnDBaseEntity(
     @ColumnInfo(index = true) val type: DnDEntityTypes,
     val name: String,
     val description: String,
-    val source: String
+    val source: String,
+    @ColumnInfo("image")
+    val image: String? = null
 )
 @Entity(
     tableName = "entity_full_descriptions",
@@ -37,11 +39,11 @@ data class EntityFullDescription(
 @Entity(
     tableName = "entity_images",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.SET_NULL)
+        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.SET_NULL)
     ]
 )
 data class EntityImage(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo(index = true) val entityId: Uuid?,
+    @ColumnInfo("entity_id", index = true) val entityId: Uuid?,
     val path: String
 )
