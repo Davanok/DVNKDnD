@@ -1,23 +1,20 @@
 package com.davanok.dvnkdnd.data.model.entities.character
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
-import androidx.compose.ui.util.fastForEach
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
+import com.davanok.dvnkdnd.data.model.entities.character.characterUtils.calculateModifiers
+import com.davanok.dvnkdnd.data.model.entities.character.characterUtils.calculateSpellSlots
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkillsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toSkillsGroup
-import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
-import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.data.model.util.calculateArmorClass
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.data.model.util.enumValueOfOrNull
@@ -40,7 +37,7 @@ data class CharacterFull(
 
     val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
     val health: DnDCharacterHealth = DnDCharacterHealth(),
-    val usedSpells: List<Int> = emptyList(),
+    val usedSpells: Map<Uuid, IntArray> = emptyMap(),
 
     val mainEntities: List<CharacterMainEntityInfo> = emptyList(),
 
@@ -103,40 +100,9 @@ data class CharacterFull(
     fun resolveGroupValue(group: DnDModifiersGroup): Double =
         resolveValueSource(group.valueSource, group.valueSourceTarget, groupIdToEntityId[group.id], group.value)
 
-    val appliedModifiers: Map<DnDModifierTargetType, List<ModifierExtendedInfo>> by lazy {
-        val result = mutableMapOf<DnDModifierTargetType, MutableList<Pair<Int, ModifierExtendedInfo>>>()
-        entities.fastForEach { entity ->
-            entity.modifiersGroups.fastForEach { group ->
-                val modifiers = group.modifiers.fastFilteredMap(
-                    predicate = { it.id in selectedModifiers },
-                    transform = { modifier ->
-                        group.priority to ModifierExtendedInfo(
-                            groupId = group.id,
-                            groupName = group.name,
-                            modifier = modifier,
-                            operation = group.operation,
-                            valueSource = group.valueSource,
-                            value = group.value,
-                            state = UiSelectableState(
-                                selectable = modifier.selectable,
-                                selected = true
-                            ),
-                            resolvedValue = resolveValueSource(
-                                group.valueSource,
-                                group.valueSourceTarget,
-                                entity.entity.id,
-                                group.value
-                            )
-                        )
-                    }
-                )
-                result
-                    .getOrPut(group.target, ::mutableListOf)
-                    .addAll(modifiers)
-            }
-        }
-        result.mapValues { modifiers -> modifiers.value.sortedBy { it.first }.map { it.second } }
-    }
+    val appliedModifiers by lazy { calculateModifiers() }
+
+    val spellSlots by lazy { calculateSpellSlots() }
 }
 
 data class CharacterModifiedValues(

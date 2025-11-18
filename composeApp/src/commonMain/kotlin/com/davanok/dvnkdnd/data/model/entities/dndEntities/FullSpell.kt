@@ -40,7 +40,7 @@ data class SpellAreaInfo(
 
 @Serializable
 data class FullSpellAttack(
-    val id: Uuid,
+    val id: Uuid = Uuid.random(),
     @SerialName("damage_type")
     val damageType: DamageTypes,
     @SerialName("dice_count")

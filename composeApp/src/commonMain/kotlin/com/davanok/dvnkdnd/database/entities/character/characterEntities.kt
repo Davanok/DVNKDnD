@@ -11,6 +11,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
 import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbSpellSlotType
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import kotlin.uuid.Uuid
 
@@ -41,11 +42,18 @@ data class CharacterHealth(
 )
 
 @Entity(
-    tableName = "character_spell_slots",
-    foreignKeys = [ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
+    tableName = "character_used_spell_slots",
+    primaryKeys = ["character_id", "spell_slot_type_id"],
+    foreignKeys = [
+        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbSpellSlotType::class, ["id"], ["spell_slot_type_id"], onDelete = ForeignKey.CASCADE),
+    ]
 )
-data class CharacterSpellSlots(
-    @PrimaryKey val id: Uuid,
+data class CharacterUsedSpellSlots(
+    @ColumnInfo("character_id", index = true)
+    val characterId: Uuid,
+    @ColumnInfo("spell_slot_type_id", index = true)
+    val spellSlotTypeId: Uuid,
     @ColumnInfo("used_spells")
     val usedSpells: List<Int>, // used spells for every spell level
 )

@@ -17,7 +17,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
-import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
+import com.davanok.dvnkdnd.database.entities.character.CharacterUsedSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterSpellLink
@@ -42,6 +42,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbSpellSlotType
 import com.davanok.dvnkdnd.database.entities.items.Armor
 import com.davanok.dvnkdnd.database.entities.items.DnDItem
 import com.davanok.dvnkdnd.database.entities.items.DnDItemProperty
@@ -63,7 +64,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         CharacterMainEntity::class,
         CharacterAttributes::class,
         CharacterHealth::class,
-        CharacterSpellSlots::class,
+        CharacterUsedSpellSlots::class,
         CharacterSelectedModifier::class,
         CharacterImage::class,
         CharacterCoins::class,
@@ -81,6 +82,7 @@ import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
         DnDClass::class,
         ClassSpell::class,
         ClassSpellSlots::class,
+        DbSpellSlotType::class,
         DnDFeat::class,
         DnDRace::class,
         EntityProficiency::class,

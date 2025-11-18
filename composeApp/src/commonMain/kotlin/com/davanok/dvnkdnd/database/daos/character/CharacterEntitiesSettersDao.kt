@@ -13,7 +13,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
-import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
+import com.davanok.dvnkdnd.database.entities.character.CharacterUsedSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
@@ -35,7 +35,7 @@ interface CharacterEntitiesSettersDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterHealth(health: CharacterHealth)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCharacterUsedSpells(usedSpells: CharacterSpellSlots)
+    suspend fun insertCharacterUsedSpells(usedSpells: List<CharacterUsedSpellSlots>)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterMainEntities(entities: List<CharacterMainEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE)

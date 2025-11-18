@@ -9,7 +9,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
 import com.davanok.dvnkdnd.database.entities.character.CharacterImage
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
-import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
+import com.davanok.dvnkdnd.database.entities.character.CharacterUsedSpellSlots
 import com.davanok.dvnkdnd.database.model.DbFullCharacter
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacter
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterAttributes
@@ -55,7 +55,9 @@ interface CharactersDao: CharacterEntitiesSettersDao, CharacterEntitiesDeletersD
         character.health.toCharacterHealth(characterId)
             .let { insertCharacterHealth(it) }
 
-        insertCharacterUsedSpells(CharacterSpellSlots(characterId, character.usedSpells))
+        character.usedSpells
+            .map { CharacterUsedSpellSlots(characterId = characterId, spellSlotTypeId = it.key, usedSpells = it.value.toList()) }
+            .let { insertCharacterUsedSpells(it) }
 
         character.mainEntities
             .map { it.toCharacterMainEntity(characterId) }

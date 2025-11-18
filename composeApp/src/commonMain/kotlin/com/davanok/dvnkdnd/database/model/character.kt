@@ -23,7 +23,7 @@ import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
 import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
 import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
-import com.davanok.dvnkdnd.database.entities.character.CharacterSpellSlots
+import com.davanok.dvnkdnd.database.entities.character.CharacterUsedSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterSpellLink
@@ -100,12 +100,9 @@ data class DbFullCharacter(
     val attributes: CharacterAttributes?,
     @Relation(parentColumn = "id", entityColumn = "id")
     val health: CharacterHealth?,
-    @Relation(
-        CharacterSpellSlots::class,
-        parentColumn = "id",
-        entityColumn = "id"
-    )
-    val usedSpells: CharacterSpellSlots?,
+
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val usedSpells: List<CharacterUsedSpellSlots>,
 
     @Relation(
         entity = CharacterMainEntity::class,
@@ -158,7 +155,7 @@ data class DbFullCharacter(
         spells = spells.fastMap { CharacterSpell(it.link.ready, it.spell.toDnDFullEntity()) },
         attributes = attributes?.toAttributesGroup() ?: DnDAttributesGroup.Default,
         health = health?.toDnDCharacterHealth() ?: DnDCharacterHealth(),
-        usedSpells = usedSpells?.usedSpells.orEmpty(),
+        usedSpells = usedSpells.associate { it.spellSlotTypeId to it.usedSpells.toIntArray() },
         mainEntities = mainEntities.fastMap(DbJoinCharacterMainEntities::toCharacterMainEntityInfo),
         feats = feats.fastMap(DbFullEntity::toDnDFullEntity),
         selectedModifiers = selectedModifiers.fastMap { it.modifierId }.toSet(),
