@@ -64,8 +64,6 @@ import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.window.Dialog
 import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
-import com.mikepenz.markdown.compose.components.markdownComponents
-import com.mikepenz.markdown.compose.elements.MarkdownText
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_tag
