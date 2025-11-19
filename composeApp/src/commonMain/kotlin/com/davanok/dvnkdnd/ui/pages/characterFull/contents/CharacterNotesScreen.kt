@@ -64,6 +64,8 @@ import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.window.Dialog
 import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
+import com.mikepenz.markdown.compose.components.markdownComponents
+import com.mikepenz.markdown.compose.elements.MarkdownText
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_tag
@@ -205,8 +207,7 @@ private fun CharacterNoteCard(
         onClick = { onEdit(note) }
     ) {
         Column(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
@@ -266,7 +267,10 @@ private fun CharacterNoteCard(
             note.title?.let {
                 Text(text = it, style = MaterialTheme.typography.titleLarge)
             }
-            Markdown(content = note.body, modifier = Modifier.fillMaxWidth())
+            Markdown(
+                content = note.body,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -286,6 +290,7 @@ private fun UpdateNoteDialog(
     val isNewNote = note.id == Uuid.NIL
 
     val buildNote = {
+        if (newTag.isNotBlank()) tagsState.add(newTag)
         CharacterNote(
             id = if (isNewNote) Uuid.random() else note.id,
             pinned = pinned,
