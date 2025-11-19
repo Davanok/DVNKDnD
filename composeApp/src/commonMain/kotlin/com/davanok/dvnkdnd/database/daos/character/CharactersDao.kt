@@ -16,15 +16,21 @@ import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterAttrib
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterCoins
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterCustomModifier
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterHealth
-import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterMainEntity
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterItemLink
+import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterMainEntity
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterNote
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterOptionalValues
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 @Dao
-interface CharactersDao: CharacterEntitiesSettersDao, CharacterEntitiesDeletersDao {
+interface CharactersDao: CharacterMainDao,
+        CharacterModifiersDao,
+        CharacterSelectableEntitiesDao,
+        CharacterSpellsDao,
+        CharacterItemsDao,
+        CharacterNotesDao
+{
     @Transaction
     @Query("SELECT * FROM characters WHERE id == :characterId")
     suspend fun getFullCharacter(characterId: Uuid): DbFullCharacter
