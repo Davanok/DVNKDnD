@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.model.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
@@ -24,6 +23,6 @@ data class DbEntityWithSub(
         type = entity.type,
         name = entity.name,
         source = entity.source,
-        subEntities = subEntities.fastMap(DbBaseEntity::toDnDEntityMin)
+        subEntities = subEntities.map(DbBaseEntity::toDnDEntityMin)
     )
 }

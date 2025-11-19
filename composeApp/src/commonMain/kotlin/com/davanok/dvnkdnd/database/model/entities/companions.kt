@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.model.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.AbilityInfo
@@ -36,6 +35,6 @@ data class DbAbilityInfo(
 ) {
     fun toAbilityInfo() = AbilityInfo(
         usageLimitByLevel = ability.usageLimitByLevel,
-        regains = regains.fastMap(DbAbilityRegain::toAbilityRegain)
+        regains = regains.map(DbAbilityRegain::toAbilityRegain)
     )
 }

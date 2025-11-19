@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.model.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
@@ -31,6 +30,6 @@ data class DbModifiersGroups(
         clampMin = group.clampMin,
         minBaseValue = group.minBaseValue,
         maxBaseValue = group.maxBaseValue,
-        modifiers = modifiers.fastMap(DbEntityModifier::toDnDModifier)
+        modifiers = modifiers.map(DbEntityModifier::toDnDModifier)
     )
 }

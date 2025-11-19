@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.daos.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -44,8 +43,8 @@ interface ItemDao {
     @Transaction
     suspend fun insertFullItem(entityId: Uuid, item: FullItem) {
         insertItem(item.toDbItem(entityId))
-        insertItemProperties(item.properties.fastMap { it.property.toDbItemProperty() })
-        insertItemPropertyLinks(item.properties.fastMap { it.toDbItemPropertyLink() })
+        insertItemProperties(item.properties.map { it.property.toDbItemProperty() })
+        insertItemPropertyLinks(item.properties.map { it.toDbItemPropertyLink() })
         item.armor?.let { insertArmor(it.toDbArmor(entityId)) }
         item.weapon?.let { insertFullWeapon(entityId, it) }
     }
@@ -53,6 +52,6 @@ interface ItemDao {
     @Transaction
     suspend fun insertFullWeapon(entityId: Uuid, weapon: FullWeapon) {
         insertWeapon(weapon.toDbWeapon(entityId))
-        insertWeaponDamages(weapon.damages.fastMap { it.toDbWeaponDamage(entityId) })
+        insertWeaponDamages(weapon.damages.map { it.toDbWeaponDamage(entityId) })
     }
 }

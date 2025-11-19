@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.daos.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -47,7 +46,7 @@ interface SpellDao {
     suspend fun insertFullSpellAttack(spellId: Uuid, attack: FullSpellAttack) {
         insertSpellAttack(attack.toDbSpellAttack(spellId))
         insertSpellAttackModifiers(
-            attack.modifiers.fastMap {
+            attack.modifiers.map {
                 it.toDbSpellAttackLevelModifier(attack.id)
             }
         )

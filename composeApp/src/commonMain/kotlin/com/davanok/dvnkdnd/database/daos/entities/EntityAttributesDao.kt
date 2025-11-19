@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.daos.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -35,7 +34,7 @@ interface EntityAttributesDao {
         val groupId = modifiersGroup.id
 
         insertEntityModifiersGroup(modifiersGroup.toDbEntityModifiersGroup(entityId))
-        insertModifiers(modifiersGroup.modifiers.fastMap { it.toDbEntityModifier(groupId) })
+        insertModifiers(modifiersGroup.modifiers.map { it.toDbEntityModifier(groupId) })
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

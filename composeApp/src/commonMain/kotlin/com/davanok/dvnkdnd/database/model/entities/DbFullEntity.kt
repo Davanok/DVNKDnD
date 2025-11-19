@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.model.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
@@ -85,9 +84,9 @@ data class DbFullEntity(
     fun toDnDFullEntity(): DnDFullEntity = DnDFullEntity(
         entity = entity.toEntityBase(),
         images = images.map { DatabaseImage(it.id, it.path) },
-        modifiersGroups = modifiers.fastMap(DbModifiersGroups::toDnDModifiersGroup),
-        proficiencies = proficiencies.fastMap(DbJoinProficiency::toJoinProficiency),
-        abilities = abilities.fastMap(DbEntityAbility::toAbilityLink),
+        modifiersGroups = modifiers.map(DbModifiersGroups::toDnDModifiersGroup),
+        proficiencies = proficiencies.map(DbJoinProficiency::toJoinProficiency),
+        abilities = abilities.map(DbEntityAbility::toAbilityLink),
         cls = cls?.toClassWithSpells(),
         race = race?.toRaceInfo(),
         background = null,

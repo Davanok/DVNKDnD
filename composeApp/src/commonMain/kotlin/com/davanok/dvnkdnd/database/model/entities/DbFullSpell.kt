@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.model.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
@@ -34,7 +33,7 @@ data class DbFullSpellAttack(
         diceCount = attack.diceCount,
         dice = attack.dice,
         modifier = attack.modifier,
-        modifiers = modifiers.fastMap(DbSpellAttackLevelModifier::toSpellAttackLevelModifierInfo),
+        modifiers = modifiers.map(DbSpellAttackLevelModifier::toSpellAttackLevelModifierInfo),
         save = save?.toSpellAttackSaveInfo()
     )
 }
@@ -66,6 +65,6 @@ data class DbFullSpell(
         duration = spell.duration,
         concentration = spell.concentration,
         area = area?.toSpellAreaInfo(),
-        attacks = attacks.fastMap(DbFullSpellAttack::toFullSpellAttack)
+        attacks = attacks.map(DbFullSpellAttack::toFullSpellAttack)
     )
 }

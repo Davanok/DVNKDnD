@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.daos.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Transaction
@@ -23,7 +22,7 @@ interface AbilityDao {
     suspend fun insertAbilityInfo(entityId: Uuid, ability: AbilityInfo) {
         insertAbility(ability.toDbAbility(entityId))
         insertAbilityRegains(
-            ability.regains.fastMap { it.toDbAbilityRegain(entityId) }
+            ability.regains.map { it.toDbAbilityRegain(entityId) }
         )
     }
 }

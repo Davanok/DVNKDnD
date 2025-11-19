@@ -1,7 +1,5 @@
 package com.davanok.dvnkdnd.database.daos.entities
 
-import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
@@ -30,16 +28,16 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
     suspend fun insertFullEntity(fullEntity: DnDFullEntity) {
         Napier.i { "insert full entity (${fullEntity.entity.type}) with id: ${fullEntity.entity.id}" }
         val entityId = fullEntity.entity.id
-        fullEntity.companionEntities.fastForEach {
+        fullEntity.companionEntities.forEach {
             insertFullEntity(it)
         }
         insertProficiencies(
-            fullEntity.proficiencies.fastMap { it.proficiency.toDbProficiency() }
+            fullEntity.proficiencies.map { it.proficiency.toDbProficiency() }
         )
 
         insertEntity(fullEntity.entity.toDbBaseEntity())
 
-        fullEntity.modifiersGroups.fastForEach { insertModifiersGroup(entityId, it) }
+        fullEntity.modifiersGroups.forEach { insertModifiersGroup(entityId, it) }
 
         fullEntity.cls?.let { insertClassWithSpells(entityId, it) }
         fullEntity.race?.let { insertRace(it.toDbRace(entityId)) }
@@ -49,7 +47,7 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
         fullEntity.spell?.let { insertFullSpell(entityId, it) }
         fullEntity.item?.let { insertFullItem(entityId, it) }
 
-        insertProficiencyLinks(fullEntity.proficiencies.fastMap { it.toDbEntityProficiency(entityId) })
-        insertAbilityLinks(fullEntity.abilities.fastMap { it.toDbEntityAbility(entityId) })
+        insertProficiencyLinks(fullEntity.proficiencies.map { it.toDbEntityProficiency(entityId) })
+        insertAbilityLinks(fullEntity.abilities.map { it.toDbEntityAbility(entityId) })
     }
 }

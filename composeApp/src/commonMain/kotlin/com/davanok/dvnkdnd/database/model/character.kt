@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.model
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
@@ -149,18 +148,18 @@ data class DbFullCharacter(
     fun toCharacterFull(): CharacterFull = CharacterFull(
         character = character.toCharacterBase(),
         optionalValues = optionalValues.toCharacterOptionalValues(),
-        images = images.fastMap { DatabaseImage(it.id, it.path) },
+        images = images.map { DatabaseImage(it.id, it.path) },
         coins = coins?.toCoinsGroup() ?: CoinsGroup(),
-        items = items.fastMap { CharacterItem(it.link.attuned, it.link.equipped, it.item.toDnDFullEntity()) },
-        spells = spells.fastMap { CharacterSpell(it.link.ready, it.spell.toDnDFullEntity()) },
+        items = items.map { CharacterItem(it.link.attuned, it.link.equipped, it.item.toDnDFullEntity()) },
+        spells = spells.map { CharacterSpell(it.link.ready, it.spell.toDnDFullEntity()) },
         attributes = attributes?.toAttributesGroup() ?: AttributesGroup.Default,
         health = health?.toDnDCharacterHealth() ?: CharacterHealth(),
         usedSpells = usedSpells.associate { it.spellSlotTypeId to it.usedSpells.toIntArray() },
-        mainEntities = mainEntities.fastMap(DbJoinCharacterMainEntities::toCharacterMainEntityInfo),
-        feats = feats.fastMap(DbFullEntity::toDnDFullEntity),
-        selectedModifiers = selectedModifiers.fastMap { it.modifierId }.toSet(),
-        selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId }.toSet(),
-        customModifiers = customModifiers.fastMap(DbCharacterCustomModifier::toCustomModifier),
+        mainEntities = mainEntities.map(DbJoinCharacterMainEntities::toCharacterMainEntityInfo),
+        feats = feats.map(DbFullEntity::toDnDFullEntity),
+        selectedModifiers = selectedModifiers.map { it.modifierId }.toSet(),
+        selectedProficiencies = selectedProficiencies.map { it.proficiencyId }.toSet(),
+        customModifiers = customModifiers.map(DbCharacterCustomModifier::toCustomModifier),
         notes = notes.map(DbCharacterNote::toCharacterNote)
     )
 }

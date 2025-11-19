@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.database.model.entities
 
-import androidx.compose.ui.util.fastMap
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
@@ -27,7 +26,7 @@ data class DbFullWeapon(
 ) {
     fun toFullWeapon() = FullWeapon(
         atkBonus = weapon.atkBonus,
-        damages = damages.fastMap(DbWeaponDamage::toWeaponDamageInfo)
+        damages = damages.map(DbWeaponDamage::toWeaponDamageInfo)
     )
 }
 data class DbJoinItemProperty(
@@ -70,7 +69,7 @@ data class DbFullItem(
         cost = item.cost,
         weight = item.weight,
         attunement = item.attunement,
-        properties = properties.fastMap(DbJoinItemProperty::toJoinItemProperty),
+        properties = properties.map(DbJoinItemProperty::toJoinItemProperty),
         armor = armor?.toArmorInfo(),
         weapon = weapon?.toFullWeapon()
     )
