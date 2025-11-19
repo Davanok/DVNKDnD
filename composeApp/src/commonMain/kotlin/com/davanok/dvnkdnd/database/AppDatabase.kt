@@ -93,7 +93,6 @@ import com.davanok.dvnkdnd.database.entities.items.DbWeaponDamage
         DbSpellAttackLevelModifier::class,
         DbSpellAttackSave::class,
         DbSpellSlotType::class,
-        DbSpellSlotType::class,
         DbWeapon::class,
         DbWeaponDamage::class
     ],
