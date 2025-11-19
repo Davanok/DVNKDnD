@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,7 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
-import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -101,7 +102,7 @@ private fun Content(
     navigateBack: () -> Unit,
     navigateToEntityInfo: (DnDEntityMin) -> Unit,
     character: CharacterFull,
-    updateHealth: (DnDCharacterHealth) -> Unit,
+    updateHealth: (CharacterHealth) -> Unit,
     onUpdateOrNewNote: (CharacterNote) -> Unit,
     onDeleteNote: (CharacterNote) -> Unit,
 ) {
@@ -240,12 +241,17 @@ private fun CharacterPages(
                 )
                 CharacterFullUiState.Page.SPELLS -> CharacterSpellsScreen(
                     spells = character.spells,
-                    onClick = {  }
+                    availableSpellSlots = character.spellSlots,
+                    usedSpells = character.usedSpells,
+                    onSpellClick = { onEntityClick(it.toDnDEntityMin()) },
+                    onMarkSpellSlotAsUsed = { typeId, lvl -> },
+                    onMarkSpellSlotAsNotUsed = { typeId, lvl -> }
                 )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(
                     notes = character.notes,
                     onUpdateOrNewNote = onUpdateOrNewNote,
-                    onDeleteNote = onDeleteNote
+                    onDeleteNote = onDeleteNote,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }

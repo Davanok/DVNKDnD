@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
     tableName = "proficiencies",
     indices = [Index(value = ["type", "name"], unique = true)]
 )
-data class DnDProficiency(
+data class DbProficiency(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("user_id") val userId: Uuid?,
     val type: ProficiencyTypes,

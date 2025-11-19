@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.util.fastForEach
-import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
 import com.davanok.dvnkdnd.ui.components.text.buildPreviewString
 import dvnkdnd.composeapp.generated.resources.Res
@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CharacterHealthWidget(
-    health: DnDCharacterHealth,
+    health: CharacterHealth,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -68,8 +68,8 @@ fun CharacterHealthWidget(
 
 @Composable
 fun CharacterHealthDialogContent(
-    baseHealth: DnDCharacterHealth,
-    updateHealth: (DnDCharacterHealth) -> Unit,
+    baseHealth: CharacterHealth,
+    updateHealth: (CharacterHealth) -> Unit,
     healthModifiers: List<ModifierExtendedInfo>,
 ) {
     var inputValue by remember { mutableStateOf("") }

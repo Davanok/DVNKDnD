@@ -14,13 +14,13 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterWithHealth
 import com.davanok.dvnkdnd.data.model.entities.character.CoinsGroup
-import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.data.model.entities.character.toEntityWithModifiers
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.EntityBase
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.data.model.util.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.data.repositories.BrowseRepository
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
@@ -110,7 +110,7 @@ class NewCharacterViewModel(
         )
     }
 
-    fun setCharacterModifiers(attributes: DnDAttributesGroup, selectedModifiers: List<Uuid>) = runCatching {
+    fun setCharacterModifiers(attributes: AttributesGroup, selectedModifiers: List<Uuid>) = runCatching {
         newCharacterState = newCharacterState.copy(
             attributes = attributes,
             selectedModifiers = newCharacterState.selectedModifiers + selectedModifiers
@@ -201,7 +201,7 @@ private data class NewCharacterWithFullEntities(
 private data class NewCharacter(
     val character: NewCharacterWithFullEntities = NewCharacterWithFullEntities(),
 
-    val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
+    val attributes: AttributesGroup = AttributesGroup.Default,
     val selectedModifiers: Set<Uuid> = emptySet(),
 
     val level: Int = 1,
@@ -215,7 +215,7 @@ private data class NewCharacter(
         val dbImages = character.images.map { path -> DatabaseImage(Uuid.random(), path.toString()) }
 
 
-        val totalHealth = DnDCharacterHealth(
+        val totalHealth = CharacterHealth(
             max = baseHealth,
             current = baseHealth,
             temp = 0
@@ -227,7 +227,7 @@ private data class NewCharacter(
             coins = CoinsGroup(),
             attributes = attributes,
             health = totalHealth,
-            usedSpells = emptyList(),
+            usedSpells = emptyMap(),
             mainEntities = character.mainEntities,
             feats = emptyList(),
             selectedModifiers = selectedModifiers,

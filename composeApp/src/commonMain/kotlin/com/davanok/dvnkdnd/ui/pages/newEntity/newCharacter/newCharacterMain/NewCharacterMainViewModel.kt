@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFirstOrNull
@@ -280,6 +281,7 @@ data class DownloadableValues(
     val backgrounds: List<DnDEntityWithSubEntities> = emptyList(),
 )
 
+@Immutable
 data class NewCharacterMain(
     val images: List<Path> = emptyList(),
     val mainImage: Path? = null,

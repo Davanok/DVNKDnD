@@ -6,39 +6,39 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ClassWithSpells
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellSlots
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbClassSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbSpellSlotType
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
-import com.davanok.dvnkdnd.database.model.adapters.entities.toClassSpellSlots
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDbClassSpellSlots
 import com.davanok.dvnkdnd.database.model.adapters.entities.toDbSpellSlotType
-import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDClass
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDbClass
 import kotlin.uuid.Uuid
 
 @Dao
 interface ClassDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertClass(cls: DnDClass)
+    suspend fun insertClass(cls: DbClass)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertClassSpells(clsSpells: List<ClassSpell>)
+    suspend fun insertClassSpells(clsSpells: List<DbClassSpell>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSpellSlotTypes(spellSlotType: List<DbSpellSlotType>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertClassSpellSlots(classSpellSlots: List<ClassSpellSlots>)
+    suspend fun insertClassSpellSlots(classSpellSlots: List<DbClassSpellSlots>)
 
     @Transaction
     suspend fun insertFullClassSpellSlots(classId: Uuid, slots: List<SpellSlots>) {
         insertSpellSlotTypes(slots.map { it.type.toDbSpellSlotType() }.toSet().toList())
-        insertClassSpellSlots(slots.map { it.toClassSpellSlots(classId) })
+        insertClassSpellSlots(slots.map { it.toDbClassSpellSlots(classId) })
     }
 
     @Transaction
     suspend fun insertClassWithSpells(entityId: Uuid, cls: ClassWithSpells) {
-        insertClass(cls.toDnDClass(entityId))
-        insertClassSpells(cls.spells.map { ClassSpell(classId = entityId, spellId = it) })
+        insertClass(cls.toDbClass(entityId))
+        insertClassSpells(cls.spells.map { DbClassSpell(classId = entityId, spellId = it) })
         insertFullClassSpellSlots(entityId, cls.slots)
     }
 }

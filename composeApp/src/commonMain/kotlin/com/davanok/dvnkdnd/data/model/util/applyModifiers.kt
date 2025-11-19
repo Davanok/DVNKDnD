@@ -13,7 +13,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.data.model.entities.character.CustomModifier
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toSkillsGroup
 import io.github.aakira.napier.Napier
@@ -24,13 +24,12 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
-import kotlin.text.toInt
 
 
 private inline fun <reified K : Enum<K>> processGroups(
-    modifierGroups: List<DnDModifiersGroup>,
+    modifierGroups: List<ModifiersGroup>,
     baseValues: MutableMap<K, Int>,
-    groupValueProvider: (DnDModifiersGroup) -> Double
+    groupValueProvider: (ModifiersGroup) -> Double
 ) {
     modifierGroups.fastForEach { group ->
         val value = groupValueProvider(group)
@@ -215,9 +214,9 @@ fun CharacterFull.withAppliedModifiers(): CharacterFull {
 
 fun calculateModifierSum(
     baseValue: Int,
-    groups: List<DnDModifiersGroup>,
+    groups: List<ModifiersGroup>,
     modifierFilter: (DnDModifier) -> Boolean,
-    groupValueProvider: (DnDModifiersGroup) -> Double
+    groupValueProvider: (ModifiersGroup) -> Double
 ): Int {
     require(groups.groupBy { it.target }.size == 1) {
         "All groups must have the same target"

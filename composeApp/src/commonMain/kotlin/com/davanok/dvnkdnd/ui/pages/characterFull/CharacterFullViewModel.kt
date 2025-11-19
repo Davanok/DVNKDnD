@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
-import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.util.withAppliedModifiers
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
@@ -57,7 +57,7 @@ class CharacterFullViewModel(
         initialValue = CharacterFullUiState(isLoading = true)
     )
 
-    fun updateHealth(health: DnDCharacterHealth) = viewModelScope.launch {
+    fun updateHealth(health: CharacterHealth) = viewModelScope.launch {
         repository.setCharacterHealth(characterId, health)
     }
     fun updateOrNewNote(note: CharacterNote) = viewModelScope.launch {

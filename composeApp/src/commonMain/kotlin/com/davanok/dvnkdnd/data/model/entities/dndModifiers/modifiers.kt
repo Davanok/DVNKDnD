@@ -4,7 +4,7 @@ import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DnDAttributesGroup(
+data class AttributesGroup(
     val strength: Int,
     val dexterity: Int,
     val constitution: Int,
@@ -37,7 +37,7 @@ data class DnDAttributesGroup(
         Attributes.WISDOM -> copy(wisdom = value)
         Attributes.CHARISMA -> copy(charisma = value)
     }
-    operator fun plus(other: DnDAttributesGroup) = DnDAttributesGroup(
+    operator fun plus(other: AttributesGroup) = AttributesGroup(
         strength = strength + other.strength,
         dexterity = dexterity + other.dexterity,
         constitution = constitution + other.constitution,
@@ -46,11 +46,11 @@ data class DnDAttributesGroup(
         charisma = charisma + other.charisma
     )
     companion object {
-        val Default = DnDAttributesGroup(10, 10, 10, 10, 10, 10)
+        val Default = AttributesGroup(10, 10, 10, 10, 10, 10)
     }
 }
 
-fun Map<Attributes, Int>.toAttributesGroup() = DnDAttributesGroup(
+fun Map<Attributes, Int>.toAttributesGroup() = AttributesGroup(
     strength = get(Attributes.STRENGTH) ?: 0,
     dexterity = get(Attributes.DEXTERITY) ?: 0,
     constitution = get(Attributes.CONSTITUTION) ?: 0,
@@ -58,10 +58,10 @@ fun Map<Attributes, Int>.toAttributesGroup() = DnDAttributesGroup(
     wisdom = get(Attributes.WISDOM) ?: 0,
     charisma = get(Attributes.CHARISMA) ?: 0,
 )
-fun DnDAttributesGroup.map(transform: (Int) -> Int) = toMap()
+fun AttributesGroup.map(transform: (Int) -> Int) = toMap()
     .mapValues { transform(it.value) }
     .toAttributesGroup()
-fun DnDAttributesGroup.modifiers() = listOf(
+fun AttributesGroup.modifiers() = listOf(
     strength,
     dexterity,
     constitution,

@@ -43,7 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.dndEnums.skills
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
@@ -135,7 +135,7 @@ fun NewCharacterStatsLargeScreen(
 
 @Composable
 private fun Content(
-    attributes: DnDAttributesGroup,
+    attributes: AttributesGroup,
     savingThrows: Map<Attributes, List<ModifierExtendedInfo>>,
     savingThrowValues: Map<Attributes, Int>,
     skills: Map<Skills, List<ModifierExtendedInfo>>,

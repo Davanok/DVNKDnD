@@ -7,50 +7,50 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpellAttack
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
-import com.davanok.dvnkdnd.database.model.adapters.entities.toDnDSpell
-import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellArea
-import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttack
-import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttackLevelModifier
-import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttackSave
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellArea
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttack
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackLevelModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackSave
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDbSpell
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDbSpellArea
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDbSpellAttack
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDbSpellAttackLevelModifier
+import com.davanok.dvnkdnd.database.model.adapters.entities.toDbSpellAttackSave
 import kotlin.uuid.Uuid
 
 @Dao
 interface SpellDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSpell(spell: DnDSpell)
+    suspend fun insertSpell(spell: DbSpell)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSpellArea(area: SpellArea)
+    suspend fun insertSpellArea(area: DbSpellArea)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSpellAttack(attack: SpellAttack)
+    suspend fun insertSpellAttack(attack: DbSpellAttack)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSpellAttackModifiers(modifiers: List<SpellAttackLevelModifier>)
+    suspend fun insertSpellAttackModifiers(modifiers: List<DbSpellAttackLevelModifier>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSpellAttackSave(save: SpellAttackSave)
+    suspend fun insertSpellAttackSave(save: DbSpellAttackSave)
 
     @Transaction
     suspend fun insertFullSpell(entityId: Uuid, spell: FullSpell) {
-        insertSpell(spell.toDnDSpell(entityId))
-        spell.area?.let { insertSpellArea(it.toSpellArea(entityId)) }
+        insertSpell(spell.toDbSpell(entityId))
+        spell.area?.let { insertSpellArea(it.toDbSpellArea(entityId)) }
         spell.attacks.forEach { insertFullSpellAttack(entityId, it) }
     }
 
     @Transaction
     suspend fun insertFullSpellAttack(spellId: Uuid, attack: FullSpellAttack) {
-        insertSpellAttack(attack.toSpellAttack(spellId))
+        insertSpellAttack(attack.toDbSpellAttack(spellId))
         insertSpellAttackModifiers(
             attack.modifiers.fastMap {
-                it.toSpellAttackLevelModifier(attack.id)
+                it.toDbSpellAttackLevelModifier(attack.id)
             }
         )
-        attack.save?.let { insertSpellAttackSave(it.toSpellAttackSave(attack.id)) }
+        attack.save?.let { insertSpellAttackSave(it.toDbSpellAttackSave(attack.id)) }
     }
 }

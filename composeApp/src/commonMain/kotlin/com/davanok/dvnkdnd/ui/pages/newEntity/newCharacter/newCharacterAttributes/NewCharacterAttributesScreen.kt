@@ -40,9 +40,9 @@ import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForString
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.data.model.ui.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -132,10 +132,10 @@ private fun Content(
     modifier: Modifier = Modifier,
     selectedCreationOption: AttributesSelectorType,
     onOptionSelected: (AttributesSelectorType) -> Unit,
-    allModifiersGroups: List<DnDModifiersGroup>,
+    allModifiersGroups: List<ModifiersGroup>,
     selectedModifiersBonuses: Set<Uuid>,
-    modifiers: DnDAttributesGroup,
-    onModifiersChange: (DnDAttributesGroup) -> Unit,
+    modifiers: AttributesGroup,
+    onModifiersChange: (AttributesGroup) -> Unit,
     onSelectModifier: (DnDModifier) -> Unit
 ) {
     var showInfoDialog by remember { mutableStateOf(false) }
@@ -214,7 +214,7 @@ private fun CreationOptionsSelector(
 
 @Composable
 private fun AboutModifiersSelectorsDialog(
-    allModifiersGroups: List<DnDModifiersGroup>,
+    allModifiersGroups: List<ModifiersGroup>,
     selectedModifiersBonuses: Set<Uuid>,
     onDismiss: () -> Unit
 ) {

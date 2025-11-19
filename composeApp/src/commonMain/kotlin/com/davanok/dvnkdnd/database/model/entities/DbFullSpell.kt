@@ -5,28 +5,28 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpellAttack
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellArea
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttack
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackLevelModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackSave
 import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAreaInfo
 import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttackLevelModifierInfo
 import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttackSaveInfo
 
 data class DbFullSpellAttack(
     @Embedded
-    val attack: SpellAttack,
+    val attack: DbSpellAttack,
     @Relation(
         parentColumn = "id",
         entityColumn = "attack_id"
     )
-    val modifiers: List<SpellAttackLevelModifier>,
+    val modifiers: List<DbSpellAttackLevelModifier>,
     @Relation(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val save: SpellAttackSave?
+    val save: DbSpellAttackSave?
 ) {
     fun toFullSpellAttack() = FullSpellAttack(
         id = attack.id,
@@ -34,7 +34,7 @@ data class DbFullSpellAttack(
         diceCount = attack.diceCount,
         dice = attack.dice,
         modifier = attack.modifier,
-        modifiers = modifiers.fastMap(SpellAttackLevelModifier::toSpellAttackLevelModifierInfo),
+        modifiers = modifiers.fastMap(DbSpellAttackLevelModifier::toSpellAttackLevelModifierInfo),
         save = save?.toSpellAttackSaveInfo()
     )
 }
@@ -42,14 +42,14 @@ data class DbFullSpellAttack(
 
 data class DbFullSpell(
     @Embedded
-    val spell: DnDSpell,
+    val spell: DbSpell,
     @Relation(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val area: SpellArea?,
+    val area: DbSpellArea?,
     @Relation(
-        SpellAttack::class,
+        DbSpellAttack::class,
         parentColumn = "id",
         entityColumn = "spell_id"
     )

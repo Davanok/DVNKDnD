@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.data.model.entities.dndEntities
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.data.model.util.wordInTextLevenshtein
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -16,7 +16,7 @@ data class DnDFullEntity(
     val images: List<DatabaseImage> = emptyList(),
 
     @SerialName("modifier_groups")
-    val modifiersGroups: List<DnDModifiersGroup>,
+    val modifiersGroups: List<ModifiersGroup>,
 
     val proficiencies: List<JoinProficiency>,
     val abilities: List<AbilityLink>,

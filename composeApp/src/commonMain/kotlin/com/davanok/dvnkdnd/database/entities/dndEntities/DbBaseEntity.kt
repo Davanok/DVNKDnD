@@ -10,10 +10,10 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "base_entities",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["parent_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["parent_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DnDBaseEntity(
+data class DbBaseEntity(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("parent_id", index = true) val parentId: Uuid? = null,
     @ColumnInfo("user_id") val userId: Uuid? = null,
@@ -27,10 +27,10 @@ data class DnDBaseEntity(
 @Entity(
     tableName = "entity_full_descriptions",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["entityId"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class EntityFullDescription(
+data class DbEntityFullDescription(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo(index = true) val entityId: Uuid,
     val text: String
@@ -39,10 +39,10 @@ data class EntityFullDescription(
 @Entity(
     tableName = "entity_images",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.SET_NULL)
+        ForeignKey(DbBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.SET_NULL)
     ]
 )
-data class EntityImage(
+data class DbEntityImage(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("entity_id", index = true) val entityId: Uuid?,
     val path: String

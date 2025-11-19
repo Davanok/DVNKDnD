@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.skills
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkillsGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.SkillsGroup
 import com.davanok.dvnkdnd.data.model.util.calculateModifier
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
@@ -42,9 +42,9 @@ private val StatItemMinWidth = 200.dp
 
 @Composable
 fun CharacterFullAttributesScreen(
-    attributes: DnDAttributesGroup,
-    savingThrows: DnDAttributesGroup,
-    skills: DnDSkillsGroup
+    attributes: AttributesGroup,
+    savingThrows: AttributesGroup,
+    skills: SkillsGroup
 ) {
     var itemsMaxHeight by remember { mutableIntStateOf(0) }
     val density = LocalDensity.current
@@ -84,7 +84,7 @@ private fun AttributeItem(
     attribute: Attributes,
     attributeValue: Int,
     savingThrowValue: Int,
-    skillsValues: DnDSkillsGroup,
+    skillsValues: SkillsGroup,
     modifier: Modifier = Modifier
 ) {
     val calculatedModifier = remember(attributeValue) { calculateModifier(attributeValue) }

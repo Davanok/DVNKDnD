@@ -4,15 +4,15 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ClassWithSpells
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellSlots
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbClassSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbSpellSlotType
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
 import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellSlotType
 import kotlin.uuid.Uuid
 
-data class ClassSpellSlotsWithType(
-    @Embedded val slot: ClassSpellSlots,
+data class DbClassSpellSlotsWithType(
+    @Embedded val slot: DbClassSpellSlots,
     @Relation(
         parentColumn = "type_id",
         entityColumn = "id"
@@ -31,26 +31,26 @@ data class ClassSpellSlotsWithType(
 
 data class DbClassWithSpells(
     @Embedded
-    val cls: DnDClass,
+    val cls: DbClass,
     @Relation(
-        ClassSpell::class,
+        DbClassSpell::class,
         parentColumn = "id",
         entityColumn = "class_id",
         projection = ["spell_id"]
     )
     val spells: List<Uuid>,
     @Relation(
-        entity = ClassSpellSlots::class,
+        entity = DbClassSpellSlots::class,
         parentColumn = "id",
         entityColumn = "class_id"
     )
-    val slots: List<ClassSpellSlotsWithType>
+    val slots: List<DbClassSpellSlotsWithType>
 ) {
     fun toClassWithSpells() = ClassWithSpells(
         primaryStats = cls.primaryStats,
         hitDice = cls.hitDice,
         caster = cls.caster,
         spells = spells,
-        slots = slots.map(ClassSpellSlotsWithType::toSpellSlots),
+        slots = slots.map(DbClassSpellSlotsWithType::toSpellSlots),
     )
 }

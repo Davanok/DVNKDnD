@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.modifiers
 import com.davanok.dvnkdnd.data.model.ui.UiError
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
@@ -72,7 +72,7 @@ class NewCharacterStatsViewModel(
         }
     }
 
-    fun setModifiers(modifiers: DnDAttributesGroup) {
+    fun setModifiers(modifiers: AttributesGroup) {
         _uiState.value = _uiState.value.copy(modifiers = modifiers)
     }
 
@@ -171,7 +171,7 @@ data class NewCharacterStatsUiState(
     val attributesSelectorType: AttributesSelectorType = AttributesSelectorType.POINT_BUY,
 
     val character: CharacterBase? = null,
-    val modifiers: DnDAttributesGroup = DnDAttributesGroup.Default,
+    val modifiers: AttributesGroup = AttributesGroup.Default,
     val selectedAttributesBonuses: Set<Uuid> = emptySet(),
-    val allModifiersGroups: List<DnDModifiersGroup> = emptyList()
+    val allModifiersGroups: List<ModifiersGroup> = emptyList()
 )

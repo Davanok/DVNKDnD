@@ -8,17 +8,17 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbProficiency
 import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "entity_modifiers_groups",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class EntityModifiersGroup(
+data class DbEntityModifiersGroup(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
 
@@ -45,11 +45,11 @@ data class EntityModifiersGroup(
 @Entity(
     tableName = "entity_modifiers",
     foreignKeys = [
-        ForeignKey(EntityModifiersGroup::class, ["id"], ["group_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbEntityModifiersGroup::class, ["id"], ["group_id"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [Index(value = ["group_id", "target"], unique = true)]
 )
-data class EntityModifier(
+data class DbEntityModifier(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("group_id", index = true) val groupId: Uuid,
     val selectable: Boolean,
@@ -61,11 +61,11 @@ data class EntityModifier(
     tableName = "entity_proficiencies",
     primaryKeys = ["entity_id", "proficiency_id"],
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDProficiency::class, ["id"], ["proficiency_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbProficiency::class, ["id"], ["proficiency_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class EntityProficiency(
+data class DbEntityProficiency(
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     @ColumnInfo("proficiency_id", index = true) val proficiencyId: Uuid,
     val level: Int
@@ -75,11 +75,11 @@ data class EntityProficiency(
     tableName = "entity_abilities",
     primaryKeys = ["entity_id", "ability_id"],
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDAbility::class, ["id"], ["ability_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbAbility::class, ["id"], ["ability_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class EntityAbility(
+data class DbEntityAbility(
     @ColumnInfo("entity_id", index = true) val entityId: Uuid,
     @ColumnInfo("ability_id", index = true) val abilityId: Uuid,
     val level: Int

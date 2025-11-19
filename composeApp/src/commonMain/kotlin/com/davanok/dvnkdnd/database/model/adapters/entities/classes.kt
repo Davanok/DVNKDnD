@@ -3,13 +3,13 @@ package com.davanok.dvnkdnd.database.model.adapters.entities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ClassWithSpells
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellSlots
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellSlotsType
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.ClassSpellSlots
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbClassSpellSlots
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbSpellSlotType
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
 import kotlin.uuid.Uuid
 
 
-fun SpellSlots.toClassSpellSlots(classId: Uuid) = ClassSpellSlots(
+fun SpellSlots.toDbClassSpellSlots(classId: Uuid) = DbClassSpellSlots(
     id = id,
     classId = classId,
     level = level,
@@ -19,7 +19,7 @@ fun SpellSlots.toClassSpellSlots(classId: Uuid) = ClassSpellSlots(
     typeId = type.id
 )
 
-fun ClassWithSpells.toDnDClass(entityId: Uuid) = DnDClass(
+fun ClassWithSpells.toDbClass(entityId: Uuid) = DbClass(
     id = entityId,
     primaryStats = primaryStats,
     hitDice = hitDice,

@@ -9,17 +9,17 @@ import com.davanok.dvnkdnd.data.model.dndEnums.Dices
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.CasterProgression
 import com.davanok.dvnkdnd.data.model.dndEnums.TimeUnits
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpell
 import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "classes",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DnDClass( // also subclass
+data class DbClass( // also subclass
     @PrimaryKey val id: Uuid, // in same time is entity id
     val primaryStats: List<Attributes>,
     val hitDice: Dices,
@@ -29,11 +29,11 @@ data class DnDClass( // also subclass
     tableName = "class_spells",
     primaryKeys = ["class_id", "spell_id"],
     foreignKeys = [
-        ForeignKey(DnDClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE),
     ]
 )
-data class ClassSpell( // spells that available for class
+data class DbClassSpell( // spells that available for class
     @ColumnInfo("class_id", index = true) val classId: Uuid,
     @ColumnInfo("spell_id", index = true) val spellId: Uuid,
 )
@@ -41,11 +41,11 @@ data class ClassSpell( // spells that available for class
     tableName = "spell_slots",
     indices = [Index(value = ["class_id", "type_id", "level"], unique = true)],
     foreignKeys = [
-        ForeignKey(DnDClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbClass::class, ["id"], ["class_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DbSpellSlotType::class, ["id"], ["type_id"], onDelete = ForeignKey.SET_DEFAULT)
     ]
 )
-data class ClassSpellSlots(
+data class DbClassSpellSlots(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("class_id", index = true) val classId: Uuid,
     @ColumnInfo("type_id", index = true, defaultValue = "'00000000-0000-0000-0000-000000000000'")

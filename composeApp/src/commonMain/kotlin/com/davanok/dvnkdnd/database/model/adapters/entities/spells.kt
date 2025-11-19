@@ -5,22 +5,22 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpellAttack
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellAreaInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellAttackLevelModifierInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellAttackSaveInfo
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellArea
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttack
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackLevelModifier
-import com.davanok.dvnkdnd.database.entities.dndEntities.SpellAttackSave
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellArea
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttack
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackLevelModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackSave
 import kotlin.uuid.Uuid
 
 
-fun SpellArea.toSpellAreaInfo() = SpellAreaInfo(
+fun DbSpellArea.toSpellAreaInfo() = SpellAreaInfo(
     range = range,
     type = type,
     width = width,
     height = height
 )
 
-fun SpellAreaInfo.toSpellArea(entityId: Uuid) = SpellArea(
+fun SpellAreaInfo.toDbSpellArea(entityId: Uuid) = DbSpellArea(
     id = entityId,
     range = range,
     type = type,
@@ -28,18 +28,18 @@ fun SpellAreaInfo.toSpellArea(entityId: Uuid) = SpellArea(
     height = height
 )
 
-fun SpellAttackSave.toSpellAttackSaveInfo() = SpellAttackSaveInfo(
+fun DbSpellAttackSave.toSpellAttackSaveInfo() = SpellAttackSaveInfo(
     savingThrow = savingThrow,
     halfOnSuccess = halfOnSuccess
 )
 
-fun SpellAttackSaveInfo.toSpellAttackSave(attackId: Uuid) = SpellAttackSave(
+fun SpellAttackSaveInfo.toDbSpellAttackSave(attackId: Uuid) = DbSpellAttackSave(
     id = attackId,
     savingThrow = savingThrow,
     halfOnSuccess = halfOnSuccess
 )
 
-fun SpellAttackLevelModifier.toSpellAttackLevelModifierInfo() = SpellAttackLevelModifierInfo(
+fun DbSpellAttackLevelModifier.toSpellAttackLevelModifierInfo() = SpellAttackLevelModifierInfo(
     id = id,
     level = level,
     diceCount = diceCount,
@@ -47,8 +47,8 @@ fun SpellAttackLevelModifier.toSpellAttackLevelModifierInfo() = SpellAttackLevel
     modifier = modifier
 )
 
-fun SpellAttackLevelModifierInfo.toSpellAttackLevelModifier(attackId: Uuid) =
-    SpellAttackLevelModifier(
+fun SpellAttackLevelModifierInfo.toDbSpellAttackLevelModifier(attackId: Uuid) =
+    DbSpellAttackLevelModifier(
         id = id,
         attackId = attackId,
         level = level,
@@ -58,7 +58,7 @@ fun SpellAttackLevelModifierInfo.toSpellAttackLevelModifier(attackId: Uuid) =
     )
 
 
-fun FullSpell.toDnDSpell(entityId: Uuid) = DnDSpell(
+fun FullSpell.toDbSpell(entityId: Uuid) = DbSpell(
     id = entityId,
     school = school,
     level = level,
@@ -71,6 +71,11 @@ fun FullSpell.toDnDSpell(entityId: Uuid) = DnDSpell(
     concentration = concentration
 )
 
-fun FullSpellAttack.toSpellAttack(spellId: Uuid) = SpellAttack(
-    id, spellId, damageType, diceCount, dice, modifier
+fun FullSpellAttack.toDbSpellAttack(spellId: Uuid) = DbSpellAttack(
+    id = id,
+    spellId = spellId,
+    damageType = damageType,
+    diceCount = diceCount,
+    dice = dice,
+    modifier = modifier
 )

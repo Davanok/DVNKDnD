@@ -1,24 +1,24 @@
 package com.davanok.dvnkdnd.database.model.adapters.entities
 
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityModifiersGroup
 import kotlin.uuid.Uuid
 
-fun EntityModifier.toDnDModifier() = DnDModifier(
+fun DbEntityModifier.toDnDModifier() = DnDModifier(
     id = id,
     selectable = selectable,
     target = target
 )
 
-fun DnDModifier.toEntityModifier(groupId: Uuid) = EntityModifier(
+fun DnDModifier.toDbEntityModifier(groupId: Uuid) = DbEntityModifier(
     id = id,
     groupId = groupId,
     selectable = selectable,
     target = target
 )
-fun DnDModifiersGroup.toEntityModifiersGroup(entityId: Uuid) = EntityModifiersGroup(
+fun ModifiersGroup.toDbEntityModifiersGroup(entityId: Uuid) = DbEntityModifiersGroup(
     id = id,
     entityId = entityId,
     target = target,

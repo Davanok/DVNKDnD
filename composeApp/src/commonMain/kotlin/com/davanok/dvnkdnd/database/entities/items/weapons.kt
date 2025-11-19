@@ -11,17 +11,17 @@ import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "weapons",
-    foreignKeys = [ForeignKey(DnDItem::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
+    foreignKeys = [ForeignKey(DbItem::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
 )
-data class Weapon(
+data class DbWeapon(
     @PrimaryKey val id: Uuid,
     val atkBonus: Int
 )
 @Entity(
     tableName = "weapon_damages",
-    foreignKeys = [ForeignKey(Weapon::class, ["id"], ["weapon_id"], onDelete = ForeignKey.CASCADE)]
+    foreignKeys = [ForeignKey(DbWeapon::class, ["id"], ["weapon_id"], onDelete = ForeignKey.CASCADE)]
 )
-data class WeaponDamage(
+data class DbWeaponDamage(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("weapon_id", index = true) val weaponId: Uuid,
     @ColumnInfo("damage_type") val damageType: DamageTypes,

@@ -6,38 +6,38 @@ import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullWeapon
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinItemProperty
-import com.davanok.dvnkdnd.database.entities.items.Armor
-import com.davanok.dvnkdnd.database.entities.items.DnDItem
-import com.davanok.dvnkdnd.database.entities.items.DnDItemProperty
-import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
-import com.davanok.dvnkdnd.database.entities.items.Weapon
-import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
+import com.davanok.dvnkdnd.database.entities.items.DbArmor
+import com.davanok.dvnkdnd.database.entities.items.DbItem
+import com.davanok.dvnkdnd.database.entities.items.DbItemProperty
+import com.davanok.dvnkdnd.database.entities.items.DbItemPropertyLink
+import com.davanok.dvnkdnd.database.entities.items.DbWeapon
+import com.davanok.dvnkdnd.database.entities.items.DbWeaponDamage
 import com.davanok.dvnkdnd.database.model.adapters.entities.toArmorInfo
 import com.davanok.dvnkdnd.database.model.adapters.entities.toItemProperty
 import com.davanok.dvnkdnd.database.model.adapters.entities.toWeaponDamageInfo
 
 data class DbFullWeapon(
     @Embedded
-    val weapon: Weapon,
+    val weapon: DbWeapon,
     @Relation(
         parentColumn = "id",
         entityColumn = "weapon_id"
     )
-    val damages: List<WeaponDamage>
+    val damages: List<DbWeaponDamage>
 ) {
     fun toFullWeapon() = FullWeapon(
         atkBonus = weapon.atkBonus,
-        damages = damages.fastMap(WeaponDamage::toWeaponDamageInfo)
+        damages = damages.fastMap(DbWeaponDamage::toWeaponDamageInfo)
     )
 }
 data class DbJoinItemProperty(
     @Embedded
-    val link: ItemPropertyLink,
+    val link: DbItemPropertyLink,
     @Relation(
         parentColumn = "property_id",
         entityColumn = "id"
     )
-    val property: DnDItemProperty
+    val property: DbItemProperty
 ) {
     fun toJoinItemProperty() = JoinItemProperty(
         itemId = link.itemId,
@@ -47,9 +47,9 @@ data class DbJoinItemProperty(
 }
 data class DbFullItem(
     @Embedded
-    val item: DnDItem,
+    val item: DbItem,
     @Relation(
-        ItemPropertyLink::class,
+        DbItemPropertyLink::class,
         parentColumn = "id",
         entityColumn = "item_id"
     )
@@ -58,9 +58,9 @@ data class DbFullItem(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val armor: Armor?,
+    val armor: DbArmor?,
     @Relation(
-        Weapon::class,
+        DbWeapon::class,
         parentColumn = "id",
         entityColumn = "id"
     )

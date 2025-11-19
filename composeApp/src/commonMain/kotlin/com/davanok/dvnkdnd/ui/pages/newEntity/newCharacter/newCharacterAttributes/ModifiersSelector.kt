@@ -57,9 +57,9 @@ import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForString
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.modifiers
 import com.davanok.dvnkdnd.data.model.ui.UiSelectableState
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
@@ -87,7 +87,7 @@ private data class AppliedModifier(
 private fun applyModifiers(base: Int, modifiers: List<AppliedModifier>) =
     modifiers.fastFold(base) { acc, modifier -> applyOperation(acc, modifier.value, modifier.operation) }
 
-private fun List<DnDModifiersGroup>.appliedModifiers(attribute: Attributes, selectedModifiers: Set<Uuid>) =
+private fun List<ModifiersGroup>.appliedModifiers(attribute: Attributes, selectedModifiers: Set<Uuid>) =
     fastFlatMap { group ->
         group.modifiers.fastFilteredMap(
             predicate = {
@@ -99,7 +99,7 @@ private fun List<DnDModifiersGroup>.appliedModifiers(attribute: Attributes, sele
         )
     }
 
-private fun approximateToDefault(input: DnDAttributesGroup): DnDAttributesGroup {
+private fun approximateToDefault(input: AttributesGroup): AttributesGroup {
     val statsList = input.modifiers().withIndex()
 
     val assignment = statsList
@@ -109,7 +109,7 @@ private fun approximateToDefault(input: DnDAttributesGroup): DnDAttributesGroup 
         }
         .toMap()
 
-    return DnDAttributesGroup(
+    return AttributesGroup(
         strength = assignment.getValue(0),
         dexterity = assignment.getValue(1),
         constitution = assignment.getValue(2),
@@ -122,10 +122,10 @@ private fun approximateToDefault(input: DnDAttributesGroup): DnDAttributesGroup 
 @Composable
 fun ModifiersSelector(
     selectedCreationOption: AttributesSelectorType,
-    allModifiersGroups: List<DnDModifiersGroup>,
+    allModifiersGroups: List<ModifiersGroup>,
     selectedAttributeModifiers: Set<Uuid>,
-    modifiers: DnDAttributesGroup,
-    onModifiersChange: (DnDAttributesGroup) -> Unit,
+    modifiers: AttributesGroup,
+    onModifiersChange: (AttributesGroup) -> Unit,
     onSelectModifiers: (DnDModifier) -> Unit,
 ) {
     Crossfade(
@@ -167,9 +167,9 @@ fun ModifiersSelector(
 
 @Composable
 private fun ColumnScope.PointBuyModifiersSelector(
-    character: DnDAttributesGroup,
-    onChange: (DnDAttributesGroup) -> Unit,
-    allModifiersGroups: List<DnDModifiersGroup>,
+    character: AttributesGroup,
+    onChange: (AttributesGroup) -> Unit,
+    allModifiersGroups: List<ModifiersGroup>,
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
 ) {
@@ -205,9 +205,9 @@ private fun ColumnScope.PointBuyModifiersSelector(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DefaultArrayModifiersSelector(
-    character: DnDAttributesGroup,
-    onChange: (DnDAttributesGroup) -> Unit,
-    allModifiersGroups: List<DnDModifiersGroup>,
+    character: AttributesGroup,
+    onChange: (AttributesGroup) -> Unit,
+    allModifiersGroups: List<ModifiersGroup>,
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
 ) {
@@ -284,9 +284,9 @@ private fun DefaultArrayModifiersSelector(
 
 @Composable
 private fun ManualModifiersSelector(
-    character: DnDAttributesGroup,
-    onChange: (DnDAttributesGroup) -> Unit,
-    allModifiersGroups: List<DnDModifiersGroup>,
+    character: AttributesGroup,
+    onChange: (AttributesGroup) -> Unit,
+    allModifiersGroups: List<ModifiersGroup>,
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
 ) {
@@ -309,7 +309,7 @@ private fun ManualModifiersSelector(
 
 @Composable
 fun ModifiersSelectionTable(
-    allModifiersGroups: List<DnDModifiersGroup>,
+    allModifiersGroups: List<ModifiersGroup>,
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
     modifier: Modifier = Modifier,

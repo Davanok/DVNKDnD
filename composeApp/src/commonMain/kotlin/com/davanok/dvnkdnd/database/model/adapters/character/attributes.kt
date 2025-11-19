@@ -1,10 +1,10 @@
 package com.davanok.dvnkdnd.database.model.adapters.character
 
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
-import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterAttributes
 import kotlin.uuid.Uuid
 
-fun CharacterAttributes.toAttributesGroup() = DnDAttributesGroup(
+fun DbCharacterAttributes.toAttributesGroup() = AttributesGroup(
     strength = strength,
     dexterity = dexterity,
     constitution = constitution,
@@ -12,7 +12,7 @@ fun CharacterAttributes.toAttributesGroup() = DnDAttributesGroup(
     wisdom = wisdom,
     charisma = charisma
 )
-fun DnDAttributesGroup.toCharacterAttributes(characterId: Uuid) = CharacterAttributes(
+fun AttributesGroup.toDbCharacterAttributes(characterId: Uuid) = DbCharacterAttributes(
     id = characterId,
     strength = strength,
     dexterity = dexterity,

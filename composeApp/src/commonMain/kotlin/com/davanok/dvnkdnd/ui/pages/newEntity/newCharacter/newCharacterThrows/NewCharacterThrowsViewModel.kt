@@ -12,9 +12,9 @@ import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifier
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.map
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
 import com.davanok.dvnkdnd.data.model.ui.UiError
@@ -46,12 +46,12 @@ class NewCharacterThrowsViewModel(
 
     // backing caches populated on load
 
-    private var attributeModifiers: DnDAttributesGroup = DnDAttributesGroup.Default
+    private var attributeModifiers: AttributesGroup = AttributesGroup.Default
         .map(::calculateModifier)
 
-    private var modifierGroups: List<DnDModifiersGroup> = emptyList()
+    private var modifierGroups: List<ModifiersGroup> = emptyList()
     private var groupIdToEntityLevel: Map<Uuid, Int> = emptyMap()
-    private var groupIdToGroup: Map<Uuid, DnDModifiersGroup> = emptyMap()
+    private var groupIdToGroup: Map<Uuid, ModifiersGroup> = emptyMap()
     private var modifierIdToGroupId: Map<Uuid, Uuid> = emptyMap()
     private var modifierIdToModifier: Map<Uuid, DnDModifier> = emptyMap()
 
@@ -92,7 +92,7 @@ class NewCharacterThrowsViewModel(
         }
     }
 
-    private fun resolveValueSource(group: DnDModifiersGroup): Double {
+    private fun resolveValueSource(group: ModifiersGroup): Double {
         val stateSnapshot = uiState.value
 
         val value = when (group.valueSource) {
@@ -124,7 +124,7 @@ class NewCharacterThrowsViewModel(
 
     private fun buildExtInfo(
         modifier: DnDModifier,
-        group: DnDModifiersGroup,
+        group: ModifiersGroup,
         selectable: Boolean,
         selected: Boolean
     ) = ModifierExtendedInfo(
@@ -266,7 +266,7 @@ data class NewCharacterThrowsUiState(
     val character: CharacterBase? = null,
     val characterLevel: Int = 1,
     val proficiencyBonus: Int = proficiencyBonusByLevel(characterLevel),
-    val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
+    val attributes: AttributesGroup = AttributesGroup.Default,
 
     val savingThrows: Map<Attributes, Pair<List<ModifierExtendedInfo>, Int>> = emptyMap(),// SavingThrows to (modifiers to result value)
     val skills: Map<Skills, Pair<List<ModifierExtendedInfo>, Int>> = emptyMap() // Skill to (modifiers to result value)

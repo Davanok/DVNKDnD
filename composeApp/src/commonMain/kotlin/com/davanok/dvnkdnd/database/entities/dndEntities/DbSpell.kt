@@ -17,13 +17,13 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "spells",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DnDSpell(
+data class DbSpell(
     @PrimaryKey val id: Uuid = Uuid.random(),
     val school: MagicSchools,
-    val level: Int?,
+    val level: Int,
     @ColumnInfo("casting_time")
     val castingTime: CastingTime,
     @ColumnInfo("casting_time_other")
@@ -39,10 +39,10 @@ data class DnDSpell(
 @Entity(
     tableName = "spell_areas",
     foreignKeys = [
-        ForeignKey(DnDSpell::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbSpell::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class SpellArea(
+data class DbSpellArea(
     @PrimaryKey val id: Uuid,
     val range: Int,
     val type: AreaTypes,
@@ -53,10 +53,10 @@ data class SpellArea(
 @Entity(
     tableName = "spell_attacks",
     foreignKeys = [
-        ForeignKey(DnDSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class SpellAttack(
+data class DbSpellAttack(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("spell_id", index = true) val spellId: Uuid,
     val damageType: DamageTypes,
@@ -68,10 +68,10 @@ data class SpellAttack(
 @Entity(
     tableName = "spell_attack_level_modifiers",
     foreignKeys = [
-        ForeignKey(SpellAttack::class, ["id"], ["attack_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbSpellAttack::class, ["id"], ["attack_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class SpellAttackLevelModifier(
+data class DbSpellAttackLevelModifier(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("attack_id", index = true) val attackId: Uuid,
     val level: Int,
@@ -83,10 +83,10 @@ data class SpellAttackLevelModifier(
 @Entity(
     tableName = "spell_attack_save",
     foreignKeys = [
-        ForeignKey(SpellAttack::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbSpellAttack::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class SpellAttackSave(
+data class DbSpellAttackSave(
     @PrimaryKey val id: Uuid,
     @ColumnInfo("saving_throw") val savingThrow: Attributes,
     @ColumnInfo("half_on_success") val halfOnSuccess: Boolean,

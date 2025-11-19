@@ -5,7 +5,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
-import com.davanok.dvnkdnd.database.model.entities.EntityWithSub
+import com.davanok.dvnkdnd.database.model.entities.DbEntityWithSub
 import kotlin.uuid.Uuid
 
 @Dao
@@ -15,15 +15,15 @@ interface BaseEntityDao {
 
     @Transaction
     @Query("SELECT * FROM base_entities WHERE id IN (:entityIds)")
-    suspend fun getEntitiesWithSubList(entityIds: List<Uuid>): List<EntityWithSub>
+    suspend fun getEntitiesWithSubList(entityIds: List<Uuid>): List<DbEntityWithSub>
 
     @Transaction
     @Query("SELECT * FROM base_entities WHERE type == :type")
-    suspend fun getEntitiesWithSubList(type: DnDEntityTypes): List<EntityWithSub>
+    suspend fun getEntitiesWithSubList(type: DnDEntityTypes): List<DbEntityWithSub>
 
     @Transaction
     @Query("SELECT * FROM base_entities WHERE type IN (:types)")
-    suspend fun getEntitiesWithSubList(vararg types: DnDEntityTypes): List<EntityWithSub>
+    suspend fun getEntitiesWithSubList(vararg types: DnDEntityTypes): List<DbEntityWithSub>
 
     @Query("SELECT id FROM base_entities WHERE id IN (:entitiesIds)")
     suspend fun getExistingEntities(entitiesIds: List<Uuid>): List<Uuid>

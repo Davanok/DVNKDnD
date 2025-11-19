@@ -1,9 +1,9 @@
 package com.davanok.dvnkdnd.database.model.entities
 
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.EntityBase
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbBaseEntity
 
-fun DnDBaseEntity.toEntityBase() = EntityBase(
+fun DbBaseEntity.toEntityBase() = EntityBase(
     id = id,
     parentId = parentId,
     userId = userId,
@@ -13,7 +13,7 @@ fun DnDBaseEntity.toEntityBase() = EntityBase(
     source = source,
     image = image
 )
-fun EntityBase.toDnDBaseEntity() = DnDBaseEntity(
+fun EntityBase.toDbBaseEntity() = DbBaseEntity(
     id = id,
     parentId = parentId,
     userId = userId,

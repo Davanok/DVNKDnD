@@ -3,12 +3,12 @@ package com.davanok.dvnkdnd.data.implementations
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
-import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.data.model.util.runLogging
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.database.daos.character.CharactersDao
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
-import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterHealth
+import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterHealth
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterNote
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -41,9 +41,9 @@ class CharactersRepositoryImpl(
             dao.saveCharacter(character)
         }
 
-    override suspend fun setCharacterHealth(characterId: Uuid, health: DnDCharacterHealth) =
+    override suspend fun setCharacterHealth(characterId: Uuid, health: CharacterHealth) =
         runLogging("setCharacterHealth") {
-            dao.insertCharacterHealth(health.toCharacterHealth(characterId))
+            dao.insertCharacterHealth(health.toDbCharacterHealth(characterId))
         }
 
     override suspend fun setCharacterNote(characterId: Uuid, note: CharacterNote) =

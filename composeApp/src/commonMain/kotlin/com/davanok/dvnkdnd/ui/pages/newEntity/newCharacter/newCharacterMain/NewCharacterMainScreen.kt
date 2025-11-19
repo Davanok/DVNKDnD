@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -26,10 +27,10 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,14 +38,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.carousel.CarouselState
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -94,7 +94,8 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
 
-private val textFieldMaxWidth = 488.dp 
+private const val textFieldMaxWidthDp = 488
+private const val preferredImagesWidthDp = 300
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -152,7 +153,7 @@ fun NewCharacterMainScreen(
             }
         ) { paddingValues ->
             Content(
-                modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp),
+                modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp).fillMaxWidth(),
                 character = uiState.character,
                 entities = uiState.entities,
                 empties = uiState.emptyFields,
@@ -185,8 +186,7 @@ private fun Content(
     ) {
         ImageContent(
             modifier = Modifier
-                .height(300.dp)
-                .widthIn(488.dp),
+                .widthIn(max = 488.dp),
             images = character.images,
             mainImage = character.mainImage,
             onAddImage = viewModel::addCharacterImage,
@@ -227,7 +227,7 @@ private fun ColumnScope.TextFields(
     onOpenExtendedSearch: (DnDEntityTypes, String) -> Unit,
 ) {
     val textFieldModifier = Modifier
-        .widthIn(max = textFieldMaxWidth)
+        .widthIn(max = textFieldMaxWidthDp.dp)
         .fillMaxWidth()
     val errorText: (error: Boolean) -> @Composable (() -> Unit)? = { error ->
         if (error) {
@@ -376,17 +376,31 @@ private fun ImageContent(
         )
     }
     if (images.isNotEmpty())
-        ImagesList(
+        Column(
             modifier = modifier,
-            images = images,
-            mainImage = mainImage,
-            onAddImage = imagePicker::launch,
-            onRemoveImage = onRemoveImage,
-            onSetImageMain = onSetImageMain
-        )
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ImagesList(
+                images = images,
+                mainImage = mainImage,
+                onRemoveImage = onRemoveImage,
+                onSetImageMain = onSetImageMain
+            )
+
+            Button(
+                modifier = Modifier.width(preferredImagesWidthDp.dp),
+                onClick = imagePicker::launch
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(Res.string.add_image)
+                )
+                Text(text = stringResource(Res.string.add_image))
+            }
+        }
     else
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier
         ) {
             Card(
                 modifier = Modifier
@@ -419,65 +433,51 @@ private fun ImageContent(
 private fun ImagesList(
     images: List<Path>,
     mainImage: Path?,
-    onAddImage: () -> Unit,
     onRemoveImage: (Path) -> Unit,
     onSetImageMain: (Path) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val carouselState = rememberSaveable(images.size, saver = CarouselState.Saver) {
-        CarouselState(0) { images.size + 1 }
-    }
+    val carouselState = rememberCarouselState { images.size }
     HorizontalMultiBrowseCarousel(
         modifier = modifier,
         state = carouselState,
-        preferredItemWidth = 300.dp,
+        preferredItemWidth = preferredImagesWidthDp.dp,
         itemSpacing = 8.dp
     ) { index ->
-        if (index != images.size) {
-            val image = images[index]
-            Box(
+        val image = images[index]
+        Box(
+            modifier = Modifier
+                .size(300.dp)
+                .maskClip(MaterialTheme.shapes.extraLarge),
+        ) {
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = image,
+                contentDescription = stringResource(Res.string.character_image),
+                contentScale = ContentScale.FillBounds
+            )
+            Row(
                 modifier = Modifier
-                    .size(300.dp)
-                    .maskClip(MaterialTheme.shapes.extraLarge),
+                    .align(Alignment.TopEnd)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = image,
-                    contentDescription = stringResource(Res.string.character_image),
-                    contentScale = ContentScale.FillBounds
-                )
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    IconButton(onClick = { onSetImageMain(image) }) {
-                        val icon =
-                            if (mainImage == image) Icons.Default.Favorite
-                            else Icons.Default.FavoriteBorder
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = stringResource(Res.string.set_image_to_main)
-                        )
-                    }
-                    IconButton(onClick = { onRemoveImage(image) }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = stringResource(Res.string.drop_image)
-                        )
-                    }
+                IconButton(onClick = { onSetImageMain(image) }) {
+                    val icon =
+                        if (mainImage == image) Icons.Default.Favorite
+                        else Icons.Default.FavoriteBorder
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = stringResource(Res.string.set_image_to_main)
+                    )
                 }
-            }
-        } else {
-            FilledIconButton(
-                onClick = onAddImage
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(Res.string.add_image)
-                )
+                IconButton(onClick = { onRemoveImage(image) }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(Res.string.drop_image)
+                    )
+                }
             }
         }
     }

@@ -1,11 +1,11 @@
 package com.davanok.dvnkdnd.database.model.adapters.character
 
 import com.davanok.dvnkdnd.data.model.entities.character.CoinsGroup
-import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterCoins
 import kotlin.uuid.Uuid
 
 
-fun CharacterCoins.toCoinsGroup() = CoinsGroup(
+fun DbCharacterCoins.toCoinsGroup() = CoinsGroup(
     copper = copper,
     silver = silver,
     electrum = electrum,
@@ -13,7 +13,7 @@ fun CharacterCoins.toCoinsGroup() = CoinsGroup(
     platinum = platinum
 )
 
-fun CoinsGroup.toCharacterCoins(characterId: Uuid) = CharacterCoins(
+fun CoinsGroup.toDbCharacterCoins(characterId: Uuid) = DbCharacterCoins(
     characterId = characterId,
     copper = copper,
     silver = silver,

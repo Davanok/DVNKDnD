@@ -5,16 +5,16 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.TimeUnits
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbBaseEntity
 import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "abilities",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DnDAbility(
+data class DbAbility(
     @PrimaryKey val id: Uuid,
     @ColumnInfo("usage_limit_by_level")
     val usageLimitByLevel: List<Int>
@@ -22,10 +22,10 @@ data class DnDAbility(
 @Entity(
     tableName = "ability_regain",
     foreignKeys = [
-        ForeignKey(DnDAbility::class, ["id"], ["ability_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbAbility::class, ["id"], ["ability_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DnDAbilityRegain(
+data class DbAbilityRegain(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("ability_id", index = true) val abilityId: Uuid,
     @ColumnInfo("regains_count") val regainsCount: Int?, // how many is regain. null for all

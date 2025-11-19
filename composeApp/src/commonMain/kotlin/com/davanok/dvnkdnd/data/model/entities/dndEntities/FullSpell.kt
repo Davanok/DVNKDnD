@@ -14,7 +14,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class FullSpell(
     val school: MagicSchools,
-    val level: Int?,
+    val level: Int,
     @SerialName("casting_time")
     val castingTime: CastingTime,
     @SerialName("casting_time_other")

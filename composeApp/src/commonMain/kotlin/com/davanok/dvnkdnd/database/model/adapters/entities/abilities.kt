@@ -3,34 +3,34 @@ package com.davanok.dvnkdnd.database.model.adapters.entities
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.AbilityInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.AbilityLink
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.AbilityRegain
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbilityRegain
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbAbilityRegain
 import kotlin.uuid.Uuid
 
 
-fun AbilityInfo.toDnDAbility(entityId: Uuid) = DnDAbility(
+fun AbilityInfo.toDbAbility(entityId: Uuid) = DbAbility(
     id = entityId,
     usageLimitByLevel = usageLimitByLevel
 )
-fun AbilityRegain.toDnDAbilityRegain(abilityId: Uuid) = DnDAbilityRegain(
+fun AbilityRegain.toDbAbilityRegain(abilityId: Uuid) = DbAbilityRegain(
     id = id,
     abilityId = abilityId,
     regainsCount = regainsCount,
     timeUnit = timeUnit,
     timeUnitCount = timeUnitCount
 )
-fun DnDAbilityRegain.toAbilityRegain() = AbilityRegain(
+fun DbAbilityRegain.toAbilityRegain() = AbilityRegain(
     id = id,
     regainsCount = regainsCount,
     timeUnit = timeUnit,
     timeUnitCount = timeUnitCount
 )
-fun EntityAbility.toAbilityLink() = AbilityLink(
+fun DbEntityAbility.toAbilityLink() = AbilityLink(
     abilityId = abilityId,
     level = level
 )
-fun AbilityLink.toEntityAbility(entityId: Uuid) = EntityAbility(
+fun AbilityLink.toDbEntityAbility(entityId: Uuid) = DbEntityAbility(
     entityId = entityId,
     abilityId = abilityId,
     level = level

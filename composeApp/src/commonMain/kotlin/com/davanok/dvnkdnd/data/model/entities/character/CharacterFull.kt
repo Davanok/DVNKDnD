@@ -10,9 +10,9 @@ import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.character.characterUtils.calculateModifiers
 import com.davanok.dvnkdnd.data.model.entities.character.characterUtils.calculateSpellSlots
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDSkillsGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.SkillsGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.data.model.entities.dndModifiers.toSkillsGroup
 import com.davanok.dvnkdnd.data.model.util.calculateArmorClass
@@ -35,8 +35,8 @@ data class CharacterFull(
     val items: List<CharacterItem> = emptyList(),
     val spells: List<CharacterSpell> = emptyList(),
 
-    val attributes: DnDAttributesGroup = DnDAttributesGroup.Default,
-    val health: DnDCharacterHealth = DnDCharacterHealth(),
+    val attributes: AttributesGroup = AttributesGroup.Default,
+    val health: CharacterHealth = CharacterHealth(),
     val usedSpells: Map<Uuid, IntArray> = emptyMap(),
 
     val mainEntities: List<CharacterMainEntityInfo> = emptyList(),
@@ -97,7 +97,7 @@ data class CharacterFull(
                 ?.let { appliedValues.skillModifiers[it] }
         }.let { it ?: 0 } + modifierValue
 
-    fun resolveGroupValue(group: DnDModifiersGroup): Double =
+    fun resolveGroupValue(group: ModifiersGroup): Double =
         resolveValueSource(group.valueSource, group.valueSourceTarget, groupIdToEntityId[group.id], group.value)
 
     val appliedModifiers by lazy { calculateModifiers() }
@@ -106,10 +106,10 @@ data class CharacterFull(
 }
 
 data class CharacterModifiedValues(
-    val attributes: DnDAttributesGroup,
-    val savingThrowModifiers: DnDAttributesGroup,
-    val skillModifiers: DnDSkillsGroup,
-    val health: DnDCharacterHealth,
+    val attributes: AttributesGroup,
+    val savingThrowModifiers: AttributesGroup,
+    val skillModifiers: SkillsGroup,
+    val health: CharacterHealth,
     val initiative: Int,
     val armorClass: Int
 )

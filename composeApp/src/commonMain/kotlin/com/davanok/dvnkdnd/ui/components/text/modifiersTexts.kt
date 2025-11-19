@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.data.model.dndEnums.applyForStringPreview
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
 import org.jetbrains.compose.resources.stringResource
 
@@ -41,6 +41,6 @@ fun ModifierExtendedInfo.buildPreviewString() = buildPreviewString(
     operation, valueSource, value
 )
 @Composable
-fun DnDModifiersGroup.buildPreviewString() = buildPreviewString(
+fun ModifiersGroup.buildPreviewString() = buildPreviewString(
     operation, valueSource, value
 )

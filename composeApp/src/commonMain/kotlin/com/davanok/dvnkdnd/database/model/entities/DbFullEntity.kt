@@ -5,40 +5,40 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.model.entities.DatabaseImage
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityImage
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifiersGroup
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityProficiency
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDAbility
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDBackground
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDClass
-import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DnDRace
-import com.davanok.dvnkdnd.database.entities.items.DnDItem
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityImage
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityModifiersGroup
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbAbility
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbBackground
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbClass
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbRace
+import com.davanok.dvnkdnd.database.entities.items.DbItem
 import com.davanok.dvnkdnd.database.model.adapters.entities.toAbilityLink
 import com.davanok.dvnkdnd.database.model.adapters.entities.toFeatInfo
 import com.davanok.dvnkdnd.database.model.adapters.entities.toRaceInfo
 
 data class DbFullEntity(
     @Embedded
-    val entity: DnDBaseEntity,
+    val entity: DbBaseEntity,
 
-    @Relation(EntityImage::class, parentColumn = "id", entityColumn = "entity_id")
-    val images: List<EntityImage>,
+    @Relation(parentColumn = "id", entityColumn = "entity_id")
+    val images: List<DbEntityImage>,
 
-    @Relation(EntityModifiersGroup::class, parentColumn = "id", entityColumn = "entity_id")
+    @Relation(DbEntityModifiersGroup::class, parentColumn = "id", entityColumn = "entity_id")
     val modifiers: List<DbModifiersGroups>,
 
-    @Relation(EntityProficiency::class, parentColumn = "id", entityColumn = "entity_id")
+    @Relation(DbEntityProficiency::class, parentColumn = "id", entityColumn = "entity_id")
     val proficiencies: List<DbJoinProficiency>,
     @Relation(parentColumn = "id", entityColumn = "entity_id")
-    val abilities: List<EntityAbility>,
+    val abilities: List<DbEntityAbility>,
 
     @Relation(
-        entity = DnDClass::class,
+        entity = DbClass::class,
         parentColumn = "id",
         entityColumn = "id"
     )
@@ -47,19 +47,19 @@ data class DbFullEntity(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val race: DnDRace?,
+    val race: DbRace?,
     @Relation(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val background: DnDBackground?,
+    val background: DbBackground?,
     @Relation(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val feat: DnDFeat?,
+    val feat: DbFeat?,
     @Relation(
-        DnDAbility::class,
+        DbAbility::class,
         parentColumn = "id",
         entityColumn = "id"
     )
@@ -68,15 +68,15 @@ data class DbFullEntity(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val proficiency: DnDProficiency?,
+    val proficiency: DbProficiency?,
     @Relation(
-        DnDSpell::class,
+        DbSpell::class,
         parentColumn = "id",
         entityColumn = "id"
     )
     val spell: DbFullSpell?,
     @Relation(
-        DnDItem::class,
+        DbItem::class,
         parentColumn = "id",
         entityColumn = "id"
     )
@@ -87,7 +87,7 @@ data class DbFullEntity(
         images = images.map { DatabaseImage(it.id, it.path) },
         modifiersGroups = modifiers.fastMap(DbModifiersGroups::toDnDModifiersGroup),
         proficiencies = proficiencies.fastMap(DbJoinProficiency::toJoinProficiency),
-        abilities = abilities.fastMap(EntityAbility::toAbilityLink),
+        abilities = abilities.fastMap(DbEntityAbility::toAbilityLink),
         cls = cls?.toClassWithSpells(),
         race = race?.toRaceInfo(),
         background = null,

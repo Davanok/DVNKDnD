@@ -3,14 +3,14 @@ package com.davanok.dvnkdnd.data.model.entities.character
 import androidx.compose.runtime.Immutable
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDModifiersGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
 import kotlin.uuid.Uuid
 
 @Immutable
 data class CharacterWithAllModifiers(
     val character: CharacterBase,
-    val attributes: DnDAttributesGroup,
+    val attributes: AttributesGroup,
 
     val selectedModifiers: Set<Uuid>,
     val entities: List<DnDEntityWithModifiers>,
@@ -20,7 +20,7 @@ data class CharacterWithAllModifiers(
 @Immutable
 data class DnDEntityWithModifiers(
     val entity: DnDEntityMin,
-    val modifiersGroups: List<DnDModifiersGroup>,
+    val modifiersGroups: List<ModifiersGroup>,
 )
 
 fun DnDFullEntity.toEntityWithModifiers() = DnDEntityWithModifiers(

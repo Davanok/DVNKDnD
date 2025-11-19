@@ -10,7 +10,7 @@ import kotlin.uuid.Uuid
 
 
 @Serializable
-data class DnDModifiersGroup(
+data class ModifiersGroup(
     val id: Uuid = Uuid.random(),
 
     val target: DnDModifierTargetType,

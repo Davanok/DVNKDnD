@@ -10,24 +10,24 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterItem
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterSpell
 import com.davanok.dvnkdnd.data.model.entities.character.CoinsGroup
-import com.davanok.dvnkdnd.data.model.entities.character.DnDCharacterHealth
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.DnDAttributesGroup
-import com.davanok.dvnkdnd.database.entities.character.Character
-import com.davanok.dvnkdnd.database.entities.character.CharacterAttributes
-import com.davanok.dvnkdnd.database.entities.character.CharacterCoins
-import com.davanok.dvnkdnd.database.entities.character.CharacterCustomModifier
-import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
-import com.davanok.dvnkdnd.database.entities.character.CharacterHealth
-import com.davanok.dvnkdnd.database.entities.character.CharacterImage
-import com.davanok.dvnkdnd.database.entities.character.CharacterMainEntity
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
+import com.davanok.dvnkdnd.database.entities.character.DbCharacter
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterAttributes
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterCoins
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterCustomModifier
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterFeat
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterHealth
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterImage
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterMainEntity
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterOptionalValues
-import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
-import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
-import com.davanok.dvnkdnd.database.entities.character.CharacterUsedSpellSlots
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterProficiency
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterSelectedModifier
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.database.entities.character.DbCharacterSpellLink
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.database.model.adapters.character.toAttributesGroup
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterNote
@@ -39,15 +39,15 @@ import com.davanok.dvnkdnd.database.model.entities.DbFullEntity
 
 data class DbJoinCharacterMainEntities(
     @Embedded
-    val link: CharacterMainEntity,
+    val link: DbCharacterMainEntity,
     @Relation(
-        DnDBaseEntity::class,
+        DbBaseEntity::class,
         parentColumn = "entity_id",
         entityColumn = "id"
     )
     val entity: DbFullEntity,
     @Relation(
-        DnDBaseEntity::class,
+        DbBaseEntity::class,
         parentColumn = "sub_entity_id",
         entityColumn = "id"
     )
@@ -63,7 +63,7 @@ data class DbJoinCharacterItem(
     @Embedded
     val link: DbCharacterItemLink,
     @Relation(
-        DnDBaseEntity::class,
+        DbBaseEntity::class,
         parentColumn = "item_id",
         entityColumn = "id"
     )
@@ -73,23 +73,23 @@ data class DbJoinCharacterSpell(
     @Embedded
     val link: DbCharacterSpellLink,
     @Relation(
-        DnDBaseEntity::class,
+        DbBaseEntity::class,
         parentColumn = "spell_id",
         entityColumn = "id"
     )
     val spell: DbFullEntity
 )
 data class DbFullCharacter(
-    @Embedded val character: Character,
+    @Embedded val character: DbCharacter,
 
     @Relation(parentColumn = "id", entityColumn = "id")
     val optionalValues: DbCharacterOptionalValues,
 
     @Relation(parentColumn = "id", entityColumn = "character_id")
-    val images: List<CharacterImage>,
+    val images: List<DbCharacterImage>,
 
     @Relation(parentColumn = "id", entityColumn = "character_id")
-    val coins: CharacterCoins?,
+    val coins: DbCharacterCoins?,
 
     @Relation(DbCharacterItemLink::class, parentColumn = "id", entityColumn = "character_id")
     val items: List<DbJoinCharacterItem>,
@@ -97,26 +97,26 @@ data class DbFullCharacter(
     val spells: List<DbJoinCharacterSpell>,
 
     @Relation(parentColumn = "id", entityColumn = "id")
-    val attributes: CharacterAttributes?,
+    val attributes: DbCharacterAttributes?,
     @Relation(parentColumn = "id", entityColumn = "id")
-    val health: CharacterHealth?,
+    val health: DbCharacterHealth?,
 
     @Relation(parentColumn = "id", entityColumn = "character_id")
-    val usedSpells: List<CharacterUsedSpellSlots>,
+    val usedSpells: List<DbCharacterUsedSpellSlots>,
 
     @Relation(
-        entity = CharacterMainEntity::class,
+        entity = DbCharacterMainEntity::class,
         parentColumn = "id",
         entityColumn = "character_id"
     )
     val mainEntities: List<DbJoinCharacterMainEntities>,
 
     @Relation(
-        entity = DnDBaseEntity::class,
+        entity = DbBaseEntity::class,
         parentColumn = "id",
         entityColumn = "id",
         associateBy = Junction(
-            CharacterFeat::class,
+            DbCharacterFeat::class,
             parentColumn = "character_id",
             entityColumn = "feat_id"
         )
@@ -127,18 +127,18 @@ data class DbFullCharacter(
         parentColumn = "id",
         entityColumn = "character_id"
     )
-    val selectedModifiers: List<CharacterSelectedModifier>,
+    val selectedModifiers: List<DbCharacterSelectedModifier>,
     @Relation(
         parentColumn = "id",
         entityColumn = "character_id"
     )
-    val selectedProficiencies: List<CharacterProficiency>,
+    val selectedProficiencies: List<DbCharacterProficiency>,
 
     @Relation(
         parentColumn = "id",
         entityColumn = "character_id"
     )
-    val customModifiers: List<CharacterCustomModifier>,
+    val customModifiers: List<DbCharacterCustomModifier>,
 
     @Relation(
         parentColumn = "id",
@@ -153,14 +153,14 @@ data class DbFullCharacter(
         coins = coins?.toCoinsGroup() ?: CoinsGroup(),
         items = items.fastMap { CharacterItem(it.link.attuned, it.link.equipped, it.item.toDnDFullEntity()) },
         spells = spells.fastMap { CharacterSpell(it.link.ready, it.spell.toDnDFullEntity()) },
-        attributes = attributes?.toAttributesGroup() ?: DnDAttributesGroup.Default,
-        health = health?.toDnDCharacterHealth() ?: DnDCharacterHealth(),
+        attributes = attributes?.toAttributesGroup() ?: AttributesGroup.Default,
+        health = health?.toDnDCharacterHealth() ?: CharacterHealth(),
         usedSpells = usedSpells.associate { it.spellSlotTypeId to it.usedSpells.toIntArray() },
         mainEntities = mainEntities.fastMap(DbJoinCharacterMainEntities::toCharacterMainEntityInfo),
         feats = feats.fastMap(DbFullEntity::toDnDFullEntity),
         selectedModifiers = selectedModifiers.fastMap { it.modifierId }.toSet(),
         selectedProficiencies = selectedProficiencies.fastMap { it.proficiencyId }.toSet(),
-        customModifiers = customModifiers.fastMap(CharacterCustomModifier::toCustomModifier),
+        customModifiers = customModifiers.fastMap(DbCharacterCustomModifier::toCustomModifier),
         notes = notes.map(DbCharacterNote::toCharacterNote)
     )
 }

@@ -4,16 +4,16 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbBaseEntity
 import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "items",
     foreignKeys = [
-        ForeignKey(DnDBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DnDItem(
+data class DbItem(
     @PrimaryKey val id: Uuid,
     val cost: Int?, // in copper pieces
     val weight: Int?,
@@ -24,18 +24,18 @@ data class DnDItem(
     tableName = "item_properties",
     primaryKeys = ["item_id", "property_id"],
     foreignKeys = [
-        ForeignKey(DnDItem::class, ["id"], ["item_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDItemProperty::class, ["id"], ["property_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbItem::class, ["id"], ["item_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbItemProperty::class, ["id"], ["property_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class ItemPropertyLink(
+data class DbItemPropertyLink(
     @ColumnInfo("item_id", index = true) val itemId: Uuid,
     @ColumnInfo("property_id", index = true) val propertyId: Uuid,
 )
 
 // properties for items like heavy, two-handed, graze
 @Entity(tableName = "properties")
-data class DnDItemProperty(
+data class DbItemProperty(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("user_id") val userId: Uuid?,
     val name: String,
@@ -44,9 +44,9 @@ data class DnDItemProperty(
 
 @Entity(
     tableName = "armors",
-    foreignKeys = [ForeignKey(DnDItem::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
+    foreignKeys = [ForeignKey(DbItem::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
 )
-data class Armor(
+data class DbArmor(
     @PrimaryKey val id: Uuid,
     @ColumnInfo("armor_class")
     val armorClass: Int,

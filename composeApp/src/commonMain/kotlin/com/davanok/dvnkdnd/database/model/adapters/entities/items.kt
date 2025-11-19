@@ -6,41 +6,41 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullWeapon
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ItemProperty
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinItemProperty
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.WeaponDamageInfo
-import com.davanok.dvnkdnd.database.entities.items.Armor
-import com.davanok.dvnkdnd.database.entities.items.DnDItem
-import com.davanok.dvnkdnd.database.entities.items.DnDItemProperty
-import com.davanok.dvnkdnd.database.entities.items.ItemPropertyLink
-import com.davanok.dvnkdnd.database.entities.items.Weapon
-import com.davanok.dvnkdnd.database.entities.items.WeaponDamage
+import com.davanok.dvnkdnd.database.entities.items.DbArmor
+import com.davanok.dvnkdnd.database.entities.items.DbItem
+import com.davanok.dvnkdnd.database.entities.items.DbItemProperty
+import com.davanok.dvnkdnd.database.entities.items.DbItemPropertyLink
+import com.davanok.dvnkdnd.database.entities.items.DbWeapon
+import com.davanok.dvnkdnd.database.entities.items.DbWeaponDamage
 import kotlin.uuid.Uuid
 
 
-fun ArmorInfo.toArmor(itemId: Uuid) = Armor(
+fun ArmorInfo.toDbArmor(itemId: Uuid) = DbArmor(
     id = itemId,
     armorClass = armorClass,
     dexMaxModifier = dexMaxModifier,
     requiredStrength = requiredStrength,
     stealthDisadvantage = stealthDisadvantage
 )
-fun Armor.toArmorInfo() = ArmorInfo(
+fun DbArmor.toArmorInfo() = ArmorInfo(
     armorClass = armorClass,
     dexMaxModifier = dexMaxModifier,
     requiredStrength = requiredStrength,
     stealthDisadvantage = stealthDisadvantage
 )
-fun ItemProperty.toDnDItemProperty() = DnDItemProperty(
+fun ItemProperty.toDbItemProperty() = DbItemProperty(
     id = id,
     userId = userId,
     name = name,
     description = description
 )
-fun DnDItemProperty.toItemProperty() = ItemProperty(
+fun DbItemProperty.toItemProperty() = ItemProperty(
     id = id,
     userId = userId,
     name = name,
     description = description
 )
-fun WeaponDamageInfo.toWeaponDamage(weaponId: Uuid) = WeaponDamage(
+fun WeaponDamageInfo.toDbWeaponDamage(weaponId: Uuid) = DbWeaponDamage(
     id = id,
     weaponId = weaponId,
     damageType = damageType,
@@ -48,7 +48,7 @@ fun WeaponDamageInfo.toWeaponDamage(weaponId: Uuid) = WeaponDamage(
     dice = dice,
     modifier = modifier
 )
-fun WeaponDamage.toWeaponDamageInfo() = WeaponDamageInfo(
+fun DbWeaponDamage.toWeaponDamageInfo() = WeaponDamageInfo(
     id = id,
     damageType = damageType,
     diceCount = diceCount,
@@ -56,8 +56,16 @@ fun WeaponDamage.toWeaponDamageInfo() = WeaponDamageInfo(
     modifier = modifier
 )
 
-fun FullItem.toDnDItem(entityId: Uuid) = DnDItem(entityId, cost, weight, attunement)
+fun FullItem.toDbItem(entityId: Uuid) = DbItem(
+    id = entityId,
+    cost = cost,
+    weight = weight,
+    attunement = attunement
+)
 
-fun JoinItemProperty.toItemPropertyLink() = ItemPropertyLink(itemId, propertyId)
+fun JoinItemProperty.toDbItemPropertyLink() = DbItemPropertyLink(
+    itemId = itemId,
+    propertyId = propertyId
+)
 
-fun FullWeapon.toWeapon(entityId: Uuid) = Weapon(entityId, atkBonus)
+fun FullWeapon.toDbWeapon(entityId: Uuid) = DbWeapon(id = entityId, atkBonus = atkBonus)

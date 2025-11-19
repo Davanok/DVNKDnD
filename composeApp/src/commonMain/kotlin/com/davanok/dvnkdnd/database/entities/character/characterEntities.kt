@@ -7,20 +7,20 @@ import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
-import com.davanok.dvnkdnd.database.entities.dndEntities.DnDSpell
-import com.davanok.dvnkdnd.database.entities.dndEntities.EntityModifier
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDFeat
-import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DnDProficiency
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityModifier
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbFeat
+import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbSpellSlotType
-import com.davanok.dvnkdnd.database.entities.items.DnDItem
+import com.davanok.dvnkdnd.database.entities.items.DbItem
 import kotlin.uuid.Uuid
 
 // one to one
 @Entity(
     tableName = "character_attributes",
-    foreignKeys = [ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
+    foreignKeys = [ForeignKey(DbCharacter::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
 )
-data class CharacterAttributes(
+data class DbCharacterAttributes(
     @PrimaryKey val id: Uuid,
     val strength: Int,
     val dexterity: Int,
@@ -32,9 +32,9 @@ data class CharacterAttributes(
 
 @Entity(
     tableName = "character_health",
-    foreignKeys = [ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
+    foreignKeys = [ForeignKey(DbCharacter::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
 )
-data class CharacterHealth(
+data class DbCharacterHealth(
     @PrimaryKey val id: Uuid,
     val max: Int, // without constitution bonus
     val current: Int,
@@ -45,11 +45,11 @@ data class CharacterHealth(
     tableName = "character_used_spell_slots",
     primaryKeys = ["character_id", "spell_slot_type_id"],
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DbSpellSlotType::class, ["id"], ["spell_slot_type_id"], onDelete = ForeignKey.CASCADE),
     ]
 )
-data class CharacterUsedSpellSlots(
+data class DbCharacterUsedSpellSlots(
     @ColumnInfo("character_id", index = true)
     val characterId: Uuid,
     @ColumnInfo("spell_slot_type_id", index = true)
@@ -62,11 +62,11 @@ data class CharacterUsedSpellSlots(
     tableName = "character_selected_modifier",
     primaryKeys = ["character_id", "modifier_id"],
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(EntityModifier::class, ["id"], ["modifier_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbEntityModifier::class, ["id"], ["modifier_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class CharacterSelectedModifier(
+data class DbCharacterSelectedModifier(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("modifier_id", index = true) val modifierId: Uuid
 )
@@ -76,11 +76,11 @@ data class CharacterSelectedModifier(
     tableName = "character_proficiencies",
     primaryKeys = ["character_id", "proficiency_id"],
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDProficiency::class, ["id"], ["proficiency_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbProficiency::class, ["id"], ["proficiency_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class CharacterProficiency(
+data class DbCharacterProficiency(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("proficiency_id", index = true) val proficiencyId: Uuid,
 )
@@ -89,11 +89,11 @@ data class CharacterProficiency(
     tableName = "character_feats",
     primaryKeys = ["character_id", "feat_id"],
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDFeat::class, ["id"], ["feat_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbFeat::class, ["id"], ["feat_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class CharacterFeat(
+data class DbCharacterFeat(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("feat_id", index = true) val featId: Uuid,
 )
@@ -101,10 +101,10 @@ data class CharacterFeat(
 @Entity(
     tableName = "character_images",
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.SET_NULL),
     ]
 )
-data class CharacterImage(
+data class DbCharacterImage(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("character_id", index = true) val characterId: Uuid?,
     val path: String,
@@ -113,10 +113,10 @@ data class CharacterImage(
 @Entity(
     tableName = "character_coins",
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class CharacterCoins(
+data class DbCharacterCoins(
     @PrimaryKey
     @ColumnInfo("character_id")
     val characterId: Uuid,
@@ -130,10 +130,10 @@ data class CharacterCoins(
 @Entity(
     tableName = "character_custom_modifiers",
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class CharacterCustomModifier(
+data class DbCharacterCustomModifier(
     @PrimaryKey
     val id: Uuid,
     @ColumnInfo("character_id", index = true)
@@ -159,7 +159,7 @@ data class CharacterCustomModifier(
 @Entity(
     tableName = "character_optional_values",
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class DbCharacterOptionalValues( // if value is null: calculate
@@ -173,8 +173,8 @@ data class DbCharacterOptionalValues( // if value is null: calculate
     tableName = "character_item",
     primaryKeys = ["character_id", "item_id"],
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDItem::class, ["id"], ["item_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbItem::class, ["id"], ["item_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class DbCharacterItemLink(
@@ -187,8 +187,8 @@ data class DbCharacterItemLink(
     tableName = "character_spell_link",
     primaryKeys = ["character_id", "spell_id"],
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DnDSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class DbCharacterSpellLink(
@@ -200,7 +200,7 @@ data class DbCharacterSpellLink(
 @Entity(
     tableName = "character_notes",
     foreignKeys = [
-        ForeignKey(Character::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class DbCharacterNote(

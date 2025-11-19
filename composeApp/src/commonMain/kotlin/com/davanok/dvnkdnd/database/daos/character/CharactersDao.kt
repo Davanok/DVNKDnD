@@ -4,19 +4,19 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.database.entities.character.Character
-import com.davanok.dvnkdnd.database.entities.character.CharacterFeat
-import com.davanok.dvnkdnd.database.entities.character.CharacterImage
-import com.davanok.dvnkdnd.database.entities.character.CharacterProficiency
-import com.davanok.dvnkdnd.database.entities.character.CharacterSelectedModifier
-import com.davanok.dvnkdnd.database.entities.character.CharacterUsedSpellSlots
+import com.davanok.dvnkdnd.database.entities.character.DbCharacter
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterFeat
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterImage
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterProficiency
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterSelectedModifier
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.database.model.DbFullCharacter
-import com.davanok.dvnkdnd.database.model.adapters.character.toCharacter
-import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterAttributes
-import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCoins
-import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterCustomModifier
-import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterHealth
-import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterMainEntity
+import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacter
+import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterAttributes
+import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterCoins
+import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterCustomModifier
+import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterHealth
+import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterMainEntity
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterItemLink
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterNote
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterOptionalValues
@@ -33,49 +33,49 @@ interface CharactersDao: CharacterEntitiesSettersDao, CharacterEntitiesDeletersD
     fun getFullCharacterFlow(characterId: Uuid): Flow<DbFullCharacter>
 
     @Query("SELECT * FROM characters")
-    fun getCharactersMinListFlow(): Flow<List<Character>>
+    fun getCharactersMinListFlow(): Flow<List<DbCharacter>>
 
     @Transaction
     suspend fun saveCharacter(character: CharacterFull): Uuid {
         val characterId = character.character.id
 
-        insertCharacter(character.character.toCharacter())
+        insertCharacter(character.character.toDbCharacter())
 
         insertOptionalValues(character.optionalValues.toDbCharacterOptionalValues(characterId))
 
         character.images
-            .map { CharacterImage(id = it.id, characterId = characterId, path = it.path) }
+            .map { DbCharacterImage(id = it.id, characterId = characterId, path = it.path) }
             .let { insertCharacterImages(it) }
-        character.coins.toCharacterCoins(characterId).let { insertCharacterCoins(it) }
+        character.coins.toDbCharacterCoins(characterId).let { insertCharacterCoins(it) }
         character.items
             .map { it.toDbCharacterItemLink(characterId) }
             .let { insertCharacterItemLinks(it) }
-        character.attributes.toCharacterAttributes(characterId)
+        character.attributes.toDbCharacterAttributes(characterId)
             .let { insertCharacterAttributes(it) }
-        character.health.toCharacterHealth(characterId)
+        character.health.toDbCharacterHealth(characterId)
             .let { insertCharacterHealth(it) }
 
         character.usedSpells
-            .map { CharacterUsedSpellSlots(characterId = characterId, spellSlotTypeId = it.key, usedSpells = it.value.toList()) }
+            .map { DbCharacterUsedSpellSlots(characterId = characterId, spellSlotTypeId = it.key, usedSpells = it.value.toList()) }
             .let { insertCharacterUsedSpells(it) }
 
         character.mainEntities
-            .map { it.toCharacterMainEntity(characterId) }
+            .map { it.toDbCharacterMainEntity(characterId) }
             .let { insertCharacterMainEntities(it) }
         character.feats
-            .map { CharacterFeat(characterId, it.entity.id) }
+            .map { DbCharacterFeat(characterId, it.entity.id) }
             .let { insertCharacterFeats(it) }
 
         character.selectedModifiers
-            .map { CharacterSelectedModifier(characterId, it) }
+            .map { DbCharacterSelectedModifier(characterId, it) }
             .let { insertCharacterSelectedModifiers(it) }
 
         character.selectedProficiencies
-            .map { CharacterProficiency(characterId, it) }
+            .map { DbCharacterProficiency(characterId, it) }
             .let { insertCharacterSelectedProficiencies(it) }
 
         character.customModifiers
-            .map { it.toCharacterCustomModifier(characterId) }
+            .map { it.toDbCharacterCustomModifier(characterId) }
             .let { insertCharacterCustomModifiers(it) }
         character.notes
             .map { it.toDbCharacterNote(characterId) }

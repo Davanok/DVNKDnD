@@ -1,10 +1,10 @@
 package com.davanok.dvnkdnd.database.model.adapters.character
 
 import com.davanok.dvnkdnd.data.model.entities.character.CustomModifier
-import com.davanok.dvnkdnd.database.entities.character.CharacterCustomModifier
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterCustomModifier
 import kotlin.uuid.Uuid
 
-fun CharacterCustomModifier.toCustomModifier() = CustomModifier(
+fun DbCharacterCustomModifier.toCustomModifier() = CustomModifier(
     id = id,
     targetGlobal = targetGlobal,
     operation = operation,
@@ -17,7 +17,7 @@ fun CharacterCustomModifier.toCustomModifier() = CustomModifier(
     target = target,
     value = value
 )
-fun CustomModifier.toCharacterCustomModifier(characterId: Uuid) = CharacterCustomModifier(
+fun CustomModifier.toDbCharacterCustomModifier(characterId: Uuid) = DbCharacterCustomModifier(
     id = id,
     characterId = characterId,
     targetGlobal = targetGlobal,

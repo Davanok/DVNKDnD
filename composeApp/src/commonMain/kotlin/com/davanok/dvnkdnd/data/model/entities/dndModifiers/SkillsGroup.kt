@@ -2,7 +2,7 @@ package com.davanok.dvnkdnd.data.model.entities.dndModifiers
 
 import com.davanok.dvnkdnd.data.model.dndEnums.Skills
 
-data class DnDSkillsGroup(
+data class SkillsGroup(
     val athletics: Int,
     val acrobatics: Int,
     val sleightOfHands: Int,
@@ -65,7 +65,7 @@ data class DnDSkillsGroup(
     operator fun get(key: Skills) = toMap()[key]!!
 }
 
-fun DnDAttributesGroup.toSkillsGroup() = DnDSkillsGroup(
+fun AttributesGroup.toSkillsGroup() = SkillsGroup(
     athletics = strength,
     acrobatics = dexterity,
     sleightOfHands = dexterity,
@@ -86,7 +86,7 @@ fun DnDAttributesGroup.toSkillsGroup() = DnDSkillsGroup(
     persuasion = charisma
 )
 
-fun Map<Skills, Int>.toSkillsGroup() = DnDSkillsGroup(
+fun Map<Skills, Int>.toSkillsGroup() = SkillsGroup(
     athletics = get(Skills.ATHLETICS) ?: 0,
     acrobatics = get(Skills.ACROBATICS) ?: 0,
     sleightOfHands = get(Skills.SLEIGHT_OF_HAND) ?: 0,

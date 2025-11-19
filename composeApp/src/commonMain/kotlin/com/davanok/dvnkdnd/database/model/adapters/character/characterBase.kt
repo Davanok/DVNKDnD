@@ -1,9 +1,9 @@
 package com.davanok.dvnkdnd.database.model.adapters.character
 
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
-import com.davanok.dvnkdnd.database.entities.character.Character
+import com.davanok.dvnkdnd.database.entities.character.DbCharacter
 
-fun Character.toCharacterBase() = CharacterBase(
+fun DbCharacter.toCharacterBase() = CharacterBase(
     id = id,
     userId = userId,
     name = name,
@@ -11,7 +11,7 @@ fun Character.toCharacterBase() = CharacterBase(
     level = level,
     image = image
 )
-fun CharacterBase.toCharacter() = Character(
+fun CharacterBase.toDbCharacter() = DbCharacter(
     id = id,
     userId = userId,
     name = name,
