@@ -106,4 +106,10 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun getCharactersDao(): CharactersDao
     abstract fun getBaseEntityDao(): BaseEntityDao
     abstract fun getFullEntityDao(): FullEntitiesDao
+
+    companion object {
+        val initialExecs = listOf(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_character_multiclass_unique ON character_used_spell_slots(character_id) WHERE spell_slot_type_id IS NULL"
+        )
+    }
 }

@@ -1,7 +1,9 @@
 package com.davanok.dvnkdnd.data.di
 
 import androidx.room.RoomDatabase
+import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.execSQL
 import com.davanok.dvnkdnd.database.AppDatabase
 import com.davanok.dvnkdnd.database.daos.character.CharactersDao
 import com.davanok.dvnkdnd.database.daos.entities.BaseEntityDao
@@ -16,6 +18,15 @@ fun databaseModule() = module {
             .fallbackToDestructiveMigration(true)
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
+            .addCallback(object : RoomDatabase.Callback() {
+                override fun onCreate(connection: SQLiteConnection) {
+                    super.onCreate(connection)
+
+                    AppDatabase.initialExecs.forEach {
+                        connection.execSQL(it)
+                    }
+                }
+            })
             .build()
     }
 

@@ -23,7 +23,7 @@ interface ClassDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClassSpells(clsSpells: List<DbClassSpell>)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSpellSlotTypes(spellSlotType: List<DbSpellSlotType>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

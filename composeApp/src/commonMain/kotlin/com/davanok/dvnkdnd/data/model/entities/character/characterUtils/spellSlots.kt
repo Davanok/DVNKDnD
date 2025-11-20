@@ -6,12 +6,12 @@ import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellSlotsType
 import com.davanok.dvnkdnd.data.model.util.DnDConstants
 import com.davanok.dvnkdnd.data.model.util.resolveCasterSpellSlotsContribution
 
-fun CharacterFull.calculateSpellSlots(): Map<SpellSlotsType, IntArray> {
+fun CharacterFull.calculateSpellSlots(): Map<SpellSlotsType?, IntArray> {
     val classes = mainEntities
         .filter { it.entity.entity.type == DnDEntityTypes.CLASS && (it.entity.cls != null || it.subEntity?.cls != null) }
     if (classes.isEmpty()) return emptyMap()
 
-    val resultByType = mutableMapOf<SpellSlotsType, Pair<Int, IntArray>>()
+    val resultByType = mutableMapOf<SpellSlotsType?, Pair<Int, IntArray>>()
     var effectiveCasterLevel = 0
 
     classes.forEach { mainEntity ->
@@ -20,14 +20,9 @@ fun CharacterFull.calculateSpellSlots(): Map<SpellSlotsType, IntArray> {
         val cls =  if (!sub?.slots.isNullOrEmpty()) sub else ent ?: return@forEach
         val slots = cls.slots
 
-        if (slots.isEmpty()) {
-            effectiveCasterLevel += resolveCasterSpellSlotsContribution(mainEntity.level, cls.caster)
-            return@forEach
-        }
+        effectiveCasterLevel += resolveCasterSpellSlotsContribution(mainEntity.level, cls.caster)
 
-        if (slots.any { it.type.id == SpellSlotsType.Multiclass.id }) {
-            effectiveCasterLevel += resolveCasterSpellSlotsContribution(mainEntity.level, cls.caster)
-        }
+        if (slots.isEmpty()) return@forEach
 
         slots.groupBy { it.type }.forEach { (typeId, list) ->
             val chosen = list.sortedBy { it.level }.lastOrNull { it.level <= mainEntity.level }
@@ -43,15 +38,13 @@ fun CharacterFull.calculateSpellSlots(): Map<SpellSlotsType, IntArray> {
     val multiclassSlots = when {
         effectiveCasterLevel <= 0 -> IntArray(0)
         effectiveCasterLevel < DnDConstants.MULTICLASS_SPELL_SLOTS_BY_LEVEL.size ->
-            DnDConstants.MULTICLASS_SPELL_SLOTS_BY_LEVEL[effectiveCasterLevel]
+            DnDConstants.MULTICLASS_SPELL_SLOTS_BY_LEVEL[effectiveCasterLevel - 1]
         else -> DnDConstants.MULTICLASS_SPELL_SLOTS_BY_LEVEL.last()
     }
 
-    val resultSpellSlots = resultByType.mapValues { it.value.second }.toMutableMap()
-    resultSpellSlots.keys.firstOrNull { it.id == SpellSlotsType.Multiclass.id }.let {
-        if (it == null) resultSpellSlots[SpellSlotsType.Multiclass] = multiclassSlots
-        else resultSpellSlots[it] = multiclassSlots
-    }
-
-    return resultSpellSlots
+    val resultSpellSlots = resultByType
+        .mapValues { it.value.second }
+        .toMutableMap()
+    resultSpellSlots[null] = multiclassSlots
+    return resultSpellSlots.filterValues { it.isNotEmpty() }
 }

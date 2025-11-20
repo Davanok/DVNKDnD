@@ -27,7 +27,7 @@ class UtilsDataRepositoryImpl(
             }.getOrThrow()
 
             emit(CheckingDataStates.CHECKING)
-            val notExistingEntities = entitiesIds.subtract(existingEntities)
+            val notExistingEntities = entitiesIds.subtract(existingEntities.toSet())
 
             if (notExistingEntities.isEmpty()) {
                 emit(CheckingDataStates.FINISH)

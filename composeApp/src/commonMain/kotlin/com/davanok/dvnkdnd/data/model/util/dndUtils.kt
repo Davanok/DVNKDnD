@@ -7,7 +7,7 @@ object DnDConstants {
     const val MAX_VALUE_TO_BUY = 15
     const val MIN_VALUE_TO_BUY = 8
     const val BUYING_BALANCE = 27
-    val DEFAULT_ARRAY = arrayOf(15, 14, 13, 12, 10, 8)
+    val DEFAULT_ARRAY = intArrayOf(15, 14, 13, 12, 10, 8)
 
     val MULTICLASS_SPELL_SLOTS_BY_LEVEL = arrayOf(
         intArrayOf(2),   // 1

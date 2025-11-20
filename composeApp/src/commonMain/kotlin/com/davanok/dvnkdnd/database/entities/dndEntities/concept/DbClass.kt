@@ -47,8 +47,9 @@ data class DbClassSpell( // spells that available for class
 )
 data class DbClassSpellSlots(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo("class_id", index = true) val classId: Uuid,
-    @ColumnInfo("type_id", index = true, defaultValue = "'00000000-0000-0000-0000-000000000000'")
+    @ColumnInfo("class_id", index = true)
+    val classId: Uuid,
+    @ColumnInfo("type_id", index = true)
     val typeId: Uuid,
     val level: Int,
     val preparedSpells: Int?,

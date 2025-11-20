@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.database.entities.character
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
@@ -43,17 +44,19 @@ data class DbCharacterHealth(
 
 @Entity(
     tableName = "character_used_spell_slots",
-    primaryKeys = ["character_id", "spell_slot_type_id"],
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DbSpellSlotType::class, ["id"], ["spell_slot_type_id"], onDelete = ForeignKey.CASCADE),
-    ]
+    ],
+    indices = [Index(value = ["character_id", "spell_slot_type_id"], unique = true)]
 )
 data class DbCharacterUsedSpellSlots(
+    @PrimaryKey
+    val id: Uuid = Uuid.random(),
     @ColumnInfo("character_id", index = true)
     val characterId: Uuid,
     @ColumnInfo("spell_slot_type_id", index = true)
-    val spellSlotTypeId: Uuid,
+    val spellSlotTypeId: Uuid?,
     @ColumnInfo("used_spells")
     val usedSpells: List<Int>, // used spells for every spell level
 )
@@ -184,7 +187,7 @@ data class DbCharacterItemLink(
     val attuned: Boolean
 )
 @Entity(
-    tableName = "character_spell_link",
+    tableName = "character_spell_links",
     primaryKeys = ["character_id", "spell_id"],
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),

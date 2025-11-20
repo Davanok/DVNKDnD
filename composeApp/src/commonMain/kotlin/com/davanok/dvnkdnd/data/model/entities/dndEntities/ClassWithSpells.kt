@@ -16,17 +16,7 @@ data class SpellSlotsType(
     val name: String,
     val regain: TimeUnits?,
     val spell: Boolean
-) {
-    companion object {
-        val Multiclass = SpellSlotsType(
-            Uuid.NIL,
-            null,
-            "Multiclass",
-            TimeUnits.LONG_REST,
-            true
-        )
-    }
-}
+)
 
 @Serializable
 data class SpellSlots(
@@ -49,5 +39,5 @@ data class ClassWithSpells(
     val caster: CasterProgression,
 
     val spells: List<Uuid>,
-    val slots: List<SpellSlots>,
+    val slots: List<SpellSlots>
 )

@@ -11,7 +11,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 actual fun platformModule() = module {
-    single<RoomDatabase.Builder<AppDatabase>> {
+    factory<RoomDatabase.Builder<AppDatabase>> {
         val context = androidContext()
         val dbFile = context.getDatabasePath("database.db")
         Room.databaseBuilder(

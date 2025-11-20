@@ -47,7 +47,9 @@ interface CharactersDao: CharacterMainDao,
 
         insertCharacter(character.character.toDbCharacter())
 
-        insertOptionalValues(character.optionalValues.toDbCharacterOptionalValues(characterId))
+        character.optionalValues
+            .toDbCharacterOptionalValues(characterId)
+            .let { insertOptionalValues(it) }
 
         character.images
             .map { DbCharacterImage(id = it.id, characterId = characterId, path = it.path) }

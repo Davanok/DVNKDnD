@@ -11,7 +11,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbSpellSlotType
 import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellSlotType
 import kotlin.uuid.Uuid
 
-data class DbClassSpellSlotsWithType(
+data class DbClassSpellSlotWithType(
     @Embedded val slot: DbClassSpellSlots,
     @Relation(
         parentColumn = "type_id",
@@ -44,13 +44,13 @@ data class DbClassWithSpells(
         parentColumn = "id",
         entityColumn = "class_id"
     )
-    val slots: List<DbClassSpellSlotsWithType>
+    val slots: List<DbClassSpellSlotWithType>
 ) {
     fun toClassWithSpells() = ClassWithSpells(
         primaryStats = cls.primaryStats,
         hitDice = cls.hitDice,
         caster = cls.caster,
         spells = spells,
-        slots = slots.map(DbClassSpellSlotsWithType::toSpellSlots),
+        slots = slots.map(DbClassSpellSlotWithType::toSpellSlots),
     )
 }

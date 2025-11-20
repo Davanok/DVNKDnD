@@ -37,7 +37,7 @@ data class CharacterFull(
 
     val attributes: AttributesGroup = AttributesGroup.Default,
     val health: CharacterHealth = CharacterHealth(),
-    val usedSpells: Map<Uuid, IntArray> = emptyMap(),
+    val usedSpells: Map<Uuid?, IntArray> = emptyMap(),
 
     val mainEntities: List<CharacterMainEntityInfo> = emptyList(),
 
