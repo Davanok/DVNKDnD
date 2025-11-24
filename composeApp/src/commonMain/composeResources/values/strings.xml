@@ -28,6 +28,8 @@
     <string name="ability">Ability</string>
     <string name="feat">Feat</string>
 
+    <string name="multiclass_spell_slot_type_name">Multiclass</string>
+
     <string name="strength">Strength</string>
     <string name="dexterity">Dexterity</string>
     <string name="constitution">Constitution</string>
@@ -304,4 +306,8 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="note_text">Note text</string>
     <!--spells screen-->
     <string name="ritual">Ritual</string>
+    <string name="concentration">Concentration</string>
+    <string name="no_spell_data">No spell data</string>
+    <string name="entity_image">Entity image</string>
+    <string name="search">Search</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.model.entities.dndEntities
 
+import androidx.compose.runtime.Immutable
 import com.davanok.dvnkdnd.data.model.dndEnums.AreaTypes
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
 import com.davanok.dvnkdnd.data.model.dndEnums.CastingTime
@@ -11,6 +12,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
+@Immutable
 @Serializable
 data class FullSpell(
     val school: MagicSchools,

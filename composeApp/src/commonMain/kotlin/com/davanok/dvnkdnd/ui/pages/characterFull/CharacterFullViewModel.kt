@@ -6,6 +6,7 @@ import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.data.model.util.getByKeyPredicate
 import com.davanok.dvnkdnd.data.model.util.withAppliedModifiers
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
@@ -65,6 +66,32 @@ class CharacterFullViewModel(
     }
     fun deleteNote(note: CharacterNote) = viewModelScope.launch {
         repository.deleteCharacterNote(note.id)
+    }
+
+    fun setUsedSpellsCount(typeId: Uuid?, level: Int, count: Int) = viewModelScope.launch {
+        val arraySize = level
+        val index = level - 1
+
+        val minCount = 0
+        val maxCount = uiState.value.character?.spellSlots?.getByKeyPredicate{ it?.id == typeId }?.get(index)
+
+        val was = uiState.value.character?.usedSpells?.get(typeId)
+        val new = count.coerceIn(minCount, maxCount)
+
+        val newArray = when {
+            was == null -> intArrayOf(arraySize)
+            was.getOrNull(index) == new -> return@launch
+            was.size < arraySize -> was.copyOf(arraySize)
+            else -> was.copyOf()
+        }
+
+        newArray[index] = count.coerceIn(minCount, maxCount)
+
+        repository.setCharacterUsedSpells(
+            characterId = characterId,
+            typeId = typeId,
+            usedSpells = newArray
+        )
     }
 }
 

@@ -18,24 +18,24 @@ fun newCharacterViewModelsModule() = module {
     viewModelOf(::LoadingDataViewModel)
     viewModelOf(::SearchSheetViewModel)
 
-    viewModel { (vm: NewCharacterViewModel) ->
+    viewModel { 
         NewCharacterMainViewModel(
             get(),
             get(),
             get(),
-            vm
+            it.get()
         )
     }
-    viewModel { (vm: NewCharacterViewModel) ->
-        NewCharacterStatsViewModel(vm)
+    viewModel { 
+        NewCharacterStatsViewModel(it.get())
     }
-    viewModel { (vm: NewCharacterViewModel) ->
-        NewCharacterThrowsViewModel(vm)
+    viewModel { 
+        NewCharacterThrowsViewModel(it.get())
     }
-    viewModel { (vm: NewCharacterViewModel) ->
-        NewCharacterHealthViewModel(vm)
+    viewModel { 
+        NewCharacterHealthViewModel(it.get())
     }
-    viewModel { (vm: NewCharacterViewModel) ->
-        SavingNewCharacterViewModel(vm)
+    viewModel { 
+        SavingNewCharacterViewModel(it.get())
     }
 }

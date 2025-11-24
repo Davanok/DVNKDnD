@@ -9,4 +9,7 @@ import com.davanok.dvnkdnd.database.entities.character.DbCharacterUsedSpellSlots
 interface CharacterSpellsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterUsedSpells(usedSpells: List<DbCharacterUsedSpellSlots>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun setCharacterUsedSpells(usedSpells: DbCharacterUsedSpellSlots)
 }

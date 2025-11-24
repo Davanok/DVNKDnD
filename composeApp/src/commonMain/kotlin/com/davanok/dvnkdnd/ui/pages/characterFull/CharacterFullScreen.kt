@@ -59,6 +59,7 @@ import dvnkdnd.composeapp.generated.resources.outline_shield
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.uuid.Uuid
 
 @Composable
 fun CharacterFullScreen(
@@ -91,6 +92,7 @@ fun CharacterFullScreen(
                     updateHealth = viewModel::updateHealth,
                     onUpdateOrNewNote = viewModel::updateOrNewNote,
                     onDeleteNote = viewModel::deleteNote,
+                    setUsedSpellsCount = viewModel::setUsedSpellsCount
                 )
         }
     }
@@ -105,6 +107,7 @@ private fun Content(
     updateHealth: (CharacterHealth) -> Unit,
     onUpdateOrNewNote: (CharacterNote) -> Unit,
     onDeleteNote: (CharacterNote) -> Unit,
+    setUsedSpellsCount: (typeId: Uuid?, lvl: Int, count: Int) -> Unit,
 ) {
     val adaptiveContentState = rememberAdaptiveContentState<CharacterFullUiState.Dialog> { entry ->
         when (entry) {
@@ -158,7 +161,8 @@ private fun Content(
                         skipAttributes = false,
                         onEntityClick = navigateToEntityInfo,
                         onUpdateOrNewNote = onUpdateOrNewNote,
-                        onDeleteNote = onDeleteNote
+                        onDeleteNote = onDeleteNote,
+                        setUsedSpellsCount = setUsedSpellsCount
                     )
                 },
                 twoPaneContent = Pair(
@@ -175,7 +179,8 @@ private fun Content(
                             skipAttributes = true,
                             onEntityClick = navigateToEntityInfo,
                             onUpdateOrNewNote = onUpdateOrNewNote,
-                            onDeleteNote = onDeleteNote
+                            onDeleteNote = onDeleteNote,
+                            setUsedSpellsCount = setUsedSpellsCount
                         )
                     }
                 )
@@ -210,6 +215,7 @@ private fun CharacterPages(
     onEntityClick: (DnDEntityMin) -> Unit,
     onUpdateOrNewNote: (CharacterNote) -> Unit,
     onDeleteNote: (CharacterNote) -> Unit,
+    setUsedSpellsCount: (typeId: Uuid?, lvl: Int, count: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pages = remember(skipAttributes) {
@@ -244,8 +250,7 @@ private fun CharacterPages(
                     availableSpellSlots = character.spellSlots,
                     usedSpells = character.usedSpells,
                     onSpellClick = { onEntityClick(it.toDnDEntityMin()) },
-                    onMarkSpellSlotAsUsed = { typeId, lvl -> },
-                    onMarkSpellSlotAsNotUsed = { typeId, lvl -> }
+                    setUsedSpellsCount = setUsedSpellsCount
                 )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(
                     notes = character.notes,

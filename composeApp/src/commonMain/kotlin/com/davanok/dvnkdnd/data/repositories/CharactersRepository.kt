@@ -18,4 +18,5 @@ interface CharactersRepository {
     suspend fun setCharacterHealth(characterId: Uuid, health: CharacterHealth): Result<Unit>
     suspend fun setCharacterNote(characterId: Uuid, note: CharacterNote): Result<Unit>
     suspend fun deleteCharacterNote(noteId: Uuid): Result<Unit>
+    suspend fun setCharacterUsedSpells(characterId: Uuid, typeId: Uuid?, usedSpells: IntArray): Result<Unit>
 }

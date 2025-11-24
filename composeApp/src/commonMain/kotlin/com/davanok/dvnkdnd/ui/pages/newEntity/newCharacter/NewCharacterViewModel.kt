@@ -139,9 +139,7 @@ class NewCharacterViewModel(
     suspend fun saveCharacter() =
         charactersRepository.saveCharacter(
             newCharacterState.toCharacterFull(Uuid.random())
-        ).onSuccess {
-            newCharacterState = NewCharacter()
-        }
+        )
 }
 
 private data class NewCharacterWithFullEntities(

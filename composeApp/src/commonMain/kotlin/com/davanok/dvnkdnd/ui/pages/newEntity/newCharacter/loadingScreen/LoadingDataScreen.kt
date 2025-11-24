@@ -16,13 +16,12 @@ import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.cancel
 import dvnkdnd.composeapp.generated.resources.continue_str
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoadingDataScreen(
     onBack: () -> Unit,
     onContinue: () -> Unit,
-    viewModel: LoadingDataViewModel = koinViewModel()
+    viewModel: LoadingDataViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

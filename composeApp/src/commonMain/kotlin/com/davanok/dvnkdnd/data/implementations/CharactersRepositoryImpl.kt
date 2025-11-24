@@ -2,11 +2,12 @@ package com.davanok.dvnkdnd.data.implementations
 
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
 import com.davanok.dvnkdnd.data.model.util.runLogging
 import com.davanok.dvnkdnd.data.repositories.CharactersRepository
 import com.davanok.dvnkdnd.database.daos.character.CharactersDao
+import com.davanok.dvnkdnd.database.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.database.model.adapters.character.toCharacterBase
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterHealth
 import com.davanok.dvnkdnd.database.model.adapters.character.toDbCharacterNote
@@ -54,5 +55,16 @@ class CharactersRepositoryImpl(
     override suspend fun deleteCharacterNote(noteId: Uuid) =
         runLogging("setCharacterNote") {
             dao.deleteCharacterNote(noteId)
+        }
+
+    override suspend fun setCharacterUsedSpells(characterId: Uuid, typeId: Uuid?, usedSpells: IntArray) =
+        runLogging("setCharacterUsedSpells") {
+            dao.setCharacterUsedSpells(
+                DbCharacterUsedSpellSlots(
+                    characterId = characterId,
+                    spellSlotTypeId = typeId,
+                    usedSpells = usedSpells.toList()
+                )
+            )
         }
 }
