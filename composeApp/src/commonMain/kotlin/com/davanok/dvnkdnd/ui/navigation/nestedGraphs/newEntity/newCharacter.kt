@@ -21,7 +21,6 @@ fun RouterEntryProvider.characterCreationFlow(
     replace: (Route) -> Unit
 ) = entry<Route.New.Character> {
     val backStack = rememberBackStack(Route.New.Character.LoadData)
-    
     val sharedViewModel: NewCharacterViewModel = koinViewModel()
 
     val nestedOnBack: () -> Unit = { backStack.removeLastOrNull() }
@@ -34,7 +33,8 @@ fun RouterEntryProvider.characterCreationFlow(
             entry<Route.New.Character.LoadData> {
                 LoadingDataScreen(
                     onBack = onBack,
-                    onContinue = { nestedReplace(Route.New.Character.Main) }
+                    onContinue = { nestedReplace(Route.New.Character.Main) },
+                    viewModel = koinViewModel()
                 )
             }
             entry<Route.New.Character.Main> {

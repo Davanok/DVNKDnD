@@ -1,17 +1,16 @@
 package com.davanok.dvnkdnd.ui.navigation
 
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.characterFull.characterFullDestinations
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.entityInfo.entityInfoDestinations
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.newEntity.newEntityDestinations
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun NavigationHost(
     modifier: Modifier = Modifier,
@@ -26,6 +25,10 @@ fun NavigationHost(
         modifier = modifier,
         backStack = backStack,
         onBack = onBack,
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
         entryProvider = entryProvider(
             fallback = { NavEntry(Route.Unknown) { NotImplementedYetScreen(onBack) } }
         ) {
