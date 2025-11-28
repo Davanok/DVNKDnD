@@ -6,5 +6,8 @@ inline fun <R> runLogging(name: String, tag: String? = null, block: () -> R): Re
     Napier.i(message = name, tag = tag)
     return runCatching(block)
         .onFailure { Napier.e(it, tag) { "failure on $name" } }
-        .onSuccess { Napier.d(tag = tag) { "success on $name: ($it)" } }
+        .onSuccess {
+            val msg = it.toString().replace(Regex("[\n\r]+"), " ")
+            Napier.d(tag = tag) { "success on $name: ($msg)" }
+        }
 }

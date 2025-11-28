@@ -284,6 +284,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="character_full_attacks_page_title">Attacks</string>
     <string name="character_full_items_page_title">Items</string>
     <string name="character_full_spells_page_title">Spells</string>
+    <string name="character_full_spell_slots_title">Spells slots</string>
     <string name="character_full_notes_page_title">Notes</string>
     <!--health dialog-->
     <string name="character_health_dialog_title">Character health</string>

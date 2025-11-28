@@ -15,6 +15,7 @@ import dvnkdnd.composeapp.generated.resources.character_full_attacks_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_attributes_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_items_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_notes_page_title
+import dvnkdnd.composeapp.generated.resources.character_full_spell_slots_title
 import dvnkdnd.composeapp.generated.resources.character_full_spells_page_title
 import dvnkdnd.composeapp.generated.resources.character_health_dialog_title
 import dvnkdnd.composeapp.generated.resources.loading_character_error
@@ -105,6 +106,7 @@ data class CharacterFullUiState(
         ATTACKS(Res.string.character_full_attacks_page_title),
         ITEMS(Res.string.character_full_items_page_title),
         SPELLS(Res.string.character_full_spells_page_title),
+        SPELL_SLOTS(Res.string.character_full_spell_slots_title),
         NOTES(Res.string.character_full_notes_page_title),
     }
     enum class Dialog(val titleStringRes: StringResource) {

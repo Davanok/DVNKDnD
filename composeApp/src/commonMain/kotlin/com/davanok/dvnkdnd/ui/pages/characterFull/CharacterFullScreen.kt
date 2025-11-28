@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,12 +27,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
 import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.data.model.ui.isCritical
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -41,23 +43,19 @@ import com.davanok.dvnkdnd.ui.components.adaptive.SupportEntry
 import com.davanok.dvnkdnd.ui.components.adaptive.rememberAdaptiveContentState
 import com.davanok.dvnkdnd.ui.components.customToolBar.CollapsingTitle
 import com.davanok.dvnkdnd.ui.components.customToolBar.CustomTopAppBar
-import com.davanok.dvnkdnd.ui.components.toSignedString
 import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterAttacksScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterFullAttributesScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterHealthDialogContent
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterHealthWidget
 import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterItemsScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterMainValuesWidget
 import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterNotesScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterSpellSlotsScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterSpellsScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.contents.MainEntitiesWidget
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
-import dvnkdnd.composeapp.generated.resources.character_armor_class
-import dvnkdnd.composeapp.generated.resources.character_initiative
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
-import dvnkdnd.composeapp.generated.resources.outline_bolt
-import dvnkdnd.composeapp.generated.resources.outline_shield
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
@@ -142,16 +140,26 @@ private fun Content(
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             Row(
-                modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                InitiativeWidget(character.appliedValues.initiative, onClick = { TODO() })
-                ArmorClassWidget(character.appliedValues.armorClass, onClick = { TODO() })
-                CharacterHealthWidget(
-                    health = character.appliedValues.health,
-                    onClick = { adaptiveContentState.showContent(CharacterFullUiState.Dialog.HEALTH) }
+                MainEntitiesWidget(
+                    entities = character.mainEntities,
+                    onClick = { TODO() },
+                    modifier = Modifier.weight(1f).fillMaxHeight()
+                )
+                CharacterMainValuesWidget(
+                    values = character.appliedValues,
+                    onInitiativeClick = { TODO() },
+                    onArmorClassClick = { TODO() },
+                    onHealthClick = { adaptiveContentState.showContent(CharacterFullUiState.Dialog.HEALTH) },
+                    modifier = Modifier.weight(1f).fillMaxHeight()
                 )
             }
+            Spacer(Modifier.height(8.dp))
             AdaptiveContent(
                 modifier = Modifier.weight(1f),
                 state = adaptiveContentState,
@@ -252,6 +260,9 @@ private fun CharacterPages(
                     onSpellClick = { onEntityClick(it.toDnDEntityMin()) },
                     setUsedSpellsCount = setUsedSpellsCount
                 )
+                CharacterFullUiState.Page.SPELL_SLOTS -> CharacterSpellSlotsScreen(
+
+                )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(
                     notes = character.notes,
                     onUpdateOrNewNote = onUpdateOrNewNote,
@@ -261,31 +272,4 @@ private fun CharacterPages(
             }
         }
     }
-}
-
-@Composable
-private fun InitiativeWidget(initiative: Int, onClick: () -> Unit) {
-    SuggestionChip(
-        onClick = onClick,
-        label = { Text(text = initiative.toSignedString()) },
-        icon = {
-            Icon(
-                painter = painterResource(Res.drawable.outline_bolt),
-                contentDescription = stringResource(Res.string.character_initiative)
-            )
-        }
-    )
-}
-@Composable
-private fun ArmorClassWidget(armorClass: Int, onClick: () -> Unit) {
-    SuggestionChip(
-        onClick = onClick,
-        label = { Text(text = armorClass.toString()) },
-        icon = {
-            Icon(
-                painter = painterResource(Res.drawable.outline_shield),
-                contentDescription = stringResource(Res.string.character_armor_class)
-            )
-        }
-    )
 }

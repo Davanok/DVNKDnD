@@ -12,7 +12,7 @@ fun main() = application {
         title = "DVNKDnD"
     ) {
         with (LocalDensity.current) {
-            window.minimumSize = Dimension(240.dp.roundToPx(), 426.dp.roundToPx())
+            window.minimumSize = Dimension(640.dp.roundToPx(), 480.dp.roundToPx())
         }
         App()
     }
