@@ -88,21 +88,23 @@ fun CharacterSpellsScreen(
     setUsedSpellsCount: (typeId: Uuid?, lvl: Int, count: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val preparedSpellSlots = remember(availableSpellSlots) {
-        val namesCount = mutableMapOf<String, Int>()
-        availableSpellSlots
-            .filterKeys { it == null || it.spell }
-            .mapKeys { (type, _) ->
-                if (type == null) null
-                else {
-                    val name = type.name
-                    val count = namesCount.getOrElse(name) { 0 }
-                    namesCount[name] = count + 1
-                    if (count == 0) type
-                    else type.copy(name = "$name ($count)")
+    val preparedSpellSlots by remember(availableSpellSlots) {
+        derivedStateOf {
+            val namesCount = mutableMapOf<String, Int>()
+            availableSpellSlots
+                .mapKeys { (type, _) ->
+                    if (type == null) null
+                    else {
+                        val name = type.name
+                        val count = namesCount.getOrElse(name) { 0 }
+                        namesCount[name] = count + 1
+                        if (count == 0) type
+                        else type.copy(name = "$name ($count)")
+                    }
                 }
-            }
+        }
     }
+
     var filterWord by remember { mutableStateOf("") }
     val visibleSpells by remember(filterWord, spells) {
         derivedStateOf {
@@ -204,7 +206,7 @@ private fun SpellSlots(
     Column(modifier = modifier) {
         val isExpandedSlotsView = availableSpellSlots.all { slot -> slot.value.count { it > 0 } <= SMALL_SPELL_SLOTS_COUNT }
         availableSpellSlots.forEach { (spellSlotType, slots) ->
-            val usedSpellsOnType = usedSpells.getOrElse(spellSlotType?.id) { IntArray(0) }
+            val usedSpellsOnType = usedSpells.getOrElse(spellSlotType?.id, ::intArrayOf)
 
             Text(
                 text = spellSlotType?.name ?: stringResource(Res.string.multiclass_spell_slot_type_name),

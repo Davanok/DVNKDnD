@@ -44,12 +44,13 @@ private val StatItemMinWidth = 200.dp
 fun CharacterFullAttributesScreen(
     attributes: AttributesGroup,
     savingThrows: AttributesGroup,
-    skills: SkillsGroup
+    skills: SkillsGroup,
+    modifier: Modifier = Modifier
 ) {
     var itemsMaxHeight by remember { mutableIntStateOf(0) }
     val density = LocalDensity.current
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         columns = GridCells.Adaptive(StatItemMinWidth),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),

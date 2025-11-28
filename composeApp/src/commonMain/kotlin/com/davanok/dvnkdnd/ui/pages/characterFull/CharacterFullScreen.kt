@@ -238,30 +238,36 @@ private fun CharacterPages(
             modifier = modifier,
             state = pagerState
         ) { index ->
-            val page = pages[index]
-            when (page) {
+            when (pages[index]) {
                 CharacterFullUiState.Page.ATTRIBUTES -> CharacterFullAttributesScreen(
                     attributes = character.appliedValues.savingThrowModifiers,
                     savingThrows = character.appliedValues.savingThrowModifiers,
-                    skills = character.appliedValues.skillModifiers
+                    skills = character.appliedValues.skillModifiers,
+                    modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.ATTACKS -> CharacterAttacksScreen(
                     items = character.items,
-                    onClick = { onEntityClick(it.toDnDEntityMin()) }
+                    onClick = { onEntityClick(it.toDnDEntityMin()) },
+                    modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.ITEMS -> CharacterItemsScreen(
                     items = character.items,
-                    onClick = { onEntityClick(it.toDnDEntityMin()) }
+                    onClick = { onEntityClick(it.toDnDEntityMin()) },
+                    modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.SPELLS -> CharacterSpellsScreen(
                     spells = character.spells,
                     availableSpellSlots = character.spellSlots,
                     usedSpells = character.usedSpells,
                     onSpellClick = { onEntityClick(it.toDnDEntityMin()) },
-                    setUsedSpellsCount = setUsedSpellsCount
+                    setUsedSpellsCount = setUsedSpellsCount,
+                    modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.SPELL_SLOTS -> CharacterSpellSlotsScreen(
-
+                    availableSpellSlots = character.spellSlots,
+                    usedSpells = character.usedSpells,
+                    setUsedSpellsCount = setUsedSpellsCount,
+                    modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(
                     notes = character.notes,
