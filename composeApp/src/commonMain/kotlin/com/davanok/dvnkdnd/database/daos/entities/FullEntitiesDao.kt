@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbState
+import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbBackground
 import com.davanok.dvnkdnd.database.model.adapters.entities.toDbFeat
 import com.davanok.dvnkdnd.database.model.adapters.entities.toDbProficiency
 import com.davanok.dvnkdnd.database.model.adapters.entities.toDbRace
@@ -41,11 +43,12 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
 
         fullEntity.cls?.let { insertClassWithSpells(entityId, it) }
         fullEntity.race?.let { insertRace(it.toDbRace(entityId)) }
-//        fullEntity.background?.let { insertBackground(it) }
+        fullEntity.background?.let { insertBackground(DbBackground(entityId)) }
         fullEntity.feat?.let { insertFeat(it.toDbFeat(entityId)) }
         fullEntity.ability?.let { insertAbilityInfo(entityId, it) }
         fullEntity.spell?.let { insertFullSpell(entityId, it) }
         fullEntity.item?.let { insertFullItem(entityId, it) }
+        fullEntity.state?.let { insertState(DbState(entityId)) }
 
         insertProficiencyLinks(fullEntity.proficiencies.map { it.toDbEntityProficiency(entityId) })
         insertAbilityLinks(fullEntity.abilities.map { it.toDbEntityAbility(entityId) })

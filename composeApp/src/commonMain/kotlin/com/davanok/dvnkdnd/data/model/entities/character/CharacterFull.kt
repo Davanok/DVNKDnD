@@ -34,6 +34,7 @@ data class CharacterFull(
 
     val items: List<CharacterItem> = emptyList(),
     val spells: List<CharacterSpell> = emptyList(),
+    val states: List<DnDFullEntity> = emptyList(),
 
     val attributes: AttributesGroup = AttributesGroup.Default,
     val health: CharacterHealth = CharacterHealth(),

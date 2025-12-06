@@ -33,6 +33,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackLevelModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackSave
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbState
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbAbilityRegain
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbFeat
@@ -87,6 +88,7 @@ import com.davanok.dvnkdnd.database.entities.items.DbWeaponDamage
         DbItemPropertyLink::class,
         DbRace::class,
         DbProficiency::class,
+        DbState::class,
         DbSpell::class,
         DbSpellArea::class,
         DbSpellAttack::class,

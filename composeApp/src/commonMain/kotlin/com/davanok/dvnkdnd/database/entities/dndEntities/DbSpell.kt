@@ -17,7 +17,8 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "spells",
     foreignKeys = [
-        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbState::class, ["id"], ["gives_state"], onDelete = ForeignKey.SET_NULL)
     ]
 )
 data class DbSpell(
@@ -33,7 +34,7 @@ data class DbSpell(
     @ColumnInfo("material_component")
     val materialComponent: String?,
     val duration: String,
-    val concentration: Boolean,
+    val concentration: Boolean
 )
 
 @Entity(
@@ -63,6 +64,8 @@ data class DbSpellAttack(
     val diceCount: Int,
     val dice: Dices,
     val modifier: Int,
+    @ColumnInfo("gives_state", index = true)
+    val givesState: Uuid?
 )
 
 @Entity(

@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.database.daos.entities
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbState
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbBackground
 import com.davanok.dvnkdnd.database.entities.dndEntities.concept.DbRace
@@ -17,4 +18,7 @@ interface EntityInfoDao: AbilityDao, ClassDao, ItemDao, SpellDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFeat(feat: DbFeat)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertState(background: DbState)
 }

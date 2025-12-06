@@ -28,6 +28,7 @@ data class DnDFullEntity(
     val ability: AbilityInfo? = null,
     val spell: FullSpell? = null,
     val item: FullItem? = null,
+    val state: Unit? = null,
 
     @SerialName("companion_entities")
     val companionEntities: List<DnDFullEntity> = emptyList(),
@@ -35,7 +36,11 @@ data class DnDFullEntity(
     fun toDnDEntityMin() = entity.toEntityMin()
 
     fun getSubEntitiesIds() =
-        abilities.fastMap { it.abilityId } + cls?.spells.orEmpty()
+        abilities.fastMap { it.abilityId } +
+                cls?.spells.orEmpty() +
+                ability?.let { listOfNotNull(it.givesStateSelf, it.givesStateTarget) }.orEmpty() +
+                spell?.attacks?.mapNotNull { it.givesState }.orEmpty() +
+                item?.item?.let { listOfNotNull(it.givesStatePassive, it.givesStateOnUse) }.orEmpty()
 
     fun getDistance(s: String) = minOf(
         wordInTextLevenshtein(s, entity.name),

@@ -5,19 +5,26 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbState
 import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "items",
     foreignKeys = [
-        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbState::class, ["id"], ["gives_state_passive"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DbState::class, ["id"], ["gives_state_on_use"], onDelete = ForeignKey.SET_NULL),
     ]
 )
 data class DbItem(
     @PrimaryKey val id: Uuid,
     val cost: Int?, // in copper pieces
     val weight: Int?,
-    val attunement: Boolean
+    val attunement: Boolean,
+    @ColumnInfo("gives_state_passive", index = true)
+    val givesStatePassive: Uuid?,
+    @ColumnInfo("gives_state_on_use", index = true)
+    val givesStateOnUse: Uuid?
 )
 
 @Entity(

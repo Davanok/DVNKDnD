@@ -1,7 +1,7 @@
 package com.davanok.dvnkdnd.database.model.adapters.entities
 
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpellAttack
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.Spell
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellAreaInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellAttackLevelModifierInfo
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellAttackSaveInfo
@@ -58,13 +58,24 @@ fun SpellAttackLevelModifierInfo.toDbSpellAttackLevelModifier(attackId: Uuid) =
     )
 
 
-fun FullSpell.toDbSpell(entityId: Uuid) = DbSpell(
+fun Spell.toDbSpell(entityId: Uuid) = DbSpell(
     id = entityId,
     school = school,
     level = level,
     castingTime = castingTime,
     castingTimeOther = castingTimeOther,
     components = components.toList(),
+    ritual = ritual,
+    materialComponent = materialComponent,
+    duration = duration,
+    concentration = concentration
+)
+fun DbSpell.toSpell() = Spell(
+    school = school,
+    level = level,
+    castingTime = castingTime,
+    castingTimeOther = castingTimeOther,
+    components = components.toSet(),
     ritual = ritual,
     materialComponent = materialComponent,
     duration = duration,
@@ -77,5 +88,6 @@ fun FullSpellAttack.toDbSpellAttack(spellId: Uuid) = DbSpellAttack(
     damageType = damageType,
     diceCount = diceCount,
     dice = dice,
-    modifier = modifier
+    modifier = modifier,
+    givesState = givesState
 )

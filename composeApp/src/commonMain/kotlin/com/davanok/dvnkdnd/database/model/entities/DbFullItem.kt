@@ -12,6 +12,7 @@ import com.davanok.dvnkdnd.database.entities.items.DbItemPropertyLink
 import com.davanok.dvnkdnd.database.entities.items.DbWeapon
 import com.davanok.dvnkdnd.database.entities.items.DbWeaponDamage
 import com.davanok.dvnkdnd.database.model.adapters.entities.toArmorInfo
+import com.davanok.dvnkdnd.database.model.adapters.entities.toItem
 import com.davanok.dvnkdnd.database.model.adapters.entities.toItemProperty
 import com.davanok.dvnkdnd.database.model.adapters.entities.toWeaponDamageInfo
 
@@ -66,9 +67,7 @@ data class DbFullItem(
     val weapon: DbFullWeapon?
 ) {
     fun toFullItem() = FullItem(
-        cost = item.cost,
-        weight = item.weight,
-        attunement = item.attunement,
+        item = item.toItem(),
         properties = properties.map(DbJoinItemProperty::toJoinItemProperty),
         armor = armor?.toArmorInfo(),
         weapon = weapon?.toFullWeapon()

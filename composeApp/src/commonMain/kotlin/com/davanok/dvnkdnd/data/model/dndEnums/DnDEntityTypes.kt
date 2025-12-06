@@ -8,6 +8,7 @@ import dvnkdnd.composeapp.generated.resources.feat
 import dvnkdnd.composeapp.generated.resources.item
 import dvnkdnd.composeapp.generated.resources.race
 import dvnkdnd.composeapp.generated.resources.spell
+import dvnkdnd.composeapp.generated.resources.state
 import dvnkdnd.composeapp.generated.resources.sub_background
 import dvnkdnd.composeapp.generated.resources.sub_class
 import dvnkdnd.composeapp.generated.resources.sub_race
@@ -24,4 +25,5 @@ enum class DnDEntityTypes(val stringRes: StringResource) {
     FEAT(Res.string.feat),
     SPELL(Res.string.spell),
     ITEM(Res.string.item),
+    STATE(Res.string.state)
 }

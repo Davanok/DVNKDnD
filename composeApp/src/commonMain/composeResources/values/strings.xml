@@ -27,6 +27,7 @@
     <string name="sub_background">Sub background</string>
     <string name="ability">Ability</string>
     <string name="feat">Feat</string>
+    <string name="state">State</string>
 
     <string name="multiclass_spell_slot_type_name">Multiclass</string>
 

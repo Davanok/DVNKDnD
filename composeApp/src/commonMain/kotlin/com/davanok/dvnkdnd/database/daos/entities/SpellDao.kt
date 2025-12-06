@@ -37,7 +37,7 @@ interface SpellDao {
 
     @Transaction
     suspend fun insertFullSpell(entityId: Uuid, spell: FullSpell) {
-        insertSpell(spell.toDbSpell(entityId))
+        insertSpell(spell.spell.toDbSpell(entityId))
         spell.area?.let { insertSpellArea(it.toDbSpellArea(entityId)) }
         spell.attacks.forEach { insertFullSpellAttack(entityId, it) }
     }
@@ -46,7 +46,7 @@ interface SpellDao {
     suspend fun insertFullSpellAttack(spellId: Uuid, attack: FullSpellAttack) {
         insertSpellAttack(attack.toDbSpellAttack(spellId))
         insertSpellAttackModifiers(
-            attack.modifiers.map {
+            attack.levelModifiers.map {
                 it.toDbSpellAttackLevelModifier(attack.id)
             }
         )

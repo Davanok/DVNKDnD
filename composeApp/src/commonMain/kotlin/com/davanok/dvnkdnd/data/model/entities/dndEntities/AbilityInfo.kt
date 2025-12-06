@@ -9,7 +9,11 @@ import kotlin.uuid.Uuid
 data class AbilityInfo(
     @SerialName("usage_limit_by_level")
     val usageLimitByLevel: List<Int>,
-    val regains: List<AbilityRegain>
+    val regains: List<AbilityRegain>,
+    @SerialName("gives_state_self")
+    val givesStateSelf: Uuid?,
+    @SerialName("gives_state_target")
+    val givesStateTarget: Uuid?
 )
 @Serializable
 data class AbilityRegain(

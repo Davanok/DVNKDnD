@@ -9,6 +9,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellArea
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttack
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackLevelModifier
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpellAttackSave
+import com.davanok.dvnkdnd.database.model.adapters.entities.toSpell
 import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAreaInfo
 import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttackLevelModifierInfo
 import com.davanok.dvnkdnd.database.model.adapters.entities.toSpellAttackSaveInfo
@@ -20,7 +21,7 @@ data class DbFullSpellAttack(
         parentColumn = "id",
         entityColumn = "attack_id"
     )
-    val modifiers: List<DbSpellAttackLevelModifier>,
+    val levelModifiers: List<DbSpellAttackLevelModifier>,
     @Relation(
         parentColumn = "id",
         entityColumn = "id"
@@ -33,7 +34,8 @@ data class DbFullSpellAttack(
         diceCount = attack.diceCount,
         dice = attack.dice,
         modifier = attack.modifier,
-        modifiers = modifiers.map(DbSpellAttackLevelModifier::toSpellAttackLevelModifierInfo),
+        givesState = attack.givesState,
+        levelModifiers = levelModifiers.map(DbSpellAttackLevelModifier::toSpellAttackLevelModifierInfo),
         save = save?.toSpellAttackSaveInfo()
     )
 }
@@ -55,15 +57,7 @@ data class DbFullSpell(
     val attacks: List<DbFullSpellAttack>
 ) {
     fun toFullSpell() = FullSpell(
-        school = spell.school,
-        level = spell.level,
-        castingTime = spell.castingTime,
-        castingTimeOther = spell.castingTimeOther,
-        components = spell.components.toSet(),
-        ritual = spell.ritual,
-        materialComponent = spell.materialComponent,
-        duration = spell.duration,
-        concentration = spell.concentration,
+        spell = spell.toSpell(),
         area = area?.toSpellAreaInfo(),
         attacks = attacks.map(DbFullSpellAttack::toFullSpellAttack)
     )

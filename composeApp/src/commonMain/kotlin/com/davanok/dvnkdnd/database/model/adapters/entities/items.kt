@@ -1,8 +1,8 @@
 package com.davanok.dvnkdnd.database.model.adapters.entities
 
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ArmorInfo
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullWeapon
+import com.davanok.dvnkdnd.data.model.entities.dndEntities.Item
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.ItemProperty
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.JoinItemProperty
 import com.davanok.dvnkdnd.data.model.entities.dndEntities.WeaponDamageInfo
@@ -56,11 +56,20 @@ fun DbWeaponDamage.toWeaponDamageInfo() = WeaponDamageInfo(
     modifier = modifier
 )
 
-fun FullItem.toDbItem(entityId: Uuid) = DbItem(
+fun Item.toDbItem(entityId: Uuid) = DbItem(
     id = entityId,
     cost = cost,
     weight = weight,
-    attunement = attunement
+    attunement = attunement,
+    givesStatePassive = givesStatePassive,
+    givesStateOnUse = givesStateOnUse
+)
+fun DbItem.toItem() = Item(
+    cost = cost,
+    weight = weight,
+    attunement = attunement,
+    givesStatePassive = givesStatePassive,
+    givesStateOnUse = givesStateOnUse
 )
 
 fun JoinItemProperty.toDbItemPropertyLink() = DbItemPropertyLink(

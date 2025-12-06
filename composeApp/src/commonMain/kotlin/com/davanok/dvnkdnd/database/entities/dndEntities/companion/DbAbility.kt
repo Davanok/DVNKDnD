@@ -6,18 +6,25 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.model.dndEnums.TimeUnits
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbBaseEntity
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbState
 import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "abilities",
     foreignKeys = [
-        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbState::class, ["id"], ["gives_state_self"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DbState::class, ["id"], ["gives_state_target"], onDelete = ForeignKey.SET_NULL),
     ]
 )
 data class DbAbility(
     @PrimaryKey val id: Uuid,
     @ColumnInfo("usage_limit_by_level")
-    val usageLimitByLevel: List<Int>
+    val usageLimitByLevel: List<Int>,
+    @ColumnInfo("gives_state_self")
+    val givesStateSelf: Uuid?,
+    @ColumnInfo("gives_state_target")
+    val givesStateTarget: Uuid?
 )
 @Entity(
     tableName = "ability_regain",

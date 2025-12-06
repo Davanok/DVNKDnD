@@ -12,9 +12,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-@Immutable
 @Serializable
-data class FullSpell(
+data class Spell(
     val school: MagicSchools,
     val level: Int,
     @SerialName("casting_time")
@@ -26,7 +25,13 @@ data class FullSpell(
     @SerialName("material_component")
     val materialComponent: String?,
     val duration: String,
-    val concentration: Boolean,
+    val concentration: Boolean
+)
+
+@Immutable
+@Serializable
+data class FullSpell(
+    val spell: Spell,
 
     val area: SpellAreaInfo?,
     val attacks: List<FullSpellAttack>,
@@ -49,9 +54,12 @@ data class FullSpellAttack(
     val diceCount: Int,
     val dice: Dices,
     val modifier: Int,
+    @SerialName("gives_state")
+    val givesState: Uuid?,
 
-    val modifiers: List<SpellAttackLevelModifierInfo>,
-    val save: SpellAttackSaveInfo?,
+    @SerialName("level_modifiers")
+    val levelModifiers: List<SpellAttackLevelModifierInfo>,
+    val save: SpellAttackSaveInfo?
 )
 
 @Serializable

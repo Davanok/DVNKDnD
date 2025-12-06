@@ -6,11 +6,21 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
+
 @Serializable
-data class FullItem(
+data class Item(
     val cost: Int?, // in copper pieces
     val weight: Int?,
     val attunement: Boolean,
+    @SerialName("gives_state_passive")
+    val givesStatePassive: Uuid?,
+    @SerialName("gives_state_on_use")
+    val givesStateOnUse: Uuid?
+)
+
+@Serializable
+data class FullItem(
+    val item: Item,
 
     val properties: List<JoinItemProperty>,
     val armor: ArmorInfo?,

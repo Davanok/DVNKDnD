@@ -35,6 +35,8 @@ data class DbAbilityInfo(
 ) {
     fun toAbilityInfo() = AbilityInfo(
         usageLimitByLevel = ability.usageLimitByLevel,
-        regains = regains.map(DbAbilityRegain::toAbilityRegain)
+        regains = regains.map(DbAbilityRegain::toAbilityRegain),
+        givesStateSelf = ability.givesStateSelf,
+        givesStateTarget = ability.givesStateTarget
     )
 }

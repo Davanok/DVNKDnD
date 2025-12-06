@@ -10,6 +10,7 @@ import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityImage
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityModifiersGroup
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbEntityProficiency
 import com.davanok.dvnkdnd.database.entities.dndEntities.DbSpell
+import com.davanok.dvnkdnd.database.entities.dndEntities.DbState
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbAbility
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbFeat
 import com.davanok.dvnkdnd.database.entities.dndEntities.companion.DbProficiency
@@ -79,7 +80,12 @@ data class DbFullEntity(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val item: DbFullItem?
+    val item: DbFullItem?,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val state: DbState?,
 ) {
     fun toDnDFullEntity(): DnDFullEntity = DnDFullEntity(
         entity = entity.toEntityBase(),
@@ -94,6 +100,7 @@ data class DbFullEntity(
         ability = ability?.toAbilityInfo(),
         spell = spell?.toFullSpell(),
         item = item?.toFullItem(),
+        state = null,
         companionEntities = emptyList()
     )
 }
