@@ -2,9 +2,9 @@ package com.davanok.dvnkdnd.ui.pages.dndEntityInfo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
-import com.davanok.dvnkdnd.data.model.ui.UiError
-import com.davanok.dvnkdnd.data.repositories.BrowseRepository
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.ui.model.UiError
+import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.loading_entity_error
 import kotlinx.coroutines.flow.MutableStateFlow

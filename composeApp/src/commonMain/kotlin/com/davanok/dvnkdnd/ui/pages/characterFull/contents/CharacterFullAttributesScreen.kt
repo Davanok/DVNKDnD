@@ -27,11 +27,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
-import com.davanok.dvnkdnd.data.model.dndEnums.skills
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.AttributesGroup
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.SkillsGroup
-import com.davanok.dvnkdnd.data.model.util.calculateModifier
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.SkillsGroup
+import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.saving_throw

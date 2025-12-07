@@ -1,0 +1,28 @@
+package com.davanok.dvnkdnd.data.local.db.daos.entities
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Transaction
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbAbility
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbAbilityRegain
+import com.davanok.dvnkdnd.domain.entities.dndEntities.AbilityInfo
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbAbility
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbAbilityRegain
+import kotlin.uuid.Uuid
+
+@Dao
+interface AbilityDao {
+    @Insert
+    suspend fun insertAbility(ability: DbAbility)
+
+    @Insert
+    suspend fun insertAbilityRegains(regains: List<DbAbilityRegain>)
+
+    @Transaction
+    suspend fun insertAbilityInfo(entityId: Uuid, ability: AbilityInfo) {
+        insertAbility(ability.toDbAbility(entityId))
+        insertAbilityRegains(
+            ability.regains.map { it.toDbAbilityRegain(entityId) }
+        )
+    }
+}

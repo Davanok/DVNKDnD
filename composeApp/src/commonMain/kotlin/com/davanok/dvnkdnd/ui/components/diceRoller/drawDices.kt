@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.ui.components.diceRoller
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.translate
-import com.davanok.dvnkdnd.data.model.dndEnums.Dices
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import kotlin.math.min
 import kotlin.math.PI
 

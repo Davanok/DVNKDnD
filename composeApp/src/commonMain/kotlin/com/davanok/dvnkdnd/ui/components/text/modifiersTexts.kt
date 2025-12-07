@@ -1,11 +1,11 @@
 package com.davanok.dvnkdnd.ui.components.text
 
 import androidx.compose.runtime.Composable
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierOperation
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDModifierValueSource
-import com.davanok.dvnkdnd.data.model.dndEnums.applyForStringPreview
-import com.davanok.dvnkdnd.data.model.entities.dndModifiers.ModifiersGroup
-import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierOperation
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifierExtendedInfo
+import com.davanok.dvnkdnd.ui.presentation.applyForStringPreview
 import org.jetbrains.compose.resources.stringResource
 
 

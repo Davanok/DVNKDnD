@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.davanok.dvnkdnd.data.platform.appDataDirectory
-import com.davanok.dvnkdnd.database.AppDatabase
+import com.davanok.dvnkdnd.data.local.db.AppDatabase
 import org.koin.dsl.module
 
 actual fun platformModule() = module {

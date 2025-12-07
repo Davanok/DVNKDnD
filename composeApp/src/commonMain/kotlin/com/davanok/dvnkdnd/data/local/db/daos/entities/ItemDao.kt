@@ -1,0 +1,57 @@
+package com.davanok.dvnkdnd.data.local.db.daos.entities
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Transaction
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbArmor
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItem
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemProperty
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemPropertyLink
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeapon
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItem
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullWeapon
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbArmor
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItem
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItemProperty
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItemPropertyLink
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbWeapon
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbWeaponDamage
+import kotlin.uuid.Uuid
+
+@Dao
+interface ItemDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertItem(item: DbItem)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertItemProperties(properties: List<DbItemProperty>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertItemPropertyLinks(link: List<DbItemPropertyLink>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertArmor(armor: DbArmor)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWeapon(weapon: DbWeapon)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWeaponDamages(damages: List<DbWeaponDamage>)
+
+    @Transaction
+    suspend fun insertFullItem(entityId: Uuid, item: FullItem) {
+        insertItem(item.item.toDbItem(entityId))
+        insertItemProperties(item.properties.map { it.property.toDbItemProperty() })
+        insertItemPropertyLinks(item.properties.map { it.toDbItemPropertyLink() })
+        item.armor?.let { insertArmor(it.toDbArmor(entityId)) }
+        item.weapon?.let { insertFullWeapon(entityId, it) }
+    }
+
+    @Transaction
+    suspend fun insertFullWeapon(entityId: Uuid, weapon: FullWeapon) {
+        insertWeapon(weapon.toDbWeapon(entityId))
+        insertWeaponDamages(weapon.damages.map { it.toDbWeaponDamage(entityId) })
+    }
+}

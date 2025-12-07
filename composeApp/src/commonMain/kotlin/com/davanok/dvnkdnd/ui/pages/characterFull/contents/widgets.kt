@@ -21,10 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterMainEntityInfo
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterModifiedValues
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityInfo
+import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.character_armor_class

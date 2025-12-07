@@ -2,10 +2,10 @@ package com.davanok.dvnkdnd.ui.pages.charactersList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.ui.UiError
-import com.davanok.dvnkdnd.data.repositories.CharactersRepository
+import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
+import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.ui.model.UiError
+import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.loading_character_error
 import dvnkdnd.composeapp.generated.resources.loading_characters_error

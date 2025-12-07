@@ -1,0 +1,46 @@
+package com.davanok.dvnkdnd.domain.entities.dndModifiers
+
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierOperation
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
+import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
+
+
+@Serializable
+data class ModifiersGroup(
+    val id: Uuid = Uuid.random(),
+
+    val target: DnDModifierTargetType,
+    val operation: DnDModifierOperation,
+    @SerialName("value_source")
+    val valueSource: DnDModifierValueSource,
+    @SerialName("value_source_target")
+    val valueSourceTarget: String?,
+    val value: Double,
+
+    val name: String,
+    val description: String?,
+    @SerialName("selection_limit")
+    val selectionLimit: Int,
+    val priority: Int,
+
+    @SerialName("clamp_min") val clampMin: Int? = null,
+    @SerialName("clamp_max") val clampMax: Int? = null,
+
+    @SerialName("min_base_value") val minBaseValue: Int? = null,
+    @SerialName("max_base_value") val maxBaseValue: Int? = null,
+
+    val modifiers: List<DnDModifier>
+)
+
+@Serializable
+data class DnDModifier(
+    val id: Uuid,
+    val selectable: Boolean,
+    val target: String
+) {
+    inline fun <reified E: Enum<E>>targetAs(): E? = enumValueOfOrNull<E>(target)
+}

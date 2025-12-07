@@ -8,7 +8,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.ui.isCritical
+import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard

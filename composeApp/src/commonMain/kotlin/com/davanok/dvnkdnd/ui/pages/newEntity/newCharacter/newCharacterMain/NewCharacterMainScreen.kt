@@ -56,11 +56,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
-import com.davanok.dvnkdnd.data.model.ui.isCritical
-import com.davanok.dvnkdnd.data.model.ui.toUiMessage
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.ui.model.isCritical
+import com.davanok.dvnkdnd.ui.model.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog

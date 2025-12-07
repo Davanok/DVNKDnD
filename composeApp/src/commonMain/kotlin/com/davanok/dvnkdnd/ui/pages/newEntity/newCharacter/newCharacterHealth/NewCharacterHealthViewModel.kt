@@ -2,8 +2,8 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.dndEnums.Dices
-import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
+import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.health_cant_be_less_than_zero

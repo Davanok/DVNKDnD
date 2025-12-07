@@ -1,9 +1,9 @@
 package com.davanok.dvnkdnd.data.di
 
-import com.davanok.dvnkdnd.database.AppDatabase
-import com.davanok.dvnkdnd.database.daos.character.CharactersDao
-import com.davanok.dvnkdnd.database.daos.entities.BaseEntityDao
-import com.davanok.dvnkdnd.database.daos.entities.FullEntitiesDao
+import com.davanok.dvnkdnd.data.local.db.AppDatabase
+import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
+import com.davanok.dvnkdnd.data.local.db.daos.entities.BaseEntityDao
+import com.davanok.dvnkdnd.data.local.db.daos.entities.FullEntitiesDao
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 

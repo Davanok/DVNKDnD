@@ -2,10 +2,10 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.types.CheckingDataStates
-import com.davanok.dvnkdnd.data.model.types.InternetConnectionException
-import com.davanok.dvnkdnd.data.repositories.ExternalKeyValueRepository
-import com.davanok.dvnkdnd.data.repositories.UtilsDataRepository
+import com.davanok.dvnkdnd.core.CheckingDataStates
+import com.davanok.dvnkdnd.core.InternetConnectionException
+import com.davanok.dvnkdnd.domain.repositories.remote.ExternalKeyValueRepository
+import com.davanok.dvnkdnd.domain.usecases.entities.EntitiesBootstrapper
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.finish
@@ -25,7 +25,7 @@ import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.Uuid
 
 class LoadingDataViewModel(
-    private val utilsDataRepository: UtilsDataRepository,
+    private val entitiesBootstrapper: EntitiesBootstrapper,
     private val externalKeyValueRepository: ExternalKeyValueRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<LoadingDataUiState>(LoadingDataUiState.Loading)
@@ -39,7 +39,7 @@ class LoadingDataViewModel(
         requiredEntities: List<Uuid>
     ) {
         var hasError = false
-        utilsDataRepository.checkAndLoadEntities(requiredEntities)
+        entitiesBootstrapper.checkAndLoadEntities(requiredEntities)
             .catch {
                 hasError = true
                 setCheckingState(LoadingDataUiState.Error(it))

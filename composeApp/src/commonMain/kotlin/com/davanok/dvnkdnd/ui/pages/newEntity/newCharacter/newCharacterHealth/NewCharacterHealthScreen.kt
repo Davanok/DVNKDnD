@@ -51,10 +51,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.dndEnums.Dices
-import com.davanok.dvnkdnd.data.model.ui.isCritical
-import com.davanok.dvnkdnd.data.model.ui.toUiMessage
-import com.davanok.dvnkdnd.data.model.util.calculateModifier
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
+import com.davanok.dvnkdnd.ui.model.isCritical
+import com.davanok.dvnkdnd.ui.model.toUiMessage
+import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster

@@ -2,13 +2,13 @@ package com.davanok.dvnkdnd.ui.pages.characterFull
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterNote
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
-import com.davanok.dvnkdnd.data.model.ui.UiError
-import com.davanok.dvnkdnd.data.model.util.getByKeyPredicate
-import com.davanok.dvnkdnd.data.model.util.withAppliedModifiers
-import com.davanok.dvnkdnd.data.repositories.CharactersRepository
+import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.ui.model.UiError
+import com.davanok.dvnkdnd.core.utils.getByKeyPredicate
+import com.davanok.dvnkdnd.core.utils.withAppliedModifiers
+import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.character_full_attacks_page_title

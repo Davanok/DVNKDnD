@@ -1,9 +1,9 @@
 package com.davanok.dvnkdnd.ui.components.text
 
 import androidx.compose.runtime.Composable
-import com.davanok.dvnkdnd.data.model.dndEnums.Dices
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpellAttack
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullSpell
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullSpellAttack
 import com.davanok.dvnkdnd.ui.components.toSignedSpacedString
 import org.jetbrains.compose.resources.stringResource
 

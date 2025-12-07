@@ -2,7 +2,7 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.saving_data_error

@@ -50,9 +50,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
-import com.davanok.dvnkdnd.data.model.ui.UiError
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.sideSheet.ModalSideSheet
 import com.davanok.dvnkdnd.ui.components.sideSheet.rememberModalSideSheetState

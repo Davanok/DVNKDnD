@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
@@ -52,10 +51,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterSpell
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.FullSpell
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellSlotsType
+import com.davanok.dvnkdnd.domain.entities.character.CharacterSpell
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullSpell
+import com.davanok.dvnkdnd.domain.entities.dndEntities.SpellSlotsType
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.adaptive.alternativeClickable
 import com.davanok.dvnkdnd.ui.components.rememberCollapsingNestedScrollConnection
@@ -320,7 +319,7 @@ private fun SpellCard(
                 Box(
                     modifier = Modifier
                         .size(56.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(MaterialTheme.shapes.medium)
                         .background(MaterialTheme.colorScheme.primaryContainer)
                         .clickable { onOpenInfo(characterSpell.spell) },
                     contentAlignment = Alignment.Center

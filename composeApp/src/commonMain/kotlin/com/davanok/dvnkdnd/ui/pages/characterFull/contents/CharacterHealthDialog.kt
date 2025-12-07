@@ -15,8 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.util.fastForEach
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterHealth
-import com.davanok.dvnkdnd.data.model.types.ModifierExtendedInfo
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifierExtendedInfo
 import com.davanok.dvnkdnd.ui.components.text.buildPreviewString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.character_health_damage_button

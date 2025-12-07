@@ -6,12 +6,13 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.data.model.dndEnums.DnDEntityTypes
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityMin
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDEntityWithSubEntities
-import com.davanok.dvnkdnd.data.model.ui.UiError
-import com.davanok.dvnkdnd.data.repositories.EntitiesRepository
-import com.davanok.dvnkdnd.data.repositories.FilesRepository
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.ui.model.UiError
+import com.davanok.dvnkdnd.domain.repositories.local.EntitiesRepository
+import com.davanok.dvnkdnd.domain.repositories.local.FilesRepository
+import com.davanok.dvnkdnd.domain.values.FilePaths
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.searchSheet.SearchSheetViewModel
 import dvnkdnd.composeapp.generated.resources.Res
@@ -145,7 +146,7 @@ class NewCharacterMainViewModel(
     }
 
     fun addCharacterImage(value: ByteArray) = viewModelScope.launch {
-        val path = filesRepository.getFilename(FilesRepository.Paths.images, "png", true)
+        val path = filesRepository.getFilename(FilePaths.images, "png", true)
         filesRepository.write(value, path)
             .onSuccess {
                 updateCharacter {

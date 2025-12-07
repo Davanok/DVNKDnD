@@ -13,7 +13,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.SpellSlotsType
+import com.davanok.dvnkdnd.domain.entities.dndEntities.SpellSlotsType
 import com.davanok.dvnkdnd.ui.components.adaptive.alternativeClickable
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.multiclass_spell_slot_type_name

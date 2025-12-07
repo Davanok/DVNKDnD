@@ -28,7 +28,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -55,7 +54,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.davanok.dvnkdnd.data.model.dndEnums.Dices
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -473,7 +472,7 @@ private fun SingleDiceContent(
                     .border(
                         1.dp,
                         MaterialTheme.colorScheme.primary,
-                        RoundedCornerShape(12.dp)
+                        MaterialTheme.shapes.medium
                     )
                 else Modifier
             )

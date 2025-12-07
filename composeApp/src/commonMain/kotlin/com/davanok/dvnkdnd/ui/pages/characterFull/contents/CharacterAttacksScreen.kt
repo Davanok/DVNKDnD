@@ -4,8 +4,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterItem
-import com.davanok.dvnkdnd.data.model.entities.dndEntities.DnDFullEntity
+import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 
 @Composable
 fun CharacterAttacksScreen(

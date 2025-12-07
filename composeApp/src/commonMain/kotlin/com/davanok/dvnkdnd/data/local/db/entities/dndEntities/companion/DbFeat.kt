@@ -1,0 +1,18 @@
+package com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion
+
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
+import kotlin.uuid.Uuid
+
+@Entity(
+    tableName = "feats",
+    foreignKeys = [
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbFeat(
+    @PrimaryKey val id: Uuid,
+    val repeatable: Boolean
+)

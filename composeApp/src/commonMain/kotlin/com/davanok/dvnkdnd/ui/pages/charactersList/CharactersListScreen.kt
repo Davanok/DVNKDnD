@@ -45,9 +45,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterBase
-import com.davanok.dvnkdnd.data.model.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.model.ui.isCritical
+import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
+import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.components.EmptyImage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
