@@ -11,7 +11,9 @@ import kotlin.uuid.Uuid
 
 fun AbilityInfo.toDbAbility(entityId: Uuid) = DbAbility(
     id = entityId,
-    usageLimitByLevel = usageLimitByLevel
+    usageLimitByLevel = usageLimitByLevel,
+    givesStateSelf = givesStateSelf,
+    givesStateTarget = givesStateTarget
 )
 fun AbilityRegain.toDbAbilityRegain(abilityId: Uuid) = DbAbilityRegain(
     id = id,

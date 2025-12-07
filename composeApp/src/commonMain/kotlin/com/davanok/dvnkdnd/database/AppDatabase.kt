@@ -3,6 +3,9 @@ package com.davanok.dvnkdnd.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.execSQL
 import com.davanok.dvnkdnd.database.daos.character.CharactersDao
 import com.davanok.dvnkdnd.database.daos.entities.BaseEntityDao
 import com.davanok.dvnkdnd.database.daos.entities.FullEntitiesDao
@@ -50,6 +53,8 @@ import com.davanok.dvnkdnd.database.entities.items.DbItemProperty
 import com.davanok.dvnkdnd.database.entities.items.DbItemPropertyLink
 import com.davanok.dvnkdnd.database.entities.items.DbWeapon
 import com.davanok.dvnkdnd.database.entities.items.DbWeaponDamage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
 @Database(
     entities = [
@@ -110,8 +115,23 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun getFullEntityDao(): FullEntitiesDao
 
     companion object {
-        val initialExecs = listOf(
+        private val initialExecs = listOf(
             "CREATE UNIQUE INDEX IF NOT EXISTS idx_character_multiclass_unique ON character_used_spell_slots(character_id) WHERE spell_slot_type_id IS NULL"
         )
+
+        fun buildDatabase(builder: Builder<AppDatabase>) = builder
+            .fallbackToDestructiveMigration(true)
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .addCallback(object : Callback() {
+                override fun onCreate(connection: SQLiteConnection) {
+                    super.onCreate(connection)
+
+                    initialExecs.forEach {
+                        connection.execSQL(it)
+                    }
+                }
+            })
+            .build()
     }
 }

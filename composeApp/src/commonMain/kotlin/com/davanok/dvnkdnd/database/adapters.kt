@@ -3,8 +3,6 @@ package com.davanok.dvnkdnd.database
 import androidx.room.TypeConverter
 import com.davanok.dvnkdnd.data.model.dndEnums.SpellComponents
 import com.davanok.dvnkdnd.data.model.dndEnums.Attributes
-import okio.Path
-import okio.Path.Companion.toPath
 import kotlin.uuid.Uuid
 
 class MainAdapters {
@@ -14,19 +12,14 @@ class MainAdapters {
     fun listToStringConverter(value: List<Int>) = value.joinToString(";")
 
     @TypeConverter
-    fun stringToPathConverter(value: String) = value.toPath()
-    @TypeConverter
-    fun pathToStringConverter(value: Path) = value.toString()
-
-    @TypeConverter
     fun uuidToBytes(value: Uuid) = value.toByteArray()
     @TypeConverter
     fun bytesToUuid(value: ByteArray) = Uuid.fromByteArray(value)
 }
-object GenericEnumListAdapters {
+private object GenericEnumListAdapters {
     inline fun <reified E: Enum<E>>toListConverter(value: String): List<E> =
         value.split(';').map { enumValueOf<E>(it) }
-    fun <E: Enum<E>>toStringConverter(value: List<E>) =
+    inline fun <reified E: Enum<E>>toStringConverter(value: List<E>) =
         value.joinToString(";") { it.name }
 }
 class EnumListAdapters {

@@ -112,7 +112,7 @@ fun CharacterSpellsScreen(
                 if (filterWord.isBlank()) compareByDescending { it.ready }
                 else compareBy { it.spell.getDistance(filterWord) }
             val comparator = firstComparator
-                .thenBy { it.spell.spell?.level }
+                .thenBy { it.spell.spell?.spell?.level }
                 .thenBy { it.spell.entity.name }
 
             spells.sortedWith(comparator)
@@ -345,24 +345,24 @@ private fun SpellCard(
                     )
 
                     if (spell != null) {
-                        val levelText = spell.level.let {
+                        val levelText = spell.spell.level.let {
                             if (it == 0) stringResource(Res.string.spell_cantrip)
                             else stringResource(Res.string.spell_level, it)
                         }
                         Text(
-                            text = "${stringResource(spell.school.stringRes)} • $levelText",
+                            text = "${stringResource(spell.spell.school.stringRes)} • $levelText",
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(top = 2.dp, bottom = 6.dp)
                         )
 
                         Text(
                             text = buildString {
-                                if (spell.components.isNotEmpty()) {
-                                    spell.components.sortedBy { it.ordinal }.forEach {
+                                if (spell.spell.components.isNotEmpty()) {
+                                    spell.spell.components.sortedBy { it.ordinal }.forEach {
                                         append(stringResource(it.stringResShort))
                                     }
                                 }
-                                spell.materialComponent?.let {
+                                spell.spell.materialComponent?.let {
                                     if (isNotEmpty()) append(" — $it")
                                 }
                             },
@@ -374,14 +374,14 @@ private fun SpellCard(
 
                 Column {
                     spell?.let {
-                        if (it.ritual) AssistChip(
+                        if (it.spell.ritual) AssistChip(
                             onClick = {},
                             label = { Text(stringResource(Res.string.ritual)) },
                             enabled = false
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = if (it.concentration) stringResource(Res.string.concentration) else it.duration,
+                            text = if (it.spell.concentration) stringResource(Res.string.concentration) else it.spell.duration,
                             style = MaterialTheme.typography.labelSmall,
                             modifier = Modifier.padding(top = 4.dp)
                         )
@@ -483,7 +483,7 @@ private fun SpellShortInfoDialog(
                     Column(
                         modifier = Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState())
                     ) {
-                        availableSlots.filter { it.value.size >= spell.level }.forEach { (slotType, slots) ->
+                        availableSlots.filter { it.value.size >= spell.spell.level }.forEach { (slotType, slots) ->
                             Text(
                                 text = slotType?.name ?: stringResource(Res.string.multiclass_spell_slot_type_name),
                                 style = MaterialTheme.typography.titleMedium
@@ -495,7 +495,7 @@ private fun SpellShortInfoDialog(
                             ) {
                                 slots.forEachIndexed { index, count ->
                                     val level = index + 1
-                                    if (level < spell.level) return@forEachIndexed
+                                    if (level < spell.spell.level) return@forEachIndexed
                                     val availableCount = count - (usedSpells[slotType?.id]?.getOrNull(index) ?: 0)
 
                                     AssistChip(
@@ -538,24 +538,24 @@ private fun SpellShortInfoCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                val levelText = spell.level.let {
+                val levelText = spell.spell.level.let {
                     if (it == 0) stringResource(Res.string.spell_cantrip)
                     else stringResource(Res.string.spell_level, it)
                 }
                 Text(
-                    text = "${stringResource(spell.school.stringRes)} • $levelText",
+                    text = "${stringResource(spell.spell.school.stringRes)} • $levelText",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 2.dp, bottom = 6.dp)
                 )
 
                 Text(
                     text = buildString {
-                        if (spell.components.isNotEmpty()) {
-                            spell.components.sortedBy { it.ordinal }.forEach {
+                        if (spell.spell.components.isNotEmpty()) {
+                            spell.spell.components.sortedBy { it.ordinal }.forEach {
                                 append(stringResource(it.stringResShort))
                             }
                         }
-                        spell.materialComponent?.let {
+                        spell.spell.materialComponent?.let {
                             if (isNotEmpty()) append(" — $it")
                         }
                     },
@@ -565,14 +565,14 @@ private fun SpellShortInfoCard(
             }
             Column {
                 spell.let {
-                    if (it.ritual) AssistChip(
+                    if (it.spell.ritual) AssistChip(
                         onClick = {},
                         label = { Text(stringResource(Res.string.ritual)) },
                         enabled = false
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = if (it.concentration) stringResource(Res.string.concentration) else it.duration,
+                        text = if (it.spell.concentration) stringResource(Res.string.concentration) else it.spell.duration,
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(top = 4.dp)
                     )

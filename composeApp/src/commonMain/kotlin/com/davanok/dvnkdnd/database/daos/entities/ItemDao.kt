@@ -42,7 +42,7 @@ interface ItemDao {
 
     @Transaction
     suspend fun insertFullItem(entityId: Uuid, item: FullItem) {
-        insertItem(item.toDbItem(entityId))
+        insertItem(item.item.toDbItem(entityId))
         insertItemProperties(item.properties.map { it.property.toDbItemProperty() })
         insertItemPropertyLinks(item.properties.map { it.toDbItemPropertyLink() })
         item.armor?.let { insertArmor(it.toDbArmor(entityId)) }

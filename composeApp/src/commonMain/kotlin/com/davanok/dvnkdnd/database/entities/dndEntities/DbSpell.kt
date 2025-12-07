@@ -17,8 +17,7 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "spells",
     foreignKeys = [
-        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DbState::class, ["id"], ["gives_state"], onDelete = ForeignKey.SET_NULL)
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class DbSpell(
@@ -54,7 +53,8 @@ data class DbSpellArea(
 @Entity(
     tableName = "spell_attacks",
     foreignKeys = [
-        ForeignKey(DbSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbState::class, ["id"], ["gives_state"], onDelete = ForeignKey.SET_NULL)
     ]
 )
 data class DbSpellAttack(

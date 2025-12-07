@@ -1,8 +1,10 @@
 package com.davanok.dvnkdnd.ui.navigation
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
+@Immutable
 @Serializable
 sealed interface Route {
     @Serializable data object Unknown: Route

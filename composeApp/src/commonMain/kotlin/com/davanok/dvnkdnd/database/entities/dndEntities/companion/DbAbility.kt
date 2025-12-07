@@ -21,9 +21,9 @@ data class DbAbility(
     @PrimaryKey val id: Uuid,
     @ColumnInfo("usage_limit_by_level")
     val usageLimitByLevel: List<Int>,
-    @ColumnInfo("gives_state_self")
+    @ColumnInfo("gives_state_self", index = true)
     val givesStateSelf: Uuid?,
-    @ColumnInfo("gives_state_target")
+    @ColumnInfo("gives_state_target", index = true)
     val givesStateTarget: Uuid?
 )
 @Entity(

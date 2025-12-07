@@ -9,7 +9,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FullSpellAttack.buildString(level: Int = 0) = buildString {
-    val modified = modifiers.lastOrNull { it.level <= level }
+    val modified = levelModifiers.lastOrNull { it.level <= level }
     append(modified?.diceCount ?: diceCount)
     append(' ')
     append(stringResource((modified?.dice ?: dice).stringRes))
@@ -25,7 +25,7 @@ fun FullSpell.buildAttacksString(level: Int) = buildString {
     val dices = mutableMapOf<Dices, Int>()
     var appendValue = 0
     attacks.forEach { attack ->
-        val modified = attack.modifiers.lastOrNull { it.level <= level }
+        val modified = attack.levelModifiers.lastOrNull { it.level <= level }
         val dice = modified?.dice ?: attack.dice
         var dicesCount = dices.getOrElse(dice) { 0 }
 
