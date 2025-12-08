@@ -5,8 +5,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpell
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbState
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeat
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbProficiency
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbSpellSlotType
@@ -212,4 +214,19 @@ data class DbCharacterNote(
     val pinned: Boolean,
     val tags: String,
     val text: String,
+)
+
+@Entity(
+    tableName = "character_states",
+    primaryKeys = ["character_id", "state_id"],
+    foreignKeys = [
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbState::class, ["id"], ["state_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbBaseEntity::class, ["id"], ["from_id"], onDelete = ForeignKey.SET_NULL)
+    ]
+)
+data class DbCharacterStateLink(
+    @ColumnInfo("character_id", index = true) val characterId: Uuid,
+    @ColumnInfo("state_id", index = true) val stateId: Uuid,
+    @ColumnInfo("from_id", index = true) val fromId: Uuid?
 )

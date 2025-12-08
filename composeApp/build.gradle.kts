@@ -72,6 +72,7 @@ kotlin {
             implementation(libs.serialization.json)
 
             implementation(libs.ktor.core)
+            implementation(libs.ktor.cio)
 
             implementation(libs.filekit.core)
             implementation(libs.filekit.compose)
@@ -98,17 +99,15 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.koin.android)
 
-            implementation(libs.ktor.okhttp)
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
         }
         desktopMain.dependencies {
-            implementation(libs.ktor.okhttp)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
         iosMain.dependencies {
-            implementation(libs.ktor.darwin)
+
         }
     }
 }

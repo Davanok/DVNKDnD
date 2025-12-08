@@ -55,6 +55,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeapon
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
 import com.davanok.dvnkdnd.data.local.adapters.EnumListAdapters
 import com.davanok.dvnkdnd.data.local.adapters.MainAdapters
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -80,6 +81,7 @@ import kotlinx.coroutines.IO
         DbCharacterSelectedModifier::class,
         DbCharacterSpellLink::class,
         DbCharacterUsedSpellSlots::class,
+        DbCharacterStateLink::class,
         DbClass::class,
         DbClassSpell::class,
         DbClassSpellSlots::class,

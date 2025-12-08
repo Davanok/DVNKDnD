@@ -26,6 +26,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpell
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSpellLink
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.data.local.mappers.character.toAttributesGroup
 import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterBase
@@ -34,6 +35,7 @@ import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterOptionalValue
 import com.davanok.dvnkdnd.data.local.mappers.character.toCoinsGroup
 import com.davanok.dvnkdnd.data.local.mappers.character.toCustomModifier
 import com.davanok.dvnkdnd.data.local.mappers.character.toDnDCharacterHealth
+import com.davanok.dvnkdnd.domain.entities.character.CharacterState
 
 data class DbJoinCharacterMainEntities(
     @Embedded
@@ -76,6 +78,16 @@ data class DbJoinCharacterSpell(
         entityColumn = "id"
     )
     val spell: DbFullEntity
+)
+data class DbJoinCharacterState(
+    @Embedded
+    val link: DbCharacterStateLink,
+    @Relation(
+        DbBaseEntity::class,
+        parentColumn = "state_id",
+        entityColumn = "id"
+    )
+    val state: DbFullEntity
 )
 data class DbFullCharacter(
     @Embedded val character: DbCharacter,
@@ -139,6 +151,13 @@ data class DbFullCharacter(
     val customModifiers: List<DbCharacterCustomModifier>,
 
     @Relation(
+        entity = DbCharacterStateLink::class,
+        parentColumn = "id",
+        entityColumn = "character_id"
+    )
+    val states: List<DbJoinCharacterState>,
+
+    @Relation(
         parentColumn = "id",
         entityColumn = "character_id"
     )
@@ -159,6 +178,7 @@ data class DbFullCharacter(
         selectedModifiers = selectedModifiers.map { it.modifierId }.toSet(),
         selectedProficiencies = selectedProficiencies.map { it.proficiencyId }.toSet(),
         customModifiers = customModifiers.map(DbCharacterCustomModifier::toCustomModifier),
+        states = states.map { CharacterState(state = it.state.toDnDFullEntity(), from = it.link.fromId) },
         notes = notes.map(DbCharacterNote::toCharacterNote)
     )
 }

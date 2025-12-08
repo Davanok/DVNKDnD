@@ -4,7 +4,7 @@ agp = "8.11.1" # "8.11.1" # "8.8.0-alpha05"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
-androidx-activityCompose = "1.12.0"
+androidx-activityCompose = "1.12.1"
 androidx-appcompat = "1.7.1"
 androidx-constraintlayout = "2.2.1"
 androidx-core-ktx = "1.17.0"
@@ -20,21 +20,21 @@ koin = "4.1.1"
 supabase-auth = "2.6.1"
 supabase-database = "3.2.6"
 slf4j = "2.0.17"
-ktor = "3.3.2"
+ktor = "3.3.3"
 serialization = "1.9.0"
 filekit = "0.12.0"
 room = "2.8.3"
 datastore = "1.2.0"
 sqlite = "2.6.2"
 ksp = "2.3.0"
-uiAndroid = "1.9.5"
+uiAndroid = "1.10.0"
 napier = "2.7.1"
 jetbrains-adaptive = "1.2.0"
-build-config = "5.7.1"
+build-config = "6.0.6"
 coil = "3.3.0"
 toaster = "0.3.8"
 markdown-parser = "0.38.1"
-navigation3 = "1.0.0-alpha05"
+navigation3 = "1.0.0-alpha06"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -80,8 +80,7 @@ slf4j = { group = "org.slf4j", name = "slf4j-nop", version.ref = "slf4j" }
 
 # internet - ktor
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
-ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
-ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+ktor-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 
 # work with files - filekit
 filekit-core = { group = "io.github.vinceglb", name = "filekit-dialogs", version.ref = "filekit" }
@@ -102,6 +101,7 @@ napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 
 #navigation
 androidx-nav3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

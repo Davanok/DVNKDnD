@@ -9,6 +9,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterFeat
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterImage
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficiency
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.data.local.db.model.DbFullCharacter
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacter
@@ -29,7 +30,8 @@ interface CharactersDao: CharacterMainDao,
         CharacterSelectableEntitiesDao,
         CharacterSpellsDao,
         CharacterItemsDao,
-        CharacterNotesDao
+        CharacterNotesDao,
+        CharacterStatesDao
 {
     @Transaction
     @Query("SELECT * FROM characters WHERE id == :characterId")
@@ -91,6 +93,11 @@ interface CharactersDao: CharacterMainDao,
         character.customModifiers
             .map { it.toDbCharacterCustomModifier(characterId) }
             .let { insertCharacterCustomModifiers(it) }
+
+        character.states
+            .map { DbCharacterStateLink(characterId, it.state.entity.id, it.from) }
+            .let { insertCharacterStates(it) }
+
         character.notes
             .map { it.toDbCharacterNote(characterId) }
             .let { insertCharacterNotes(it) }
