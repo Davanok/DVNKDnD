@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.data.platform.supportsWindows
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
@@ -112,6 +114,7 @@ fun <T> AdaptiveContent(
     singlePaneContent: @Composable () -> Unit,
     twoPaneContent: Pair<@Composable () -> Unit, @Composable () -> Unit>,
     state: AdaptiveContentState<T> = rememberAdaptiveContentState(),
+    panesSpacing: Dp = 0.dp,
     modifier: Modifier = Modifier
 ) {
     // entries and platform capability are checked at composition time
@@ -125,6 +128,7 @@ fun <T> AdaptiveContent(
         singlePaneContent = singlePaneContent,
         twoPaneContent = twoPaneContent,
         supportPane = if (showSupportPane) state.peekContentComposable(showWindows) else null,
+        panesSpacing = panesSpacing,
         onHideSupportPane = { state.clear() }
     )
 

@@ -1,5 +1,7 @@
 package com.davanok.dvnkdnd.ui.components.adaptive
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +11,9 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.util.fastForEach
 import androidx.window.core.layout.WindowSizeClass
 
@@ -25,7 +29,8 @@ fun AdaptiveWidth(
     twoPaneContent: Pair<@Composable () -> Unit, @Composable () -> Unit>,
     supportPane: (@Composable () -> Unit)? = null,
     supportPaneTitle: @Composable () -> Unit = {  },
-    onHideSupportPane: () -> Unit = {},
+    onHideSupportPane: () -> Unit = {  },
+    panesSpacing: Dp = 0.dp,
     modifier: Modifier = Modifier
 ) {
     val windowAdaptiveInfo = currentWindowAdaptiveInfo(true)
@@ -79,13 +84,16 @@ fun AdaptiveWidth(
                     Row(modifier = modifier) {
                         // order: main left, main middle, support (edge/right)
                         val panes = listOf(twoPaneContent.first, twoPaneContent.second, supportPane)
-                        for (i in panes.indices) {
-                            val wDp = with(density) { groupWidthsPx[i].coerceAtLeast(0f).toDp() }
-                            Box(modifier = Modifier.width(wDp)) { panes[i].invoke() }
-                            if (i < spacerWidthsPx.size) {
+                        panes.forEachIndexed { index, pane ->
+                            val wDp = with(density) { groupWidthsPx[index].coerceAtLeast(0f).toDp() }
+
+                            Box(modifier = Modifier.width(wDp)) { pane.invoke() }
+
+                            if (index < spacerWidthsPx.size) {
                                 val sDp =
-                                    with(density) { spacerWidthsPx[i].coerceAtLeast(0f).toDp() }
-                                if (sDp.value > 0f) Spacer(modifier = Modifier.width(sDp))
+                                    with(density) { spacerWidthsPx[index].coerceAtLeast(0f).toDp() }
+
+                                Spacer(modifier = Modifier.width(max(panesSpacing, sDp)))
                             }
                         }
                     }
@@ -117,7 +125,8 @@ fun AdaptiveWidth(
                         Box(modifier = Modifier.width(leftDp)) { twoPaneContent.first() }
 
                         val sDp = with(density) { spacerPx.coerceAtLeast(0f).toDp() }
-                        if (sDp.value > 0f) Spacer(modifier = Modifier.width(sDp))
+
+                        Spacer(modifier = Modifier.width(max(panesSpacing, sDp)))
 
                         Box(modifier = Modifier.width(rightDp)) { twoPaneContent.second() }
                     }
@@ -132,25 +141,28 @@ fun AdaptiveWidth(
 
         windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_LARGE_LOWER_BOUND) -> {
             // expanded breakpoint: if supportPane present -> render it inline on the right edge
-            if (supportPane != null) {
-                willShowInlineSupport = true
-                Row(modifier = modifier) {
-                    Box(modifier = Modifier.weight(1f)) { twoPaneContent.first() }
-                    Box(modifier = Modifier.weight(1f)) { twoPaneContent.second() }
-                    Box(modifier = Modifier.weight(1f)) { supportPane() } // edge pane on right
-                }
-            } else {
-                willShowInlineSupport = false
-                Row(modifier = modifier) {
-                    Box(modifier = Modifier.weight(1f)) { twoPaneContent.first() }
-                    Box(modifier = Modifier.weight(1f)) { twoPaneContent.second() }
+            willShowInlineSupport = true
+
+            Row(
+                modifier = modifier,
+                horizontalArrangement = Arrangement.spacedBy(panesSpacing)
+            ) {
+                Box(modifier = Modifier.weight(1f)) { twoPaneContent.first() }
+                Box(modifier = Modifier.weight(1f)) { twoPaneContent.second() }
+                AnimatedVisibility(
+                    visible = supportPane != null
+                ) {
+                    Box(modifier = Modifier.weight(1f)) { supportPane?.invoke() }
                 }
             }
         }
 
         windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> {
             willShowInlineSupport = false
-            Row(modifier = modifier) {
+            Row(
+                modifier = modifier,
+                horizontalArrangement = Arrangement.spacedBy(panesSpacing)
+            ) {
                 Box(modifier = Modifier.weight(1f)) { twoPaneContent.first() }
                 Box(modifier = Modifier.weight(1f)) { twoPaneContent.second() }
             }
@@ -162,11 +174,10 @@ fun AdaptiveWidth(
         }
     }
 
-    if (supportPane != null && !willShowInlineSupport) {
+    if (supportPane != null && !willShowInlineSupport)
         AdaptiveModalSheet(
             onDismissRequest = onHideSupportPane,
             title = supportPaneTitle,
             content = supportPane
         )
-    }
 }
