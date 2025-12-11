@@ -1,23 +1,20 @@
 package com.davanok.dvnkdnd.domain.entities.character
 
 import androidx.compose.runtime.Immutable
-import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
-import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
+import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
+import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.domain.entities.DatabaseImage
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateModifiers
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateSpellSlots
+import com.davanok.dvnkdnd.domain.entities.character.characterUtils.getAppliedValues
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.SkillsGroup
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.toAttributesGroup
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.toSkillsGroup
-import com.davanok.dvnkdnd.domain.dnd.calculateArmorClass
-import com.davanok.dvnkdnd.domain.dnd.calculateModifier
-import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -48,33 +45,15 @@ data class CharacterFull(
 
     val states: List<CharacterState> = emptyList(),
 
-    val notes: List<CharacterNote> = emptyList(),
-
-    @Transient
-    val appliedValues: CharacterModifiedValues = CharacterModifiedValues(
-        attributes = attributes,
-        savingThrowModifiers = attributes
-            .toMap()
-            .mapValues { (_, value) -> calculateModifier(value) }
-            .toAttributesGroup(),
-        skillModifiers = attributes
-            .toMap()
-            .mapValues { (_, value) -> calculateModifier(value) }
-            .toAttributesGroup()
-            .toSkillsGroup(),
-        health = health,
-        initiative = optionalValues.initiative ?: calculateModifier(attributes[Attributes.DEXTERITY]),
-        armorClass = optionalValues.armorClass ?: calculateArmorClass(
-            attributes[Attributes.DEXTERITY],
-            items.firstOrNull { it.equipped && it.item.item?.armor != null }?.item?.item?.armor
-        )
-    )
+    val notes: List<CharacterNote> = emptyList()
 ) {
     val entities: List<DnDFullEntity>
         get() = mainEntities.flatMap { listOfNotNull(it.entity, it.subEntity) } + feats + states.map { it.state }
     private val groupIdToEntityId by lazy {
         entities.flatMap { e -> e.modifiersGroups.map { it.id to e.entity.id } }.toMap()
     }
+
+    val appliedValues: CharacterModifiedValues by lazy { getAppliedValues() }
 
     fun resolveValueSource(source: DnDModifierValueSource, valueSourceTarget: String?, entityId: Uuid?, modifierValue: Double): Double =
         when(source) {

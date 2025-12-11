@@ -7,7 +7,6 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.core.utils.getByKeyPredicate
-import com.davanok.dvnkdnd.core.utils.withAppliedModifiers
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
@@ -39,7 +38,7 @@ class CharacterFullViewModel(
         characterResult.fold(
             onSuccess = { character ->
                 uiState.copy(
-                    character = character.withAppliedModifiers(),
+                    character = character,
                     isLoading = false
                 )
             },
