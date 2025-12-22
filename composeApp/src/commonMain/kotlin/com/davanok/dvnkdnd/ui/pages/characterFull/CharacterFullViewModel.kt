@@ -16,7 +16,9 @@ import dvnkdnd.composeapp.generated.resources.character_full_items_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_notes_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_spell_slots_title
 import dvnkdnd.composeapp.generated.resources.character_full_spells_page_title
+import dvnkdnd.composeapp.generated.resources.character_full_states_page_title
 import dvnkdnd.composeapp.generated.resources.character_health_dialog_title
+import dvnkdnd.composeapp.generated.resources.character_main_entities_dialog_title
 import dvnkdnd.composeapp.generated.resources.loading_character_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -106,10 +108,12 @@ data class CharacterFullUiState(
         ITEMS(Res.string.character_full_items_page_title),
         SPELLS(Res.string.character_full_spells_page_title),
         SPELL_SLOTS(Res.string.character_full_spell_slots_title),
+        STATES(Res.string.character_full_states_page_title),
         NOTES(Res.string.character_full_notes_page_title),
     }
     enum class Dialog(val titleStringRes: StringResource) {
         HEALTH(Res.string.character_health_dialog_title),
+        MAIN_ENTITIES(Res.string.character_main_entities_dialog_title),
         NONE(Res.string.app_name)
     }
 }

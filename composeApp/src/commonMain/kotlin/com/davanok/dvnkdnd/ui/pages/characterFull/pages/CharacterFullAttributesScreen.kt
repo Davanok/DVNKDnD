@@ -1,8 +1,8 @@
-package com.davanok.dvnkdnd.ui.pages.characterFull.contents
+package com.davanok.dvnkdnd.ui.pages.characterFull.pages
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,19 +31,23 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.SkillsGroup
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.saving_throw
 import dvnkdnd.composeapp.generated.resources.skills
 import org.jetbrains.compose.resources.stringResource
 
-private val StatItemMinWidth = 200.dp
+private val StatItemMinWidth = 150.dp
 
 @Composable
 fun CharacterFullAttributesScreen(
     attributes: AttributesGroup,
     savingThrows: AttributesGroup,
     skills: SkillsGroup,
+    onAttributeClick: (Attributes) -> Unit,
+    onSavingThrowClick: (Attributes) -> Unit,
+    onSkillClick: (Skills) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var itemsMaxHeight by remember { mutableIntStateOf(0) }
@@ -52,8 +56,7 @@ fun CharacterFullAttributesScreen(
         modifier = modifier,
         columns = GridCells.Adaptive(StatItemMinWidth),
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
             items = Attributes.entries,
@@ -73,6 +76,9 @@ fun CharacterFullAttributesScreen(
                 attribute = attribute,
                 attributeValue = attributes[attribute],
                 savingThrowValue = savingThrows[attribute],
+                onAttributeClick = { onAttributeClick(attribute) },
+                onSavingThrowClick = { onSavingThrowClick(attribute) },
+                onSkillClick = onSkillClick,
                 skillsValues = skills
             )
         }
@@ -85,6 +91,9 @@ private fun AttributeItem(
     attributeValue: Int,
     savingThrowValue: Int,
     skillsValues: SkillsGroup,
+    onAttributeClick: () -> Unit,
+    onSavingThrowClick: () -> Unit,
+    onSkillClick: (Skills) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val calculatedModifier = remember(attributeValue) { calculateModifier(attributeValue) }
@@ -98,16 +107,16 @@ private fun AttributeItem(
             // header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth().clickable(onClick = onAttributeClick)
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = stringResource(attribute.stringRes),
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 1
                 )
                 Text(
-                    modifier = Modifier,
                     text = calculatedModifier.toSignedString(),
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 1
@@ -116,10 +125,13 @@ private fun AttributeItem(
             // saving throw: value
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth().clickable(onClick = onSavingThrowClick)
             ) {
-                Text(stringResource(Res.string.saving_throw))
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(Res.string.saving_throw)
+                )
                 Text(
                     text = savingThrowValue.toSignedString(),
                     style = MaterialTheme.typography.titleMedium
@@ -143,10 +155,12 @@ private fun AttributeItem(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(24.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                            .height(24.dp)
+                            .clickable { onSkillClick(skill) },
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(
+                            modifier = Modifier.weight(1f),
                             text = stringResource(skill.stringRes),
                             maxLines = 1
                         )

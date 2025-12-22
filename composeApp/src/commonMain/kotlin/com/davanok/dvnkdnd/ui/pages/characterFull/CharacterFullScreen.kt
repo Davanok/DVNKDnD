@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,40 +17,42 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
-import com.davanok.dvnkdnd.ui.model.isCritical
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveContent
 import com.davanok.dvnkdnd.ui.components.adaptive.SupportEntry
 import com.davanok.dvnkdnd.ui.components.adaptive.rememberAdaptiveContentState
-import com.davanok.dvnkdnd.ui.components.customToolBar.CollapsingTitle
-import com.davanok.dvnkdnd.ui.components.customToolBar.CustomTopAppBar
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterAttacksScreen
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterFullAttributesScreen
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterHealthDialogContent
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterItemsScreen
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterMainValuesWidget
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterNotesScreen
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterSpellSlotsScreen
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.CharacterSpellsScreen
-import com.davanok.dvnkdnd.ui.pages.characterFull.contents.MainEntitiesWidget
+import com.davanok.dvnkdnd.ui.model.isCritical
+import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterAttacksScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterFullAttributesScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterHealthDialogContent
+import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterMainEntitiesDialog
+import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterItemsScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterNotesScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterSpellSlotsScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterSpellsScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterStatesScreen
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
@@ -120,12 +121,24 @@ private fun Content(
                     )
                 }
             )
+            CharacterFullUiState.Dialog.MAIN_ENTITIES -> SupportEntry(
+                titleGetter = { stringResource(entry.titleStringRes) },
+                ignoreWindows = true,
+                content = {
+                    CharacterMainEntitiesDialog(
+
+                    )
+                }
+            )
             CharacterFullUiState.Dialog.NONE -> null
         }
     }
+
+    val appBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     Scaffold(
         topBar = {
-            CustomTopAppBar(
+            MediumTopAppBar(
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
                         Icon(
@@ -134,37 +147,52 @@ private fun Content(
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.medium(character.character.name)
+                title = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)
+                    ) {
+                        Text(
+                            text = character.character.name,
+                            maxLines = 1,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        VerticalDivider()
+
+                        MainEntitiesWidget(
+                            entities = character.mainEntities,
+                            onClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.MAIN_ENTITIES) },
+                            modifier = Modifier.padding(horizontal = 8.dp).fillMaxHeight()
+                        )
+                    }
+                },
+                scrollBehavior = appBarScrollBehavior
             )
         }
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Max),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                MainEntitiesWidget(
-                    entities = character.mainEntities,
-                    onClick = { TODO() },
-                    modifier = Modifier.weight(1f).fillMaxHeight()
-                )
-                CharacterMainValuesWidget(
-                    values = character.appliedValues,
-                    onInitiativeClick = { TODO() },
-                    onArmorClassClick = { TODO() },
-                    onHealthClick = { adaptiveContentState.showContent(CharacterFullUiState.Dialog.HEALTH) },
-                    modifier = Modifier.weight(1f).fillMaxHeight()
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            AdaptiveContent(
-                modifier = Modifier.weight(1f),
-                state = adaptiveContentState,
-                singlePaneContent = {
+        AdaptiveContent(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .nestedScroll(appBarScrollBehavior.nestedScrollConnection),
+            state = adaptiveContentState,
+            panesSpacing = 8.dp,
+            singlePaneContent = {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    CharacterMainValuesWidget(
+                        values = character.appliedValues,
+                        states = character.states,
+                        onInitiativeClick = { TODO() },
+                        onArmorClassClick = { TODO() },
+                        onHealthClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.HEALTH) },
+                        onStateClick = { TODO() },
+                        onAddStateClick = { TODO() }
+                    )
                     CharacterPages(
+                        modifier = Modifier.weight(1f),
                         character = character,
                         skipAttributes = false,
                         onEntityClick = navigateToEntityInfo,
@@ -172,28 +200,48 @@ private fun Content(
                         onDeleteNote = onDeleteNote,
                         setUsedSpellsCount = setUsedSpellsCount
                     )
-                },
-                twoPaneContent = Pair(
-                    {
+                }
+            },
+            twoPaneContent = Pair(
+                {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CharacterMainValuesWidget(
+                            values = character.appliedValues,
+                            states = character.states,
+                            onInitiativeClick = { TODO() },
+                            onArmorClassClick = { TODO() },
+                            onHealthClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.HEALTH) },
+                            onStateClick = { TODO() },
+                            onAddStateClick = { TODO() },
+                            modifier = Modifier.fillMaxWidth()
+                        )
                         CharacterFullAttributesScreen(
+                            modifier = Modifier.weight(1f),
                             attributes = character.appliedValues.savingThrowModifiers,
                             savingThrows = character.appliedValues.savingThrowModifiers,
-                            skills = character.appliedValues.skillModifiers
-                        )
-                    },
-                    {
-                        CharacterPages(
-                            character = character,
-                            skipAttributes = true,
-                            onEntityClick = navigateToEntityInfo,
-                            onUpdateOrNewNote = onUpdateOrNewNote,
-                            onDeleteNote = onDeleteNote,
-                            setUsedSpellsCount = setUsedSpellsCount
+                            skills = character.appliedValues.skillModifiers,
+                            onAttributeClick = { TODO() },
+                            onSavingThrowClick = { TODO() },
+                            onSkillClick = { TODO() }
                         )
                     }
-                )
+                },
+                {
+                    CharacterPages(
+                        modifier = Modifier.fillMaxSize(),
+                        character = character,
+                        skipAttributes = true,
+                        onEntityClick = navigateToEntityInfo,
+                        onUpdateOrNewNote = onUpdateOrNewNote,
+                        onDeleteNote = onDeleteNote,
+                        setUsedSpellsCount = setUsedSpellsCount
+                    )
+                }
             )
-        }
+        )
     }
 }
 
@@ -231,11 +279,11 @@ private fun CharacterPages(
         else CharacterFullUiState.Page.entries
     }
 
-    Column {
+    Column(modifier = modifier) {
         val pagerState = rememberPagerState { pages.size }
         CharacterFullTabsRow(pagerState, pages)
         HorizontalPager(
-            modifier = modifier,
+            modifier = Modifier.weight(1f),
             state = pagerState
         ) { index ->
             when (pages[index]) {
@@ -243,7 +291,10 @@ private fun CharacterPages(
                     attributes = character.appliedValues.savingThrowModifiers,
                     savingThrows = character.appliedValues.savingThrowModifiers,
                     skills = character.appliedValues.skillModifiers,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    onAttributeClick = { TODO() },
+                    onSavingThrowClick = { TODO() },
+                    onSkillClick = { TODO() }
                 )
                 CharacterFullUiState.Page.ATTACKS -> CharacterAttacksScreen(
                     items = character.items,
@@ -267,6 +318,9 @@ private fun CharacterPages(
                     availableSpellSlots = character.spellSlots,
                     usedSpells = character.usedSpells,
                     setUsedSpellsCount = setUsedSpellsCount,
+                    modifier = Modifier.fillMaxSize()
+                )
+                CharacterFullUiState.Page.STATES -> CharacterStatesScreen(
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(

@@ -1,0 +1,266 @@
+package com.davanok.dvnkdnd.ui.pages.characterFull
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityInfo
+import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
+import com.davanok.dvnkdnd.domain.entities.character.CharacterState
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.ui.components.toSignedString
+import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.add_character_state
+import dvnkdnd.composeapp.generated.resources.character_armor_class
+import dvnkdnd.composeapp.generated.resources.character_initiative
+import dvnkdnd.composeapp.generated.resources.no_character_states
+import dvnkdnd.composeapp.generated.resources.outline_bolt
+import dvnkdnd.composeapp.generated.resources.outline_shield
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+fun MainEntitiesWidget(
+    entities: List<CharacterMainEntityInfo>,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val classes = remember(entities) {
+        entities.filter { it.entity.entity.type == DnDEntityTypes.CLASS }
+    }
+
+    Column(
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .then(modifier)
+            .verticalScroll(rememberScrollState())
+    ) {
+        classes.forEach { mainEntity ->
+            Text(
+                text =
+                    if (mainEntity.level < 2) mainEntity.entity.entity.name
+                    else "${mainEntity.entity.entity.name} (${mainEntity.level})",
+                maxLines = 1,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+fun CharacterMainValuesWidget(
+    values: CharacterModifiedValues,
+    states: List<CharacterState>,
+    onInitiativeClick: () -> Unit,
+    onArmorClassClick: () -> Unit,
+    onHealthClick: () -> Unit,
+    onStateClick: (CharacterState) -> Unit,
+    onAddStateClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedCard(modifier) {
+        Column(
+            modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()
+        ) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalArrangement = Arrangement.Center
+            ) {
+                InitiativeWidget(values.initiative, onClick = onInitiativeClick)
+                ArmorClassWidget(values.armorClass, onClick = onArmorClassClick)
+                CharacterHealthWidget(values.health, onClick = onHealthClick)
+            }
+
+            CharacterStatesWidget(
+                states = states,
+                onStateClick = onStateClick,
+                onAddStateClick = onAddStateClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun InitiativeWidget(
+    initiative: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    SuggestionChip(
+        modifier = modifier,
+        onClick = onClick,
+        label = { Text(text = initiative.toSignedString()) },
+        icon = {
+            Icon(
+                painter = painterResource(Res.drawable.outline_bolt),
+                contentDescription = stringResource(Res.string.character_initiative)
+            )
+        }
+    )
+}
+@Composable
+private fun ArmorClassWidget(
+    armorClass: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    SuggestionChip(
+        modifier = modifier,
+        onClick = onClick,
+        label = { Text(text = armorClass.toString()) },
+        icon = {
+            Icon(
+                painter = painterResource(Res.drawable.outline_shield),
+                contentDescription = stringResource(Res.string.character_armor_class)
+            )
+        }
+    )
+}
+
+@Composable
+private fun CharacterHealthWidget(
+    health: CharacterHealth,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val currentHealth = health.current + health.temp
+    val healthPercent =
+        if (currentHealth == 0) 0f else health.max / currentHealth.toFloat().coerceIn(0f, 1f)
+
+    AssistChip(
+        modifier = modifier,
+        onClick = onClick,
+        label = {
+            Text(
+                text = buildString {
+                    append(currentHealth)
+                    append('/')
+                    append(health.max)
+                }
+            )
+        },
+        border = AssistChipDefaults.assistChipBorder(enabled = true, borderColor = when {
+            healthPercent < 0.5 -> Color(
+                red = 1f,
+                green = healthPercent - 0.5f,
+                blue = 0f
+            )
+            else -> Color(
+                1f - (healthPercent - 0.5f) / 0.5f,
+                green = 1f,
+                blue = 0f
+            )
+        })
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CharacterStatesWidget(
+    states: List<CharacterState>,
+    onStateClick: (CharacterState) -> Unit,
+    onAddStateClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when {
+        states.isEmpty() -> AssistChip(
+            modifier = modifier,
+            onClick = onAddStateClick,
+            label = { Text(text = stringResource(Res.string.no_character_states)) },
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(Res.string.add_character_state)
+                )
+            }
+        )
+        states.size == 1 -> CharacterStateChip(
+            state = states.first(),
+            onClick = onStateClick,
+            onAddClick = onAddStateClick,
+            modifier = modifier
+        )
+        else -> {
+            var statesExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = statesExpanded,
+                onExpandedChange = { statesExpanded = it },
+                modifier = modifier
+            ) {
+                CharacterStateChip(
+                    state = states.first(),
+                    onClick = onStateClick,
+                    onAddClick = onAddStateClick,
+                    modifier = Modifier.fillMaxSize()
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                )
+
+                ExposedDropdownMenu(
+                    expanded = statesExpanded,
+                    onDismissRequest = { statesExpanded = false }
+                ) {
+                    states.forEach { state ->
+                        DropdownMenuItem(
+                            text = { Text(text = state.state.entity.name) },
+                            onClick = { onStateClick(state) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CharacterStateChip(
+    state: CharacterState,
+    onClick: (CharacterState) -> Unit,
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AssistChip(
+        modifier = modifier,
+        onClick = { onClick(state) },
+        label = { Text(text = state.state.entity.name) },
+        trailingIcon = {
+            IconButton(
+                onClick = onAddClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(Res.string.add_character_state)
+                )
+            }
+        }
+    )
+}

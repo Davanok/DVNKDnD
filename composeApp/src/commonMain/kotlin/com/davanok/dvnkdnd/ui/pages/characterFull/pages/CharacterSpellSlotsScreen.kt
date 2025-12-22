@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.characterFull.contents
+package com.davanok.dvnkdnd.ui.pages.characterFull.pages
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.characterFull.contents
+package com.davanok.dvnkdnd.ui.pages.characterFull.pages
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

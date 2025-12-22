@@ -287,11 +287,14 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="character_full_spells_page_title">Spells</string>
     <string name="character_full_spell_slots_title">Spells slots</string>
     <string name="character_full_notes_page_title">Notes</string>
+    <string name="character_full_states_page_title">States</string>
     <!--health dialog-->
     <string name="character_health_dialog_title">Character health</string>
     <string name="character_health_heal_button">Heal</string>
     <string name="character_health_damage_button">Damage</string>
     <string name="character_health_temp_health_button">Temp</string>
+
+    <string name="character_main_entities_dialog_title">Main entities</string>
     <!--notes screen-->
     <string name="delete_note">Delete note</string>
     <string name="edit_note">Edit note</string>
@@ -312,4 +315,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="no_spell_data">No spell data</string>
     <string name="entity_image">Entity image</string>
     <string name="search">Search</string>
+    <!--states screen-->
+    <string name="no_character_states">No states</string>
+    <string name="add_character_state">Add state</string>
 </resources>

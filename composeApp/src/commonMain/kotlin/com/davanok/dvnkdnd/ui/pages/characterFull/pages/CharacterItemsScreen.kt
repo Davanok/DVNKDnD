@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.characterFull.contents
+package com.davanok.dvnkdnd.ui.pages.characterFull.pages
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,7 +8,7 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 
 @Composable
-fun CharacterAttacksScreen(
+fun CharacterItemsScreen(
     items: List<CharacterItem>,
     onClick: (DnDFullEntity) -> Unit,
     modifier: Modifier = Modifier,
