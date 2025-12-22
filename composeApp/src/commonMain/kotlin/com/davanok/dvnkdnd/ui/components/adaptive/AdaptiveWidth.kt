@@ -1,183 +1,356 @@
 package com.davanok.dvnkdnd.ui.components.adaptive
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.allVerticalHingeBounds
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
-import androidx.compose.ui.util.fastForEach
 import androidx.window.core.layout.WindowSizeClass
-
-private fun Iterable<Int>.sumOf(selector: (Int) -> Float): Float {
-    var result = 0f
-    forEach { result += selector(it) }
-    return result
-}
 
 @Composable
 fun AdaptiveWidth(
     singlePaneContent: @Composable () -> Unit,
     twoPaneContent: Pair<@Composable () -> Unit, @Composable () -> Unit>,
     supportPane: (@Composable () -> Unit)? = null,
-    supportPaneTitle: @Composable () -> Unit = {  },
-    onHideSupportPane: () -> Unit = {  },
+    supportPaneTitle: @Composable () -> Unit = {},
+    onHideSupportPane: () -> Unit = {},
     panesSpacing: Dp = 0.dp,
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
     modifier: Modifier = Modifier
 ) {
-    val windowAdaptiveInfo = currentWindowAdaptiveInfo(true)
-    val windowSizeClass = windowAdaptiveInfo.windowSizeClass
-    val windowPosture = windowAdaptiveInfo.windowPosture
-
     val density = LocalDensity.current
-    val screenWidthDp = windowSizeClass.minWidthDp
-    val screenWidthPx = with(density) { screenWidthDp.dp.toPx() }
 
-    // We'll compute whether we actually render supportPane inline
-    var willShowInlineSupport: Boolean
+    /**
+     * BoxWithConstraints provides the actual rendered width of this composable.
+     * This value reflects the real container size rather than the window size class.
+     */
+    BoxWithConstraints(modifier = modifier) {
+        val actualWidth = maxWidth
 
-    when {
-        windowPosture.allVerticalHingeBounds.isNotEmpty() -> {
-            val bounds = windowPosture.allVerticalHingeBounds.sortedBy { it.left }
-
-            val segmentsPx = mutableListOf<Float>()
-            var start = 0f
-            bounds.fastForEach { b ->
-                val left = b.left
-                segmentsPx.add((left - start).coerceAtLeast(0f))
-                start = b.right
-            }
-            segmentsPx.add((screenWidthPx - start).coerceAtLeast(0f))
-
-            val hingeWidthsPx = bounds.map { it.right - it.left }
-
-            when {
-                segmentsPx.size <= 1 || screenWidthPx <= 0f -> {
-                    willShowInlineSupport = false
-                    singlePaneContent()
-                }
-
-                supportPane != null && segmentsPx.size >= 3 -> {
-                    willShowInlineSupport = true
-                    val n = segmentsPx.size
-                    val groups = if (n == 3) listOf(listOf(0), listOf(1), listOf(2))
-                    else listOf(listOf(0), (1 until n - 1).toList(), listOf(n - 1))
-
-                    val groupWidthsPx = groups.map { idxs -> idxs.sumOf { segmentsPx[it] } }
-                    val spacerWidthsPx = mutableListOf<Float>()
-                    for (g in 0 until groups.size - 1) {
-                        val endIdx = groups[g].last()
-                        val startNext = groups[g + 1].first()
-                        val hingeRange = endIdx until startNext
-                        val sumHinges = hingeRange.sumOf { hingeWidthsPx.getOrNull(it) ?: 0f }
-                        spacerWidthsPx.add(sumHinges)
-                    }
-
-                    Row(modifier = modifier) {
-                        // order: main left, main middle, support (edge/right)
-                        val panes = listOf(twoPaneContent.first, twoPaneContent.second, supportPane)
-                        panes.forEachIndexed { index, pane ->
-                            val wDp = with(density) { groupWidthsPx[index].coerceAtLeast(0f).toDp() }
-
-                            Box(modifier = Modifier.width(wDp)) { pane.invoke() }
-
-                            if (index < spacerWidthsPx.size) {
-                                val sDp =
-                                    with(density) { spacerWidthsPx[index].coerceAtLeast(0f).toDp() }
-
-                                Spacer(modifier = Modifier.width(max(panesSpacing, sDp)))
-                            }
-                        }
-                    }
-                }
-
-                segmentsPx.size >= 2 -> {
-                    willShowInlineSupport = false
-                    val total = segmentsPx.sum()
-                    var cum = 0f
-                    var splitSegmentIndex = 0
-                    for (i in 0 until segmentsPx.size - 1) {
-                        cum += segmentsPx[i]
-                        if (cum >= total / 2f) {
-                            splitSegmentIndex = i
-                            break
-                        }
-                    }
-
-                    val leftIdxs = 0..splitSegmentIndex
-                    val rightIdxs = (splitSegmentIndex + 1) until segmentsPx.size
-                    val leftPx = leftIdxs.sumOf { segmentsPx[it] }
-                    val rightPx = rightIdxs.sumOf { segmentsPx[it] }
-                    val spacerPx =
-                        if (splitSegmentIndex in hingeWidthsPx.indices) hingeWidthsPx[splitSegmentIndex] else 0f
-
-                    Row(modifier = modifier) {
-                        val leftDp = with(density) { leftPx.coerceAtLeast(0f).toDp() }
-                        val rightDp = with(density) { rightPx.coerceAtLeast(0f).toDp() }
-                        Box(modifier = Modifier.width(leftDp)) { twoPaneContent.first() }
-
-                        val sDp = with(density) { spacerPx.coerceAtLeast(0f).toDp() }
-
-                        Spacer(modifier = Modifier.width(max(panesSpacing, sDp)))
-
-                        Box(modifier = Modifier.width(rightDp)) { twoPaneContent.second() }
-                    }
-                }
-
-                else -> {
-                    willShowInlineSupport = false
-                    singlePaneContent()
-                }
+        /**
+         * Determine the adaptive layout configuration based on:
+         * - current window adaptive info
+         * - actual container width
+         * - display density
+         * - presence of an optional support pane
+         */
+        val layoutConfig by remember(
+            windowAdaptiveInfo,
+            actualWidth,
+            density,
+            supportPane != null
+        ) {
+            derivedStateOf {
+                calculateAdaptiveConfig(
+                    windowInfo = windowAdaptiveInfo,
+                    containerWidth = actualWidth,
+                    density = density,
+                    hasSupportPane = supportPane != null
+                )
             }
         }
 
-        windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_LARGE_LOWER_BOUND) -> {
-            // expanded breakpoint: if supportPane present -> render it inline on the right edge
-            willShowInlineSupport = true
+        /**
+         * Render the adaptive layout according to the resolved configuration.
+         */
+        AdaptiveLayout(
+            config = layoutConfig,
+            panesSpacing = panesSpacing,
+            singleContent = singlePaneContent,
+            primaryContent = twoPaneContent.first,
+            secondaryContent = twoPaneContent.second,
+            tertiaryContent = supportPane
+        )
 
-            Row(
-                modifier = modifier,
-                horizontalArrangement = Arrangement.spacedBy(panesSpacing)
-            ) {
-                Box(modifier = Modifier.weight(1f)) { twoPaneContent.first() }
-                Box(modifier = Modifier.weight(1f)) { twoPaneContent.second() }
-                AnimatedVisibility(
-                    visible = supportPane != null
-                ) {
-                    Box(modifier = Modifier.weight(1f)) { supportPane?.invoke() }
-                }
-            }
-        }
+        /**
+         * Show the support pane as a modal sheet when it cannot be placed inline
+         * in the current layout configuration.
+         */
+        val showModalSupport =
+            supportPane != null &&
+                    (layoutConfig is AdaptiveConfig.Single ||
+                            layoutConfig is AdaptiveConfig.Split)
 
-        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> {
-            willShowInlineSupport = false
-            Row(
-                modifier = modifier,
-                horizontalArrangement = Arrangement.spacedBy(panesSpacing)
-            ) {
-                Box(modifier = Modifier.weight(1f)) { twoPaneContent.first() }
-                Box(modifier = Modifier.weight(1f)) { twoPaneContent.second() }
-            }
-        }
-
-        else -> {
-            willShowInlineSupport = false
-            singlePaneContent()
+        if (showModalSupport) {
+            AdaptiveModalSheet(
+                onDismissRequest = onHideSupportPane,
+                title = supportPaneTitle,
+                content = supportPane
+            )
         }
     }
+}
 
-    if (supportPane != null && !willShowInlineSupport)
-        AdaptiveModalSheet(
-            onDismissRequest = onHideSupportPane,
-            title = supportPaneTitle,
-            content = supportPane
+/**
+ * Low-level custom Layout responsible for measuring and placing panes.
+ *
+ * The constraints passed here originate from BoxWithConstraints,
+ * so constraints.maxWidth represents the actual available width.
+ */
+@Composable
+private fun AdaptiveLayout(
+    config: AdaptiveConfig,
+    panesSpacing: Dp,
+    singleContent: @Composable () -> Unit,
+    primaryContent: @Composable () -> Unit,
+    secondaryContent: @Composable () -> Unit,
+    tertiaryContent: (@Composable () -> Unit)?
+) {
+    Layout(
+        content = {
+            when (config) {
+                is AdaptiveConfig.Single -> Box { singleContent() }
+                is AdaptiveConfig.Split,
+                is AdaptiveConfig.HingeSplit -> {
+                    Box { primaryContent() }
+                    Box { secondaryContent() }
+                }
+                is AdaptiveConfig.Triple,
+                is AdaptiveConfig.HingeTriple -> {
+                    Box { primaryContent() }
+                    Box { secondaryContent() }
+                    Box { tertiaryContent?.invoke() }
+                }
+            }
+        }
+    ) { measurables, constraints ->
+        val width = constraints.maxWidth
+        val height = constraints.maxHeight
+        val spacingPx = panesSpacing.roundToPx()
+
+        /**
+         * Measures a composable using a fixed width and full available height.
+         */
+        fun measureFixed(measurable: Measurable, w: Int) =
+            measurable.measure(
+                Constraints.fixed(
+                    width = w.coerceAtLeast(0),
+                    height = height
+                )
+            )
+
+        val placeables = when (config) {
+            AdaptiveConfig.Single -> {
+                listOf(
+                    PlacedPane(
+                        measureFixed(measurables[0], width),
+                        x = 0
+                    )
+                )
+            }
+
+            AdaptiveConfig.Split -> {
+                // Two equal-width columns with spacing in between
+                val availableWidth = width - spacingPx
+                val columnWidth = availableWidth / 2
+
+                listOf(
+                    PlacedPane(
+                        measureFixed(measurables[0], columnWidth),
+                        x = 0
+                    ),
+                    PlacedPane(
+                        measureFixed(measurables[1], columnWidth),
+                        x = columnWidth + spacingPx
+                    )
+                )
+            }
+
+            AdaptiveConfig.Triple -> {
+                // Three equal-width columns with spacing
+                val availableWidth = width - (spacingPx * 2)
+                val columnWidth = availableWidth / 3
+
+                listOf(
+                    PlacedPane(
+                        measureFixed(measurables[0], columnWidth),
+                        x = 0
+                    ),
+                    PlacedPane(
+                        measureFixed(measurables[1], columnWidth),
+                        x = columnWidth + spacingPx
+                    ),
+                    PlacedPane(
+                        measureFixed(measurables[2], columnWidth),
+                        x = (columnWidth + spacingPx) * 2
+                    )
+                )
+            }
+
+            is AdaptiveConfig.HingeSplit -> {
+                /**
+                 * Layout based on a physical hinge (foldable devices).
+                 * Left and right pane sizes are derived from hinge coordinates.
+                 */
+                val leftWidth = config.gapLeftPx
+                val rightStartX = config.gapRightPx
+                val rightWidth = width - rightStartX
+
+                listOf(
+                    PlacedPane(
+                        measureFixed(measurables[0], leftWidth),
+                        x = 0
+                    ),
+                    PlacedPane(
+                        measureFixed(measurables[1], rightWidth),
+                        x = rightStartX
+                    )
+                )
+            }
+
+            is AdaptiveConfig.HingeTriple -> {
+                /**
+                 * Multi-pane layout for devices with multiple vertical hinges.
+                 */
+                var currentX = 0
+
+                measurables.mapIndexed { index, measurable ->
+                    val paneWidth =
+                        config.panelWidthsPx.getOrElse(index) { 0 }
+                    val placeable =
+                        PlacedPane(
+                            measureFixed(measurable, paneWidth),
+                            x = currentX
+                        )
+
+                    val gap =
+                        config.gapWidthsPx.getOrElse(index) { 0 }
+                    currentX += paneWidth + gap
+                    placeable
+                }
+            }
+        }
+
+        layout(width, height) {
+            placeables.forEach { (placeable, x) ->
+                placeable.place(x, 0)
+            }
+        }
+    }
+}
+
+private data class PlacedPane(
+    val placeable: Placeable,
+    val x: Int
+)
+
+@Immutable
+private sealed interface AdaptiveConfig {
+
+    /** Single-pane layout */
+    data object Single : AdaptiveConfig
+
+    /** Two-pane layout without physical hinge */
+    data object Split : AdaptiveConfig
+
+    /** Three-pane layout without physical hinge */
+    data object Triple : AdaptiveConfig
+
+    /**
+     * Two-pane layout separated by a physical vertical hinge.
+     * Coordinates are expressed in pixels.
+     */
+    data class HingeSplit(
+        val gapLeftPx: Int,
+        val gapRightPx: Int
+    ) : AdaptiveConfig
+
+    /**
+     * Three-pane layout with multiple vertical hinges.
+     * Pane widths and gap widths are expressed in pixels.
+     */
+    data class HingeTriple(
+        val panelWidthsPx: List<Int>,
+        val gapWidthsPx: List<Int>
+    ) : AdaptiveConfig
+}
+
+private fun calculateAdaptiveConfig(
+    windowInfo: WindowAdaptiveInfo,
+    containerWidth: Dp,
+    density: Density,
+    hasSupportPane: Boolean
+): AdaptiveConfig {
+    val hingeBounds =
+        windowInfo.windowPosture.allVerticalHingeBounds
+    val windowSizeClass =
+        windowInfo.windowSizeClass
+
+    /**
+     * Foldable device handling (hinge-aware layouts).
+     */
+    if (hingeBounds.isNotEmpty()) {
+        val containerWidthPx =
+            with(density) { containerWidth.roundToPx() }
+        val sortedBounds =
+            hingeBounds.sortedBy { it.left }
+
+        // Single vertical hinge (book mode)
+        if (sortedBounds.size == 1) {
+            val hinge = sortedBounds.first()
+            return AdaptiveConfig.HingeSplit(
+                gapLeftPx = hinge.left.toInt(),
+                gapRightPx = hinge.right.toInt()
+            )
+        }
+
+        // Multiple hinges (rare devices)
+        if (sortedBounds.size >= 2 && hasSupportPane) {
+            val widths = mutableListOf<Int>()
+            val gaps = mutableListOf<Int>()
+            var lastX = 0
+
+            sortedBounds.take(2).forEach { hinge ->
+                widths.add(hinge.left.toInt() - lastX)
+                gaps.add((hinge.right - hinge.left).toInt())
+                lastX = hinge.right.toInt()
+            }
+
+            widths.add(
+                (containerWidthPx - lastX).coerceAtLeast(0)
+            )
+
+            return AdaptiveConfig.HingeTriple(widths, gaps)
+        }
+
+        // Fallback to a simple hinge split
+        val hinge = sortedBounds.first()
+        return AdaptiveConfig.HingeSplit(
+            hinge.left.toInt(),
+            hinge.right.toInt()
         )
+    }
+
+    /**
+     * Flat (non-foldable) screen handling.
+     */
+    val isExpanded =
+        windowSizeClass.isWidthAtLeastBreakpoint(
+            WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND
+        )
+
+    val isMedium =
+        windowSizeClass.isWidthAtLeastBreakpoint(
+            WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
+        )
+
+    return when {
+        isExpanded && hasSupportPane -> AdaptiveConfig.Triple
+        isMedium -> AdaptiveConfig.Split
+        else -> AdaptiveConfig.Single
+    }
 }

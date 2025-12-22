@@ -38,14 +38,15 @@ class AdaptiveContentState<T>(
      * the platform supports it, content is added (multiple allowed). Otherwise
      * the state behaves like a single-pane stack (replaces existing).
      */
-    fun showContent(key: T) {
-        if (useWindows) {
-            _contents.filter { contentProvider(it)?.ignoreWindows == true }
-            _contents.add(key)
-        } else {
-            _contents.clear()
-            _contents.add(key)
-        }
+    fun toggleContent(key: T) {
+        if (!_contents.remove(key))
+            if (useWindows) {
+                _contents.filter { contentProvider(it)?.ignoreWindows == true }
+                _contents.add(key)
+            } else {
+                _contents.clear()
+                _contents.add(key)
+            }
     }
 
     fun hideContent(key: T) = _contents.remove(key)
@@ -71,16 +72,16 @@ class AdaptiveContentState<T>(
      * Marked @Composable so it can use remember to avoid recreating mapping on every recomposition.
      */
     @Composable
-    fun composableEntries(): List<Pair<T, SupportEntry>> =
+    fun composableEntries(): Map<T, SupportEntry> =
         remember(_contents.toList()) {
             _contents.mapNotNull { t ->
                 contentProvider(t)?.let { entry -> t to entry }
-            }
+            }.toMap()
         }
 
     @Composable
     fun composableContents(): List<@Composable () -> Unit> =
-        composableEntries().map { it.second.content }
+        composableEntries().values.map { it.content }
 }
 
 class ContentProviderBuilder<T> {
@@ -120,7 +121,7 @@ fun <T> AdaptiveContent(
     // entries and platform capability are checked at composition time
     val entries = state.composableEntries()
     val showWindows = state.useWindows && supportsWindows()
-    val showSupportPane = !showWindows || entries.any { it.second.ignoreWindows }
+    val showSupportPane = !showWindows || entries.values.any { it.ignoreWindows }
 
     // If windows are not used or pane ignore them, show supportPane (first item) inside adaptive width
     AdaptiveWidth(

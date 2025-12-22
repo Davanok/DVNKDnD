@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,6 +13,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.more
 import org.jetbrains.compose.resources.stringResource
@@ -19,7 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun <T> FiniteTextField(
-    value: T? = null,
+    value: T?,
     entities: List<T>,
     toString: (T) -> String,
     onSelected: (T?) -> Unit,
@@ -28,54 +31,78 @@ fun <T> FiniteTextField(
     label: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
     supportingText: @Composable (() -> Unit)? = null,
-    maxLines: Int = 1
+    singleLine: Boolean = true
 ) {
-    var text by remember { mutableStateOf("") }
-    val entitiesMap = remember(entities) {
-        entities.associateWith(toString)
+    var textFieldValue by remember(value) {
+        mutableStateOf(
+            value?.let {
+                val string = toString(value)
+                TextFieldValue(text = string, selection = TextRange(string.length))
+            } ?: TextFieldValue()
+        )
     }
-    val filteredItems by remember(entities, text) {
+
+    val filteredItems by remember(entities, value, value) {
         derivedStateOf {
-            entitiesMap.filterValues { it.startsWith(text, ignoreCase = true) }
+            val query = textFieldValue.text.trim()
+            if (value != null && toString(value) == query) {
+                entities
+            } else {
+                entities.filter { toString(it).contains(query, ignoreCase = true) }
+            }
         }
     }
 
+
+
     SelectableTextField(
         modifier = modifier,
-        value = if (value == null) text else toString(value),
-        onValueChange = { newText ->
-            text = newText
-            val match = entitiesMap.entries
-                .firstOrNull { it.value.equals(newText, ignoreCase = true) }
-                ?.key
-            if (match != value) onSelected(match)
+        value = textFieldValue,
+        onValueChange = { newValue ->
+            textFieldValue = newValue
+            val exactMatch = entities.firstOrNull {
+                toString(it).equals(newValue.text, ignoreCase = true)
+            }
+            if (exactMatch != value)
+                onSelected(exactMatch)
+
         },
         label = label,
         isError = isError,
         supportingText = supportingText,
-        maxLines = maxLines
-    ) {
-        filteredItems.forEach { (key, name) ->
-            item(
+        singleLine = singleLine
+    ) { onDismiss ->
+        filteredItems.forEach { entity ->
+            val name = toString(entity)
+            DropdownMenuItem(
                 text = { Text(name) },
                 onClick = {
-                    text = name
-                    if (value != key) onSelected(key)
+                    onSelected(entity)
+                    onDismiss()
                 }
             )
         }
-        if (onNeedMore != null)
-            item(
+        if (onNeedMore != null) {
+            DropdownMenuItem(
                 text = {
-                    Text(stringResource(Res.string.more), color = MaterialTheme.colorScheme.primary)
-                       },
-                onClick = { onNeedMore(text) },
+                    Text(
+                        text = stringResource(Res.string.more),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                },
+                onClick = {
+                    onNeedMore(textFieldValue.text)
+                    onDismiss()
+                },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowForward,
-                        contentDescription = stringResource(Res.string.more)
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             )
+        }
     }
 }
