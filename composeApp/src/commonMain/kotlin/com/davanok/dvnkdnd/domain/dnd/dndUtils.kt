@@ -33,7 +33,7 @@ object DnDConstants {
     )
 }
 
-fun calculateModifier(modifier: Int) = (modifier - 10).floorDiv(2)
+fun calculateModifier(attributeValue: Int) = (attributeValue - 10).floorDiv(2)
 
 fun pointBuyCost(score: Int): Int = when {
     score <= 8 -> 0
@@ -61,3 +61,6 @@ fun resolveCasterSpellSlotsContribution(level: Int, caster: CasterProgression) =
     CasterProgression.THIRD -> level / 3
     CasterProgression.NONE, CasterProgression.OTHER -> 0
 }
+
+fun calculateSpellDifficultyClass(proficiencyBonus: Int, attributeValue: Int) =
+    8 + proficiencyBonus + calculateModifier(attributeValue)

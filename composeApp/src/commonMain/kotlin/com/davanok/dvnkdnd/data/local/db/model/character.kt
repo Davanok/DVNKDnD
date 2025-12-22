@@ -73,6 +73,7 @@ data class DbJoinCharacterItem(
         equipped = link.equipped,
         active = link.active,
         attuned = link.attuned,
+        count = link.count,
         item = item.toDnDFullEntity()
     )
 }

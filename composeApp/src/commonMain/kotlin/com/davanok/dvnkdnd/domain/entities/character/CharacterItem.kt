@@ -8,5 +8,6 @@ data class CharacterItem(
     val equipped: Boolean,
     val active: Boolean,
     val attuned: Boolean,
+    val count: Int?,
     val item: DnDFullEntity
 )

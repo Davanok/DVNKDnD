@@ -187,7 +187,8 @@ data class DbCharacterItemLink(
     @ColumnInfo("item_id", index = true) val itemId: Uuid,
     val equipped: Boolean,
     val active: Boolean,
-    val attuned: Boolean
+    val attuned: Boolean,
+    val count: Int?,
 )
 @Entity(
     tableName = "character_spell_links",

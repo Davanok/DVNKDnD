@@ -9,5 +9,6 @@ fun CharacterItem.toDbCharacterItemLink(characterId: Uuid) = DbCharacterItemLink
     itemId = item.entity.id,
     equipped = equipped,
     active = active,
-    attuned = attuned
+    attuned = attuned,
+    count = count
 )
