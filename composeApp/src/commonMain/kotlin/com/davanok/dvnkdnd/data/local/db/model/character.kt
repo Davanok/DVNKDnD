@@ -68,7 +68,14 @@ data class DbJoinCharacterItem(
         entityColumn = "id"
     )
     val item: DbFullEntity
-)
+) {
+    fun toCharacterItem() = CharacterItem(
+        equipped = link.equipped,
+        active = link.active,
+        attuned = link.attuned,
+        item = item.toDnDFullEntity()
+    )
+}
 data class DbJoinCharacterSpell(
     @Embedded
     val link: DbCharacterSpellLink,
@@ -168,7 +175,7 @@ data class DbFullCharacter(
         optionalValues = optionalValues.toCharacterOptionalValues(),
         images = images.map { DatabaseImage(it.id, it.path) },
         coins = coins?.toCoinsGroup() ?: CoinsGroup(),
-        items = items.map { CharacterItem(it.link.attuned, it.link.equipped, it.item.toDnDFullEntity()) },
+        items = items.map(DbJoinCharacterItem::toCharacterItem),
         spells = spells.map { CharacterSpell(it.link.ready, it.spell.toDnDFullEntity()) },
         attributes = attributes?.toAttributesGroup() ?: AttributesGroup.Default,
         health = health?.toDnDCharacterHealth() ?: CharacterHealth(),
