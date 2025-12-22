@@ -52,6 +52,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.domain.entities.character.CharacterSpell
+import com.davanok.dvnkdnd.domain.entities.character.SpellCastingValues
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullSpell
 import com.davanok.dvnkdnd.domain.entities.dndEntities.SpellSlotsType
@@ -60,9 +61,12 @@ import com.davanok.dvnkdnd.ui.components.adaptive.alternativeClickable
 import com.davanok.dvnkdnd.ui.components.rememberCollapsingNestedScrollConnection
 import com.davanok.dvnkdnd.ui.components.text.buildAttacksString
 import com.davanok.dvnkdnd.ui.components.text.buildString
+import com.davanok.dvnkdnd.ui.components.toSignedString
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.attack_bonus_short
 import dvnkdnd.composeapp.generated.resources.concentration
+import dvnkdnd.composeapp.generated.resources.difficulty_class_short
 import dvnkdnd.composeapp.generated.resources.entity_image
 import dvnkdnd.composeapp.generated.resources.multiclass_spell_slot_type_name
 import dvnkdnd.composeapp.generated.resources.ritual
@@ -81,6 +85,7 @@ private const val PREFERRED_IMAGE_WIDTH_DP = 300
 @Composable
 fun CharacterSpellsScreen(
     spells: List<CharacterSpell>,
+    spellCastingValues: SpellCastingValues,
     availableSpellSlots: Map<SpellSlotsType?, IntArray>,
     usedSpells: Map<Uuid?, IntArray>,
     onSpellClick: (DnDFullEntity) -> Unit,
@@ -134,6 +139,7 @@ fun CharacterSpellsScreen(
             visible = spellSlotsVisible
         ) {
             SpellSlots(
+                spellCastingValues = spellCastingValues,
                 availableSpellSlots = preparedSpellSlots,
                 usedSpells = usedSpells,
                 onMarkSpellSlotAsUsed = { typeId, lvl ->
@@ -196,36 +202,48 @@ fun CharacterSpellsScreen(
 
 @Composable
 private fun SpellSlots(
+    spellCastingValues: SpellCastingValues,
     availableSpellSlots: Map<SpellSlotsType?, IntArray>,
     usedSpells: Map<Uuid?, IntArray>,
     onMarkSpellSlotAsUsed: (typeId: Uuid?, lvl: Int) -> Unit,
     onMarkSpellSlotAsNotUsed: (typeId: Uuid?, lvl: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        val isExpandedSlotsView = availableSpellSlots.all { slot -> slot.value.count { it > 0 } <= SMALL_SPELL_SLOTS_COUNT }
-        availableSpellSlots.forEach { (spellSlotType, slots) ->
-            val usedSpellsOnType = usedSpells.getOrElse(spellSlotType?.id, ::intArrayOf)
+    Row(modifier = modifier) {
+        Column(modifier = Modifier.weight(1f)) {
+            val isExpandedSlotsView = availableSpellSlots.all { slot -> slot.value.count { it > 0 } <= SMALL_SPELL_SLOTS_COUNT }
+            availableSpellSlots.forEach { (spellSlotType, slots) ->
+                val usedSpellsOnType = usedSpells.getOrElse(spellSlotType?.id, ::intArrayOf)
 
+                Text(
+                    text = spellSlotType?.name ?: stringResource(Res.string.multiclass_spell_slot_type_name),
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                if (isExpandedSlotsView)
+                    ExpandedSpellSlotsRow(
+                        slots = slots,
+                        usedSlots = usedSpellsOnType,
+                        onMarkSpellSlotAsUsed = { onMarkSpellSlotAsUsed(spellSlotType?.id, it) },
+                        onMarkSpellSlotAsNotUsed = { onMarkSpellSlotAsNotUsed(spellSlotType?.id, it) }
+                    )
+                else
+                    CompactSpellSlotsRow(
+                        slots = slots,
+                        usedSlots = usedSpellsOnType,
+                        onMarkSpellSlotAsUsed = { onMarkSpellSlotAsUsed(spellSlotType?.id, it) },
+                        onMarkSpellSlotAsNotUsed = { onMarkSpellSlotAsNotUsed(spellSlotType?.id, it) }
+                    )
+            }
+        }
+
+        Column {
             Text(
-                text = spellSlotType?.name ?: stringResource(Res.string.multiclass_spell_slot_type_name),
-                style = MaterialTheme.typography.titleMedium
+                text = "${stringResource(Res.string.attack_bonus_short)}: ${spellCastingValues.attackBonus.toSignedString()}"
             )
-
-            if (isExpandedSlotsView)
-                ExpandedSpellSlotsRow(
-                    slots = slots,
-                    usedSlots = usedSpellsOnType,
-                    onMarkSpellSlotAsUsed = { onMarkSpellSlotAsUsed(spellSlotType?.id, it) },
-                    onMarkSpellSlotAsNotUsed = { onMarkSpellSlotAsNotUsed(spellSlotType?.id, it) }
-                )
-            else
-                CompactSpellSlotsRow(
-                    slots = slots,
-                    usedSlots = usedSpellsOnType,
-                    onMarkSpellSlotAsUsed = { onMarkSpellSlotAsUsed(spellSlotType?.id, it) },
-                    onMarkSpellSlotAsNotUsed = { onMarkSpellSlotAsNotUsed(spellSlotType?.id, it) }
-                )
+            Text(
+                text = "${stringResource(Res.string.difficulty_class_short)}: ${spellCastingValues.saveDifficultyClass}"
+            )
         }
     }
 }
@@ -324,7 +342,7 @@ private fun SpellCard(
                         .clickable { onOpenInfo(characterSpell.spell) },
                     contentAlignment = Alignment.Center
                 ) {
-                    characterSpell.spell.entity.image?.let { image ->
+                    entity.image?.let { image ->
                         AsyncImage(
                             model = image,
                             contentDescription = null
@@ -388,31 +406,29 @@ private fun SpellCard(
                 }
             }
 
-            spell?.let { s ->
-                if (s.attacks.isNotEmpty()) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        spell.attacks.forEach { attack ->
-                            TooltipBox(
-                                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                                    TooltipAnchorPosition.Above
-                                ),
-                                tooltip = { PlainTooltip { Text(text = stringResource(attack.damageType.stringRes)) } },
-                                state = rememberTooltipState()
-                            ) {
-                                AssistChip(
-                                    onClick = { /* noop */ },
-                                    label = { Text(text = attack.buildString()) },
-                                    leadingIcon = attack.damageType.drawableRes?.let {
-                                        {
-                                            Icon(
-                                                painter = painterResource(it),
-                                                contentDescription = stringResource(attack.damageType.stringRes),
-                                                tint = attack.damageType.color ?: LocalContentColor.current
-                                            )
-                                        }
+            if (!spell?.attacks.isNullOrEmpty()) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    spell.attacks.forEach { attack ->
+                        TooltipBox(
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                TooltipAnchorPosition.Above
+                            ),
+                            tooltip = { PlainTooltip { Text(text = stringResource(attack.damageType.stringRes)) } },
+                            state = rememberTooltipState()
+                        ) {
+                            AssistChip(
+                                onClick = { /* noop */ },
+                                label = { Text(text = attack.buildString()) },
+                                leadingIcon = attack.damageType.drawableRes?.let {
+                                    {
+                                        Icon(
+                                            painter = painterResource(it),
+                                            contentDescription = stringResource(attack.damageType.stringRes),
+                                            tint = attack.damageType.color ?: LocalContentColor.current
+                                        )
                                     }
-                                )
-                            }
+                                }
+                            )
                         }
                     }
                 }

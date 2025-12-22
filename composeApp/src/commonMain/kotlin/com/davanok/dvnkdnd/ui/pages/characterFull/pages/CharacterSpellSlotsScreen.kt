@@ -57,12 +57,12 @@ fun CharacterSpellSlotsScreen(
                 contentType = "spell_slot_type"
             ) {
                 Column {
-                    HorizontalDivider()
-
                     Text(
                         text = spellSlotType?.name ?: stringResource(Res.string.multiclass_spell_slot_type_name),
                         style = MaterialTheme.typography.titleMedium
                     )
+
+                    HorizontalDivider()
                 }
             }
 

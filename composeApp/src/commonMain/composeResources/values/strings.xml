@@ -315,6 +315,8 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="no_spell_data">No spell data</string>
     <string name="entity_image">Entity image</string>
     <string name="search">Search</string>
+    <string name="difficulty_class_short">DC</string>
+    <string name="attack_bonus_short">ATK Bonus</string>
     <!--states screen-->
     <string name="no_character_states">No states</string>
     <string name="add_character_state">Add state</string>

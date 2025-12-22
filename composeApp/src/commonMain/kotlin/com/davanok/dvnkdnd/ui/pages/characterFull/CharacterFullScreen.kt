@@ -3,7 +3,9 @@ package com.davanok.dvnkdnd.ui.pages.characterFull
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -282,9 +284,12 @@ private fun CharacterPages(
     Column(modifier = modifier) {
         val pagerState = rememberPagerState { pages.size }
         CharacterFullTabsRow(pagerState, pages)
+        Spacer(Modifier.height(8.dp))
         HorizontalPager(
             modifier = Modifier.weight(1f),
-            state = pagerState
+            state = pagerState,
+            pageSpacing = 8.dp,
+            contentPadding = PaddingValues(horizontal = 8.dp)
         ) { index ->
             when (pages[index]) {
                 CharacterFullUiState.Page.ATTRIBUTES -> CharacterFullAttributesScreen(
@@ -308,6 +313,7 @@ private fun CharacterPages(
                 )
                 CharacterFullUiState.Page.SPELLS -> CharacterSpellsScreen(
                     spells = character.spells,
+                    spellCastingValues = character.getSpellCastingValues(),
                     availableSpellSlots = character.spellSlots,
                     usedSpells = character.usedSpells,
                     onSpellClick = { onEntityClick(it.toDnDEntityMin()) },
