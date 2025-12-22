@@ -84,7 +84,7 @@ class NewCharacterThrowsViewModel(
             state.copy(
                 isLoading = false,
                 character = character.character,
-                proficiencyBonus = character.character.getProfBonus(),
+                proficiencyBonus = proficiencyBonusByLevel(character.character.level),
                 attributes = character.attributes,
                 savingThrows = getModifiersInfo(DnDModifierTargetType.SAVING_THROW) { attributeModifiers[it] },
                 skills = getModifiersInfo(DnDModifierTargetType.SKILL) { attributeModifiers[it.attribute] }

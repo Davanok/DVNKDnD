@@ -3,6 +3,8 @@ package com.davanok.dvnkdnd.domain.entities.character
 import androidx.compose.runtime.Immutable
 import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
+import com.davanok.dvnkdnd.domain.dnd.calculateSpellDifficultyClass
+import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.domain.entities.DatabaseImage
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateModifiers
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateSpellSlots
@@ -12,6 +14,8 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.SkillsGroup
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
+import com.davanok.dvnkdnd.domain.enums.dndEnums.CasterProgression
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import kotlinx.serialization.Serializable
@@ -55,13 +59,16 @@ data class CharacterFull(
 
     val appliedValues: CharacterModifiedValues by lazy { getAppliedValues() }
 
+    val proficiencyBonus: Int
+        get() = optionalValues.proficiencyBonus ?: proficiencyBonusByLevel(character.level)
+
     fun resolveValueSource(source: DnDModifierValueSource, valueSourceTarget: String?, entityId: Uuid?, modifierValue: Double): Double =
         when(source) {
             DnDModifierValueSource.CONSTANT -> 0
             DnDModifierValueSource.CHARACTER_LEVEL -> character.level
             DnDModifierValueSource.ENTITY_LEVEL -> entityId
                 ?.let { id -> mainEntities.firstOrNull { id in it }?.level }
-            DnDModifierValueSource.PROFICIENCY_BONUS -> character.getProfBonus()
+            DnDModifierValueSource.PROFICIENCY_BONUS -> proficiencyBonus
             DnDModifierValueSource.ATTRIBUTE -> valueSourceTarget
                 ?.let { enumValueOfOrNull<Attributes>(it) }
                 ?.let { appliedValues.attributes[it] }
@@ -82,6 +89,34 @@ data class CharacterFull(
     val appliedModifiers by lazy { calculateModifiers() }
 
     val spellSlots by lazy { calculateSpellSlots() }
+
+    fun getSpellCastingValues(): SpellCastingValues {
+        val spellCastingAttribute = mainEntities
+            .mapNotNull { entityInfo ->
+                val entity = when {
+                    entityInfo.entity.entity.type != DnDEntityTypes.CLASS -> null
+                    entityInfo.subEntity?.cls != null && entityInfo.subEntity.cls.caster != CasterProgression.NONE -> entityInfo.subEntity
+                    entityInfo.entity.cls?.caster != CasterProgression.NONE -> entityInfo.entity
+                    else -> null
+                }
+                entity?.cls?.primaryStats?.firstOrNull()
+            }
+            .maxByOrNull { attr -> appliedValues.attributes[attr] }
+            ?: return SpellCastingValues(
+                attackBonus = proficiencyBonus,
+                saveDifficultyClass = calculateSpellDifficultyClass(proficiencyBonus, 10)
+            )
+
+        val attributeValue = appliedValues.attributes[spellCastingAttribute]
+        val modifier = calculateModifier(attributeValue)
+        val attackBonus = proficiencyBonus + modifier
+        val saveDC = calculateSpellDifficultyClass(proficiencyBonus, attributeValue)
+
+        return SpellCastingValues(
+            attackBonus = attackBonus,
+            saveDifficultyClass = saveDC
+        )
+    }
 }
 
 data class CharacterModifiedValues(
@@ -101,3 +136,8 @@ data class CharacterMainEntityInfo(
 ) {
     operator fun contains(element: Uuid) = entity.entity.id == element || subEntity?.entity?.id == element
 }
+
+data class SpellCastingValues(
+    val attackBonus: Int,
+    val saveDifficultyClass: Int
+)
