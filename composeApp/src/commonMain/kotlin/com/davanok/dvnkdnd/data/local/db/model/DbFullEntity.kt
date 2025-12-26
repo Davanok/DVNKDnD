@@ -2,8 +2,6 @@ package com.davanok.dvnkdnd.data.local.db.model
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.davanok.dvnkdnd.domain.entities.DatabaseImage
-import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityAbility
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityImage
@@ -18,10 +16,6 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbBackgrou
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbClass
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbRace
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItem
-import com.davanok.dvnkdnd.data.local.mappers.entities.toAbilityLink
-import com.davanok.dvnkdnd.data.local.mappers.entities.toEntityBase
-import com.davanok.dvnkdnd.data.local.mappers.entities.toFeatInfo
-import com.davanok.dvnkdnd.data.local.mappers.entities.toRaceInfo
 
 data class DbFullEntity(
     @Embedded
@@ -83,25 +77,9 @@ data class DbFullEntity(
     )
     val item: DbFullItem?,
     @Relation(
+        DbState::class,
         parentColumn = "id",
         entityColumn = "id"
     )
-    val state: DbState?,
-) {
-    fun toDnDFullEntity(): DnDFullEntity = DnDFullEntity(
-        entity = entity.toEntityBase(),
-        images = images.map { DatabaseImage(it.id, it.path) },
-        modifiersGroups = modifiers.map(DbModifiersGroups::toDnDModifiersGroup),
-        proficiencies = proficiencies.map(DbJoinProficiency::toJoinProficiency),
-        abilities = abilities.map(DbEntityAbility::toAbilityLink),
-        cls = cls?.toClassWithSpells(),
-        race = race?.toRaceInfo(),
-        background = null,
-        feat = feat?.toFeatInfo(),
-        ability = ability?.toAbilityInfo(),
-        spell = spell?.toFullSpell(),
-        item = item?.toFullItem(),
-        state = null,
-        companionEntities = emptyList()
-    )
-}
+    val state: DbFullState?,
+)

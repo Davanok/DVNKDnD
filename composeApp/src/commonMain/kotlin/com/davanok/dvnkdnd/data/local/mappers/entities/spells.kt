@@ -10,6 +10,9 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellArea
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellAttack
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellAttackLevelModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellAttackSave
+import com.davanok.dvnkdnd.data.local.db.model.DbFullSpell
+import com.davanok.dvnkdnd.data.local.db.model.DbFullSpellAttack
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullSpell
 import kotlin.uuid.Uuid
 
 
@@ -90,4 +93,20 @@ fun FullSpellAttack.toDbSpellAttack(spellId: Uuid) = DbSpellAttack(
     dice = dice,
     modifier = modifier,
     givesState = givesState
+)
+
+fun DbFullSpellAttack.toFullSpellAttack() = FullSpellAttack(
+    id = attack.id,
+    damageType = attack.damageType,
+    diceCount = attack.diceCount,
+    dice = attack.dice,
+    modifier = attack.modifier,
+    givesState = attack.givesState,
+    levelModifiers = levelModifiers.map(DbSpellAttackLevelModifier::toSpellAttackLevelModifierInfo),
+    save = save?.toSpellAttackSaveInfo()
+)
+fun DbFullSpell.toFullSpell() = FullSpell(
+    spell = spell.toSpell(),
+    area = area?.toSpellAreaInfo(),
+    attacks = attacks.map(DbFullSpellAttack::toFullSpellAttack)
 )

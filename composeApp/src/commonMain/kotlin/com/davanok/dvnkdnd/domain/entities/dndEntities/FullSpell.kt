@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.domain.entities.dndEntities
 import androidx.compose.runtime.Immutable
 import com.davanok.dvnkdnd.domain.enums.dndEnums.AreaTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.CastingTime
+import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.domain.enums.dndEnums.MagicSchools
@@ -17,7 +17,7 @@ data class Spell(
     val school: MagicSchools,
     val level: Int,
     @SerialName("casting_time")
-    val castingTime: CastingTime,
+    val castingTime: TimeUnit,
     @SerialName("casting_time_other")
     val castingTimeOther: String?,
     val components: Set<SpellComponents>,

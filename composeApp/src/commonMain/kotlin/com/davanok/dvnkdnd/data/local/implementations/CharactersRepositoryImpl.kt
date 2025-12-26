@@ -8,6 +8,7 @@ import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterBase
+import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterFull
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterHealth
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterNote
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository

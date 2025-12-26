@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.data.local.implementations
 
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.entities.BaseEntityDao
+import com.davanok.dvnkdnd.data.local.mappers.entities.toEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.repositories.local.EntitiesRepository

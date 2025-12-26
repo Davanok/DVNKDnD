@@ -2,19 +2,15 @@ package com.davanok.dvnkdnd.data.local.db.model
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItem
-import com.davanok.dvnkdnd.domain.entities.dndEntities.FullWeapon
-import com.davanok.dvnkdnd.domain.entities.dndEntities.JoinItemProperty
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbArmor
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItem
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivation
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationRegain
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemEffect
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemProperty
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemPropertyLink
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeapon
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
-import com.davanok.dvnkdnd.data.local.mappers.entities.toArmorInfo
-import com.davanok.dvnkdnd.data.local.mappers.entities.toItem
-import com.davanok.dvnkdnd.data.local.mappers.entities.toItemProperty
-import com.davanok.dvnkdnd.data.local.mappers.entities.toWeaponDamageInfo
 
 data class DbFullWeapon(
     @Embedded
@@ -24,12 +20,8 @@ data class DbFullWeapon(
         entityColumn = "weapon_id"
     )
     val damages: List<DbWeaponDamage>
-) {
-    fun toFullWeapon() = FullWeapon(
-        atkBonus = weapon.atkBonus,
-        damages = damages.map(DbWeaponDamage::toWeaponDamageInfo)
-    )
-}
+)
+
 data class DbJoinItemProperty(
     @Embedded
     val link: DbItemPropertyLink,
@@ -38,16 +30,35 @@ data class DbJoinItemProperty(
         entityColumn = "id"
     )
     val property: DbItemProperty
-) {
-    fun toJoinItemProperty() = JoinItemProperty(
-        itemId = link.itemId,
-        propertyId = link.propertyId,
-        property = property.toItemProperty()
+)
+
+data class DbFullItemActivation(
+    @Embedded
+    val activation: DbItemActivation,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "activation_id"
     )
-}
+    val regains: List<DbItemActivationRegain>
+)
+
 data class DbFullItem(
     @Embedded
     val item: DbItem,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "item_id"
+    )
+    val effects: List<DbItemEffect>,
+
+    @Relation(
+        DbItemActivation::class,
+        parentColumn = "id",
+        entityColumn = "item_id"
+    )
+    val activations: List<DbFullItemActivation>,
+
     @Relation(
         DbItemPropertyLink::class,
         parentColumn = "id",
@@ -65,11 +76,4 @@ data class DbFullItem(
         entityColumn = "id"
     )
     val weapon: DbFullWeapon?
-) {
-    fun toFullItem() = FullItem(
-        item = item.toItem(),
-        properties = properties.map(DbJoinItemProperty::toJoinItemProperty),
-        armor = armor?.toArmorInfo(),
-        weapon = weapon?.toFullWeapon()
-    )
-}
+)

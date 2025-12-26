@@ -10,7 +10,7 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.domain.enums.dndEnums.MagicSchools
 import com.davanok.dvnkdnd.domain.enums.dndEnums.SpellComponents
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.CastingTime
+import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlin.uuid.Uuid
 
 
@@ -25,7 +25,7 @@ data class DbSpell(
     val school: MagicSchools,
     val level: Int,
     @ColumnInfo("casting_time")
-    val castingTime: CastingTime,
+    val castingTime: TimeUnit,
     @ColumnInfo("casting_time_other")
     val castingTimeOther: String?,
     val components: List<SpellComponents>,

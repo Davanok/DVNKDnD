@@ -56,6 +56,10 @@ import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
 import com.davanok.dvnkdnd.data.local.adapters.EnumListAdapters
 import com.davanok.dvnkdnd.data.local.adapters.MainAdapters
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbStateDuration
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivation
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationRegain
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -105,7 +109,11 @@ import kotlinx.coroutines.IO
         DbSpellAttackSave::class,
         DbSpellSlotType::class,
         DbWeapon::class,
-        DbWeaponDamage::class
+        DbWeaponDamage::class,
+        DbItemEffect::class,
+        DbItemActivation::class,
+        DbItemActivationRegain::class,
+        DbStateDuration::class
     ],
     version = 1
 )

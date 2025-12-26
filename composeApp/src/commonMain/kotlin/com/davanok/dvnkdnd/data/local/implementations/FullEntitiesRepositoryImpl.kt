@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.data.local.implementations
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.entities.FullEntitiesDao
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDnDFullEntity
 import com.davanok.dvnkdnd.domain.repositories.local.FullEntitiesRepository
 import kotlin.uuid.Uuid
 

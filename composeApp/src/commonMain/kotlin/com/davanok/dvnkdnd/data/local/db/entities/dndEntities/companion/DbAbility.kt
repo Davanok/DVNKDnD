@@ -6,7 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbState
-import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnits
+import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlin.uuid.Uuid
 
 @Entity(
@@ -27,7 +27,7 @@ data class DbAbility(
     val givesStateTarget: Uuid?
 )
 @Entity(
-    tableName = "ability_regain",
+    tableName = "ability_regains",
     foreignKeys = [
         ForeignKey(DbAbility::class, ["id"], ["ability_id"], onDelete = ForeignKey.CASCADE)
     ]
@@ -36,6 +36,6 @@ data class DbAbilityRegain(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("ability_id", index = true) val abilityId: Uuid,
     @ColumnInfo("regains_count") val regainsCount: Int?, // how many is regain. null for all
-    @ColumnInfo("time_unit") val timeUnit: TimeUnits,
+    @ColumnInfo("time_unit") val timeUnit: TimeUnit,
     @ColumnInfo("time_unit_count") val timeUnitCount: Int
 )

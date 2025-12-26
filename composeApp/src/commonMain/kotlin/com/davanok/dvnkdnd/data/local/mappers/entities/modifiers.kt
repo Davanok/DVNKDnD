@@ -4,6 +4,7 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifiersGroup
+import com.davanok.dvnkdnd.data.local.db.model.DbModifiersGroups
 import kotlin.uuid.Uuid
 
 fun DbEntityModifier.toDnDModifier() = DnDModifier(
@@ -18,6 +19,25 @@ fun DnDModifier.toDbEntityModifier(groupId: Uuid) = DbEntityModifier(
     selectable = selectable,
     target = target
 )
+
+fun DbModifiersGroups.toDnDModifiersGroup() = ModifiersGroup(
+    id = group.id,
+    target = group.target,
+    operation = group.operation,
+    valueSource = group.valueSource,
+    valueSourceTarget = group.valueSourceTarget,
+    value = group.value,
+    name = group.name,
+    description = group.description,
+    selectionLimit = group.selectionLimit,
+    priority = group.priority,
+    clampMax = group.clampMax,
+    clampMin = group.clampMin,
+    minBaseValue = group.minBaseValue,
+    maxBaseValue = group.maxBaseValue,
+    modifiers = modifiers.map(DbEntityModifier::toDnDModifier)
+)
+
 fun ModifiersGroup.toDbEntityModifiersGroup(entityId: Uuid) = DbEntityModifiersGroup(
     id = id,
     entityId = entityId,

@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.domain.entities.dndEntities
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.CasterProgression
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
-import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnits
+import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -14,7 +14,7 @@ data class SpellSlotsType(
     @SerialName("user_id")
     val userId: Uuid? = null,
     val name: String,
-    val regain: TimeUnits?,
+    val regain: TimeUnit?,
     val spell: Boolean
 )
 

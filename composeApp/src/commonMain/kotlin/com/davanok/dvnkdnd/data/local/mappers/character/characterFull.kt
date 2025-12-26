@@ -1,0 +1,36 @@
+package com.davanok.dvnkdnd.data.local.mappers.character
+
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterNote
+import com.davanok.dvnkdnd.data.local.db.model.DbFullEntity
+import com.davanok.dvnkdnd.data.local.db.model.character.DbFullCharacter
+import com.davanok.dvnkdnd.data.local.db.model.character.DbJoinCharacterItem
+import com.davanok.dvnkdnd.data.local.db.model.character.DbJoinCharacterMainEntities
+import com.davanok.dvnkdnd.data.local.db.model.character.DbJoinCharacterState
+import com.davanok.dvnkdnd.data.local.mappers.entities.toCharacterState
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDnDFullEntity
+import com.davanok.dvnkdnd.domain.entities.DatabaseImage
+import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.domain.entities.character.CharacterSpell
+import com.davanok.dvnkdnd.domain.entities.character.CoinsGroup
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
+
+fun DbFullCharacter.toCharacterFull(): CharacterFull = CharacterFull(
+    character = character.toCharacterBase(),
+    optionalValues = optionalValues.toCharacterOptionalValues(),
+    images = images.map { DatabaseImage(it.id, it.path) },
+    coins = coins?.toCoinsGroup() ?: CoinsGroup(),
+    items = items.map(DbJoinCharacterItem::toCharacterItem),
+    spells = spells.map { CharacterSpell(it.link.ready, it.spell.toDnDFullEntity()) },
+    attributes = attributes?.toAttributesGroup() ?: AttributesGroup.Default,
+    health = health?.toDnDCharacterHealth() ?: CharacterHealth(),
+    usedSpells = usedSpells.associate { it.spellSlotTypeId to it.usedSpells.toIntArray() },
+    mainEntities = mainEntities.map(DbJoinCharacterMainEntities::toCharacterMainEntityInfo),
+    feats = feats.map(DbFullEntity::toDnDFullEntity),
+    selectedModifiers = selectedModifiers.map { it.modifierId }.toSet(),
+    selectedProficiencies = selectedProficiencies.map { it.proficiencyId }.toSet(),
+    customModifiers = customModifiers.map(DbCharacterCustomModifier::toCustomModifier),
+    states = states.map(DbJoinCharacterState::toCharacterState),
+    notes = notes.map(DbCharacterNote::toCharacterNote)
+)

@@ -1,6 +1,6 @@
 package com.davanok.dvnkdnd.domain.entities.dndEntities
 
-import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnits
+import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -21,7 +21,7 @@ data class AbilityRegain(
     @SerialName("regains_count")
     val regainsCount: Int?,
     @SerialName("time_unit")
-    val timeUnit: TimeUnits,
+    val timeUnit: TimeUnit,
     @SerialName("time_unit_count")
     val timeUnitCount: Int
 )

@@ -6,25 +6,68 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbState
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemEffectScope
+import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "items",
     foreignKeys = [
-        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DbState::class, ["id"], ["gives_state_passive"], onDelete = ForeignKey.SET_NULL),
-        ForeignKey(DbState::class, ["id"], ["gives_state_on_use"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class DbItem(
     @PrimaryKey val id: Uuid,
     val cost: Int?, // in copper pieces
-    val weight: Int?,
-    val attunement: Boolean,
-    @ColumnInfo("gives_state_passive", index = true)
-    val givesStatePassive: Uuid?,
-    @ColumnInfo("gives_state_on_use", index = true)
-    val givesStateOnUse: Uuid?
+    val weight: Int?
+)
+
+@Entity(
+    tableName = "item_effects",
+    foreignKeys = [
+        ForeignKey(DbItem::class, ["id"], ["item_id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbItemEffect(
+    @PrimaryKey val id: Uuid,
+    @ColumnInfo("item_id", index = true)
+    val itemId: Uuid,
+
+    val scope: ItemEffectScope,
+
+    @ColumnInfo("gives_state", index = true)
+    val givesState: Uuid
+)
+
+@Entity(
+    tableName = "item_activations",
+    foreignKeys = [
+        ForeignKey(DbItem::class, ["id"], ["item_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbState::class, ["id"], ["gives_state"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbItemActivation(
+    @PrimaryKey val id: Uuid,
+    @ColumnInfo("item_id", index = true)
+    val itemId: Uuid,
+    @ColumnInfo("requires_attunement")
+    val requiresAttunement: Boolean,
+    @ColumnInfo("gives_state", index = true)
+    val givesState: Uuid,
+    val count: Int?
+)
+@Entity(
+    tableName = "item_activation_regains",
+    foreignKeys = [
+        ForeignKey(DbItemActivation::class, ["id"], ["activation_id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbItemActivationRegain(
+    @PrimaryKey val id: Uuid = Uuid.random(),
+    @ColumnInfo("activation_id", index = true) val activationId: Uuid,
+    @ColumnInfo("regains_count") val regainsCount: Int?, // how many is regain. null for all
+    @ColumnInfo("time_unit") val timeUnit: TimeUnit,
+    @ColumnInfo("time_unit_count") val timeUnitCount: Int
 )
 
 @Entity(

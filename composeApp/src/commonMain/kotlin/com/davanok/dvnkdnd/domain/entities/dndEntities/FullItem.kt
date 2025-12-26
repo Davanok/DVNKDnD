@@ -2,6 +2,8 @@ package com.davanok.dvnkdnd.domain.entities.dndEntities
 
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemEffectScope
+import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -10,22 +12,52 @@ import kotlin.uuid.Uuid
 @Serializable
 data class Item(
     val cost: Int?, // in copper pieces
-    val weight: Int?,
-    val attunement: Boolean,
-    @SerialName("gives_state_passive")
-    val givesStatePassive: Uuid?,
-    @SerialName("gives_state_on_use")
-    val givesStateOnUse: Uuid?
+    val weight: Int? // in grams
 )
 
 @Serializable
 data class FullItem(
     val item: Item,
 
-    val properties: List<JoinItemProperty>,
+    val effects: List<ItemEffect>,
+    val activations: List<FullItemActivation>,
+
+    val properties: List<ItemProperty>,
     val armor: ArmorInfo?,
     val weapon: FullWeapon?,
 )
+
+@Serializable
+data class ItemEffect(
+    val id: Uuid,
+    val scope: ItemEffectScope,
+    @SerialName("gives_state")
+    val givesState: Uuid
+)
+
+@Serializable
+data class FullItemActivation(
+    val id: Uuid,
+    @SerialName("requires_attunement")
+    val requiresAttunement: Boolean,
+    @SerialName("gives_state")
+    val givesState: Uuid,
+    val count: Int?,
+
+    val regains: List<ItemActivationRegain>
+)
+
+@Serializable
+data class ItemActivationRegain(
+    val id: Uuid,
+    @SerialName("regains_count")
+    val regainsCount: Int?,
+    @SerialName("time_unit")
+    val timeUnit: TimeUnit,
+    @SerialName("time_unit_count")
+    val timeUnitCount: Int
+)
+
 @Serializable
 data class ArmorInfo(
     @SerialName("armor_class")
@@ -36,15 +68,6 @@ data class ArmorInfo(
     val requiredStrength: Int?,
     @SerialName("stealth_disadvantage")
     val stealthDisadvantage: Boolean,
-)
-@Serializable
-data class JoinItemProperty(
-    @SerialName("item_id")
-    val itemId: Uuid,
-    @SerialName("property_id")
-    val propertyId: Uuid,
-
-    val property: ItemProperty,
 )
 @Serializable
 data class ItemProperty(

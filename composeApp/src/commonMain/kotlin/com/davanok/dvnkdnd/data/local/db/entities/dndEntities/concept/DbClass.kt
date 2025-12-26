@@ -10,7 +10,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpell
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.CasterProgression
-import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnits
+import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlin.uuid.Uuid
 
 @Entity(
@@ -62,7 +62,7 @@ data class DbSpellSlotType(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("user_id") val userId: Uuid? = null,
     val name: String,
-    val regain: TimeUnits?,
+    val regain: TimeUnit?,
     val spell: Boolean
 )
 

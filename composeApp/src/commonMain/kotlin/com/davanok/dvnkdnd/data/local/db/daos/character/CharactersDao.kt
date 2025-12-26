@@ -11,7 +11,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficien
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
-import com.davanok.dvnkdnd.data.local.db.model.DbFullCharacter
+import com.davanok.dvnkdnd.data.local.db.model.character.DbFullCharacter
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacter
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterAttributes
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterCoins

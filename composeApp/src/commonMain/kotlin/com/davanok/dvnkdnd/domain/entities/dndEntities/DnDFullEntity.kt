@@ -27,7 +27,7 @@ data class DnDFullEntity(
     val ability: AbilityInfo? = null,
     val spell: FullSpell? = null,
     val item: FullItem? = null,
-    val state: Unit? = null,
+    val state: FullState? = null,
 
     @SerialName("companion_entities")
     val companionEntities: List<DnDFullEntity> = emptyList(),
@@ -39,7 +39,9 @@ data class DnDFullEntity(
                 cls?.spells.orEmpty() +
                 ability?.let { listOfNotNull(it.givesStateSelf, it.givesStateTarget) }.orEmpty() +
                 spell?.attacks?.mapNotNull { it.givesState }.orEmpty() +
-                item?.item?.let { listOfNotNull(it.givesStatePassive, it.givesStateOnUse) }.orEmpty()
+                item?.let { fullItem ->
+                    fullItem.effects.map { it.givesState } + fullItem.activations.map { it.givesState }
+                }.orEmpty()
 
     fun getDistance(s: String) = minOf(
         wordInTextLevenshtein(s, entity.name),
