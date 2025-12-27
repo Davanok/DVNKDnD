@@ -38,6 +38,13 @@
     <string name="wisdom">Wisdom</string>
     <string name="charisma">Charisma</string>
 
+    <string name="strength_short">STR</string>
+    <string name="dexterity_short">DEX</string>
+    <string name="constitution_short">CON</string>
+    <string name="intelligence_short">INT</string>
+    <string name="wisdom_short">WIS</string>
+    <string name="charisma_short">CHA</string>
+
     <string name="athletics">Athletics</string>
     <string name="acrobatics">Acrobatics</string>
     <string name="sleight_of_hand">Sleight of hand</string>
@@ -231,12 +238,14 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="spell_level">Lvl %1$d</string>
 
     <!--casting time-->
-    <string name="casting_time_action">Action</string>
-    <string name="casting_time_bonus_action">Bonus action</string>
-    <string name="casting_time_reaction">Reaction</string>
-    <string name="casting_time_minute">Minute</string>
-    <string name="casting_time_ten_minutes">Ten minutes</string>
-    <string name="casting_time_other">Casting time other</string>
+    <string name="time_unit_action">Action</string>
+    <string name="time_unit_bonus_action">Bonus action</string>
+    <string name="time_unit_reaction">Reaction</string>
+    <string name="time_unit_minute">Minute</string>
+    <string name="time_unit_ten_minutes">Ten minutes</string>
+    <string name="time_unit_other">Casting time other</string>
+    <string name="time_unit_short_rest">Short rest</string>
+    <string name="time_unit_long_rest">Long rest</string>
 
     <!--spell components-->
     <string name="spell_component_verbal">Verbal</string>
@@ -320,4 +329,24 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <!--states screen-->
     <string name="no_character_states">No states</string>
     <string name="add_character_state">Add state</string>
+    <!-- items page-->
+    <string name="active_items_group_name">Active</string>
+    <string name="attuned_items_group_name">Attuned</string>
+    <string name="equipped_items_group_name">Equipped</string>
+    <string name="other_items_group_name">Other</string>
+    <string name="armor_class_short">AC</string>
+    <string name="stealth_disadvantage_short">Stealth Dis.</string>
+    <string name="max_value">max:</string>
+    <string name="x_count">x%1$d</string>
+
+    <!--measurement system-->
+    <string name="meter_short">%1$s m</string>
+    <string name="centimeter_short">%1$s cm</string>
+    <string name="inch_short">%1$s″</string>
+    <string name="foot_short">%1$s′</string>
+
+    <string name="gram_short">%1$s g</string>
+    <string name="kilogram_short">%1$s kg</string>
+    <string name="ounce_short">%1$s oz</string>
+    <string name="pound_short">%1$s lb</string>
 </resources>

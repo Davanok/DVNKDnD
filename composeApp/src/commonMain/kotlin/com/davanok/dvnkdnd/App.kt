@@ -12,9 +12,12 @@ import com.davanok.dvnkdnd.data.di.databaseModule
 import com.davanok.dvnkdnd.data.di.platformModule
 import com.davanok.dvnkdnd.data.di.viewModelsModule
 import com.davanok.dvnkdnd.data.platform.getColorScheme
+import com.davanok.dvnkdnd.domain.enums.configs.MeasurementSystem
 import com.davanok.dvnkdnd.ui.components.AppColorScheme
 import com.davanok.dvnkdnd.ui.components.LocalColorScheme
 import com.davanok.dvnkdnd.ui.navigation.NavigationHost
+import com.davanok.dvnkdnd.ui.providers.LocalMeasurementSystem
+import com.davanok.dvnkdnd.ui.providers.MeasurementSystemConfig
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -45,7 +48,8 @@ fun App() {
             colorScheme = getColorScheme(darkTheme)
         ) {
             CompositionLocalProvider(
-                LocalColorScheme provides AppColorScheme(darkTheme)
+                LocalColorScheme provides AppColorScheme(darkTheme),
+                LocalMeasurementSystem provides MeasurementSystemConfig(MeasurementSystem.METRIC, MeasurementSystem.METRIC)
             ) {
                 Surface {
                     NavigationHost(

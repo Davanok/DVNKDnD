@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RaceInfo(
-    val speed: Int,
+    val speed: Int, // in cm
     val size: Size,
 )
 @Serializable
