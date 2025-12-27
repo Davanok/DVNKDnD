@@ -64,7 +64,7 @@ class LoadingDataViewModel(
         externalKeyValueRepository.getRequiredEntities().onSuccess {
             loadRequiredEntities(it)
         }.onFailure {
-            if (it == InternetConnectionException()) setCheckingState(LoadingDataUiState.NoInternet)
+            if (it is InternetConnectionException) setCheckingState(LoadingDataUiState.NoInternet)
             else setCheckingState(LoadingDataUiState.Error(it))
         }
     }

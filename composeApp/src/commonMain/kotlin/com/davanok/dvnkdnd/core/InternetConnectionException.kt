@@ -1,3 +1,3 @@
 package com.davanok.dvnkdnd.core
 
-class InternetConnectionException : Exception()
+class InternetConnectionException(message: String?, cause: Throwable?) : Exception(message, cause)

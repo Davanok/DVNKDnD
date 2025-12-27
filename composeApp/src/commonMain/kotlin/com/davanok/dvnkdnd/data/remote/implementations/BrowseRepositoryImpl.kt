@@ -20,7 +20,7 @@ class BrowseRepositoryImpl(
     private val storage: Storage,
 ) : BrowseRepository {
     private fun <T>Result<T>.handleFailure() = recoverCatching { exception ->
-        throw InternetConnectionException()
+        throw InternetConnectionException(exception.message, exception.cause)
     }
 
     override suspend fun loadEntityFullInfo(entityId: Uuid): Result<DnDFullEntity?> =
