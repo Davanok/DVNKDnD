@@ -165,16 +165,15 @@ class NewCharacterMainViewModel(
                 _uiState.update {
                     it.copy(error = UiError.Critical(getString(Res.string.saving_data_error), thr))
                 }
-            }.also {
-                updateCharacter {
-                    val images = it.images.fastFilter { path -> path != value }
-                    val wasMainImage = it.mainImage == value
-                    it.copy(
-                        images = images,
-                        mainImage = if (wasMainImage) images.firstOrNull() else it.mainImage
-                    )
-                }
             }
+        updateCharacter {
+            val images = it.images.fastFilter { path -> path != value }
+            val wasMainImage = it.mainImage == value
+            it.copy(
+                images = images,
+                mainImage = if (wasMainImage) images.firstOrNull() else it.mainImage
+            )
+        }
     }
 
     fun setCharacterMainImage(value: Path?) = updateCharacter { it.copy(mainImage = value) }

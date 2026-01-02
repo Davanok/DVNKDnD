@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -41,22 +40,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
-import com.davanok.dvnkdnd.ui.model.isCritical
-import com.davanok.dvnkdnd.ui.components.EmptyImage
+import com.davanok.dvnkdnd.ui.components.BaseEntityImage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.navigation.FABScaffold
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.back
-import dvnkdnd.composeapp.generated.resources.character_image
 import dvnkdnd.composeapp.generated.resources.no_characters_yet
 import dvnkdnd.composeapp.generated.resources.select_character_for_info
 import dvnkdnd.composeapp.generated.resources.sentiment_dissatisfied
@@ -84,6 +80,7 @@ fun CharactersListScreen(
                 )
             }
         }
+
         uiState.characters.isEmpty() ->
             FABScaffold(onClick = onNewCharacter) {
                 FullScreenCard(
@@ -100,6 +97,7 @@ fun CharactersListScreen(
                     }
                 )
             }
+
         else -> Content(
             characters = uiState.characters,
             onNewCharacter = onNewCharacter,
@@ -124,8 +122,10 @@ private fun Content(
     val navigator = rememberListDetailPaneScaffoldNavigator()
     val coroutineScope = rememberCoroutineScope()
 
-    val characterVisible = navigator.scaffoldState.currentState[ThreePaneScaffoldRole.Primary] == PaneAdaptedValue.Expanded
-    val listVisible = navigator.scaffoldState.currentState[ThreePaneScaffoldRole.Secondary] == PaneAdaptedValue.Expanded
+    val characterVisible =
+        navigator.scaffoldState.currentState[ThreePaneScaffoldRole.Primary] == PaneAdaptedValue.Expanded
+    val listVisible =
+        navigator.scaffoldState.currentState[ThreePaneScaffoldRole.Secondary] == PaneAdaptedValue.Expanded
 
     Scaffold(
         topBar = {
@@ -214,9 +214,11 @@ private fun Content(
                         isCurrentCharacterLoading -> Box(modifier = Modifier.fillMaxSize()) {
                             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                         }
+
                         currentCharacter == null -> FullScreenCard {
                             Text(stringResource(Res.string.select_character_for_info))
                         }
+
                         else -> CharacterInfo(currentCharacter)
                     }
                 }
@@ -268,18 +270,10 @@ private fun CharacterItem(
             ),
         headlineContent = { Text(character.name) },
         leadingContent = {
-            if (character.image == null) EmptyImage(
+            BaseEntityImage(
+                character = character,
                 modifier = Modifier
                     .size(40.dp)
-                    .clip(CircleShape),
-                text = character.name
-            )
-            else AsyncImage(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape),
-                model = character.image,
-                contentDescription = stringResource(Res.string.character_image)
             )
         }
     )

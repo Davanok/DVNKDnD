@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.data.local.implementations
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.domain.repositories.local.FilesRepository
 import okio.FileSystem
+import okio.IOException
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.SYSTEM
@@ -32,7 +33,14 @@ class FilesRepositoryImpl(
 
     override suspend fun move(from: Path, to: Path) =
         runLogging("move file") {
-            fs.atomicMove(from, to)
+            val parent = to.parent
+            if (parent != null && !fs.exists(parent)) fs.createDirectories(parent)
+            try {
+                fs.atomicMove(from, to)
+            } catch (_: IOException) {
+                fs.copy(from, to)
+                fs.delete(from)
+            }
         }
 
     override fun getFilename(dir: Path, extension: String, temp: Boolean): Path {

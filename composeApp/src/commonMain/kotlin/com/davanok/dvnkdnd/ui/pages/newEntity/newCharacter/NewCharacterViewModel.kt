@@ -24,7 +24,9 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
+import com.davanok.dvnkdnd.domain.repositories.local.FilesRepository
 import com.davanok.dvnkdnd.domain.repositories.local.FullEntitiesRepository
+import com.davanok.dvnkdnd.domain.values.FilePaths
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMain
 import okio.Path
 import kotlin.uuid.Uuid
@@ -32,7 +34,8 @@ import kotlin.uuid.Uuid
 class NewCharacterViewModel(
     private val fullEntitiesRepository: FullEntitiesRepository,
     private val browseRepository: BrowseRepository,
-    private val charactersRepository: CharactersRepository
+    private val charactersRepository: CharactersRepository,
+    private val filesRepository: FilesRepository
 ) : ViewModel() {
     private var newCharacterState = NewCharacter()
 
@@ -136,10 +139,28 @@ class NewCharacterViewModel(
         )
     }
 
-    suspend fun saveCharacter() =
+    suspend fun saveCharacter() = runCatching {
+        var mainImage: Path? = null
+        val images = newCharacterState.character.images.map {
+            val newFilename = filesRepository.getFilename(
+                FilePaths.images,
+                "png",
+                false
+            )
+            filesRepository.move(
+                from = it,
+                to = newFilename
+            )
+            if (it == newCharacterState.character.mainImage)
+                mainImage = newFilename
+            newFilename
+        }
         charactersRepository.saveCharacter(
-            newCharacterState.toCharacterFull(Uuid.random())
-        )
+            newCharacterState
+                .copy(character = newCharacterState.character.copy(images = images, mainImage = mainImage))
+                .toCharacterFull(Uuid.random())
+        ).getOrThrow()
+    }
 }
 
 private data class NewCharacterWithFullEntities(
@@ -210,7 +231,8 @@ private data class NewCharacter(
     fun toCharacterFull(id: Uuid = Uuid.NIL): CharacterFull {
         val characterBase = toCharacterBase(id)
 
-        val dbImages = character.images.map { path -> DatabaseImage(Uuid.random(), path.toString()) }
+        val dbImages = character.images
+            .map { path -> DatabaseImage(Uuid.random(), path.toString()) }
 
 
         val totalHealth = CharacterHealth(
@@ -239,5 +261,10 @@ private data class NewCharacter(
         name = character.name,
         description = character.description,
         level = level,
+        image = character
+            .takeIf { character.mainImage != null }
+            ?.images
+            ?.firstOrNull { it == character.mainImage }
+            ?.toString()
     )
 }
