@@ -324,20 +324,37 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="no_spell_data">No spell data</string>
     <string name="entity_image">Entity image</string>
     <string name="search">Search</string>
-    <string name="difficulty_class_short">DC</string>
-    <string name="attack_bonus_short">ATK Bonus</string>
+    <string name="difficulty_class_short">DC: %1$s</string>
+    <string name="attack_bonus_short">ATK Bonus: %1$s</string>
     <!--states screen-->
     <string name="no_character_states">No states</string>
     <string name="add_character_state">Add state</string>
     <!-- items page-->
-    <string name="active_items_group_name">Active</string>
-    <string name="attuned_items_group_name">Attuned</string>
-    <string name="equipped_items_group_name">Equipped</string>
-    <string name="other_items_group_name">Other</string>
+    <string name="active_items_filter_name">Active</string>
+    <string name="attuned_items_filter_name">Attuned</string>
+    <string name="equipped_items_filter_name">Equipped</string>
     <string name="armor_class_short">AC</string>
     <string name="stealth_disadvantage_short">Stealth Dis.</string>
-    <string name="max_value">max:</string>
+    <string name="max_value">max: %1$d</string>
     <string name="x_count">x%1$d</string>
+    <string name="cost">Cost</string>
+    <string name="weight">Weight</string>
+    <string name="equipped">Equipped</string>
+    <string name="attuned">Attuned</string>
+    <string name="not_equipped">Not equipped</string>
+    <string name="not_attuned">Not attuned</string>
+    <string name="total_weight_value">Total weight: %1$s</string>
+    <string name="character_has_no_money">No money</string>
+    <plurals name="total_items_count_value">
+        <item quantity="one">Total %1$d item</item>
+        <item quantity="other">Total %1$d items</item>
+    </plurals>
+    <string name="damage">Damage</string>
+    <string name="infinity_symbol">∞</string>
+    <string name="properties">Properties</string>
+    <string name="item_count">Item count</string>
+    <string name="decrement_count">Decrement count</string>
+    <string name="increment_count">Increment count</string>
 
     <!--measurement system-->
     <string name="meter_short">%1$s m</string>
@@ -349,4 +366,26 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="kilogram_short">%1$s kg</string>
     <string name="ounce_short">%1$s oz</string>
     <string name="pound_short">%1$s lb</string>
+
+    <string name="copper_pieces_short">cp</string>
+    <string name="silver_pieces_short">sp</string>
+    <string name="electrum_pieces_short">ep</string>
+    <string name="gold_pieces_short">gp</string>
+    <string name="platinum_pieces_short">pp</string>
+    <string name="other_pieces_short">?p</string>
+
+    <string name="copper_pieces_full">Copper</string>
+    <string name="silver_pieces_full">Silver</string>
+    <string name="electrum_pieces_full">Electrum</string>
+    <string name="gold_pieces_full">Gold</string>
+    <string name="platinum_pieces_full">Platinum</string>
+    <string name="other_pieces_full">Other</string>
+
+    <string name="common_rarity_item">Common item</string>
+    <string name="uncommon_rarity_item">Uncommon item</string>
+    <string name="rare_rarity_item">Rare item</string>
+    <string name="very_rare_rarity_item">Very rare item</string>
+    <string name="legendary_rarity_item">Legendary item</string>
+    <string name="artifact_rarity_item">Artifact</string>
+    <string name="various_rarity_item">Varous rarity item</string>
 </resources>

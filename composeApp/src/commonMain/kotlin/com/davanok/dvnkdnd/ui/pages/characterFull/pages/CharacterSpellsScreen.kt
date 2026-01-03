@@ -1,11 +1,8 @@
 package com.davanok.dvnkdnd.ui.pages.characterFull.pages
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -47,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -55,13 +51,17 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterSpell
 import com.davanok.dvnkdnd.domain.entities.character.SpellCastingValues
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullSpell
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullSpellAttack
 import com.davanok.dvnkdnd.domain.entities.dndEntities.SpellSlotsType
+import com.davanok.dvnkdnd.ui.components.BaseEntityImage
+import com.davanok.dvnkdnd.ui.components.DEFAULT_PARTS_SEP
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.adaptive.alternativeClickable
 import com.davanok.dvnkdnd.ui.components.rememberCollapsingNestedScrollConnection
-import com.davanok.dvnkdnd.ui.components.text.buildAttacksString
+import com.davanok.dvnkdnd.ui.components.text.buildDamagesString
 import com.davanok.dvnkdnd.ui.components.text.buildString
 import com.davanok.dvnkdnd.ui.components.toSignedString
+import com.davanok.dvnkdnd.ui.pages.characterFull.components.ImagesCarousel
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.attack_bonus_short
@@ -239,10 +239,16 @@ private fun SpellSlots(
 
         Column {
             Text(
-                text = "${stringResource(Res.string.attack_bonus_short)}: ${spellCastingValues.attackBonus.toSignedString()}"
+                text = stringResource(
+                    Res.string.attack_bonus_short,
+                    spellCastingValues.attackBonus.toSignedString()
+                )
             )
             Text(
-                text = "${stringResource(Res.string.difficulty_class_short)}: ${spellCastingValues.saveDifficultyClass}"
+                text = stringResource(
+                    Res.string.difficulty_class_short,
+                    spellCastingValues.saveDifficultyClass
+                )
             )
         }
     }
@@ -317,7 +323,6 @@ private fun CompactSpellSlotsRow(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SpellCard(
     characterSpell: CharacterSpell,
@@ -334,24 +339,11 @@ private fun SpellCard(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .clickable { onOpenInfo(characterSpell.spell) },
-                    contentAlignment = Alignment.Center
-                ) {
-                    entity.image?.let { image ->
-                        AsyncImage(
-                            model = image,
-                            contentDescription = null
-                        )
-                    } ?: Text(
-                        text = entity.name.firstOrNull()?.toString() ?: "*",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
+                BaseEntityImage(
+                    entity = entity,
+                    onClick = { onOpenInfo(characterSpell.spell) },
+                    modifier = Modifier.size(56.dp)
+                )
 
                 Spacer(modifier = Modifier.width(12.dp))
 
@@ -367,7 +359,7 @@ private fun SpellCard(
                             else stringResource(Res.string.spell_level, it)
                         }
                         Text(
-                            text = "${stringResource(spell.spell.school.stringRes)} • $levelText",
+                            text = "${stringResource(spell.spell.school.stringRes)}$DEFAULT_PARTS_SEP$levelText",
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(top = 2.dp, bottom = 6.dp)
                         )
@@ -390,15 +382,17 @@ private fun SpellCard(
                 }
 
                 Column {
-                    spell?.let {
-                        if (it.spell.ritual) AssistChip(
-                            onClick = {},
+                    if (spell != null) {
+                        if (spell.spell.ritual) AssistChip(
+                            onClick = { /* noop */ },
                             label = { Text(stringResource(Res.string.ritual)) },
                             enabled = false
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = if (it.spell.concentration) stringResource(Res.string.concentration) else it.spell.duration,
+                            text =
+                                if (spell.spell.concentration) stringResource(Res.string.concentration)
+                                else spell.spell.duration,
                             style = MaterialTheme.typography.labelSmall,
                             modifier = Modifier.padding(top = 4.dp)
                         )
@@ -406,38 +400,45 @@ private fun SpellCard(
                 }
             }
 
-            if (!spell?.attacks.isNullOrEmpty()) {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    spell.attacks.forEach { attack ->
-                        TooltipBox(
-                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                                TooltipAnchorPosition.Above
-                            ),
-                            tooltip = { PlainTooltip { Text(text = stringResource(attack.damageType.stringRes)) } },
-                            state = rememberTooltipState()
-                        ) {
-                            AssistChip(
-                                onClick = { /* noop */ },
-                                label = { Text(text = attack.buildString()) },
-                                leadingIcon = attack.damageType.drawableRes?.let {
-                                    {
-                                        Icon(
-                                            painter = painterResource(it),
-                                            contentDescription = stringResource(attack.damageType.stringRes),
-                                            tint = attack.damageType.color ?: LocalContentColor.current
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            }
+            if (!spell?.attacks.isNullOrEmpty())
+                SpellAttacksRow(attacks = spell.attacks)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SpellAttacksRow(
+    attacks: List<FullSpellAttack>,
+    modifier: Modifier = Modifier
+) {
+    FlowRow(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        attacks.forEach { attack ->
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                    TooltipAnchorPosition.Above
+                ),
+                tooltip = { PlainTooltip { Text(text = stringResource(attack.damageType.stringRes)) } },
+                state = rememberTooltipState()
+            ) {
+                AssistChip(
+                    onClick = { /* noop */ },
+                    label = { Text(text = attack.buildString()) },
+                    leadingIcon = attack.damageType.drawableRes?.let {
+                        {
+                            Icon(
+                                painter = painterResource(it),
+                                contentDescription = stringResource(attack.damageType.stringRes),
+                                tint = attack.damageType.color ?: LocalContentColor.current
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun SpellShortInfoDialog(
     entity: DnDFullEntity,
@@ -461,20 +462,10 @@ private fun SpellShortInfoDialog(
                 AnimatedVisibility(
                     visible = additionalContentExpanded
                 ) {
-                    HorizontalMultiBrowseCarousel(
-                        modifier = Modifier.fillMaxWidth().height(300.dp),
-                        state = rememberCarouselState { entity.images.size },
-                        preferredItemWidth = PREFERRED_IMAGE_WIDTH_DP.dp,
-                        itemSpacing = 12.dp
-                    ) { index ->
-                        AsyncImage(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .maskClip(MaterialTheme.shapes.extraLarge),
-                            model = entity.images[index].path,
-                            contentDescription = stringResource(Res.string.entity_image),
-                        )
-                    }
+                    ImagesCarousel(
+                        images = entity.images.map { it.path },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
 
             Column(
@@ -495,46 +486,63 @@ private fun SpellShortInfoDialog(
 
             entity.spell?.let { spell ->
                 AnimatedVisibility(visible = additionalContentExpanded) {
-                    Column(
+                    SpellLevelSelector(
+                        spell = spell,
+                        availableSlots = availableSlots,
+                        usedSpells = usedSpells,
+                        onCast = onCast,
                         modifier = Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState())
-                    ) {
-                        availableSlots.filter { it.value.size >= spell.spell.level }.forEach { (slotType, slots) ->
-                            Text(
-                                text = slotType?.name ?: stringResource(Res.string.multiclass_spell_slot_type_name),
-                                style = MaterialTheme.typography.titleMedium
-                            )
+                    )
+                }
+            }
+        }
+    }
+}
 
-                            Row(
-                                modifier = Modifier.horizontalScroll(rememberScrollState()),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+@Composable
+private fun SpellLevelSelector(
+    spell: FullSpell,
+    availableSlots: Map<SpellSlotsType?, IntArray>,
+    usedSpells: Map<Uuid?, IntArray>,
+    onCast: (spellSlotType: Uuid?, level: Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+    ) {
+        availableSlots.filter { it.value.size >= spell.spell.level }.forEach { (slotType, slots) ->
+            Text(
+                text = slotType?.name ?: stringResource(Res.string.multiclass_spell_slot_type_name),
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                slots.forEachIndexed { index, count ->
+                    val level = index + 1
+                    if (level < spell.spell.level) return@forEachIndexed
+                    val availableCount = count - (usedSpells[slotType?.id]?.getOrNull(index) ?: 0)
+
+                    AssistChip(
+                        onClick = { onCast(slotType?.id, level) },
+                        label = {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                slots.forEachIndexed { index, count ->
-                                    val level = index + 1
-                                    if (level < spell.spell.level) return@forEachIndexed
-                                    val availableCount = count - (usedSpells[slotType?.id]?.getOrNull(index) ?: 0)
+                                Text(text = buildString {
+                                    append(stringResource(Res.string.spell_level, level))
+                                    append(" (")
+                                    append(availableCount)
+                                    append(')')
+                                })
 
-                                    AssistChip(
-                                        onClick = { onCast(slotType?.id, level) },
-                                        label = {
-                                            Column(
-                                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                                            ) {
-                                                Text(text = buildString {
-                                                    append(stringResource(Res.string.spell_level, level))
-                                                    append(" (")
-                                                    append(availableCount)
-                                                    append(')')
-                                                })
-
-                                                if (spell.attacks.isNotEmpty())
-                                                    Text(text = spell.buildAttacksString(level))
-                                            }
-                                        }
-                                    )
-                                }
+                                if (spell.attacks.isNotEmpty())
+                                    Text(text = spell.buildDamagesString(level))
                             }
                         }
-                    }
+                    )
                 }
             }
         }
@@ -558,7 +566,7 @@ private fun SpellShortInfoCard(
                     else stringResource(Res.string.spell_level, it)
                 }
                 Text(
-                    text = "${stringResource(spell.spell.school.stringRes)} • $levelText",
+                    text = "${stringResource(spell.spell.school.stringRes)}$DEFAULT_PARTS_SEP$levelText",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 2.dp, bottom = 6.dp)
                 )

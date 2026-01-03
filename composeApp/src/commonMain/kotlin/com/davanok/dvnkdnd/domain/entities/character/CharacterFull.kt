@@ -36,6 +36,7 @@ data class CharacterFull(
 
     val attributes: AttributesGroup = AttributesGroup.Default,
     val health: CharacterHealth = CharacterHealth(),
+    val usedItemActivations: Map<Uuid, Int> = emptyMap(),
     val usedSpells: Map<Uuid?, IntArray> = emptyMap(),
 
     val mainEntities: List<CharacterMainEntityInfo> = emptyList(),
@@ -52,7 +53,8 @@ data class CharacterFull(
     val notes: List<CharacterNote> = emptyList()
 ) {
     val entities: List<DnDFullEntity>
-        get() = mainEntities.flatMap { listOfNotNull(it.entity, it.subEntity) } + feats + states.map { it.state }
+        get() = mainEntities
+            .flatMap { listOfNotNull(it.entity, it.subEntity) } + feats + states.map { it.state }
     private val groupIdToEntityId by lazy {
         entities.flatMap { e -> e.modifiersGroups.map { it.id to e.entity.id } }.toMap()
     }

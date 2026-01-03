@@ -34,13 +34,14 @@ data class DnDFullEntity(
 ) {
     fun toDnDEntityMin() = entity.toEntityMin()
 
-    fun getSubEntitiesIds() =
+    fun getCompanionEntitiesIds() =
         abilities.map { it.abilityId } +
                 cls?.spells.orEmpty() +
                 ability?.let { listOfNotNull(it.givesStateSelf, it.givesStateTarget) }.orEmpty() +
                 spell?.attacks?.mapNotNull { it.givesState }.orEmpty() +
                 item?.let { fullItem ->
-                    fullItem.effects.map { it.givesState } + fullItem.activations.map { it.givesState }
+                    fullItem.effects.map { it.givesState } +
+                            fullItem.activations.flatMap { listOfNotNull(it.givesState, it.castsSpell?.spellId) }
                 }.orEmpty()
 
     fun getDistance(s: String) = minOf(

@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityAbility
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityImage
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifiersGroup
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityProficiency
@@ -19,6 +20,9 @@ import kotlin.uuid.Uuid
 interface EntityAttributesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEntity(entity: DbBaseEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEntityImages(images: List<DbEntityImage>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProficiencies(proficiencies: List<DbProficiency>)

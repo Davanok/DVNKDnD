@@ -273,7 +273,7 @@ private fun CharacterItem(
             BaseEntityImage(
                 character = character,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(56.dp)
             )
         }
     )

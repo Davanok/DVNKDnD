@@ -32,11 +32,15 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
         fullEntity.companionEntities.forEach {
             insertFullEntity(it)
         }
-        insertProficiencies(
-            fullEntity.proficiencies.map { it.proficiency.toDbProficiency() }
-        )
+        fullEntity.proficiencies
+            .map { it.proficiency.toDbProficiency() }
+            .let { insertProficiencies(it) }
 
         insertEntity(fullEntity.entity.toDbBaseEntity())
+
+        fullEntity.images
+            .map { it.toDbEntityImage(entityId) }
+            .let { insertEntityImages(it) }
 
         fullEntity.modifiersGroups.forEach { insertModifiersGroup(entityId, it) }
 

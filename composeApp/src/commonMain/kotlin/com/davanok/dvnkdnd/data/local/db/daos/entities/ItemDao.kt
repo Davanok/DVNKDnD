@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbArmor
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItem
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivation
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationCastsSpell
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationRegain
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemEffect
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemProperty
@@ -18,6 +19,7 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.FullWeapon
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbArmor
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItem
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItemActivation
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItemActivationCastsSpell
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItemActivationRegain
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItemEffect
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItemProperty
@@ -60,11 +62,17 @@ interface ItemDao {
     suspend fun insertItemActivation(activation: DbItemActivation)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertItemActivationCastsSpell(castsSpell: DbItemActivationCastsSpell)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemActivationRegains(regains: List<DbItemActivationRegain>)
 
     @Transaction
     suspend fun insertFullItemActivation(itemId: Uuid, activation: FullItemActivation) {
         insertItemActivation(activation.toDbItemActivation(itemId))
+        activation.castsSpell
+            ?.toDbItemActivationCastsSpell(activation.id)
+            ?.let { insertItemActivationCastsSpell(it) }
         activation.regains
             .map { it.toDbItemActivationRegain(activation.id) }
             .let { insertItemActivationRegains(it) }

@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.domain.entities.dndEntities
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemEffectScope
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemsRarity
 import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -12,7 +13,9 @@ import kotlin.uuid.Uuid
 @Serializable
 data class Item(
     val cost: Int?, // in copper pieces
-    val weight: Int? // in grams
+    val weight: Int?, // in grams
+    val equippable: Boolean,
+    val rarity: ItemsRarity
 )
 
 @Serializable
@@ -25,7 +28,11 @@ data class FullItem(
     val properties: List<ItemProperty>,
     val armor: ArmorInfo?,
     val weapon: FullWeapon?,
-)
+) {
+    fun requiresAttunement(): Boolean =
+        effects.any { it.scope == ItemEffectScope.ATTUNED }
+                || activations.any { it.requiresAttunement }
+}
 
 @Serializable
 data class ItemEffect(
@@ -38,13 +45,23 @@ data class ItemEffect(
 @Serializable
 data class FullItemActivation(
     val id: Uuid,
+    val name: String,
     @SerialName("requires_attunement")
     val requiresAttunement: Boolean,
     @SerialName("gives_state")
-    val givesState: Uuid,
+    val givesState: Uuid?,
     val count: Int?,
 
+    @SerialName("casts_spell")
+    val castsSpell: ItemActivationCastsSpell?,
     val regains: List<ItemActivationRegain>
+)
+
+@Serializable
+data class ItemActivationCastsSpell(
+    @SerialName("spell_id")
+    val spellId: Uuid,
+    val level: Int
 )
 
 @Serializable

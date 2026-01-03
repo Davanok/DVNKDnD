@@ -63,11 +63,15 @@ fun DbWeaponDamage.toWeaponDamageInfo() = WeaponDamageInfo(
 fun Item.toDbItem(entityId: Uuid) = DbItem(
     id = entityId,
     cost = cost,
-    weight = weight
+    weight = weight,
+    equippable = equippable,
+    rarity = rarity
 )
 fun DbItem.toItem() = Item(
     cost = cost,
-    weight = weight
+    weight = weight,
+    equippable = equippable,
+    rarity = rarity
 )
 
 fun FullWeapon.toDbWeapon(entityId: Uuid) = DbWeapon(id = entityId, atkBonus = atkBonus)
@@ -86,6 +90,7 @@ fun DbItemEffect.toItemEffect() = ItemEffect(
 
 fun FullItemActivation.toDbItemActivation(itemId: Uuid) = DbItemActivation(
     id = id,
+    name = name,
     itemId = itemId,
     requiresAttunement = requiresAttunement,
     givesState = givesState,

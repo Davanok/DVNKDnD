@@ -307,7 +307,9 @@ private fun CharacterPages(
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.ITEMS -> CharacterItemsScreen(
+                    characterCoins = character.coins,
                     items = character.items,
+                    usedActivations = character.usedItemActivations,
                     onClick = { onEntityClick(it.toDnDEntityMin()) },
                     modifier = Modifier.fillMaxSize()
                 )

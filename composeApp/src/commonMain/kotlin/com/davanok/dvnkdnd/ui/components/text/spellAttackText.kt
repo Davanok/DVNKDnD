@@ -21,7 +21,7 @@ fun FullSpellAttack.buildString(level: Int = 0) = buildString {
 }
 
 @Composable
-fun FullSpell.buildAttacksString(level: Int) = buildString {
+fun FullSpell.buildDamagesString(level: Int) = buildString {
     val dices = mutableMapOf<Dices, Int>()
     var appendValue = 0
     attacks.forEach { attack ->

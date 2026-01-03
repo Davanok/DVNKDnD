@@ -13,6 +13,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeat
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbProficiency
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbSpellSlotType
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItem
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivation
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
@@ -175,7 +176,7 @@ data class DbCharacterOptionalValues( // if value is null: calculate
 )
 
 @Entity(
-    tableName = "character_item",
+    tableName = "character_items",
     primaryKeys = ["character_id", "item_id"],
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
@@ -188,7 +189,22 @@ data class DbCharacterItemLink(
     val equipped: Boolean,
     val active: Boolean,
     val attuned: Boolean,
-    val count: Int?,
+    val count: Int?
+)
+@Entity(
+    tableName = "character_item_activation_count",
+    primaryKeys = ["character_id", "activation_id"],
+    foreignKeys = [
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbItemActivation::class, ["id"], ["activation_id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbCharacterItemActivationsCount(
+    @ColumnInfo("character_id", index = true)
+    val characterId: Uuid,
+    @ColumnInfo("activation_id", index = true)
+    val activationId: Uuid,
+    val count: Int
 )
 @Entity(
     tableName = "character_spell_links",

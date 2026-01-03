@@ -25,6 +25,7 @@ fun DbFullCharacter.toCharacterFull(): CharacterFull = CharacterFull(
     spells = spells.map { CharacterSpell(it.link.ready, it.spell.toDnDFullEntity()) },
     attributes = attributes?.toAttributesGroup() ?: AttributesGroup.Default,
     health = health?.toDnDCharacterHealth() ?: CharacterHealth(),
+    usedItemActivations = usedItemActivations.associate { it.activationId to it.count },
     usedSpells = usedSpells.associate { it.spellSlotTypeId to it.usedSpells.toIntArray() },
     mainEntities = mainEntities.map(DbJoinCharacterMainEntities::toCharacterMainEntityInfo),
     feats = feats.map(DbFullEntity::toDnDFullEntity),

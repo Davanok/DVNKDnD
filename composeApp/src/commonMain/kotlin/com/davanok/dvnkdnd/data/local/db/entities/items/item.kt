@@ -5,8 +5,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpell
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbState
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemEffectScope
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemsRarity
 import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlin.uuid.Uuid
 
@@ -19,7 +21,9 @@ import kotlin.uuid.Uuid
 data class DbItem(
     @PrimaryKey val id: Uuid,
     val cost: Int?, // in copper pieces
-    val weight: Int?
+    val weight: Int?,
+    val equippable: Boolean,
+    val rarity: ItemsRarity
 )
 
 @Entity(
@@ -50,12 +54,28 @@ data class DbItemActivation(
     @PrimaryKey val id: Uuid,
     @ColumnInfo("item_id", index = true)
     val itemId: Uuid,
+    val name: String,
     @ColumnInfo("requires_attunement")
     val requiresAttunement: Boolean,
     @ColumnInfo("gives_state", index = true)
-    val givesState: Uuid,
+    val givesState: Uuid?,
     val count: Int?
 )
+
+@Entity(
+    tableName = "item_activation_casts_spell",
+    foreignKeys = [
+        ForeignKey(DbItemActivation::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(DbSpell::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbItemActivationCastsSpell(
+    @PrimaryKey val id: Uuid,
+    @ColumnInfo("spell_id", index = true)
+    val spellId: Uuid,
+    val level: Int
+)
+
 @Entity(
     tableName = "item_activation_regains",
     foreignKeys = [

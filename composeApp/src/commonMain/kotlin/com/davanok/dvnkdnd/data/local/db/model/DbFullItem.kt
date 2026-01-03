@@ -5,6 +5,7 @@ import androidx.room.Relation
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbArmor
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItem
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivation
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationCastsSpell
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationRegain
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemEffect
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemProperty
@@ -35,6 +36,11 @@ data class DbJoinItemProperty(
 data class DbFullItemActivation(
     @Embedded
     val activation: DbItemActivation,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val castsSpell: DbItemActivationCastsSpell?,
     @Relation(
         parentColumn = "id",
         entityColumn = "activation_id"

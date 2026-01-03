@@ -42,8 +42,7 @@ private fun BaseEntityImageContent(
             }
             Text(
                 modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxSize(),
+                    .padding(4.dp),
                 text = text,
                 style = MaterialTheme.typography.titleLarge,
                 autoSize = TextAutoSize.StepBased()
@@ -83,23 +82,11 @@ fun BaseEntityImage(
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.primaryContainer
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            if (image != null)
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = image,
-                    contentDescription = null
-                )
-            else
-                Text(
-                    text = name.firstOrNull()?.toString() ?: "*",
-                    style = MaterialTheme.typography.titleLarge,
-                    autoSize = TextAutoSize.StepBased()
-                )
-        }
+        BaseEntityImageContent(
+            image = image,
+            name = name,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 

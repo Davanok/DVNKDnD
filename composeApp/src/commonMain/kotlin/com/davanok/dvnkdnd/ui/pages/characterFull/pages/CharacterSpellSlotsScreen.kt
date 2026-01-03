@@ -1,10 +1,8 @@
 package com.davanok.dvnkdnd.ui.pages.characterFull.pages
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -19,7 +17,6 @@ import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.multiclass_spell_slot_type_name
 import dvnkdnd.composeapp.generated.resources.spell_level
 import org.jetbrains.compose.resources.stringResource
-import kotlin.collections.forEach
 import kotlin.uuid.Uuid
 
 @Composable
@@ -56,14 +53,10 @@ fun CharacterSpellSlotsScreen(
                 key = "type: ${spellSlotType?.id}",
                 contentType = "spell_slot_type"
             ) {
-                Column {
-                    Text(
-                        text = spellSlotType?.name ?: stringResource(Res.string.multiclass_spell_slot_type_name),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-
-                    HorizontalDivider()
-                }
+                Text(
+                    text = spellSlotType?.name ?: stringResource(Res.string.multiclass_spell_slot_type_name),
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
 
             spellSlots.forEachIndexed { index, slotCount ->
