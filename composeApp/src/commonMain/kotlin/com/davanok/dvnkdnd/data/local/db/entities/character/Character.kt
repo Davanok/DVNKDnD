@@ -15,9 +15,7 @@ data class DbCharacter(
     val name: String,
     val description: String,
     val level: Int = 1,
-    val source: String? = null,
-    @ColumnInfo("image")
-    val image: String? = null
+    val source: String? = null
 )
 
 @Entity(

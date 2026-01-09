@@ -42,11 +42,11 @@ private val Coins.shortStringRes: StringResource
 @Composable
 fun CoinsGroup.buildString(): String {
     val parts = mapOf(
-        Coins.COPPER to copper,
-        Coins.SILVER to silver,
-        Coins.ELECTRUM to electrum,
+        Coins.PLATINUM to platinum,
         Coins.GOLD to gold,
-        Coins.PLATINUM to platinum
+        Coins.ELECTRUM to electrum,
+        Coins.SILVER to silver,
+        Coins.COPPER to copper
     )
 
     val notZero = parts
@@ -63,11 +63,11 @@ fun CoinsGroup.buildString(): String {
 @Composable
 fun CoinsGroup.buildAnnotatedString(): AnnotatedString {
     val parts = mapOf(
-        Coins.COPPER to copper,
-        Coins.SILVER to silver,
-        Coins.ELECTRUM to electrum,
+        Coins.PLATINUM to platinum,
         Coins.GOLD to gold,
-        Coins.PLATINUM to platinum
+        Coins.ELECTRUM to electrum,
+        Coins.SILVER to silver,
+        Coins.COPPER to copper
     )
 
     val notZero = parts
@@ -86,4 +86,3 @@ fun CoinsGroup.buildAnnotatedString(): AnnotatedString {
             }
         }
 }
-

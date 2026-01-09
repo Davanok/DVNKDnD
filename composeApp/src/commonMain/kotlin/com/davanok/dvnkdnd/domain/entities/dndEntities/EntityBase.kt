@@ -15,14 +15,14 @@ data class EntityBase(
     val type: DnDEntityTypes,
     val name: String,
     val description: String,
-    val source: String,
-    @SerialName("image")
-    val image: String? = null
+    val source: String
 ) {
-    fun toEntityMin() = DnDEntityMin(
+    fun toEntityMin(image: String? = null) = DnDEntityMin(
         id = id,
         type = type,
         name = name,
-        source = source
+        description = description,
+        source = source,
+        image = image
     )
 }

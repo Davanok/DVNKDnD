@@ -1,17 +1,17 @@
 package com.davanok.dvnkdnd.data.remote.implementations
 
-import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
-import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.core.InternetConnectionException
 import com.davanok.dvnkdnd.core.PagedResult
 import com.davanok.dvnkdnd.core.utils.runLogging
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
 import io.github.jan.supabase.postgrest.Postgrest
-import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
 import io.github.jan.supabase.storage.Storage
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.uuid.Uuid
 
@@ -19,9 +19,19 @@ class BrowseRepositoryImpl(
     private val postgrest: Postgrest,
     private val storage: Storage,
 ) : BrowseRepository {
-    private fun <T>Result<T>.handleFailure() = recoverCatching { exception ->
+    private fun <T> Result<T>.handleFailure() = recoverCatching { exception ->
         throw InternetConnectionException(exception.message, exception.cause)
     }
+
+    @Serializable
+    private data class LoadEntitiesWithSubPagedParams(
+        @SerialName("p_entity_type")
+        val entityType: DnDEntityTypes,
+        @SerialName("p_limit")
+        val limit: Int,
+        @SerialName("p_offset") val offset: Int,
+        @SerialName("p_search") val search: String?
+    )
 
     override suspend fun loadEntityFullInfo(entityId: Uuid): Result<DnDFullEntity?> =
         runLogging("loadEntityFullInfo") {
@@ -39,15 +49,6 @@ class BrowseRepositoryImpl(
             ).decodeList<DnDFullEntity>()
         }.handleFailure()
 
-    override suspend fun loadEntitiesWithSub(entityType: DnDEntityTypes): Result<List<DnDEntityWithSubEntities>> =
-        runLogging("loadEntitiesWithSub") {
-            postgrest.from("base_entities").select(
-                Columns.raw("*, sub_entities:base_entities(*)")
-            ) {
-                filter { DnDEntityWithSubEntities::type eq entityType.name }
-            }.decodeList<DnDEntityWithSubEntities>()
-        }.handleFailure()
-
     override suspend fun loadEntitiesWithSubPaged(
         entityType: DnDEntityTypes,
         page: Int,
@@ -55,21 +56,17 @@ class BrowseRepositoryImpl(
         searchQuery: String?
     ): Result<PagedResult<DnDEntityWithSubEntities>> =
         runLogging("loadEntitiesWithSubPaged") {
-            val offset = (page * pageSize).toLong()
+            val offset = (page * pageSize)
 
-            val fetched = postgrest
-                .from("base_entities")
-                .select(Columns.raw("*, sub_entities:base_entities(*)")) {
-                    filter { DnDEntityWithSubEntities::type eq entityType.name }
-
-                    if (!searchQuery.isNullOrBlank()) {
-                        val safe = searchQuery.replace("%", "\\%").replace("_", "\\_")
-                        filter { DnDEntityWithSubEntities::name ilike "$safe%" }
-                    }
-
-                    order("id", Order.ASCENDING)
-                    range(offset, offset + pageSize)
-                }.decodeList<DnDEntityWithSubEntities>()
+            val fetched = postgrest.rpc(
+                "get_entity_min_with_sub_entities",
+                LoadEntitiesWithSubPagedParams(
+                    entityType = entityType,
+                    limit = pageSize + 1,
+                    offset = offset,
+                    search = searchQuery
+                )
+            ).decodeList<DnDEntityWithSubEntities>()
 
             val hasNext = fetched.size > pageSize
             val items = if (hasNext) fetched.subList(0, pageSize) else fetched

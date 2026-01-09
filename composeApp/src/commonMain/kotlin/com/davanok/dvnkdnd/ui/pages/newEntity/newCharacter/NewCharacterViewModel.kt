@@ -211,6 +211,7 @@ private data class NewCharacterWithFullEntities(
                 id = id,
                 type = type,
                 name = name,
+                description = description,
                 source = source,
                 subEntities = subEntities
             )
@@ -232,7 +233,7 @@ private data class NewCharacter(
         val characterBase = toCharacterBase(id)
 
         val dbImages = character.images
-            .map { path -> DatabaseImage(Uuid.random(), path.toString()) }
+            .map { path -> DatabaseImage(Uuid.random(), path.toString(), false) }
 
 
         val totalHealth = CharacterHealth(
@@ -260,11 +261,6 @@ private data class NewCharacter(
         userId = null,
         name = character.name,
         description = character.description,
-        level = level,
-        image = character
-            .takeIf { character.mainImage != null }
-            ?.images
-            ?.firstOrNull { it == character.mainImage }
-            ?.toString()
+        level = level
     )
 }

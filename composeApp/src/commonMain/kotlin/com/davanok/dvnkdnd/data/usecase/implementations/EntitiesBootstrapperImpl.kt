@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.usecaseImplementations
+package com.davanok.dvnkdnd.data.usecase.implementations
 
 import com.davanok.dvnkdnd.core.CheckingDataStates
 import com.davanok.dvnkdnd.domain.repositories.local.EntitiesRepository

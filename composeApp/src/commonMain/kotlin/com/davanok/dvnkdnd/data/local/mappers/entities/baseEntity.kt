@@ -10,8 +10,7 @@ fun DbBaseEntity.toEntityBase() = EntityBase(
     type = type,
     name = name,
     description = description,
-    source = source,
-    image = image
+    source = source
 )
 fun EntityBase.toDbBaseEntity() = DbBaseEntity(
     id = id,
@@ -20,6 +19,5 @@ fun EntityBase.toDbBaseEntity() = DbBaseEntity(
     type = type,
     name = name,
     description = description,
-    source = source,
-    image = image
+    source = source
 )

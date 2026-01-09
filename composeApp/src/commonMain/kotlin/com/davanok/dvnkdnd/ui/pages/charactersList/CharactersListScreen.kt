@@ -42,8 +42,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
+import com.davanok.dvnkdnd.core.getMainImage
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterMin
 import com.davanok.dvnkdnd.ui.components.BaseEntityImage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
@@ -62,10 +63,19 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 
+private fun CharacterFull.toCharacterMin() = CharacterMin(
+    id = character.id,
+    userId = character.userId,
+    name = character.name,
+    description = character.description,
+    level = character.level,
+    image = images.getMainImage()?.path
+)
+
 @Composable
 fun CharactersListScreen(
     onNewCharacter: () -> Unit,
-    navigateToCharacter: (CharacterBase) -> Unit,
+    navigateToCharacter: (CharacterMin) -> Unit,
     viewModel: CharactersListViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -112,10 +122,10 @@ fun CharactersListScreen(
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
-    characters: List<CharacterBase>,
+    characters: List<CharacterMin>,
     onNewCharacter: () -> Unit,
-    onClickCharacter: (CharacterBase) -> Unit,
-    navigateToCharacter: (CharacterBase) -> Unit,
+    onClickCharacter: (CharacterMin) -> Unit,
+    navigateToCharacter: (CharacterMin) -> Unit,
     currentCharacter: CharacterFull?,
     isCurrentCharacterLoading: Boolean,
 ) {
@@ -163,7 +173,9 @@ private fun Content(
                         exit = shrinkHorizontally(shrinkTowards = Alignment.End) + fadeOut()
                     ) {
                         IconButton(
-                            onClick = { currentCharacter?.let { navigateToCharacter(it.character) } },
+                            onClick = {
+                                currentCharacter?.let { navigateToCharacter(it.toCharacterMin()) }
+                                      },
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowForward,
@@ -229,9 +241,9 @@ private fun Content(
 
 @Composable
 private fun CharactersList(
-    items: List<CharacterBase>,
-    onClick: (CharacterBase) -> Unit,
-    onLongClick: (CharacterBase) -> Unit,
+    items: List<CharacterMin>,
+    onClick: (CharacterMin) -> Unit,
+    onLongClick: (CharacterMin) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row {
@@ -256,9 +268,9 @@ private fun CharactersList(
 
 @Composable
 private fun CharacterItem(
-    character: CharacterBase,
-    onClick: (CharacterBase) -> Unit,
-    onLongClick: (CharacterBase) -> Unit,
+    character: CharacterMin,
+    onClick: (CharacterMin) -> Unit,
+    onLongClick: (CharacterMin) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ListItem(

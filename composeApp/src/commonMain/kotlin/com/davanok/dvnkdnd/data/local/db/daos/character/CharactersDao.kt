@@ -3,24 +3,24 @@ package com.davanok.dvnkdnd.data.local.db.daos.character
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacter
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterFeat
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterImage
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficiency
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
+import com.davanok.dvnkdnd.data.local.db.model.character.DbCharacterWithImages
 import com.davanok.dvnkdnd.data.local.db.model.character.DbFullCharacter
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacter
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterAttributes
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterCoins
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterCustomModifier
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterHealth
+import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterImage
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterMainEntity
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterNote
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterOptionalValues
+import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -40,8 +40,9 @@ interface CharactersDao: CharacterMainDao,
     @Query("SELECT * FROM characters WHERE id == :characterId")
     fun getFullCharacterFlow(characterId: Uuid): Flow<DbFullCharacter>
 
+    @Transaction
     @Query("SELECT * FROM characters")
-    fun getCharactersMinListFlow(): Flow<List<DbCharacter>>
+    fun getCharactersWithImageListFlow(): Flow<List<DbCharacterWithImages>>
 
     @Transaction
     suspend fun saveCharacter(character: CharacterFull): Uuid {
@@ -54,7 +55,7 @@ interface CharactersDao: CharacterMainDao,
             .let { insertOptionalValues(it) }
 
         character.images
-            .map { DbCharacterImage(id = it.id, characterId = characterId, path = it.path) }
+            .map { it.toDbCharacterImage(characterId) }
             .let { insertCharacterImages(it) }
         character.coins.toDbCharacterCoins(characterId).let { insertCharacterCoins(it) }
         character.items

@@ -114,6 +114,8 @@ data class DbCharacterImage(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("character_id", index = true) val characterId: Uuid?,
     val path: String,
+    @ColumnInfo("is_main")
+    val isMain: Boolean
 )
 
 @Entity(

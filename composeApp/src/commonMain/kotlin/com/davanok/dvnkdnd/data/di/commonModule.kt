@@ -7,7 +7,7 @@ import com.davanok.dvnkdnd.data.local.implementations.EntitiesRepositoryImpl
 import com.davanok.dvnkdnd.data.remote.implementations.ExternalKeyValueRepositoryImpl
 import com.davanok.dvnkdnd.data.local.implementations.FilesRepositoryImpl
 import com.davanok.dvnkdnd.data.local.implementations.FullEntitiesRepositoryImpl
-import com.davanok.dvnkdnd.data.usecaseImplementations.EntitiesBootstrapperImpl
+import com.davanok.dvnkdnd.data.usecase.implementations.EntitiesBootstrapperImpl
 import com.davanok.dvnkdnd.data.platform.appCacheDirectory
 import com.davanok.dvnkdnd.data.platform.appDataDirectory
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository

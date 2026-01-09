@@ -7,6 +7,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbBackgrou
 import com.davanok.dvnkdnd.data.local.db.model.DbFullEntity
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbBaseEntity
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityAbility
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityImage
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityProficiency
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbFeat
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbProficiency
@@ -28,7 +29,7 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
     @Transaction
     suspend fun insertFullEntity(fullEntity: DnDFullEntity) {
         Napier.i { "insert full entity (${fullEntity.entity.type}) with id: ${fullEntity.entity.id}" }
-        val entityId = fullEntity.entity.id
+
         fullEntity.companionEntities.forEach {
             insertFullEntity(it)
         }
@@ -36,6 +37,8 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
             .map { it.proficiency.toDbProficiency() }
             .let { insertProficiencies(it) }
 
+
+        val entityId = fullEntity.entity.id
         insertEntity(fullEntity.entity.toDbBaseEntity())
 
         fullEntity.images

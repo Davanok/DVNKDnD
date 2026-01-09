@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.data.local.mappers.character
 
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterImage
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.data.local.db.model.DbFullEntity
 import com.davanok.dvnkdnd.data.local.db.model.character.DbFullCharacter
@@ -9,7 +10,6 @@ import com.davanok.dvnkdnd.data.local.db.model.character.DbJoinCharacterMainEnti
 import com.davanok.dvnkdnd.data.local.db.model.character.DbJoinCharacterState
 import com.davanok.dvnkdnd.data.local.mappers.entities.toCharacterState
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDnDFullEntity
-import com.davanok.dvnkdnd.domain.entities.DatabaseImage
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterSpell
@@ -19,7 +19,7 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 fun DbFullCharacter.toCharacterFull(): CharacterFull = CharacterFull(
     character = character.toCharacterBase(),
     optionalValues = optionalValues.toCharacterOptionalValues(),
-    images = images.map { DatabaseImage(it.id, it.path) },
+    images = images.map(DbCharacterImage::toDatabaseImage),
     coins = coins?.toCoinsGroup() ?: CoinsGroup(),
     items = items.map(DbJoinCharacterItem::toCharacterItem),
     spells = spells.map { CharacterSpell(it.link.ready, it.spell.toDnDFullEntity()) },

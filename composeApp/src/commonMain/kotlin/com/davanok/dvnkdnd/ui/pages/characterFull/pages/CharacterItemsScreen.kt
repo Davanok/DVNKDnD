@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,12 +40,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
-import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,9 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.core.CoinsConverter
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
 import com.davanok.dvnkdnd.domain.entities.character.CoinsGroup
@@ -309,7 +303,7 @@ private fun CharacterItemCard(
                     }
                 ) {
                     BaseEntityImage(
-                        entity = entity,
+                        entity = characterItem.item.toDnDEntityMin(),
                         onClick = onOpenInfo,
                         modifier = Modifier
                             .size(56.dp)

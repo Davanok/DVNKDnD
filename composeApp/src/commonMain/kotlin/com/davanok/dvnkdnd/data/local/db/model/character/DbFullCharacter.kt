@@ -10,6 +10,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomMod
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterFeat
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterHealth
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterImage
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemActivationsCount
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterMainEntity
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterNote
@@ -44,6 +45,8 @@ data class DbFullCharacter(
     @Relation(parentColumn = "id", entityColumn = "id")
     val health: DbCharacterHealth?,
 
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val usedItemActivations: List<DbCharacterItemActivationsCount>,
     @Relation(parentColumn = "id", entityColumn = "character_id")
     val usedSpells: List<DbCharacterUsedSpellSlots>,
 

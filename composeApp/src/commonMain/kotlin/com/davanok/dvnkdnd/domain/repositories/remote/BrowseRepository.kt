@@ -9,7 +9,6 @@ import kotlin.uuid.Uuid
 interface BrowseRepository {
     suspend fun loadEntityFullInfo(entityId: Uuid): Result<DnDFullEntity?>
     suspend fun loadEntitiesFullInfo(entityIds: List<Uuid>): Result<List<DnDFullEntity>>
-    suspend fun loadEntitiesWithSub(entityType: DnDEntityTypes): Result<List<DnDEntityWithSubEntities>>
     suspend fun loadEntitiesWithSubPaged(
         entityType: DnDEntityTypes,
         page: Int,

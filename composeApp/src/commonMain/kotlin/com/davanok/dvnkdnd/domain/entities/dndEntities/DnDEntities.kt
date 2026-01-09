@@ -12,7 +12,9 @@ data class DnDEntityMin(
     val id: Uuid,
     val type: DnDEntityTypes,
     val name: String,
+    val description: String,
     val source: String,
+    val image: String? = null
 )
 
 @Immutable
@@ -21,9 +23,11 @@ data class DnDEntityWithSubEntities(
     val id: Uuid,
     val type: DnDEntityTypes,
     val name: String,
+    val description: String,
     val source: String,
+    val image: String? = null,
     @SerialName("sub_entities")
     val subEntities: List<DnDEntityMin>,
 ) {
-    fun toDnDEntityMin() = DnDEntityMin(id, type, name, source)
+    fun toDnDEntityMin() = DnDEntityMin(id, type, name, description, source, image)
 }

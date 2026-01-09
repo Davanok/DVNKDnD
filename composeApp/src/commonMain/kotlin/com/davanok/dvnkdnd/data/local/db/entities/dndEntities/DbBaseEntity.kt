@@ -20,9 +20,7 @@ data class DbBaseEntity(
     @ColumnInfo(index = true) val type: DnDEntityTypes,
     val name: String,
     val description: String,
-    val source: String,
-    @ColumnInfo("image")
-    val image: String? = null
+    val source: String
 )
 @Entity(
     tableName = "entity_full_descriptions",
@@ -45,5 +43,6 @@ data class DbEntityFullDescription(
 data class DbEntityImage(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("entity_id", index = true) val entityId: Uuid?,
-    val path: String
+    val path: String,
+    @ColumnInfo(name = "is_main") val isMain: Boolean
 )

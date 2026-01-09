@@ -2,10 +2,10 @@ package com.davanok.dvnkdnd.ui.pages.charactersList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
-import com.davanok.dvnkdnd.ui.model.UiError
+import com.davanok.dvnkdnd.domain.entities.character.CharacterMin
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
+import com.davanok.dvnkdnd.ui.model.UiError
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.loading_character_error
 import dvnkdnd.composeapp.generated.resources.loading_characters_error
@@ -23,7 +23,7 @@ class CharactersListViewModel(
     private val repository: CharactersRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CharactersListUiState(isLoading = true))
-    private val _characters = repository.getCharactersMinListFlow()
+    private val _characters = repository.getCharactersWithImagesListFlow()
 
     val uiState: StateFlow<CharactersListUiState> = combine(
         _uiState,
@@ -51,7 +51,7 @@ class CharactersListViewModel(
 
     private val charactersCache = mutableMapOf<Uuid, CharacterFull>()
 
-    fun selectCharacter(character: CharacterBase) = viewModelScope.launch {
+    fun selectCharacter(character: CharacterMin) = viewModelScope.launch {
         var characterFull = charactersCache[character.id]
 
         if (characterFull == null) {
@@ -84,7 +84,7 @@ class CharactersListViewModel(
 data class CharactersListUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
-    val characters: List<CharacterBase> = emptyList(),
+    val characters: List<CharacterMin> = emptyList(),
     val currentCharacter: CharacterFull? = null,
     val isCurrentCharacterLoading: Boolean = false
 )

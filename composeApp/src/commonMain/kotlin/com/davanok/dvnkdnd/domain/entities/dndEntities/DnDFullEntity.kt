@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.domain.entities.dndEntities
 
 import androidx.compose.runtime.Immutable
+import com.davanok.dvnkdnd.core.getMainImage
 import com.davanok.dvnkdnd.domain.entities.DatabaseImage
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.core.utils.wordInTextLevenshtein
@@ -32,7 +33,7 @@ data class DnDFullEntity(
     @SerialName("companion_entities")
     val companionEntities: List<DnDFullEntity> = emptyList(),
 ) {
-    fun toDnDEntityMin() = entity.toEntityMin()
+    fun toDnDEntityMin() = entity.toEntityMin(images.getMainImage()?.path)
 
     fun getCompanionEntitiesIds() =
         abilities.map { it.abilityId } +

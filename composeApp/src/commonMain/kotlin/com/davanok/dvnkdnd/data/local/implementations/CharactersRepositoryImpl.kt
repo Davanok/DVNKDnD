@@ -1,16 +1,16 @@
 package com.davanok.dvnkdnd.data.local.implementations
 
-import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
-import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
-import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
-import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
-import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterBase
 import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterFull
+import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterMin
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterHealth
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterNote
+import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.domain.entities.character.CharacterMin
+import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -33,9 +33,9 @@ class CharactersRepositoryImpl(
         }.catch { thr -> emit(Result.failure(thr)) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getCharactersMinListFlow(): Flow<Result<List<CharacterBase>>> =
-        dao.getCharactersMinListFlow().mapLatest { characters ->
-            Result.success(characters.map { it.toCharacterBase() })
+    override fun getCharactersWithImagesListFlow(): Flow<Result<List<CharacterMin>>> =
+        dao.getCharactersWithImageListFlow().mapLatest { characters ->
+            Result.success(characters.map { it.toCharacterMin() })
         }.catch { thr -> emit(Result.failure(thr)) }
 
     override suspend fun saveCharacter(character: CharacterFull) =

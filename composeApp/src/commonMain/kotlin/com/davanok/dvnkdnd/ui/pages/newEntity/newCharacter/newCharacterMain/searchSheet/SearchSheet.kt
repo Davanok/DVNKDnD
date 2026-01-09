@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -52,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.ui.components.BaseEntityImage
 import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.sideSheet.ModalSideSheet
@@ -261,6 +263,12 @@ private fun ListElement(
         headlineContent = {
             Text(
                 text = entity.name
+            )
+        },
+        leadingContent = {
+            BaseEntityImage(
+                entity = entity.toDnDEntityMin(),
+                modifier = Modifier.size(48.dp)
             )
         },
         trailingContent = {

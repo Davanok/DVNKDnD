@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -33,8 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
-import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -46,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.domain.entities.character.CharacterSpell
 import com.davanok.dvnkdnd.domain.entities.character.SpellCastingValues
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
@@ -67,7 +63,6 @@ import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.attack_bonus_short
 import dvnkdnd.composeapp.generated.resources.concentration
 import dvnkdnd.composeapp.generated.resources.difficulty_class_short
-import dvnkdnd.composeapp.generated.resources.entity_image
 import dvnkdnd.composeapp.generated.resources.multiclass_spell_slot_type_name
 import dvnkdnd.composeapp.generated.resources.ritual
 import dvnkdnd.composeapp.generated.resources.search
@@ -79,7 +74,6 @@ import kotlin.uuid.Uuid
 
 
 private const val SMALL_SPELL_SLOTS_COUNT = 3
-private const val PREFERRED_IMAGE_WIDTH_DP = 300
 
 
 @Composable
@@ -340,7 +334,7 @@ private fun SpellCard(
         Column(modifier = Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 BaseEntityImage(
-                    entity = entity,
+                    entity = characterSpell.spell.toDnDEntityMin(),
                     onClick = { onOpenInfo(characterSpell.spell) },
                     modifier = Modifier.size(56.dp)
                 )

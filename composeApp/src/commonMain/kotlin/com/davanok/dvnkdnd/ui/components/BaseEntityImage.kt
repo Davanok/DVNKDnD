@@ -13,8 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
-import com.davanok.dvnkdnd.domain.entities.dndEntities.EntityBase
+import com.davanok.dvnkdnd.domain.entities.character.CharacterMin
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 
 @Composable
 private fun BaseEntityImageContent(
@@ -92,7 +92,7 @@ fun BaseEntityImage(
 
 @Composable
 fun BaseEntityImage(
-    entity: EntityBase,
+    entity: DnDEntityMin,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) = BaseEntityImage(
@@ -104,7 +104,7 @@ fun BaseEntityImage(
 
 @Composable
 fun BaseEntityImage(
-    entity: EntityBase,
+    entity: DnDEntityMin,
     modifier: Modifier = Modifier
 ) = BaseEntityImage(
     image = entity.image,
@@ -114,7 +114,7 @@ fun BaseEntityImage(
 
 @Composable
 fun BaseEntityImage(
-    character: CharacterBase,
+    character: CharacterMin,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) = BaseEntityImage(
@@ -126,7 +126,7 @@ fun BaseEntityImage(
 
 @Composable
 fun BaseEntityImage(
-    character: CharacterBase,
+    character: CharacterMin,
     modifier: Modifier = Modifier
 ) = BaseEntityImage(
     image = character.image,
