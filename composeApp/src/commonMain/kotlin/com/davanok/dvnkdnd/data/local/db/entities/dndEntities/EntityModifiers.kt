@@ -53,7 +53,7 @@ data class DbEntityModifier(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("group_id", index = true) val groupId: Uuid,
     val selectable: Boolean,
-    val target: String
+    val target: String?
 )
 
 

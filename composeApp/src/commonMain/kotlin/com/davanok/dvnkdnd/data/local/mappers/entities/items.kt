@@ -13,6 +13,9 @@ import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemEffect
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemProperty
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeapon
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamageCondition
+import com.davanok.dvnkdnd.data.local.db.model.DbWeaponDamageWithCondition
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DamageCondition
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.entities.dndEntities.ItemActivationRegain
 import com.davanok.dvnkdnd.domain.entities.dndEntities.ItemEffect
@@ -35,12 +38,25 @@ fun DbArmor.toArmorInfo() = ArmorInfo(
 fun ItemProperty.toDbItemProperty() = DbItemProperty(
     id = id,
     userId = userId,
+    type = type,
     name = name,
     description = description
 )
+
+fun DbWeaponDamageCondition.toDamageCondition() = DamageCondition(
+    type = type,
+    target = target
+)
+fun DamageCondition.toDbWeaponDamageCondition(damageId: Uuid) = DbWeaponDamageCondition(
+    id = damageId,
+    type = type,
+    target = target
+)
+
 fun DbItemProperty.toItemProperty() = ItemProperty(
     id = id,
     userId = userId,
+    type = type,
     name = name,
     description = description
 )
@@ -52,12 +68,13 @@ fun WeaponDamageInfo.toDbWeaponDamage(weaponId: Uuid) = DbWeaponDamage(
     dice = dice,
     modifier = modifier
 )
-fun DbWeaponDamage.toWeaponDamageInfo() = WeaponDamageInfo(
-    id = id,
-    damageType = damageType,
-    diceCount = diceCount,
-    dice = dice,
-    modifier = modifier
+fun DbWeaponDamageWithCondition.toWeaponDamageInfo() = WeaponDamageInfo(
+    id = damage.id,
+    damageType = damage.damageType,
+    diceCount = damage.diceCount,
+    dice = damage.dice,
+    modifier = damage.modifier,
+    condition = condition?.toDamageCondition()
 )
 
 fun Item.toDbItem(entityId: Uuid) = DbItem(

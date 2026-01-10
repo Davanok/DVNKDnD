@@ -12,15 +12,28 @@ import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemProperty
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemPropertyLink
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeapon
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamageCondition
+
+
+data class DbWeaponDamageWithCondition(
+    @Embedded
+    val damage: DbWeaponDamage,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val condition: DbWeaponDamageCondition?
+)
 
 data class DbFullWeapon(
     @Embedded
     val weapon: DbWeapon,
     @Relation(
+        entity = DbWeaponDamage::class,
         parentColumn = "id",
         entityColumn = "weapon_id"
     )
-    val damages: List<DbWeaponDamage>
+    val damages: List<DbWeaponDamageWithCondition>
 )
 
 data class DbJoinItemProperty(

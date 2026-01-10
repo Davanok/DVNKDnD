@@ -40,7 +40,7 @@ data class ModifiersGroup(
 data class DnDModifier(
     val id: Uuid,
     val selectable: Boolean,
-    val target: String
+    val target: String?
 ) {
-    inline fun <reified E: Enum<E>>targetAs(): E? = enumValueOfOrNull<E>(target)
+    inline fun <reified E: Enum<E>>targetAs(): E? = target?.let { enumValueOfOrNull<E>(it) }
 }

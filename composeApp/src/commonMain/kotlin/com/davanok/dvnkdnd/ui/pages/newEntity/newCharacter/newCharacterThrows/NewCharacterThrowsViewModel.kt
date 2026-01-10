@@ -175,7 +175,7 @@ class NewCharacterThrowsViewModel(
         baseValueGetter: (E) -> Int
     ): Map<E, Pair<List<ModifierExtendedInfo>, Int>> {
         // collect ModifierExtendedInfo grouped by target name
-        val raw = mutableMapOf<String, MutableList<ModifierExtendedInfo>>()
+        val raw = mutableMapOf<String?, MutableList<ModifierExtendedInfo>>()
 
         modifierGroups.fastForEach { group ->
             if (group.target != target) return@fastForEach
@@ -195,7 +195,9 @@ class NewCharacterThrowsViewModel(
         // convert keys that match enum names to the enum
         val modifiersByEnum = mutableMapOf<E, List<ModifierExtendedInfo>>()
         raw.forEach { (k, v) ->
-            enumValueOfOrNull<E>(k)?.let { modifiersByEnum[it] = v }
+            k
+                ?.let { enumValueOfOrNull<E>(it) }
+                ?.let { modifiersByEnum[it] = v }
         }
         // For each enum entry compute the final modifier value using calculateModifierSum.
         val groupsForTarget = modifierGroups.fastFilter { it.target == target }

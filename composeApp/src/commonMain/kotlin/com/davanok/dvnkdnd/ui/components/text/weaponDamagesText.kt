@@ -10,29 +10,48 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FullWeapon.buildDamagesString() = buildString {
-    val dices = mutableMapOf<Dices, Int>()
-    var appendValue = 0
-    damages.forEach { damage ->
-        var dicesCount = dices.getOrElse(damage.dice) { 0 }
-
-        dicesCount += damage.diceCount
-
-        dices[damage.dice] = dicesCount
-
-        appendValue += damage.modifier
-    }
-
     append(stringResource(Res.string.damage))
     append(": ")
-    dices.toList().sortedByDescending { it.first.ordinal }.forEach { (dice, count) ->
-        if (count > 1) {
-            append(count)
-            append(' ')
+
+    val groupedDamages = damages.groupBy { it.condition }
+
+    val sortedKeys = groupedDamages.keys.sortedBy { it != null }
+
+    sortedKeys.forEachIndexed { index, condition ->
+        val group = groupedDamages[condition] ?: return@forEachIndexed
+
+        if (index > 0) append(" + ")
+
+        val dices = mutableMapOf<Dices, Int>()
+        var appendValue = 0
+
+        group.forEach { damage ->
+            val dicesCount = dices.getOrElse(damage.dice) { 0 }
+            dices[damage.dice] = dicesCount + damage.diceCount
+            appendValue += damage.modifier
         }
-        append(stringResource(dice.stringRes))
-    }
-    if (appendValue != 0) {
-        append(' ')
-        append(appendValue.toSignedSpacedString())
+
+        dices.toList().sortedByDescending { it.first.ordinal }.forEachIndexed { i, (dice, count) ->
+            if (i > 0) append(' ')
+            if (count > 1) {
+                append(count)
+                append(' ')
+            }
+            append(stringResource(dice.stringRes))
+        }
+
+        if (appendValue != 0 || dices.isEmpty()) {
+            append(' ')
+            append(appendValue.toSignedSpacedString())
+        }
+
+        if (condition != null) {
+            append(" (")
+            append(stringResource(condition.type.stringRes))
+            if (condition.target != null) {
+                append(condition.target)
+            }
+            append(")")
+        }
     }
 }

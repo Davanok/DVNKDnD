@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DamageConditionType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import kotlin.uuid.Uuid
@@ -28,4 +29,13 @@ data class DbWeaponDamage(
     @ColumnInfo("dice_count") val diceCount: Int,
     val dice: Dices,
     val modifier: Int
+)
+@Entity(
+    tableName = "weapon_damage_conditions",
+    foreignKeys = [ForeignKey(DbWeaponDamage::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)]
+)
+data class DbWeaponDamageCondition(
+    @PrimaryKey val id: Uuid,
+    val type: DamageConditionType,
+    val target: String?
 )

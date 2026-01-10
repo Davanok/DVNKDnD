@@ -390,4 +390,11 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="legendary_rarity_item">Legendary item</string>
     <string name="artifact_rarity_item">Artifact</string>
     <string name="various_rarity_item">Varous rarity item</string>
+
+    <string name="damage_condition_critical_hit">Critical hit</string>
+    <string name="damage_condition_target_type">Target type</string>
+    <string name="damage_condition_versatile">Versatile</string>
+    <string name="damage_condition_sneak_attack">Sneak attack</string>
+    <string name="damage_condition_off_hand">Off-hand</string>
+    <string name="damage_condition_specific_property">Specific property</string>
 </resources>

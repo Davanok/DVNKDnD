@@ -26,8 +26,8 @@ data class CustomModifier(
     val selectionLimit: Int,
     val priority: Int,
 
-    val target: String,
+    val target: String?,
     val value: Double
 ) {
-    inline fun <reified E: Enum<E>>targetAs(): E? = enumValueOfOrNull<E>(target)
+    inline fun <reified E: Enum<E>>targetAs(): E? = target?.let { enumValueOfOrNull<E>(it) }
 }

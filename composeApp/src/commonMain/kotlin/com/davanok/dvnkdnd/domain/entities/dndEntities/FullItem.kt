@@ -1,8 +1,10 @@
 package com.davanok.dvnkdnd.domain.entities.dndEntities
 
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DamageConditionType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DamageTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemEffectScope
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemPropertyType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemsRarity
 import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlinx.serialization.SerialName
@@ -91,6 +93,7 @@ data class ItemProperty(
     val id: Uuid,
     @SerialName("user_id")
     val userId: Uuid?,
+    val type: ItemPropertyType,
     val name: String,
     val description: String,
 )
@@ -109,5 +112,12 @@ data class WeaponDamageInfo(
     @SerialName("dice_count")
     val diceCount: Int,
     val dice: Dices,
-    val modifier: Int
+    val modifier: Int,
+
+    val condition: DamageCondition?
+)
+@Serializable
+data class DamageCondition(
+    val type: DamageConditionType,
+    val target: String?
 )

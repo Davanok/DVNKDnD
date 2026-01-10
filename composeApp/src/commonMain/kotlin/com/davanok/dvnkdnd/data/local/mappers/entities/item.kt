@@ -3,10 +3,10 @@ package com.davanok.dvnkdnd.data.local.mappers.entities
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationCastsSpell
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationRegain
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemEffect
-import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
 import com.davanok.dvnkdnd.data.local.db.model.DbFullItem
 import com.davanok.dvnkdnd.data.local.db.model.DbFullItemActivation
 import com.davanok.dvnkdnd.data.local.db.model.DbFullWeapon
+import com.davanok.dvnkdnd.data.local.db.model.DbWeaponDamageWithCondition
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullWeapon
@@ -15,7 +15,7 @@ import kotlin.uuid.Uuid
 
 fun DbFullWeapon.toFullWeapon() = FullWeapon(
     atkBonus = weapon.atkBonus,
-    damages = damages.map(DbWeaponDamage::toWeaponDamageInfo)
+    damages = damages.map(DbWeaponDamageWithCondition::toWeaponDamageInfo)
 )
 fun DbFullItemActivation.toFullItemActivation() = FullItemActivation(
     id = activation.id,

@@ -8,6 +8,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpell
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbState
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemEffectScope
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemPropertyType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ItemsRarity
 import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlin.uuid.Uuid
@@ -108,6 +109,7 @@ data class DbItemPropertyLink(
 data class DbItemProperty(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("user_id") val userId: Uuid?,
+    val type: ItemPropertyType,
     val name: String,
     val description: String,
 )

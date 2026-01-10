@@ -62,6 +62,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivation
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationCastsSpell
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationRegain
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemEffect
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamageCondition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -114,6 +115,7 @@ import kotlinx.coroutines.IO
         DbSpellSlotType::class,
         DbWeapon::class,
         DbWeaponDamage::class,
+        DbWeaponDamageCondition::class,
         DbItemEffect::class,
         DbItemActivation::class,
         DbItemActivationRegain::class,

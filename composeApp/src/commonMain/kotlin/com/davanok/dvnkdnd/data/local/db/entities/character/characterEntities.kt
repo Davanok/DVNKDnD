@@ -160,7 +160,7 @@ data class DbCharacterCustomModifier(
     @ColumnInfo("selection_limit") val selectionLimit: Int,
     val priority: Int,
 
-    val target: String,
+    val target: String?,
     val value: Double
 )
 

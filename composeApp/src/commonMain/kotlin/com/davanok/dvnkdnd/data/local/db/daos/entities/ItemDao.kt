@@ -14,6 +14,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemProperty
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemPropertyLink
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeapon
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamageCondition
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullWeapon
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbArmor
@@ -25,8 +26,10 @@ import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItemEffect
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbItemProperty
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbWeapon
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbWeaponDamage
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbWeaponDamageCondition
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.entities.dndEntities.ItemProperty
+import com.davanok.dvnkdnd.domain.entities.dndEntities.WeaponDamageInfo
 import kotlin.uuid.Uuid
 
 @Dao
@@ -47,7 +50,21 @@ interface ItemDao {
     suspend fun insertWeapon(weapon: DbWeapon)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWeaponDamages(damages: List<DbWeaponDamage>)
+    suspend fun insertWeaponDamageCondition(condition: DbWeaponDamageCondition)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWeaponDamage(damages: DbWeaponDamage)
+
+    @Transaction
+    suspend fun insertWeaponDamages(weaponId: Uuid, damagesWithCondition: List<WeaponDamageInfo>) {
+        damagesWithCondition.forEach { damage ->
+            val damageId = damage.id
+            insertWeaponDamage(damage.toDbWeaponDamage(weaponId))
+            damage.condition
+                ?.toDbWeaponDamageCondition(damageId)
+                ?.let { insertWeaponDamageCondition(it) }
+        }
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItemEffects(effects: List<DbItemEffect>)
@@ -97,6 +114,6 @@ interface ItemDao {
     @Transaction
     suspend fun insertFullWeapon(entityId: Uuid, weapon: FullWeapon) {
         insertWeapon(weapon.toDbWeapon(entityId))
-        insertWeaponDamages(weapon.damages.map { it.toDbWeaponDamage(entityId) })
+        insertWeaponDamages(entityId, weapon.damages)
     }
 }
