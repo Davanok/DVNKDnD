@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -36,13 +37,18 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterState
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.ui.components.text.MeasurementConverter
 import com.davanok.dvnkdnd.ui.components.toSignedString
+import com.davanok.dvnkdnd.ui.providers.LocalMeasurementSystem
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_character_state
 import dvnkdnd.composeapp.generated.resources.character_armor_class
+import dvnkdnd.composeapp.generated.resources.character_health
 import dvnkdnd.composeapp.generated.resources.character_initiative
+import dvnkdnd.composeapp.generated.resources.character_speed
 import dvnkdnd.composeapp.generated.resources.no_character_states
 import dvnkdnd.composeapp.generated.resources.outline_bolt
+import dvnkdnd.composeapp.generated.resources.outline_health_cross
 import dvnkdnd.composeapp.generated.resources.outline_shield
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -82,6 +88,7 @@ fun CharacterMainValuesWidget(
     onInitiativeClick: () -> Unit,
     onArmorClassClick: () -> Unit,
     onHealthClick: () -> Unit,
+    onSpeedClick: () -> Unit,
     onStateClick: (CharacterState) -> Unit,
     onAddStateClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -97,7 +104,8 @@ fun CharacterMainValuesWidget(
             ) {
                 InitiativeWidget(values.initiative, onClick = onInitiativeClick)
                 ArmorClassWidget(values.armorClass, onClick = onArmorClassClick)
-                CharacterHealthWidget(values.health, onClick = onHealthClick)
+                HealthWidget(values.health, onClick = onHealthClick)
+                SpeedWidget(values.speed, onClick = onSpeedClick)
             }
 
             CharacterStatesWidget(
@@ -148,39 +156,64 @@ private fun ArmorClassWidget(
 }
 
 @Composable
-private fun CharacterHealthWidget(
+private fun HealthWidget(
     health: CharacterHealth,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentHealth = health.current + health.temp
     val healthPercent =
-        if (currentHealth == 0) 0f else health.max / currentHealth.toFloat().coerceIn(0f, 1f)
+        if (currentHealth == 0) 0f else (health.max / currentHealth.toFloat()).coerceIn(0f, 1f)
 
-    AssistChip(
+    SuggestionChip(
         modifier = modifier,
         onClick = onClick,
         label = {
-            Text(
-                text = buildString {
-                    append(currentHealth)
-                    append('/')
-                    append(health.max)
-                }
+            Text(text = "$currentHealth/${health.max}")
+        },
+        icon = {
+            Icon(
+                painter = painterResource(Res.drawable.outline_health_cross),
+                contentDescription = stringResource(Res.string.character_health)
             )
         },
-        border = AssistChipDefaults.assistChipBorder(enabled = true, borderColor = when {
-            healthPercent < 0.5 -> Color(
-                red = 1f,
-                green = healthPercent - 0.5f,
-                blue = 0f
+        border = AssistChipDefaults.assistChipBorder(
+            enabled = true,
+            borderColor = when {
+                healthPercent < 0.5 -> Color(
+                    red = 1f,
+                    green = healthPercent - 0.5f,
+                    blue = 0f
+                )
+                else -> Color(
+                    1f - (healthPercent - 0.5f) / 0.5f,
+                    green = 1f,
+                    blue = 0f
+                )
+            }
+        )
+    )
+}
+
+@Composable
+private fun SpeedWidget(
+    speed: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val speed = MeasurementConverter.convertLength(speed, LocalMeasurementSystem.current.length)
+    SuggestionChip(
+        modifier = modifier,
+        onClick = onClick,
+        label = {
+            Text(text = speed)
+        },
+        icon = {
+            Icon(
+                imageVector = Icons.Default.Speed,
+                contentDescription = stringResource(Res.string.character_speed)
             )
-            else -> Color(
-                1f - (healthPercent - 0.5f) / 0.5f,
-                green = 1f,
-                blue = 0f
-            )
-        })
+        }
     )
 }
 

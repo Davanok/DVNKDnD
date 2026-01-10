@@ -174,7 +174,8 @@ data class DbCharacterOptionalValues( // if value is null: calculate
     @PrimaryKey val id: Uuid,
     @ColumnInfo("proficiency_bonus") val proficiencyBonus: Int?,
     val initiative: Int?,
-    @ColumnInfo("armor_class") val armorClass: Int?
+    @ColumnInfo("armor_class") val armorClass: Int?,
+    val speed: Int?
 )
 
 @Entity(

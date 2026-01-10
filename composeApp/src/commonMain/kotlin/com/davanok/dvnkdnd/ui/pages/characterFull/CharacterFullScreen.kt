@@ -36,8 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
-import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
-import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -60,7 +58,6 @@ import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import kotlin.uuid.Uuid
 
 @Composable
 fun CharacterFullScreen(
@@ -90,10 +87,7 @@ fun CharacterFullScreen(
                     navigateBack = navigateBack,
                     navigateToEntityInfo = navigateToEntityInfo,
                     character = character,
-                    updateHealth = viewModel::updateHealth,
-                    onUpdateOrNewNote = viewModel::updateOrNewNote,
-                    onDeleteNote = viewModel::deleteNote,
-                    setUsedSpellsCount = viewModel::setUsedSpellsCount
+                    action = viewModel::action
                 )
         }
     }
@@ -105,10 +99,7 @@ private fun Content(
     navigateBack: () -> Unit,
     navigateToEntityInfo: (DnDEntityMin) -> Unit,
     character: CharacterFull,
-    updateHealth: (CharacterHealth) -> Unit,
-    onUpdateOrNewNote: (CharacterNote) -> Unit,
-    onDeleteNote: (CharacterNote) -> Unit,
-    setUsedSpellsCount: (typeId: Uuid?, lvl: Int, count: Int) -> Unit,
+    action: (CharacterFullScreenContract) -> Unit
 ) {
     val adaptiveContentState = rememberAdaptiveContentState<CharacterFullUiState.Dialog> { entry ->
         when (entry) {
@@ -117,7 +108,7 @@ private fun Content(
                 content = {
                     CharacterHealthDialogContent(
                         baseHealth = character.health,
-                        updateHealth = updateHealth,
+                        updateHealth = { action(CharacterFullScreenContract.SetHealth(it)) },
                         healthModifiers = character.appliedModifiers
                             .getOrElse(DnDModifierTargetType.HEALTH, ::emptyList)
                     )
@@ -190,6 +181,7 @@ private fun Content(
                         onInitiativeClick = { TODO() },
                         onArmorClassClick = { TODO() },
                         onHealthClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.HEALTH) },
+                        onSpeedClick = { TODO() },
                         onStateClick = { TODO() },
                         onAddStateClick = { TODO() }
                     )
@@ -198,9 +190,7 @@ private fun Content(
                         character = character,
                         skipAttributes = false,
                         onEntityClick = navigateToEntityInfo,
-                        onUpdateOrNewNote = onUpdateOrNewNote,
-                        onDeleteNote = onDeleteNote,
-                        setUsedSpellsCount = setUsedSpellsCount
+                        action = action
                     )
                 }
             },
@@ -216,6 +206,7 @@ private fun Content(
                             onInitiativeClick = { TODO() },
                             onArmorClassClick = { TODO() },
                             onHealthClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.HEALTH) },
+                            onSpeedClick = { TODO() },
                             onStateClick = { TODO() },
                             onAddStateClick = { TODO() },
                             modifier = Modifier.fillMaxWidth()
@@ -237,9 +228,7 @@ private fun Content(
                         character = character,
                         skipAttributes = true,
                         onEntityClick = navigateToEntityInfo,
-                        onUpdateOrNewNote = onUpdateOrNewNote,
-                        onDeleteNote = onDeleteNote,
-                        setUsedSpellsCount = setUsedSpellsCount
+                        action = action
                     )
                 }
             )
@@ -271,9 +260,7 @@ private fun CharacterPages(
     character: CharacterFull,
     skipAttributes: Boolean,
     onEntityClick: (DnDEntityMin) -> Unit,
-    onUpdateOrNewNote: (CharacterNote) -> Unit,
-    onDeleteNote: (CharacterNote) -> Unit,
-    setUsedSpellsCount: (typeId: Uuid?, lvl: Int, count: Int) -> Unit,
+    action: (CharacterFullScreenContract) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pages = remember(skipAttributes) {
@@ -311,6 +298,12 @@ private fun CharacterPages(
                     items = character.items,
                     usedActivations = character.usedItemActivations,
                     onClick = { onEntityClick(it.toDnDEntityMin()) },
+                    onUpdateCharacterItem = {
+                        action(CharacterFullScreenContract.UpdateCharacterItem(it))
+                    },
+                    onActivateItem = { item, activation ->
+                        action(CharacterFullScreenContract.ActivateCharacterItem(item, activation))
+                    },
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.SPELLS -> CharacterSpellsScreen(
@@ -319,13 +312,17 @@ private fun CharacterPages(
                     availableSpellSlots = character.spellSlots,
                     usedSpells = character.usedSpells,
                     onSpellClick = { onEntityClick(it.toDnDEntityMin()) },
-                    setUsedSpellsCount = setUsedSpellsCount,
+                    setUsedSpellsCount = { typeId, lvl, count ->
+                        action(CharacterFullScreenContract.SetUsedSpellsCount(typeId, lvl, count))
+                                         },
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.SPELL_SLOTS -> CharacterSpellSlotsScreen(
                     availableSpellSlots = character.spellSlots,
                     usedSpells = character.usedSpells,
-                    setUsedSpellsCount = setUsedSpellsCount,
+                    setUsedSpellsCount = { typeId, lvl, count ->
+                        action(CharacterFullScreenContract.SetUsedSpellsCount(typeId, lvl, count))
+                    },
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.STATES -> CharacterStatesScreen(
@@ -333,8 +330,12 @@ private fun CharacterPages(
                 )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(
                     notes = character.notes,
-                    onUpdateOrNewNote = onUpdateOrNewNote,
-                    onDeleteNote = onDeleteNote,
+                    onUpdateOrNewNote = {
+                        action(CharacterFullScreenContract.UpdateOrNewNote(it))
+                    },
+                    onDeleteNote = {
+                        action(CharacterFullScreenContract.DeleteNote(it))
+                    },
                     modifier = Modifier.fillMaxSize()
                 )
             }

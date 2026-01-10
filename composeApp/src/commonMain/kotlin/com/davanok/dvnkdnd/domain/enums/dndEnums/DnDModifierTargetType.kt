@@ -6,5 +6,6 @@ enum class DnDModifierTargetType {
     SKILL,
     HEALTH,
     INITIATIVE,
-    ARMOR_CLASS
+    ARMOR_CLASS,
+    SPEED
 }

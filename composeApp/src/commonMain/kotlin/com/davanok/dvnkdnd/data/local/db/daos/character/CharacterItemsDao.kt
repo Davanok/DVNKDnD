@@ -13,4 +13,7 @@ interface CharacterItemsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterItemLinks(items: List<DbCharacterItemLink>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun setCharacterItemLink(item: DbCharacterItemLink)
 }

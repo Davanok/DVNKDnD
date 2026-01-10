@@ -127,7 +127,8 @@ data class CharacterModifiedValues(
     val skillModifiers: SkillsGroup,
     val health: CharacterHealth,
     val initiative: Int,
-    val armorClass: Int
+    val armorClass: Int,
+    val speed: Int
 )
 
 @Serializable

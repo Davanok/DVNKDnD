@@ -7,11 +7,13 @@ import kotlin.uuid.Uuid
 fun DbCharacterOptionalValues.toCharacterOptionalValues() = CharacterOptionalValues(
     proficiencyBonus = proficiencyBonus,
     initiative = initiative,
-    armorClass = armorClass
+    armorClass = armorClass,
+    speed = speed
 )
 fun CharacterOptionalValues.toDbCharacterOptionalValues(characterId: Uuid) = DbCharacterOptionalValues(
     id = characterId,
     proficiencyBonus = proficiencyBonus,
     initiative = initiative,
-    armorClass = armorClass
+    armorClass = armorClass,
+    speed = speed
 )

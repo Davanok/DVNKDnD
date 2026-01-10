@@ -7,4 +7,5 @@ data class CharacterOptionalValues(
     val proficiencyBonus: Int? = null,
     val initiative: Int? = null,
     val armorClass: Int? = null,
+    val speed: Int? = null
 )

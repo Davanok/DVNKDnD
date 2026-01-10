@@ -290,6 +290,8 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="no_such_character_error">No such character</string>
     <string name="character_armor_class">Armor class</string>
     <string name="character_initiative">Initiative</string>
+    <string name="character_health">Health</string>
+    <string name="character_speed">Speed</string>
     <string name="character_full_attributes_page_title">Attributes</string>
     <string name="character_full_attacks_page_title">Attacks</string>
     <string name="character_full_items_page_title">Items</string>

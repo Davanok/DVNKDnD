@@ -10,13 +10,31 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toSkillsGroup
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierArmorClassTarget
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierHealthTarget
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierInitiativeTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
 
 
+private inline fun processGroups(
+    modifierGroups: List<ModifiersGroup>,
+    baseValue: Int,
+    groupValueProvider: (ModifiersGroup) -> Double
+): Int {
+    var current = baseValue
+    modifierGroups.forEach { group ->
+        val value = groupValueProvider(group)
+        group.modifiers.forEach modifier@{ modifier ->
+            if (group.minBaseValue?.let { current < it } == true) return@modifier
+            if (group.maxBaseValue?.let { current > it } == true) return@modifier
+
+            val result = applyOperation(current, value, group.operation)
+
+            current = result.coerceIn(group.clampMin, group.clampMax)
+        }
+    }
+    return current
+}
 
 
 private inline fun <reified K : Enum<K>> processGroups(
@@ -49,7 +67,8 @@ private inline fun <reified T : Enum<T>> applyCustomModifiers(
         val target = modifier.targetAs<T>() ?: return@forEach
         val current = values[target] ?: return@forEach
 
-        val value = valueSourcesProvider(modifier.valueSource, modifier.valueSourceTarget, modifier.value)
+        val value =
+            valueSourcesProvider(modifier.valueSource, modifier.valueSourceTarget, modifier.value)
         val result = applyOperation(
             base = current,
             value = value,
@@ -65,15 +84,16 @@ fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
     val targetGroups = entities
         .flatMap { it.modifiersGroups }
         .groupBy { it.target }
-        .mapValues { (_, value) -> value.sortedBy { it.priority } }
+        .mapValues { (_, value) -> value.filter { it.id in selectedModifiers }.sortedBy { it.priority } }
 
     val customModifiersGrouped = customModifiers
         .groupBy { it.targetGlobal }
-        .mapValues { (_, value) -> value.sortedBy { it.targetGlobal } }
+        .mapValues { (_, value) -> value.sortedBy { it.priority } }
 
-    val customModifierValueSourceProvider: (DnDModifierValueSource, String?, Double) -> Double = { source, target, value ->
-        resolveValueSource(source, target, null, value)
-    }
+    val customModifierValueSourceProvider: (DnDModifierValueSource, String?, Double) -> Double =
+        { source, target, value ->
+            resolveValueSource(source, target, null, value)
+        }
 
     val attributeValues = attributes.toMap().toMutableMap()
     targetGroups[DnDModifierTargetType.ATTRIBUTE]?.let {
@@ -123,10 +143,10 @@ fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
     }
     val modifiedSkills = skillValues.toSkillsGroup()
 
-    val currentMaxHealth = health.max + calculateModifier(attributes[Attributes.CONSTITUTION])
+    val defaultMaxHealth = health.max + calculateModifier(attributes[Attributes.CONSTITUTION])
     val healthValues = mutableMapOf(
         DnDModifierHealthTarget.CURRENT to health.current,
-        DnDModifierHealthTarget.MAX to currentMaxHealth
+        DnDModifierHealthTarget.MAX to defaultMaxHealth
     )
 
     targetGroups[DnDModifierTargetType.HEALTH]?.let {
@@ -148,30 +168,35 @@ fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
         attributes[Attributes.DEXTERITY],
         items.firstOrNull { it.equipped && it.item.item?.armor != null }?.item?.item?.armor
     )
-    val armorClassValues = mutableMapOf(
-        DnDModifierArmorClassTarget.ARMOR_CLASS to defaultArmorClass
-    )
-    targetGroups[DnDModifierTargetType.ARMOR_CLASS]?.let {
+    val armorClass = targetGroups[DnDModifierTargetType.ARMOR_CLASS]?.let {
         processGroups(
             it,
-            armorClassValues,
+            defaultArmorClass,
             ::resolveGroupValue
         )
-    }
-    val armorClass = armorClassValues[DnDModifierArmorClassTarget.ARMOR_CLASS] ?: 0
+    } ?: defaultArmorClass
 
-    val defaultInitiative = optionalValues.initiative ?: calculateModifier(attributes[Attributes.DEXTERITY])
-    val initiativeValues = mutableMapOf(
-        DnDModifierInitiativeTarget.INITIATIVE to defaultInitiative
-    )
-    targetGroups[DnDModifierTargetType.INITIATIVE]?.let {
+    val defaultInitiative =
+        optionalValues.initiative ?: calculateModifier(attributes[Attributes.DEXTERITY])
+    val initiative = targetGroups[DnDModifierTargetType.INITIATIVE]?.let {
         processGroups(
             it,
-            initiativeValues,
+            defaultInitiative,
             ::resolveGroupValue
         )
-    }
-    val initiative = initiativeValues[DnDModifierInitiativeTarget.INITIATIVE] ?: 0
+    } ?: defaultInitiative
+
+    val defaultSpeed =
+        optionalValues.speed ?: mainEntities
+            .filter { it.entity.entity.type == DnDEntityTypes.RACE }
+            .maxOf { it.entity.race?.speed ?: 0 }
+    val speed = targetGroups[DnDModifierTargetType.SPEED]?.let {
+        processGroups(
+            it,
+            defaultSpeed,
+            ::resolveGroupValue
+        )
+    } ?: defaultSpeed
 
     return CharacterModifiedValues(
         attributes = modifiedAttributes,
@@ -179,6 +204,7 @@ fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
         skillModifiers = modifiedSkills,
         health = modifiedHealth,
         armorClass = armorClass,
-        initiative = initiative
+        initiative = initiative,
+        speed = speed
     )
 }

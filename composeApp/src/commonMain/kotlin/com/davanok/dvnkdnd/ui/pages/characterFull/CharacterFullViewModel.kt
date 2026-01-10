@@ -7,6 +7,7 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.core.utils.getByKeyPredicate
+import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
@@ -94,6 +95,19 @@ class CharacterFullViewModel(
             typeId = typeId,
             usedSpells = newArray
         )
+    }
+
+    fun updateCharacterItem(item: CharacterItem) = viewModelScope.launch {
+        repository.setCharacterItem(characterId, item)
+    }
+
+    fun action(action: CharacterFullScreenContract) = when (action) {
+        is CharacterFullScreenContract.DeleteNote -> deleteNote(action.note)
+        is CharacterFullScreenContract.SetHealth -> updateHealth(action.health)
+        is CharacterFullScreenContract.SetUsedSpellsCount -> setUsedSpellsCount(action.typeId, action.level, action.count)
+        is CharacterFullScreenContract.UpdateCharacterItem -> updateCharacterItem(action.item)
+        is CharacterFullScreenContract.UpdateOrNewNote -> updateOrNewNote(action.note)
+        is CharacterFullScreenContract.ActivateCharacterItem -> { TODO() }
     }
 }
 

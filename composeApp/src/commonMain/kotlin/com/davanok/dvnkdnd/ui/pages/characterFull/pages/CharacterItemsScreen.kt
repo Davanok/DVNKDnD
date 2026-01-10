@@ -160,6 +160,8 @@ fun CharacterItemsScreen(
     items: List<CharacterItem>,
     usedActivations: Map<Uuid, Int>,
     onClick: (DnDFullEntity) -> Unit,
+    onUpdateCharacterItem: (CharacterItem) -> Unit,
+    onActivateItem: (CharacterItem, FullItemActivation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var characterItemInfoDialog: CharacterItem? by remember { mutableStateOf(null) }
@@ -202,22 +204,22 @@ fun CharacterItemsScreen(
                     characterItem = item,
                     onClick = { characterItemInfoDialog = item },
                     onOpenInfo = { onClick(item.item) },
-                    setItemEquipped = { TODO() },
-                    setItemAttuned = { TODO() },
+                    setItemEquipped = { onUpdateCharacterItem(item.copy(equipped = it)) },
+                    setItemAttuned = { onUpdateCharacterItem(item.copy(attuned = it)) },
                 )
             }
         }
     }
 
-    characterItemInfoDialog?.let {
+    characterItemInfoDialog?.let { item ->
         ItemShortInfoDialog(
-            characterItem = it,
+            characterItem = item,
             usedActivations = usedActivations,
             onDismissRequest = { characterItemInfoDialog = null },
-            setItemEquipped = { TODO() },
-            setItemAttuned = { TODO() },
-            onCountChange = { TODO() },
-            activate = { TODO() },
+            setItemEquipped = { onUpdateCharacterItem(item.copy(equipped = it)) },
+            setItemAttuned = { onUpdateCharacterItem(item.copy(attuned = it)) },
+            onCountChange = { onUpdateCharacterItem(item.copy(count = it)) },
+            activate = { onActivateItem(item, it) },
         )
     }
 }
