@@ -51,45 +51,54 @@ Provide an automatic, cross-platform DnD character manager for easier gameplay a
 
 ```
 DVNKDnD/
-├── composeApp/                     # Shared Compose Multiplatform module
+├── composeApp/                 # Main shared module (UI & Logic)
+│   ├── build.gradle.kts
 │   └── src/
-│       ├── commonMain/             # Shared UI + business logic (Compose, ViewModels, repositories)
-│       │   ├── kotlin/com/davanok/dvnkdnd/
-│       │   │   ├── data/           # DI, implementations, repositories
-│       │   │   ├── database/       # SQL / DAO / entity mapping
-│       │   │   ├── model/          # DnD data models and enums
-│       │   │   ├── ui/             # Compose UI (components, pages, navigation)
-│       │   │   └── util/           # Utilities and helpers
-│       │   └── composeResources/   # Shared resources (drawables, values)
-│       ├── androidMain/            # Android-specific code and resources
-│       │   ├── kotlin/com/davanok/dvnkdnd/
-│       │   │   ├── data/di/        # Android DI setup
-│       │   │   ├── data/platform/  # Android platform code
-│       │   │   └── ui/components/  # Android-specific UI
-│       │   └── res/                # XML resources (drawable, mipmap, values, etc.)
-│       ├── desktopMain/            # Desktop (JVM) target
+│       ├── commonMain/         # 🧠 CORE SHARED LOGIC & UI
+│       │   ├── composeResources/ # Shared assets (Drawables, Strings, Fonts)
 │       │   └── kotlin/com/davanok/dvnkdnd/
-│       │       ├── data/           # Desktop DI + platform integrations
-│       │       └── ui/             # Desktop Compose components
-│       └── iosMain/                # iOS target (Kotlin/Native)
-│           └── kotlin/com/davanok/dvnkdnd/
-│               ├── data/           # iOS DI + platform integrations
-│               └── ui/             # iOS Compose components
+│       │       ├── App.kt      # Main Entry Point / Root Composable
+│       │       ├── core/       # Utilities, Converters, Ext functions
+│       │       ├── data/       # 💾 DATA LAYER (Implementations)
+│       │       │   ├── db/     # Database definitions & DAOs (Room)
+│       │       │   ├── files/  # File system handling
+│       │       │   ├── mappers/# DTO to Domain mappers
+│       │       │   └── repositories/ # Repository Implementations
+│       │       ├── domain/     # 📐 DOMAIN LAYER (Business Logic)
+│       │       │   ├── dnd/    # DnD specific logic (Rules, Utils)
+│       │       │   ├── entities/ # Core Models (Character, Spells, Items)
+│       │       │   ├── enums/  # Game constants (Dice, DamageTypes, etc.)
+│       │       │   ├── repositories/ # Interfaces
+│       │       │   └── usecases/ # Interactors
+│       │       └── ui/         # 🎨 PRESENTATION LAYER (Compose)
+│       │           ├── components/ # Reusable UI widgets
+│       │           │   ├── adaptive/   # Responsive/Window layout logic
+│       │           │   ├── diceRoller/ # 3D Dice rendering logic
+│       │           │   └── ...
+│       │           ├── navigation/ # Navigation graph & Routes
+│       │           ├── pages/      # Feature Screens
+│       │           │   ├── characterFull/ # Main Character Sheet
+│       │           │   ├── charactersList/
+│       │           │   └── newEntity/     # Creation Wizards
+│       │           ├── theme/      # Colors & Typography
+│       │           └── viewmodels/ # Shared ViewModels
+│       │
+│       ├── androidMain/        # 🤖 Android Specific Implementations
+│       │   ├── AndroidManifest.xml
+│       │   └── .../platform/   # Android platform bindings
+│       │
+│       ├── desktopMain/        # 🖥️ Desktop (JVM) Specific Implementations
+│       │   └── .../platform/   # Desktop platform bindings
+│       │
+│       └── iosMain/            # 🍎 iOS (Kotlin) Specific Implementations
+│           └── .../platform/   # iOS platform bindings
 │
-├── iosApp/                         # iOS entry point (Xcode project)
-│   ├── iosApp.xcodeproj/
+├── iosApp/                     # Native iOS Shell (SwiftUI)
 │   └── iosApp/
-│       ├── Assets.xcassets/        # iOS assets & icons
-│       ├── Configuration/          # iOS build configuration
-│       └── Preview Content/        # Xcode previews
+│       └── iOSApp.swift        # iOS Entry point calling Shared UI
 │
-├── gradle/                         # Gradle configuration
-│   └── wrapper/
-├── screenshots/                    # App screenshots for README
-├── build.gradle.kts
-├── settings.gradle.kts
-├── gradlew / gradlew.bat
-└── README.md
+├── gradle/                     # Build configurations & Version Catalog
+└── settings.gradle.kts
 ```
 
 ---
