@@ -326,8 +326,10 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="no_spell_data">No spell data</string>
     <string name="entity_image">Entity image</string>
     <string name="search">Search</string>
-    <string name="difficulty_class_short">DC: %1$s</string>
-    <string name="attack_bonus_short">ATK Bonus: %1$s</string>
+    <string name="difficulty_class_short">DC:</string>
+    <string name="attack_bonus_short">ATK Bonus:</string>
+    <string name="difficulty_class_short_value">DC:</string>
+    <string name="attack_bonus_short_value">ATK Bonus:</string>
     <!--states screen-->
     <string name="no_character_states">No states</string>
     <string name="add_character_state">Add state</string>
@@ -357,6 +359,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="item_count">Item count</string>
     <string name="decrement_count">Decrement count</string>
     <string name="increment_count">Increment count</string>
+    <string name="if_value">if</string>
 
     <!--measurement system-->
     <string name="meter_short">%1$s m</string>

@@ -289,8 +289,7 @@ private fun CharacterPages(
                     onSkillClick = { TODO() }
                 )
                 CharacterFullUiState.Page.ATTACKS -> CharacterAttacksScreen(
-                    items = character.items,
-                    onClick = { onEntityClick(it.toDnDEntityMin()) },
+                    attacks = character.attacks,
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.ITEMS -> CharacterItemsScreen(

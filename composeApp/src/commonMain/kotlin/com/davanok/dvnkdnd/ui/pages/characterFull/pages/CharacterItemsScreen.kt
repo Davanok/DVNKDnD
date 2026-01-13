@@ -72,6 +72,7 @@ import com.davanok.dvnkdnd.ui.components.rememberCollapsingNestedScrollConnectio
 import com.davanok.dvnkdnd.ui.components.text.MeasurementConverter
 import com.davanok.dvnkdnd.ui.components.text.buildAnnotatedString
 import com.davanok.dvnkdnd.ui.components.text.buildDamagesString
+import com.davanok.dvnkdnd.ui.components.text.buildName
 import com.davanok.dvnkdnd.ui.components.text.buildString
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import com.davanok.dvnkdnd.ui.pages.characterFull.components.ImagesCarousel
@@ -79,7 +80,7 @@ import com.davanok.dvnkdnd.ui.providers.LocalMeasurementSystem
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.active_items_filter_name
-import dvnkdnd.composeapp.generated.resources.attack_bonus_short
+import dvnkdnd.composeapp.generated.resources.attack_bonus_short_value
 import dvnkdnd.composeapp.generated.resources.attuned
 import dvnkdnd.composeapp.generated.resources.attuned_items_filter_name
 import dvnkdnd.composeapp.generated.resources.cost
@@ -338,7 +339,7 @@ private fun CharacterItemCard(
                             if (weapon.atkBonus != 0)
                                 Text(
                                     text = stringResource(
-                                        Res.string.attack_bonus_short,
+                                        Res.string.attack_bonus_short_value,
                                         weapon.atkBonus.toSignedString()
                                     ),
                                     style = MaterialTheme.typography.bodyMedium,
@@ -436,13 +437,14 @@ private fun ItemPropertiesRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         properties.forEach { property ->
+            val propertyName = property.buildName()
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
                     TooltipAnchorPosition.Above
                 ),
                 tooltip = {
                     RichTooltip(
-                        title = { Text(text = property.name) }
+                        title = { Text(text = propertyName) }
                     ) {
                         Text(text = property.description)
                     }
@@ -453,7 +455,7 @@ private fun ItemPropertiesRow(
                     onClick = { /* noop */ },
                     label = {
                         Text(
-                            text = property.name,
+                            text = propertyName,
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
@@ -743,7 +745,7 @@ private fun ItemShortInfoCard(
                         if (weapon.atkBonus != 0)
                             Text(
                                 text = stringResource(
-                                    Res.string.attack_bonus_short,
+                                    Res.string.attack_bonus_short_value,
                                     weapon.atkBonus.toSignedString()
                                 ),
                                 style = MaterialTheme.typography.bodyMedium,

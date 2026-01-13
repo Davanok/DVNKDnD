@@ -2,56 +2,65 @@ package com.davanok.dvnkdnd.ui.components.text
 
 import androidx.compose.runtime.Composable
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullWeapon
+import com.davanok.dvnkdnd.domain.entities.dndEntities.WeaponDamageInfo
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.ui.components.toSignedSpacedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.damage
+import dvnkdnd.composeapp.generated.resources.if_value
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun FullWeapon.buildDamagesString() = buildString {
+fun buildDamagesString(damages: List<WeaponDamageInfo>) = buildString {
     append(stringResource(Res.string.damage))
     append(": ")
+    val groupedByType = damages.groupBy { it.damageType }.toList()
 
-    val groupedDamages = damages.groupBy { it.condition }
+    groupedByType.forEachIndexed { typeIndex, (_, typeGroup) ->
+        if (typeIndex > 0) append(" + ")
+        val groupedByCondition = typeGroup
+            .groupBy { it.condition }
+            .toList()
+            .sortedBy { it.first != null }
 
-    val sortedKeys = groupedDamages.keys.sortedBy { it != null }
+        groupedByCondition.forEachIndexed { condIndex, (condition, damageEntries) ->
+            if (condIndex > 0) append(" + ")
+            val diceCounts = mutableMapOf<Dices, Int>()
+            var flatModifier = 0
 
-    sortedKeys.forEachIndexed { index, condition ->
-        val group = groupedDamages[condition] ?: return@forEachIndexed
+            damageEntries.forEach { damage ->
+                diceCounts[damage.dice] = diceCounts.getOrElse(damage.dice) { 0 } + damage.diceCount
+                flatModifier += damage.modifier
+            }
+            val sortedDice = diceCounts.toList().sortedByDescending { it.first.ordinal }
 
-        if (index > 0) append(" + ")
+            sortedDice.forEachIndexed { i, (dice, count) ->
+                if (i > 0) append(" + ")
 
-        val dices = mutableMapOf<Dices, Int>()
-        var appendValue = 0
+                if (count > 1) {
+                    append(count)
+                    append(' ')
+                }
+                append(stringResource(dice.stringRes))
+            }
 
-        group.forEach { damage ->
-            val dicesCount = dices.getOrElse(damage.dice) { 0 }
-            dices[damage.dice] = dicesCount + damage.diceCount
-            appendValue += damage.modifier
-        }
+            if (flatModifier != 0)
+                append(flatModifier.toSignedSpacedString())
 
-        dices.toList().sortedByDescending { it.first.ordinal }.forEachIndexed { i, (dice, count) ->
-            if (i > 0) append(' ')
-            if (count > 1) {
-                append(count)
+            condition?.let {
+                append(" (")
+                append(stringResource(Res.string.if_value))
                 append(' ')
+                append(it.type)
+                if (it.target != null) {
+                    append(": ")
+                    append(it.target)
+                }
+                append(')')
             }
-            append(stringResource(dice.stringRes))
-        }
-
-        if (appendValue != 0 || dices.isEmpty()) {
-            append(' ')
-            append(appendValue.toSignedSpacedString())
-        }
-
-        if (condition != null) {
-            append(" (")
-            append(stringResource(condition.type.stringRes))
-            if (condition.target != null) {
-                append(condition.target)
-            }
-            append(")")
         }
     }
 }
+
+@Composable
+fun FullWeapon.buildDamagesString() = buildDamagesString(damages)

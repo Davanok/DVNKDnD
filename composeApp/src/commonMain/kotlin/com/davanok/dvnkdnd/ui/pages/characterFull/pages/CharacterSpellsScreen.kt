@@ -5,6 +5,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -65,7 +65,6 @@ import dvnkdnd.composeapp.generated.resources.concentration
 import dvnkdnd.composeapp.generated.resources.difficulty_class_short
 import dvnkdnd.composeapp.generated.resources.multiclass_spell_slot_type_name
 import dvnkdnd.composeapp.generated.resources.ritual
-import dvnkdnd.composeapp.generated.resources.search
 import dvnkdnd.composeapp.generated.resources.spell_cantrip
 import dvnkdnd.composeapp.generated.resources.spell_level
 import org.jetbrains.compose.resources.painterResource
@@ -103,13 +102,9 @@ fun CharacterSpellsScreen(
         }
     }
 
-    var filterWord by remember { mutableStateOf("") }
-    val visibleSpells by remember(filterWord, spells) {
+    val visibleSpells by remember(spells) {
         derivedStateOf {
-            val firstComparator: Comparator<CharacterSpell> =
-                if (filterWord.isBlank()) compareByDescending { it.ready }
-                else compareBy { it.spell.getDistance(filterWord) }
-            val comparator = firstComparator
+            val comparator = compareByDescending<CharacterSpell> { it.ready }
                 .thenBy { it.spell.spell?.spell?.level }
                 .thenBy { it.spell.entity.name }
 
@@ -164,20 +159,6 @@ fun CharacterSpellsScreen(
                 )
             }
         }
-        AnimatedVisibility(
-            visible = spellSlotsVisible
-        ) {
-            OutlinedTextField(
-                value = filterWord,
-                onValueChange = {
-                    filterWord = it
-                    if (visibleSpells.isNotEmpty())
-                        lazyColumnState.requestScrollToItem(0)
-                },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-                label = { Text(text = stringResource(Res.string.search)) }
-            )
-        }
     }
 
     showSelectSpellSlotDialog?.let {
@@ -231,19 +212,23 @@ private fun SpellSlots(
             }
         }
 
-        Column {
-            Text(
-                text = stringResource(
-                    Res.string.attack_bonus_short,
-                    spellCastingValues.attackBonus.toSignedString()
-                )
-            )
-            Text(
-                text = stringResource(
-                    Res.string.difficulty_class_short,
-                    spellCastingValues.saveDifficultyClass
-                )
-            )
+        Column(modifier = Modifier.width(IntrinsicSize.Max)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = stringResource(Res.string.attack_bonus_short))
+                Spacer(Modifier.width(8.dp))
+                Text(text = spellCastingValues.attackBonus.toSignedString())
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = stringResource(Res.string.difficulty_class_short))
+                Spacer(Modifier.width(8.dp))
+                Text(text = spellCastingValues.saveDifficultyClass.toString())
+            }
         }
     }
 }
