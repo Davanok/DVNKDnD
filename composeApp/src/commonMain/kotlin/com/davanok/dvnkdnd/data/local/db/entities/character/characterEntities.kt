@@ -243,11 +243,11 @@ data class DbCharacterNote(
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DbState::class, ["id"], ["state_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DbBaseEntity::class, ["id"], ["from_id"], onDelete = ForeignKey.SET_NULL)
+        ForeignKey(DbBaseEntity::class, ["id"], ["source_id"], onDelete = ForeignKey.SET_NULL)
     ]
 )
 data class DbCharacterStateLink(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("state_id", index = true) val stateId: Uuid,
-    @ColumnInfo("from_id", index = true) val fromId: Uuid?
+    @ColumnInfo("source_id", index = true) val sourceId: Uuid?
 )

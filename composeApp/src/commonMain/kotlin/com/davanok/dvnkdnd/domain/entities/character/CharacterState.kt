@@ -2,10 +2,9 @@ package com.davanok.dvnkdnd.domain.entities.character
 
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import kotlinx.serialization.Serializable
-import kotlin.uuid.Uuid
 
 @Serializable
 data class CharacterState(
     val state: DnDFullEntity,
-    val from: Uuid?
+    val source: DnDFullEntity?
 )

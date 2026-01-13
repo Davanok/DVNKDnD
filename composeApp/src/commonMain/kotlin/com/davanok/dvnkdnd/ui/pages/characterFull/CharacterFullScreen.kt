@@ -325,6 +325,8 @@ private fun CharacterPages(
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.STATES -> CharacterStatesScreen(
+                    states = character.states,
+                    onClick = { onEntityClick(it.toDnDEntityMin()) },
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(

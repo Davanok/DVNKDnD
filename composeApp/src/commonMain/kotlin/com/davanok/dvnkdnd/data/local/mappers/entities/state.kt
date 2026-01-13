@@ -26,7 +26,7 @@ fun StateDuration.toDbStateDuration(stateId: Uuid) = DbStateDuration(
 
 fun DbJoinCharacterState.toCharacterState() = CharacterState(
     state = state.toDnDFullEntity(),
-    from = link.fromId
+    source = source?.toDnDFullEntity()
 )
 
 fun FullState.toDbState(entityId: Uuid) = DbState(entityId)

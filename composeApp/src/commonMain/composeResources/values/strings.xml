@@ -243,7 +243,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="time_unit_reaction">Reaction</string>
     <string name="time_unit_minute">Minute</string>
     <string name="time_unit_ten_minutes">Ten minutes</string>
-    <string name="time_unit_other">Casting time other</string>
+    <string name="time_unit_other">Other</string>
     <string name="time_unit_short_rest">Short rest</string>
     <string name="time_unit_long_rest">Long rest</string>
 
@@ -333,6 +333,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <!--states screen-->
     <string name="no_character_states">No states</string>
     <string name="add_character_state">Add state</string>
+    <string name="state_from">From:</string>
     <!-- items page-->
     <string name="active_items_filter_name">Active</string>
     <string name="attuned_items_filter_name">Attuned</string>

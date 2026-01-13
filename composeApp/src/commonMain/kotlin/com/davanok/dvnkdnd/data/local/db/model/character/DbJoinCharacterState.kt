@@ -15,5 +15,11 @@ data class DbJoinCharacterState(
         parentColumn = "state_id",
         entityColumn = "id"
     )
-    val state: DbFullEntity
+    val state: DbFullEntity,
+    @Relation(
+        DbBaseEntity::class,
+        parentColumn = "source_id",
+        entityColumn = "id"
+    )
+    val source: DbFullEntity?
 )
