@@ -31,6 +31,10 @@ object DnDConstants {
         intArrayOf(4,3,3,3,3,2,1,1,1),   // 19
         intArrayOf(4,3,3,3,3,2,2,1,1)    // 20
     )
+
+    const val ITEM_DEFAULT_RANGE = 152 // cm
+    const val REACH_ITEM_DEFAULT_RANGE_MODIFIER = 152 // cm
+    val RANGED_ITEM_DEFAULT_RANGE = listOf(2438, 9753) // cm
 }
 
 fun calculateModifier(attributeValue: Int) = (attributeValue - 10).floorDiv(2)

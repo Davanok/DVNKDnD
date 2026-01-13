@@ -10,12 +10,14 @@ import kotlin.uuid.Uuid
 fun Proficiency.toDbProficiency() = DbProficiency(
     id = id,
     userId = userId,
+    itemPropertyId = itemPropertyId,
     type = type,
     name = name
 )
 fun DbProficiency.toProficiency() = Proficiency(
     id = id,
     userId = userId,
+    itemPropertyId = itemPropertyId,
     type = type,
     name = name
 )

@@ -94,6 +94,7 @@ data class ItemProperty(
     @SerialName("user_id")
     val userId: Uuid?,
     val type: ItemPropertyType,
+    val value: String?,
     val name: String,
     val description: String,
 )

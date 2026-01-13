@@ -16,6 +16,8 @@ data class Proficiency(
     val id: Uuid = Uuid.random(),
     @SerialName("user_id")
     val userId: Uuid? = null,
+    @SerialName("item_property_id")
+    val itemPropertyId: Uuid?,
     val type: ProficiencyTypes,
     val name: String
 )

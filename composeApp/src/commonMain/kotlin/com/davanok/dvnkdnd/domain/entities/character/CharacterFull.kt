@@ -8,10 +8,11 @@ import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.domain.entities.DatabaseImage
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateModifiers
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateSpellSlots
+import com.davanok.dvnkdnd.domain.entities.character.characterUtils.findAttacks
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.getAppliedValues
+import com.davanok.dvnkdnd.domain.entities.character.characterUtils.getEntitiesWithLevel
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.SkillsGroup
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.CasterProgression
@@ -52,12 +53,9 @@ data class CharacterFull(
 
     val notes: List<CharacterNote> = emptyList()
 ) {
-    val entities: List<DnDFullEntity>
-        get() = mainEntities
-            .flatMap { listOfNotNull(it.entity, it.subEntity) } + feats + states.map { it.state }
-    private val groupIdToEntityId by lazy {
-        entities.flatMap { e -> e.modifiersGroups.map { it.id to e.entity.id } }.toMap()
-    }
+    val entitiesWithLevel: List<Pair<DnDFullEntity, Int>> by lazy { getEntitiesWithLevel() }
+
+   val entities = entitiesWithLevel.map { it.first }
 
     val appliedValues: CharacterModifiedValues by lazy { getAppliedValues() }
 
@@ -85,12 +83,11 @@ data class CharacterFull(
                 ?.let { appliedValues.skillModifiers[it] }
         }.let { it ?: 0 } + modifierValue
 
-    fun resolveGroupValue(group: ModifiersGroup): Double =
-        resolveValueSource(group.valueSource, group.valueSourceTarget, groupIdToEntityId[group.id], group.value)
-
     val appliedModifiers by lazy { calculateModifiers() }
 
     val spellSlots by lazy { calculateSpellSlots() }
+
+    val attacks by lazy { findAttacks() }
 
     fun getSpellCastingValues(): SpellCastingValues {
         val spellCastingAttribute = mainEntities

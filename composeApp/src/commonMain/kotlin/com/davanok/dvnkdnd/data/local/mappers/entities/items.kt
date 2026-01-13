@@ -39,6 +39,7 @@ fun ItemProperty.toDbItemProperty() = DbItemProperty(
     id = id,
     userId = userId,
     type = type,
+    value = value,
     name = name,
     description = description
 )
@@ -57,6 +58,7 @@ fun DbItemProperty.toItemProperty() = ItemProperty(
     id = id,
     userId = userId,
     type = type,
+    value = value,
     name = name,
     description = description
 )

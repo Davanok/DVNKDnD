@@ -16,195 +16,235 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
 
 
-private inline fun processGroups(
-    modifierGroups: List<ModifiersGroup>,
-    baseValue: Int,
-    groupValueProvider: (ModifiersGroup) -> Double
-): Int {
-    var current = baseValue
-    modifierGroups.forEach { group ->
-        val value = groupValueProvider(group)
-        group.modifiers.forEach modifier@{ modifier ->
-            if (group.minBaseValue?.let { current < it } == true) return@modifier
-            if (group.maxBaseValue?.let { current > it } == true) return@modifier
-
-            val result = applyOperation(current, value, group.operation)
-
-            current = result.coerceIn(group.clampMin, group.clampMax)
-        }
-    }
-    return current
-}
-
-
-private inline fun <reified K : Enum<K>> processGroups(
-    modifierGroups: List<ModifiersGroup>,
-    baseValues: MutableMap<K, Int>,
-    groupValueProvider: (ModifiersGroup) -> Double
-) {
-    modifierGroups.forEach { group ->
-        val value = groupValueProvider(group)
-        group.modifiers.forEach modifier@{ modifier ->
-            val target = modifier.targetAs<K>() ?: return@modifier
-            val current = baseValues[target] ?: return@modifier
-
-            if (group.minBaseValue?.let { current < it } == true) return@modifier
-            if (group.maxBaseValue?.let { current > it } == true) return@modifier
-
-            val result = applyOperation(current, value, group.operation)
-
-            baseValues[target] = result.coerceIn(group.clampMin, group.clampMax)
-        }
-    }
-}
-
-private inline fun <reified T : Enum<T>> applyCustomModifiers(
-    modifiers: List<CustomModifier>,
-    values: MutableMap<T, Int>,
-    valueSourcesProvider: (DnDModifierValueSource, String?, Double) -> Double
-) {
-    modifiers.forEach { modifier ->
-        val target = modifier.targetAs<T>() ?: return@forEach
-        val current = values[target] ?: return@forEach
-
-        val value =
-            valueSourcesProvider(modifier.valueSource, modifier.valueSourceTarget, modifier.value)
-        val result = applyOperation(
-            base = current,
-            value = value,
-            operation = modifier.operation
-        )
-
-        values[target] = result
-    }
-}
-
-
 fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
-    val targetGroups = entities
+    val groupIdToEntityId =
+        entities.flatMap { e -> e.modifiersGroups.map { it.id to e.entity.id } }.toMap()
+
+    val resolveGroupValue: (group: ModifiersGroup) -> Double = { group ->
+        resolveValueSource(
+            group.valueSource,
+            group.valueSourceTarget,
+            groupIdToEntityId[group.id],
+            group.value
+        )
+    }
+
+    // 1. Pre-calculate and group modifiers once to avoid repeated iteration
+    val targetGroups = entities.asSequence()
         .flatMap { it.modifiersGroups }
+        .filter { it.id in selectedModifiers }
+        .sortedBy { it.priority }
         .groupBy { it.target }
-        .mapValues { (_, value) -> value.filter { it.id in selectedModifiers }.sortedBy { it.priority } }
 
-    val customModifiersGrouped = customModifiers
+    val customModifiersGrouped = customModifiers.asSequence()
+        .sortedBy { it.priority }
         .groupBy { it.targetGlobal }
-        .mapValues { (_, value) -> value.sortedBy { it.priority } }
 
-    val customModifierValueSourceProvider: (DnDModifierValueSource, String?, Double) -> Double =
+    // Helper to resolve dynamic values for CustomModifiers
+    val valueSourceProvider: (DnDModifierValueSource, String?, Double) -> Double =
         { source, target, value ->
             resolveValueSource(source, target, null, value)
         }
 
-    val attributeValues = attributes.toMap().toMutableMap()
-    targetGroups[DnDModifierTargetType.ATTRIBUTE]?.let {
-        processGroups(
-            it,
-            attributeValues,
-            ::resolveGroupValue
-        )
-    }
-    customModifiersGrouped[DnDModifierTargetType.ATTRIBUTE]?.let {
-        applyCustomModifiers(it, attributeValues, customModifierValueSourceProvider)
-    }
+    // --- Attributes ---
+    // Use EnumMap for performance when keys are Enums
+    val attributeValues = attributes
+        .toMap()
+        .toMutableMap()
+
+    applyModifiers(
+        targetType = DnDModifierTargetType.ATTRIBUTE,
+        values = attributeValues,
+        modifierGroups = targetGroups,
+        customModifiers = customModifiersGrouped,
+        groupValueProvider = resolveGroupValue,
+        customValueProvider = valueSourceProvider
+    )
     val modifiedAttributes = attributeValues.toAttributesGroup()
 
+    // --- Saving Throws ---
+    // Base saves are the modifiers of the base attributes
     val savingThrowsValues = attributes
         .toMap()
         .mapValues { calculateModifier(it.value) }
         .toMutableMap()
 
-    targetGroups[DnDModifierTargetType.SAVING_THROW]?.let {
-        processGroups(
-            it,
-            savingThrowsValues,
-            ::resolveGroupValue
-        )
-    }
-    customModifiersGrouped[DnDModifierTargetType.SAVING_THROW]?.let {
-        applyCustomModifiers(it, savingThrowsValues, customModifierValueSourceProvider)
-    }
+    applyModifiers(
+        targetType = DnDModifierTargetType.SAVING_THROW,
+        values = savingThrowsValues,
+        modifierGroups = targetGroups,
+        customModifiers = customModifiersGrouped,
+        groupValueProvider = resolveGroupValue,
+        customValueProvider = valueSourceProvider
+    )
     val modifiedSavingThrows = savingThrowsValues.toAttributesGroup()
 
+    // --- Skills ---
+    // Base skills are the modifiers of the specific attribute they rely on
     val skillValues = attributes
         .toSkillsGroup()
         .toMap()
         .mapValues { calculateModifier(it.value) }
         .toMutableMap()
 
-    targetGroups[DnDModifierTargetType.SKILL]?.let {
-        processGroups(
-            it,
-            skillValues,
-            ::resolveGroupValue
-        )
-    }
-    customModifiersGrouped[DnDModifierTargetType.SKILL]?.let {
-        applyCustomModifiers(it, skillValues, customModifierValueSourceProvider)
-    }
+    applyModifiers(
+        targetType = DnDModifierTargetType.SKILL,
+        values = skillValues,
+        modifierGroups = targetGroups,
+        customModifiers = customModifiersGrouped,
+        groupValueProvider = resolveGroupValue,
+        customValueProvider = valueSourceProvider
+    )
     val modifiedSkills = skillValues.toSkillsGroup()
 
+    // --- Health ---
     val defaultMaxHealth = health.max + calculateModifier(attributes[Attributes.CONSTITUTION])
     val healthValues = mutableMapOf(
         DnDModifierHealthTarget.CURRENT to health.current,
         DnDModifierHealthTarget.MAX to defaultMaxHealth
     )
 
-    targetGroups[DnDModifierTargetType.HEALTH]?.let {
-        processGroups(
-            it,
-            healthValues,
-            ::resolveGroupValue
-        )
-    }
-    customModifiersGrouped[DnDModifierTargetType.HEALTH]?.let {
-        applyCustomModifiers(it, healthValues, customModifierValueSourceProvider)
-    }
+    applyModifiers(
+        targetType = DnDModifierTargetType.HEALTH,
+        values = healthValues,
+        modifierGroups = targetGroups,
+        customModifiers = customModifiersGrouped,
+        groupValueProvider = resolveGroupValue,
+        customValueProvider = valueSourceProvider
+    )
     val modifiedHealth = health.copy(
         current = healthValues.getOrElse(DnDModifierHealthTarget.CURRENT) { health.current },
         max = healthValues.getOrElse(DnDModifierHealthTarget.MAX) { health.max }
     )
 
-    val defaultArmorClass = optionalValues.armorClass ?: calculateArmorClass(
+    // --- Armor Class ---
+    val baseArmor = optionalValues.armorClass ?: calculateArmorClass(
         attributes[Attributes.DEXTERITY],
         items.firstOrNull { it.equipped && it.item.item?.armor != null }?.item?.item?.armor
     )
-    val armorClass = targetGroups[DnDModifierTargetType.ARMOR_CLASS]?.let {
-        processGroups(
-            it,
-            defaultArmorClass,
-            ::resolveGroupValue
-        )
-    } ?: defaultArmorClass
 
-    val defaultInitiative =
+    val finalArmorClass = applySingleValueModifiers(
+        targetType = DnDModifierTargetType.ARMOR_CLASS,
+        baseValue = baseArmor,
+        modifierGroups = targetGroups,
+        customModifiers = customModifiersGrouped,
+        groupValueProvider = resolveGroupValue,
+        customValueProvider = valueSourceProvider
+    )
+
+    // --- Initiative ---
+    val baseInitiative =
         optionalValues.initiative ?: calculateModifier(attributes[Attributes.DEXTERITY])
-    val initiative = targetGroups[DnDModifierTargetType.INITIATIVE]?.let {
-        processGroups(
-            it,
-            defaultInitiative,
-            ::resolveGroupValue
-        )
-    } ?: defaultInitiative
 
-    val defaultSpeed =
-        optionalValues.speed ?: mainEntities
-            .filter { it.entity.entity.type == DnDEntityTypes.RACE }
-            .maxOf { it.entity.race?.speed ?: 0 }
-    val speed = targetGroups[DnDModifierTargetType.SPEED]?.let {
-        processGroups(
-            it,
-            defaultSpeed,
-            ::resolveGroupValue
-        )
-    } ?: defaultSpeed
+    val finalInitiative = applySingleValueModifiers(
+        targetType = DnDModifierTargetType.INITIATIVE,
+        baseValue = baseInitiative,
+        modifierGroups = targetGroups,
+        customModifiers = customModifiersGrouped,
+        groupValueProvider = resolveGroupValue,
+        customValueProvider = valueSourceProvider
+    )
+
+    // --- Speed ---
+    val baseSpeed = optionalValues.speed ?: mainEntities
+        .filter { it.entity.entity.type == DnDEntityTypes.RACE }
+        .maxOfOrNull { it.entity.race?.speed ?: 0 } ?: 0
+
+    val finalSpeed = applySingleValueModifiers(
+        targetType = DnDModifierTargetType.SPEED,
+        baseValue = baseSpeed,
+        modifierGroups = targetGroups,
+        customModifiers = customModifiersGrouped,
+        groupValueProvider = resolveGroupValue,
+        customValueProvider = valueSourceProvider
+    )
 
     return CharacterModifiedValues(
         attributes = modifiedAttributes,
         savingThrowModifiers = modifiedSavingThrows,
         skillModifiers = modifiedSkills,
         health = modifiedHealth,
-        armorClass = armorClass,
-        initiative = initiative,
-        speed = speed
+        armorClass = finalArmorClass,
+        initiative = finalInitiative,
+        speed = finalSpeed
     )
 }
+
+// -----------------------------------------------------------------------------
+// Private Helper Functions (Generic & Consolidated)
+// -----------------------------------------------------------------------------
+
+/**
+ * Applies both standard modifiers and custom modifiers to a Map of values (e.g. Attributes, Skills).
+ */
+private inline fun <reified K : Enum<K>> applyModifiers(
+    targetType: DnDModifierTargetType,
+    values: MutableMap<K, Int>,
+    modifierGroups: Map<DnDModifierTargetType, List<ModifiersGroup>>,
+    customModifiers: Map<DnDModifierTargetType, List<CustomModifier>>,
+    crossinline groupValueProvider: (ModifiersGroup) -> Double,
+    crossinline customValueProvider: (DnDModifierValueSource, String?, Double) -> Double
+) {
+    // 1. Standard Groups
+    modifierGroups[targetType]?.forEach { group ->
+        val groupValue = groupValueProvider(group)
+        group.modifiers.forEach { modifier ->
+            val targetKey = modifier.targetAs<K>() ?: return@forEach
+            val currentVal = values[targetKey] ?: return@forEach
+
+            if (shouldSkip(group, currentVal)) return@forEach
+
+            val result = applyOperation(currentVal, groupValue, group.operation)
+            values[targetKey] = result.coerceIn(group.clampMin, group.clampMax)
+        }
+    }
+
+    // 2. Custom Modifiers
+    customModifiers[targetType]?.forEach { modifier ->
+        val targetKey = modifier.targetAs<K>() ?: return@forEach
+        val currentVal = values[targetKey] ?: return@forEach
+
+        val modValue =
+            customValueProvider(modifier.valueSource, modifier.valueSourceTarget, modifier.value)
+        val result = applyOperation(currentVal, modValue, modifier.operation)
+        values[targetKey] = result
+    }
+}
+
+/**
+ * Applies both standard modifiers and custom modifiers to a single Integer value (e.g. Speed, AC).
+ */
+private inline fun applySingleValueModifiers(
+    targetType: DnDModifierTargetType,
+    baseValue: Int,
+    modifierGroups: Map<DnDModifierTargetType, List<ModifiersGroup>>,
+    customModifiers: Map<DnDModifierTargetType, List<CustomModifier>>,
+    crossinline groupValueProvider: (ModifiersGroup) -> Double,
+    crossinline customValueProvider: (DnDModifierValueSource, String?, Double) -> Double
+): Int {
+    var current = baseValue
+
+    // 1. Standard Groups
+    modifierGroups[targetType]?.forEach { group ->
+        val groupValue = groupValueProvider(group)
+        group.modifiers.forEach { _ ->
+            // Note: Single value modifiers usually don't have a specific 'target' string to parse
+            if (shouldSkip(group, current)) return@forEach
+
+            val result = applyOperation(current, groupValue, group.operation)
+            current = result.coerceIn(group.clampMin, group.clampMax)
+        }
+    }
+
+    // 2. Custom Modifiers
+    customModifiers[targetType]?.forEach { modifier ->
+        val modValue =
+            customValueProvider(modifier.valueSource, modifier.valueSourceTarget, modifier.value)
+        current = applyOperation(current, modValue, modifier.operation)
+    }
+
+    return current
+}
+
+private fun shouldSkip(group: ModifiersGroup, currentValue: Int): Boolean =
+    (group.minBaseValue != null && currentValue < group.minBaseValue) || (group.maxBaseValue != null && currentValue > group.maxBaseValue)

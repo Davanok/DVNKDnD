@@ -67,7 +67,7 @@ data class DbItemActivation(
     tableName = "item_activation_casts_spell",
     foreignKeys = [
         ForeignKey(DbItemActivation::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DbSpell::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbSpell::class, ["id"], ["spell_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
 data class DbItemActivationCastsSpell(
@@ -110,6 +110,7 @@ data class DbItemProperty(
     @PrimaryKey val id: Uuid = Uuid.random(),
     @ColumnInfo("user_id") val userId: Uuid?,
     val type: ItemPropertyType,
+    val value: String?,
     val name: String,
     val description: String,
 )
