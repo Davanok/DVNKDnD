@@ -12,13 +12,18 @@ androidx-espresso-core = "3.7.0"
 androidx-lifecycle = "2.9.6"
 androidx-material = "1.13.0"
 androidx-test-junit = "1.3.0"
-compose-plugin = "1.9.3"
+componentsResources = "1.10.0"
+foundation = "1.10.0"
+material3 = "1.9.0"
+materialIconsExtended = "1.7.3"
+compose-plugin = "1.10.0"
 junit = "4.13.2"
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 koin = "4.1.1"
+runtime = "1.10.0"
 supabase-auth = "2.6.1"
-supabase-database = "3.2.6"
+supabase-database = "3.3.0"
 slf4j = "2.0.17"
 ktor = "3.3.3"
 serialization = "1.9.0"
@@ -35,6 +40,7 @@ coil = "3.3.0"
 toaster = "0.3.8"
 markdown-parser = "0.39.0"
 navigation3 = "1.0.0-alpha06"
+uiTooling = "1.10.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -47,6 +53,17 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "componentsResources" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "foundation" }
+compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "runtime" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "uiTooling" }
+compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "uiTooling" }
+compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "uiTooling" }
+
+material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3" }
 
 jetbrains-compose-material3-adaptive = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive", version.ref = "jetbrains-adaptive" }
 jetbrains-compose-material3-adaptive-layout = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive-layout", version.ref = "jetbrains-adaptive" }

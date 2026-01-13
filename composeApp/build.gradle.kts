@@ -81,25 +81,25 @@ kotlin {
             implementation(libs.jetbrains.compose.material3.adaptive.layout)
             implementation(libs.jetbrains.compose.material3.adaptive.navigation)
 
-            implementation(compose.material3AdaptiveNavigationSuite)
+            implementation(libs.material3.adaptive.navigation.suite)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
 
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material.icons.extended)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.ui.tooling.preview)
+
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
         androidMain.dependencies {
             implementation(libs.koin.android)
 
-            implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
         }
         desktopMain.dependencies {
@@ -163,7 +163,6 @@ compose.desktop {
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling)
     listOf(
         "kspAndroid",
         "kspIosSimulatorArm64",

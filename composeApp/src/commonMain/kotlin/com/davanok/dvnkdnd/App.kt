@@ -20,7 +20,6 @@ import com.davanok.dvnkdnd.ui.providers.LocalMeasurementSystem
 import com.davanok.dvnkdnd.ui.providers.MeasurementSystemConfig
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinMultiplatformApplication
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.koinConfiguration
@@ -33,7 +32,6 @@ fun initApp() {
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-@Preview
 fun App() {
     KoinMultiplatformApplication(
         config = koinConfiguration {
