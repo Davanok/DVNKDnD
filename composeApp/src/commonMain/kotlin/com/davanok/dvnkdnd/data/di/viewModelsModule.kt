@@ -1,7 +1,7 @@
 package com.davanok.dvnkdnd.data.di
 
+import com.davanok.dvnkdnd.data.di.viewModelModules.characterFullViewModelsModule
 import com.davanok.dvnkdnd.data.di.viewModelModules.newCharacterViewModelsModule
-import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullViewModel
 import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListViewModel
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfoViewModel
 import org.koin.core.module.dsl.viewModel
@@ -18,7 +18,5 @@ fun viewModelsModule() = module {
         DnDEntityInfoViewModel(entityId, get())
     }
 
-    viewModel { (characterId: Uuid) ->
-        CharacterFullViewModel(characterId, get())
-    }
+    includes(characterFullViewModelsModule())
 }

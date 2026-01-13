@@ -11,6 +11,8 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
+import dvnkdnd.composeapp.generated.resources.character_add_item_dialog_title
+import dvnkdnd.composeapp.generated.resources.character_add_state_dialog_title
 import dvnkdnd.composeapp.generated.resources.character_full_attacks_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_attributes_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_items_page_title
@@ -128,6 +130,8 @@ data class CharacterFullUiState(
     enum class Dialog(val titleStringRes: StringResource) {
         HEALTH(Res.string.character_health_dialog_title),
         MAIN_ENTITIES(Res.string.character_main_entities_dialog_title),
+        ADD_ITEM(Res.string.character_add_item_dialog_title),
+        ADD_STATE(Res.string.character_add_state_dialog_title),
         NONE(Res.string.app_name)
     }
 }

@@ -96,7 +96,7 @@ interface CharactersDao: CharacterMainDao,
             .let { insertCharacterCustomModifiers(it) }
 
         character.states
-            .map { DbCharacterStateLink(characterId, it.state.entity.id, it.from) }
+            .map { DbCharacterStateLink(characterId, it.state.entity.id, it.source?.entity?.id) }
             .let { insertCharacterStates(it) }
 
         character.notes

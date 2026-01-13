@@ -306,6 +306,8 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="character_health_temp_health_button">Temp</string>
 
     <string name="character_main_entities_dialog_title">Main entities</string>
+    <string name="character_add_item_dialog_title">Add item</string>
+    <string name="character_add_state_dialog_title">Add state</string>
     <!--notes screen-->
     <string name="delete_note">Delete note</string>
     <string name="edit_note">Edit note</string>

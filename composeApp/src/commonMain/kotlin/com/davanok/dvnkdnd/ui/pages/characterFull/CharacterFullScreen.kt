@@ -44,6 +44,8 @@ import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveContent
 import com.davanok.dvnkdnd.ui.components.adaptive.SupportEntry
 import com.davanok.dvnkdnd.ui.components.adaptive.rememberAdaptiveContentState
 import com.davanok.dvnkdnd.ui.model.isCritical
+import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterAddItemDialogContent
+import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterAddStateDialogContent
 import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterAttacksScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterFullAttributesScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterHealthDialogContent
@@ -104,25 +106,33 @@ private fun Content(
     val adaptiveContentState = rememberAdaptiveContentState<CharacterFullUiState.Dialog> { entry ->
         when (entry) {
             CharacterFullUiState.Dialog.HEALTH -> SupportEntry(
-                titleGetter = { stringResource(entry.titleStringRes) },
-                content = {
-                    CharacterHealthDialogContent(
-                        baseHealth = character.health,
-                        updateHealth = { action(CharacterFullScreenContract.SetHealth(it)) },
-                        healthModifiers = character.appliedModifiers
-                            .getOrElse(DnDModifierTargetType.HEALTH, ::emptyList)
-                    )
-                }
-            )
+                titleGetter = { stringResource(entry.titleStringRes) }
+            ) {
+                CharacterHealthDialogContent(
+                    baseHealth = character.health,
+                    updateHealth = { action(CharacterFullScreenContract.SetHealth(it)) },
+                    healthModifiers = character.appliedModifiers
+                        .getOrElse(DnDModifierTargetType.HEALTH, ::emptyList)
+                )
+            }
             CharacterFullUiState.Dialog.MAIN_ENTITIES -> SupportEntry(
                 titleGetter = { stringResource(entry.titleStringRes) },
-                ignoreWindows = true,
-                content = {
-                    CharacterMainEntitiesDialog(
+                ignoreWindows = true
+            ) {
+                CharacterMainEntitiesDialog(
 
-                    )
-                }
-            )
+                )
+            }
+            CharacterFullUiState.Dialog.ADD_ITEM -> SupportEntry(
+                titleGetter = { stringResource(entry.titleStringRes) }
+            ) {
+                CharacterAddItemDialogContent()
+            }
+            CharacterFullUiState.Dialog.ADD_STATE -> SupportEntry(
+                titleGetter = { stringResource(entry.titleStringRes) }
+            ) {
+                CharacterAddStateDialogContent()
+            }
             CharacterFullUiState.Dialog.NONE -> null
         }
     }
@@ -183,7 +193,8 @@ private fun Content(
                         onHealthClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.HEALTH) },
                         onSpeedClick = { TODO() },
                         onStateClick = { TODO() },
-                        onAddStateClick = { TODO() }
+                        onAddStateClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_STATE) },
+                        modifier = Modifier.fillMaxWidth()
                     )
                     CharacterPages(
                         modifier = Modifier.weight(1f),
@@ -208,7 +219,7 @@ private fun Content(
                             onHealthClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.HEALTH) },
                             onSpeedClick = { TODO() },
                             onStateClick = { TODO() },
-                            onAddStateClick = { TODO() },
+                            onAddStateClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_STATE) },
                             modifier = Modifier.fillMaxWidth()
                         )
                         CharacterFullAttributesScreen(
