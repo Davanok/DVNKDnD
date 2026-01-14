@@ -1,11 +1,8 @@
 package com.davanok.dvnkdnd
 
 import android.app.Application
-
-lateinit var appDataDir: String
-    private set
-lateinit var appCacheDir: String
-    private set
+import com.davanok.dvnkdnd.data.platform.appCacheDir
+import com.davanok.dvnkdnd.data.platform.appDataDir
 
 class MyApp: Application() {
     override fun onCreate() {

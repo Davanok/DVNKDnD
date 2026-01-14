@@ -1,48 +1,40 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import java.util.Properties
-import kotlin.math.pow
-
-project.version = libs.versions.project.get()
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
-    kotlin("plugin.serialization") version libs.versions.kotlin.get()
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.android.kmp.library)
+    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
     alias(libs.plugins.buildConfig)
 }
 
 kotlin {
-    androidTarget {
+    android {
+        namespace = "com.davanok.dvnkdnd"
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk = libs.versions.android.targetSdk.get().toInt()
+        androidResources.enable = true
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
+    jvm()
 
-            linkerOpts.add("-lsqlite3")
-        }
-    }
-
-    jvm("desktop")
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         all {
             languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
         }
-        val desktopMain by getting
         commonMain.dependencies {
             implementation(libs.androidx.nav3.ui)
 
@@ -86,13 +78,13 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
 
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
+            api(libs.compose.runtime)
+            api(libs.compose.foundation)
             implementation(libs.compose.material.icons.extended)
-            implementation(libs.compose.material3)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.ui.tooling.preview)
+            api(libs.compose.material3)
+            api(libs.compose.ui)
+            api(libs.compose.components.resources)
+            api(libs.compose.ui.tooling.preview)
 
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
@@ -102,7 +94,7 @@ kotlin {
 
             implementation(libs.androidx.activity.compose)
         }
-        desktopMain.dependencies {
+        jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
@@ -110,69 +102,32 @@ kotlin {
 
         }
     }
-}
 
-android {
-    namespace = "com.davanok.dvnkdnd"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    targets
+        .withType<KotlinNativeTarget>()
+        .matching { it.konanTarget.family.isAppleFamily }
+        .configureEach {
+            binaries {
+                framework {
+                    baseName = "ComposeApp"
+                    isStatic = true
 
-    val versionCodeValue = project.version.toString()
-        .split('.')
-        .reversed()
-        .withIndex()
-        .sumOf { (index, value) ->
-            100f.pow(index).toInt() * value.toInt()
-        }
-    defaultConfig {
-        applicationId = "com.davanok.dvnkdnd"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = versionCodeValue
-        versionName = project.version.toString()
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
-compose.desktop {
-    application {
-        mainClass = "com.davanok.dvnkdnd.MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.davanok.dvnkdnd"
-            packageVersion = project.version.toString()
-
-            linux {
-                modules("jdk.security.auth")
+                    linkerOpts.add("-lsqlite3")
+                }
             }
         }
-    }
 }
 
 dependencies {
     listOf(
         "kspAndroid",
+        "kspJvm",
         "kspIosSimulatorArm64",
         "kspIosX64",
-        "kspIosArm64",
-        "kspDesktop"
+        "kspIosArm64"
     ).forEach {
         add(it, libs.androidx.room.compiler)
     }
-    implementation(libs.androidx.ui.android)
     kspCommonMainMetadata(libs.androidx.room.compiler)
 }
 
@@ -181,20 +136,16 @@ room {
 }
 
 buildConfig {
-    buildConfigField("APP_VERSION_NAME", project.version.toString())
+    packageName = "com.davanok.dvnkdnd"
+    buildConfigField("APP_VERSION_NAME", libs.versions.project.get())
     buildConfigField("PACKAGE_NAME", packageName)
     buildConfigField("BUNDLE_ID", "com.davanok.dvnkdnd.DVNKDnD")
 
     val properties = Properties()
-    packageName = "com.davanok.dvnkdnd"
     project.rootProject.file("config.properties").inputStream().use {
         properties.load(it)
     }
     properties.forEach { property ->
         buildConfigField(property.key.toString(), property.value.toString())
     }
-}
-composeCompiler {
-    reportsDestination = layout.buildDirectory.dir("compose_compiler")
-    metricsDestination = layout.buildDirectory.dir("compose_compiler")
 }

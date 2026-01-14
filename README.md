@@ -93,6 +93,12 @@ DVNKDnD/
 │       └── iosMain/            # 🍎 iOS (Kotlin) Specific Implementations
 │           └── .../platform/   # iOS platform bindings
 │
+├── androidApp/
+│   └── src/main/kotlin/com/davanok/dvnkdnd/
+│       └── MainActivity.kt     # android Entry point calling Shared UI
+├── desktopApp/
+│   └── src/main/kotlin/com/davanok/dvnkdnd/
+│       └── main.kt             # desktop Entry point calling Shared UI
 ├── iosApp/                     # Native iOS Shell (SwiftUI)
 │   └── iosApp/
 │       └── iOSApp.swift        # iOS Entry point calling Shared UI
@@ -133,17 +139,17 @@ DVNKDnD/
 
 ```bash
 # Build APK
-./gradlew :composeApp:assembleDebug
-./gradlew :composeApp:assembleRelease
+./gradlew :androidApp:assembleDebug
+./gradlew :androidApp:assembleRelease
 
 # Install on device
-./gradlew :composeApp:installDebug
+./gradlew :androidApp:installDebug
 
 # Uninstall
-./gradlew :composeApp:uninstallDebug
+./gradlew :androidApp:uninstallDebug
 
 # View signing info
-./gradlew :composeApp:signingReport
+./gradlew :androidApp:signingReport
 ```
 
 ---
@@ -152,11 +158,11 @@ DVNKDnD/
 
 ```bash
 # Run desktop app (JVM)
-./gradlew :composeApp:run
+./gradlew :desktopApp:run
 
 # Package desktop distributables
-./gradlew :composeApp:createDistributable
-./gradlew :composeApp:createReleaseDistributable
+./gradlew :desktopApp:createDistributable
+./gradlew :desktopApp:createReleaseDistributable
 ```
 
 ---

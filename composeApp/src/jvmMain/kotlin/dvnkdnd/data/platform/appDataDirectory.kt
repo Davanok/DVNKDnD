@@ -1,7 +1,6 @@
 package com.davanok.dvnkdnd.data.platform
 
 import com.davanok.dvnkdnd.BuildConfig
-import io.ktor.client.plugins.cache.storage.FileStorage
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
