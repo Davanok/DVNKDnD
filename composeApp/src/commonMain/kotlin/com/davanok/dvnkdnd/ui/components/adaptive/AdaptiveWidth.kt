@@ -2,6 +2,15 @@ package com.davanok.dvnkdnd.ui.components.adaptive
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.allVerticalHingeBounds
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -20,7 +29,11 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.close_side_sheet
+import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdaptiveWidth(
     singlePaneContent: @Composable () -> Unit,
@@ -73,7 +86,27 @@ fun AdaptiveWidth(
             singleContent = singlePaneContent,
             primaryContent = twoPaneContent.first,
             secondaryContent = twoPaneContent.second,
-            tertiaryContent = supportPane
+            tertiaryContent = if (supportPane == null) null else { {
+                Row {
+                    VerticalDivider()
+                    Column {
+                        TopAppBar(
+                            title = supportPaneTitle,
+                            actions = {
+                                IconButton(
+                                    onClick = onHideSupportPane
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = stringResource(Res.string.close_side_sheet)
+                                    )
+                                }
+                            }
+                        )
+                        supportPane()
+                    }
+                }
+            } }
         )
 
         /**
@@ -123,7 +156,10 @@ private fun AdaptiveLayout(
                 is AdaptiveConfig.HingeTriple -> {
                     Box { primaryContent() }
                     Box { secondaryContent() }
-                    Box { tertiaryContent?.invoke() }
+                    Box {
+
+                        tertiaryContent?.invoke()
+                    }
                 }
             }
         }

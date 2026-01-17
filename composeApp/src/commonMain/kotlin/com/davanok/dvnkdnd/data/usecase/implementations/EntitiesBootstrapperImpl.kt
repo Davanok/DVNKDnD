@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.data.usecase.implementations
 
 import com.davanok.dvnkdnd.core.CheckingDataStates
+import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.domain.repositories.local.EntitiesRepository
 import com.davanok.dvnkdnd.domain.repositories.local.FullEntitiesRepository
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
@@ -19,12 +20,13 @@ class EntitiesBootstrapperImpl(
         flow {
             Napier.d { "checkAndLoadEntities called with entitiesIds: $entitiesIds" }
             emit(CheckingDataStates.LOAD_FROM_DATABASE)
-            val existingEntities = runCatching {
-                Napier.d { "Getting existing entities for ids: $entitiesIds" }
-                entitiesRepository.getExistingEntities(entitiesIds).getOrThrow()
-            }.onFailure {
-                Napier.e("Error getting existing entities", it)
-            }.getOrThrow()
+            Napier.d { "Getting existing entities for ids: $entitiesIds" }
+            val existingEntities = entitiesRepository
+                .getExistingEntities(entitiesIds)
+                .onFailure {
+                    Napier.e("Error getting existing entities", it)
+                }
+                .getOrThrow()
 
             emit(CheckingDataStates.CHECKING)
             val notExistingEntities = entitiesIds.subtract(existingEntities.toSet())
@@ -35,20 +37,32 @@ class EntitiesBootstrapperImpl(
             }
 
             emit(CheckingDataStates.LOADING_DATA)
-            val entities = runCatching {
-                Napier.d { "Loading full info for entities: $notExistingEntities" }
-                browseRepository.loadEntitiesFullInfo(notExistingEntities.toList()).getOrThrow()
-            }.onFailure {
-                Napier.e("Error loading full info for entities", it)
-            }.getOrThrow()
+            Napier.d { "Loading full info for entities: $notExistingEntities" }
+            val entities = browseRepository
+                .loadEntitiesFullInfo(notExistingEntities.toList())
+                .onFailure {
+                    Napier.e("Error loading full info for entities", it)
+                }
+                .getOrThrow()
 
             emit(CheckingDataStates.UPDATING)
-            runCatching {
-                Napier.d { "Inserting full entities: $entities" }
-                fullEntitiesRepository.insertFullEntities(entities)
-            }.onFailure {
-                Napier.e("Error inserting full entities", it)
-            }.getOrThrow()
+            Napier.d { "Inserting full entities: $entities" }
+            fullEntitiesRepository.insertFullEntities(entities)
+                .onFailure {
+                    Napier.e("Error inserting full entities", it)
+                }
+                .getOrThrow()
             emit(CheckingDataStates.FINISH)
+        }
+
+    override suspend fun checkAndLoadEntity(entityId: Uuid): Result<Unit> =
+        runLogging("checkAndLoadEntity (entityId: $entityId)") {
+            if (entitiesRepository.getExistsEntity(entityId).getOrThrow())
+                return@runLogging
+
+            val entity = browseRepository.loadEntityFullInfo(entityId).getOrThrow()
+            requireNotNull(entity) { "entity from external storage not found" }
+
+            fullEntitiesRepository.insertFullEntity(entity).getOrThrow()
         }
 }

@@ -16,6 +16,11 @@ class EntitiesRepositoryImpl(
             dao.getExistingEntities(entityIds)
         }
 
+    override suspend fun getExistsEntity(entityId: Uuid): Result<Boolean> =
+        runLogging("getExistsEntity") {
+            dao.getExistsEntity(entityId)
+        }
+
     override suspend fun getEntitiesWithSubList(entityIds: List<Uuid>) =
         runLogging("getEntitiesWithSubList by ids") {
             dao.getEntitiesWithSubList(entityIds).map { it.toEntityWithSubEntities() }

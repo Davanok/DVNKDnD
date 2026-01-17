@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -14,23 +13,17 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityInfo
@@ -89,13 +82,12 @@ fun CharacterMainValuesWidget(
     onArmorClassClick: () -> Unit,
     onHealthClick: () -> Unit,
     onSpeedClick: () -> Unit,
-    onStateClick: (CharacterState) -> Unit,
     onAddStateClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedCard(modifier) {
         Column(
-            modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()
+            modifier = Modifier.padding(8.dp).fillMaxWidth()
         ) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
@@ -110,7 +102,6 @@ fun CharacterMainValuesWidget(
 
             CharacterStatesWidget(
                 states = states,
-                onStateClick = onStateClick,
                 onAddStateClick = onAddStateClick,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -221,79 +212,44 @@ private fun SpeedWidget(
 @Composable
 private fun CharacterStatesWidget(
     states: List<CharacterState>,
-    onStateClick: (CharacterState) -> Unit,
     onAddStateClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when {
-        states.isEmpty() -> AssistChip(
+    if (states.isEmpty())
+            CharacterStateChip(
             modifier = modifier,
-            onClick = onAddStateClick,
-            label = { Text(text = stringResource(Res.string.no_character_states)) },
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(Res.string.add_character_state)
-                )
-            }
+            label = stringResource(Res.string.no_character_states),
+            onClick = onAddStateClick
         )
-        states.size == 1 -> CharacterStateChip(
-            state = states.first(),
-            onClick = onStateClick,
-            onAddClick = onAddStateClick,
+    else
+        CharacterStateChip(
+            label = states.joinToString { it.state.entity.name },
+            onClick = onAddStateClick,
             modifier = modifier
         )
-        else -> {
-            var statesExpanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = statesExpanded,
-                onExpandedChange = { statesExpanded = it },
-                modifier = modifier
-            ) {
-                CharacterStateChip(
-                    state = states.first(),
-                    onClick = onStateClick,
-                    onAddClick = onAddStateClick,
-                    modifier = Modifier.fillMaxSize()
-                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                )
-
-                ExposedDropdownMenu(
-                    expanded = statesExpanded,
-                    onDismissRequest = { statesExpanded = false }
-                ) {
-                    states.forEach { state ->
-                        DropdownMenuItem(
-                            text = { Text(text = state.state.entity.name) },
-                            onClick = { onStateClick(state) }
-                        )
-                    }
-                }
-            }
-        }
-    }
 }
 
 @Composable
 private fun CharacterStateChip(
-    state: CharacterState,
-    onClick: (CharacterState) -> Unit,
-    onAddClick: () -> Unit,
+    label: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AssistChip(
         modifier = modifier,
-        onClick = { onClick(state) },
-        label = { Text(text = state.state.entity.name) },
+        onClick = onClick,
+        label = {
+            Text(
+                text = label,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+                },
         trailingIcon = {
-            IconButton(
-                onClick = onAddClick
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(Res.string.add_character_state)
-                )
-            }
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = stringResource(Res.string.add_character_state)
+            )
         }
     )
 }

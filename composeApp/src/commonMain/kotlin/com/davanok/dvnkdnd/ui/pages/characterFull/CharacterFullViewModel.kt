@@ -8,7 +8,12 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.core.utils.getByKeyPredicate
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
+import com.davanok.dvnkdnd.domain.entities.character.CharacterItemLink
+import com.davanok.dvnkdnd.domain.entities.character.CharacterStateLink
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
+import com.davanok.dvnkdnd.domain.usecases.entities.EntitiesBootstrapper
+import com.davanok.dvnkdnd.ui.components.UiMessage
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.character_add_item_dialog_title
@@ -27,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
@@ -34,6 +40,7 @@ import kotlin.uuid.Uuid
 
 class CharacterFullViewModel(
     private val characterId: Uuid,
+    private val bootstrapper: EntitiesBootstrapper,
     private val repository: CharactersRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CharacterFullUiState(isLoading = true))
@@ -63,14 +70,47 @@ class CharacterFullViewModel(
         initialValue = CharacterFullUiState(isLoading = true)
     )
 
+    private fun addMessage(message: UiMessage) =
+        _uiState.update { it.copy(messages = it.messages + message) }
+
+    fun removeMessage(messageId: Uuid) = _uiState.update { state ->
+        state.copy(messages = state.messages.filter { it.id == messageId })
+    }
+
+    private fun <T> Result<T>.handleResult(
+        successMessage: (T) -> String?,
+        failureMessage: (Throwable) -> String?
+    ) : Result<T> =
+        onSuccess {
+            val text = successMessage(it) ?: return@onSuccess
+            val message = UiMessage.Success(message = text)
+            addMessage(message)
+        }.onFailure {
+            val text = failureMessage(it) ?: return@onFailure
+            val message = UiMessage.Error(message = text, error = it)
+            addMessage(message)
+        }
+
     fun updateHealth(health: CharacterHealth) = viewModelScope.launch {
         repository.setCharacterHealth(characterId, health)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
     }
     fun updateOrNewNote(note: CharacterNote) = viewModelScope.launch {
         repository.setCharacterNote(characterId, note)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
     }
     fun deleteNote(note: CharacterNote) = viewModelScope.launch {
         repository.deleteCharacterNote(note.id)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
     }
 
     fun setUsedSpellsCount(typeId: Uuid?, level: Int, count: Int) = viewModelScope.launch {
@@ -96,11 +136,68 @@ class CharacterFullViewModel(
             characterId = characterId,
             typeId = typeId,
             usedSpells = newArray
+        ).handleResult(
+            successMessage = { "TODO" },
+            failureMessage = { "TODO" }
         )
     }
 
     fun updateCharacterItem(item: CharacterItem) = viewModelScope.launch {
+        repository
+            .setCharacterItem(characterId, item.toCharacterItemLink())
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
+    }
+    fun newCharacterItem(itemId: Uuid) = viewModelScope.launch {
+        bootstrapper.checkAndLoadEntity(itemId)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
+            .onFailure { return@launch }
+
+        val item = CharacterItemLink(
+            equipped = false,
+            attuned = false,
+            count = 1,
+            item = itemId
+        )
         repository.setCharacterItem(characterId, item)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
+    }
+
+    fun newCharacterState(stateId: Uuid, sourceId: Uuid?) = viewModelScope.launch {
+        bootstrapper.checkAndLoadEntity(stateId)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
+            .onFailure { return@launch }
+
+
+        val state = CharacterStateLink(
+            stateId = stateId,
+            sourceId = sourceId
+        )
+        repository.setCharacterState(characterId, state)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
+    }
+
+    fun activateCharacterItem(item: CharacterItem, activation: FullItemActivation) = viewModelScope.launch {
+        repository
+            .activateCharacterItem(characterId, item.toCharacterItemLink(), activation)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
     }
 
     fun action(action: CharacterFullScreenContract) = when (action) {
@@ -109,7 +206,9 @@ class CharacterFullViewModel(
         is CharacterFullScreenContract.SetUsedSpellsCount -> setUsedSpellsCount(action.typeId, action.level, action.count)
         is CharacterFullScreenContract.UpdateCharacterItem -> updateCharacterItem(action.item)
         is CharacterFullScreenContract.UpdateOrNewNote -> updateOrNewNote(action.note)
-        is CharacterFullScreenContract.ActivateCharacterItem -> { TODO() }
+        is CharacterFullScreenContract.ActivateCharacterItem -> activateCharacterItem(action.item, action.activation)
+        is CharacterFullScreenContract.AddItem -> newCharacterItem(action.item.id)
+        is CharacterFullScreenContract.AddState -> newCharacterState(action.state.id, null)
     }
 }
 
@@ -117,6 +216,7 @@ data class CharacterFullUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
     val character: CharacterFull? = null,
+    val messages: List<UiMessage> = emptyList()
 ) {
     enum class Page(val stringRes: StringResource) {
         ATTRIBUTES(Res.string.character_full_attributes_page_title),

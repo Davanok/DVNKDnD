@@ -6,4 +6,6 @@ import kotlin.uuid.Uuid
 
 interface EntitiesBootstrapper {
     fun checkAndLoadEntities(entitiesIds: List<Uuid>): Flow<CheckingDataStates>
+
+    suspend fun checkAndLoadEntity(entityId: Uuid): Result<Unit>
 }

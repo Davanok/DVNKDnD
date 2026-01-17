@@ -190,7 +190,6 @@ data class DbCharacterItemLink(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("item_id", index = true) val itemId: Uuid,
     val equipped: Boolean,
-    val active: Boolean,
     val attuned: Boolean,
     val count: Int?
 )

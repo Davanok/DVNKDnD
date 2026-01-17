@@ -37,15 +37,16 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveContent
 import com.davanok.dvnkdnd.ui.components.adaptive.SupportEntry
 import com.davanok.dvnkdnd.ui.components.adaptive.rememberAdaptiveContentState
 import com.davanok.dvnkdnd.ui.model.isCritical
-import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterAddItemDialogContent
-import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterAddStateDialogContent
+import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterAddEntityDialogContent
 import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterAttacksScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterFullAttributesScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterHealthDialogContent
@@ -68,6 +69,11 @@ fun CharacterFullScreen(
     viewModel: CharacterFullViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    UiToaster(
+        messages = uiState.messages,
+        onRemoveMessage = viewModel::removeMessage
+    )
 
     when {
         uiState.isLoading -> LoadingCard()
@@ -103,7 +109,9 @@ private fun Content(
     character: CharacterFull,
     action: (CharacterFullScreenContract) -> Unit
 ) {
-    val adaptiveContentState = rememberAdaptiveContentState<CharacterFullUiState.Dialog> { entry ->
+    val adaptiveContentState = rememberAdaptiveContentState<CharacterFullUiState.Dialog>(
+        useWindows = false
+    ) { entry ->
         when (entry) {
             CharacterFullUiState.Dialog.HEALTH -> SupportEntry(
                 titleGetter = { stringResource(entry.titleStringRes) }
@@ -116,8 +124,7 @@ private fun Content(
                 )
             }
             CharacterFullUiState.Dialog.MAIN_ENTITIES -> SupportEntry(
-                titleGetter = { stringResource(entry.titleStringRes) },
-                ignoreWindows = true
+                titleGetter = { stringResource(entry.titleStringRes) }
             ) {
                 CharacterMainEntitiesDialog(
 
@@ -126,12 +133,20 @@ private fun Content(
             CharacterFullUiState.Dialog.ADD_ITEM -> SupportEntry(
                 titleGetter = { stringResource(entry.titleStringRes) }
             ) {
-                CharacterAddItemDialogContent()
+                CharacterAddEntityDialogContent(
+                    entityType = DnDEntityTypes.ITEM,
+                    onSelectEntityClick = { action(CharacterFullScreenContract.AddItem(it)) },
+                    onEntityInfoClick = navigateToEntityInfo
+                )
             }
             CharacterFullUiState.Dialog.ADD_STATE -> SupportEntry(
                 titleGetter = { stringResource(entry.titleStringRes) }
             ) {
-                CharacterAddStateDialogContent()
+                CharacterAddEntityDialogContent(
+                    entityType = DnDEntityTypes.STATE,
+                    onSelectEntityClick = { action(CharacterFullScreenContract.AddState(it)) },
+                    onEntityInfoClick = navigateToEntityInfo
+                )
             }
             CharacterFullUiState.Dialog.NONE -> null
         }
@@ -192,7 +207,6 @@ private fun Content(
                         onArmorClassClick = { TODO() },
                         onHealthClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.HEALTH) },
                         onSpeedClick = { TODO() },
-                        onStateClick = { TODO() },
                         onAddStateClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_STATE) },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -218,7 +232,6 @@ private fun Content(
                             onArmorClassClick = { TODO() },
                             onHealthClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.HEALTH) },
                             onSpeedClick = { TODO() },
-                            onStateClick = { TODO() },
                             onAddStateClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_STATE) },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -307,7 +320,7 @@ private fun CharacterPages(
                     characterCoins = character.coins,
                     items = character.items,
                     usedActivations = character.usedItemActivations,
-                    onClick = { onEntityClick(it.toDnDEntityMin()) },
+                    onOpenInfo = onEntityClick,
                     onUpdateCharacterItem = {
                         action(CharacterFullScreenContract.UpdateCharacterItem(it))
                     },

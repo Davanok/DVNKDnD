@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 import com.davanok.dvnkdnd.core.getMainImage
 import com.davanok.dvnkdnd.domain.entities.DatabaseImage
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
-import com.davanok.dvnkdnd.core.utils.wordInTextLevenshtein
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -44,9 +43,4 @@ data class DnDFullEntity(
                     fullItem.effects.map { it.givesState } +
                             fullItem.activations.flatMap { listOfNotNull(it.givesState, it.castsSpell?.spellId) }
                 }.orEmpty()
-
-    fun getDistance(s: String) = minOf(
-        wordInTextLevenshtein(s, entity.name),
-        wordInTextLevenshtein(s, entity.description)
-    )
 }

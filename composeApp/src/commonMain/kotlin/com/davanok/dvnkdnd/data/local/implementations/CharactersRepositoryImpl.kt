@@ -8,11 +8,14 @@ import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterMin
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterHealth
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterNote
+import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
-import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
+import com.davanok.dvnkdnd.domain.entities.character.CharacterItemLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMin
 import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
+import com.davanok.dvnkdnd.domain.entities.character.CharacterStateLink
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -71,8 +74,23 @@ class CharactersRepositoryImpl(
             )
         }
 
-    override suspend fun setCharacterItem(characterId: Uuid, item: CharacterItem) =
+    override suspend fun setCharacterItem(characterId: Uuid, item: CharacterItemLink) =
         runLogging("setCharacterItem") {
             dao.setCharacterItemLink(item.toDbCharacterItemLink(characterId))
         }
+
+    override suspend fun setCharacterState(
+        characterId: Uuid,
+        state: CharacterStateLink
+    ): Result<Unit> = runLogging("setCharacterState") {
+        dao.setCharacterState(state.toDbCharacterStateLink(characterId))
+    }
+
+    override suspend fun activateCharacterItem(
+        characterId: Uuid,
+        item: CharacterItemLink,
+        activation: FullItemActivation
+    ): Result<Unit> = runLogging("activateCharacterItem") {
+        dao.activateCharacterItem(characterId, item, activation)
+    }
 }

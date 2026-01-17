@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 
 fun characterFullViewModelsModule() = module {
     viewModel { (characterId: Uuid) ->
-        CharacterFullViewModel(characterId, get())
+        CharacterFullViewModel(characterId, get(), get())
     }
 
     viewModel { (entityType: DnDEntityTypes) ->

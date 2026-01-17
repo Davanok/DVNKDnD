@@ -9,4 +9,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 interface CharacterStatesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCharacterStates(states: List<DbCharacterStateLink>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun setCharacterState(state: DbCharacterStateLink)
 }

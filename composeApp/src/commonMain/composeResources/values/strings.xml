@@ -337,7 +337,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="add_character_state">Add state</string>
     <string name="state_from">From:</string>
     <!-- items page-->
-    <string name="active_items_filter_name">Active</string>
+    <string name="activated_items_filter_name">Active</string>
     <string name="attuned_items_filter_name">Attuned</string>
     <string name="equipped_items_filter_name">Equipped</string>
     <string name="armor_class_short">AC</string>
@@ -363,6 +363,14 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="decrement_count">Decrement count</string>
     <string name="increment_count">Increment count</string>
     <string name="if_value">if</string>
+
+    <string name="gives_state">Gives state:</string>
+    <string name="casts_spell">Casts spell:</string>
+
+    <string name="show_description">Show description</string>
+    <string name="hide_description">Hide description</string>
+
+    <string name="search_entity_type">Search entity (%1$d)</string>
 
     <!--measurement system-->
     <string name="meter_short">%1$s m</string>

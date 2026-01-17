@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.ui.pages.characterFull.pages
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
@@ -46,6 +48,7 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.core.CoinsConverter
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
 import com.davanok.dvnkdnd.domain.entities.character.CoinsGroup
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.entities.dndEntities.Item
@@ -79,14 +83,16 @@ import com.davanok.dvnkdnd.ui.pages.characterFull.components.ImagesCarousel
 import com.davanok.dvnkdnd.ui.providers.LocalMeasurementSystem
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.active_items_filter_name
+import dvnkdnd.composeapp.generated.resources.activated_items_filter_name
 import dvnkdnd.composeapp.generated.resources.attack_bonus_short_value
 import dvnkdnd.composeapp.generated.resources.attuned
 import dvnkdnd.composeapp.generated.resources.attuned_items_filter_name
+import dvnkdnd.composeapp.generated.resources.casts_spell
 import dvnkdnd.composeapp.generated.resources.cost
 import dvnkdnd.composeapp.generated.resources.decrement_count
 import dvnkdnd.composeapp.generated.resources.equipped
 import dvnkdnd.composeapp.generated.resources.equipped_items_filter_name
+import dvnkdnd.composeapp.generated.resources.gives_state
 import dvnkdnd.composeapp.generated.resources.increment_count
 import dvnkdnd.composeapp.generated.resources.item_count
 import dvnkdnd.composeapp.generated.resources.not_attuned
@@ -107,7 +113,7 @@ import kotlin.uuid.Uuid
 private const val ITEMS_COUNT_CHANGE_DEBOUNCE = 300L
 
 private enum class CharacterItemsFilter(val stringRes: StringResource) {
-    ACTIVE(Res.string.active_items_filter_name),
+    ACTIVATED(Res.string.activated_items_filter_name),
     ATTUNED(Res.string.attuned_items_filter_name),
     EQUIPPED(Res.string.equipped_items_filter_name)
 }
@@ -121,13 +127,26 @@ private data class ItemsInfo(
     val totalCost: CoinsGroup
 ) {
     operator fun get(filter: CharacterItemsFilter): Int = when (filter) {
-        CharacterItemsFilter.ACTIVE -> activeCount
+        CharacterItemsFilter.ACTIVATED -> activeCount
         CharacterItemsFilter.ATTUNED -> attunedCount
         CharacterItemsFilter.EQUIPPED -> equippedCount
     }
 }
 
-private fun calculateItemsInfo(items: List<CharacterItem>): ItemsInfo {
+private fun isItemActivated(item: CharacterItem, usedActivations: Map<Uuid, Int>): Boolean {
+    val fullItem = item.item.item ?: return false
+
+    val notZeroActivations = usedActivations.filterValues { it > 0 }
+
+    return fullItem.activations.any {
+        it.id in notZeroActivations.keys
+    }
+}
+
+private fun calculateItemsInfo(
+    items: List<CharacterItem>,
+    usedActivations: Map<Uuid, Int>
+): ItemsInfo {
     var activeCount = 0
     var attunedCount = 0
     var equippedCount = 0
@@ -135,7 +154,7 @@ private fun calculateItemsInfo(items: List<CharacterItem>): ItemsInfo {
     var totalCost = 0
 
     items.forEach { characterItem ->
-        if (characterItem.active) activeCount++
+        if (isItemActivated(characterItem, usedActivations)) activeCount++
         if (characterItem.attuned) attunedCount++
         if (characterItem.equipped) equippedCount++
 
@@ -160,9 +179,9 @@ fun CharacterItemsScreen(
     characterCoins: CoinsGroup,
     items: List<CharacterItem>,
     usedActivations: Map<Uuid, Int>,
-    onClick: (DnDFullEntity) -> Unit,
     onUpdateCharacterItem: (CharacterItem) -> Unit,
     onActivateItem: (CharacterItem, FullItemActivation) -> Unit,
+    onOpenInfo: (DnDEntityMin) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var characterItemInfoDialog: CharacterItem? by remember { mutableStateOf(null) }
@@ -172,13 +191,15 @@ fun CharacterItemsScreen(
     }
 
     var currentFilter: CharacterItemsFilter? by remember { mutableStateOf(null) }
-    val itemsInfo = remember(items) { calculateItemsInfo(items) }
-    val preparedItems = remember(items, currentFilter) {
-        when (currentFilter) {
-            CharacterItemsFilter.ACTIVE -> items.filter { it.active }
-            CharacterItemsFilter.ATTUNED -> items.filter { it.attuned }
-            CharacterItemsFilter.EQUIPPED -> items.filter { it.equipped }
-            null -> items
+    val itemsInfo = remember(items) { calculateItemsInfo(items, usedActivations) }
+    val preparedItems by remember(items, currentFilter, usedActivations) {
+        derivedStateOf {
+            when (currentFilter) {
+                CharacterItemsFilter.ACTIVATED -> items.filter { isItemActivated(it, usedActivations) }
+                CharacterItemsFilter.ATTUNED -> items.filter { it.attuned }
+                CharacterItemsFilter.EQUIPPED -> items.filter { it.equipped }
+                null -> items
+            }
         }
     }
 
@@ -204,7 +225,7 @@ fun CharacterItemsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     characterItem = item,
                     onClick = { characterItemInfoDialog = item },
-                    onOpenInfo = { onClick(item.item) },
+                    onOpenInfo = { onOpenInfo(item.item.toDnDEntityMin()) },
                     setItemEquipped = { onUpdateCharacterItem(item.copy(equipped = it)) },
                     setItemAttuned = { onUpdateCharacterItem(item.copy(attuned = it)) },
                 )
@@ -221,6 +242,7 @@ fun CharacterItemsScreen(
             setItemAttuned = { onUpdateCharacterItem(item.copy(attuned = it)) },
             onCountChange = { onUpdateCharacterItem(item.copy(count = it)) },
             activate = { onActivateItem(item, it) },
+            onOpenInfo = onOpenInfo,
         )
     }
 }
@@ -566,6 +588,7 @@ fun ItemShortInfoDialog(
     setItemEquipped: (Boolean) -> Unit,
     setItemAttuned: (Boolean) -> Unit,
     onCountChange: (Int) -> Unit,
+    onOpenInfo: (DnDEntityMin) -> Unit,
     activate: (FullItemActivation) -> Unit
 ) {
     val entity = characterItem.item
@@ -670,35 +693,99 @@ fun ItemShortInfoDialog(
                     )
                     ItemPropertiesRow(properties)
                 }
-            }
 
-            // Action Section: Activations (like "Cast a spell from staff")
-            fullItem?.activations?.takeIf { it.isNotEmpty() }?.let { activations ->
-                AnimatedVisibility(visible = additionalContentExpanded) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        activations.forEach { activation ->
+                fullItem?.activations?.takeIf { it.isNotEmpty() }?.let { activations ->
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp).fillMaxWidth())
 
-                            val text = remember(activation, usedActivations) {
-                                buildString {
-                                    append(activation.name)
-                                    if (activation.count != null) {
-                                        val usedCount = usedActivations[activation.id] ?: 0
-
-                                        append(' ')
-                                        append(activation.count - usedCount)
-                                        append('/')
-                                        append(activation.count)
-                                    }
+                    activations.forEach { activation ->
+                        val givesState = remember(characterItem) {
+                            if (activation.givesState == null) null
+                            else characterItem.item.companionEntities
+                                .firstOrNull {
+                                    it.entity.id == activation.givesState
                                 }
-                            }
-
-                            AssistChip(
-                                onClick = { activate(activation) },
-                                enabled = !activation.requiresAttunement || characterItem.attuned,
-                                label = { Text(text = text) }
-                            )
                         }
+                        val castsSpell = remember(characterItem) {
+                            if (activation.castsSpell == null) null
+                            else characterItem.item.companionEntities
+                                .firstOrNull {
+                                    it.entity.id == activation.castsSpell.spellId
+                                }
+                        }
+
+                        ActivationItem(
+                            activation = activation,
+                            givesState = givesState,
+                            castsSpell = castsSpell,
+                            usedActivations = usedActivations,
+                            onClick = { activate(activation) },
+                            onOpenInfo = onOpenInfo,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ActivationItem(
+    activation: FullItemActivation,
+    givesState: DnDFullEntity?,
+    castsSpell: DnDFullEntity?,
+    usedActivations: Map<Uuid, Int>,
+    onClick: () -> Unit,
+    onOpenInfo: (DnDEntityMin) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val name = remember(activation, usedActivations) {
+        buildString {
+            append(activation.name)
+            if (activation.count != null) {
+                val usedCount = usedActivations[activation.id] ?: 0
+
+                append(' ')
+                append(activation.count - usedCount)
+                append('/')
+                append(activation.count)
+            }
+        }
+    }
+    Column(
+        modifier = modifier.clickable(onClick = onClick)
+    ) {
+        Text(text = name, style = MaterialTheme.typography.labelMedium)
+
+        if (givesState != null) {
+            val entityMin = remember(givesState) { givesState.toDnDEntityMin() }
+            Column {
+                Text(text = stringResource(Res.string.gives_state))
+
+                Row {
+                    BaseEntityImage(
+                        entity = entityMin,
+                        onClick = { onOpenInfo(entityMin) },
+                        modifier = Modifier.size(34.dp)
+                    )
+
+                    Text(text = entityMin.name)
+                }
+            }
+        }
+        if (castsSpell != null) {
+            val entityMin = remember(castsSpell) { castsSpell.toDnDEntityMin() }
+            Column {
+                Text(text = stringResource(Res.string.casts_spell))
+
+                Row {
+                    BaseEntityImage(
+                        entity = entityMin,
+                        onClick = { onOpenInfo(entityMin) },
+                        modifier = Modifier.size(34.dp)
+                    )
+
+                    Text(text = entityMin.name)
                 }
             }
         }

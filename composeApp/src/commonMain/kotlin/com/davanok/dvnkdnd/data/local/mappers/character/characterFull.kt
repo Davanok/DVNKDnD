@@ -8,7 +8,6 @@ import com.davanok.dvnkdnd.data.local.db.model.character.DbFullCharacter
 import com.davanok.dvnkdnd.data.local.db.model.character.DbJoinCharacterItem
 import com.davanok.dvnkdnd.data.local.db.model.character.DbJoinCharacterMainEntities
 import com.davanok.dvnkdnd.data.local.db.model.character.DbJoinCharacterState
-import com.davanok.dvnkdnd.data.local.mappers.entities.toCharacterState
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth

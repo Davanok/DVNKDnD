@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.ui.pages.characterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
 import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import kotlin.uuid.Uuid
 
@@ -16,4 +17,7 @@ sealed interface CharacterFullScreenContract {
 
     data class UpdateCharacterItem(val item: CharacterItem) : CharacterFullScreenContract
     data class ActivateCharacterItem(val item: CharacterItem, val activation: FullItemActivation) : CharacterFullScreenContract
+
+    data class AddState(val state: DnDEntityMin) : CharacterFullScreenContract
+    data class AddItem(val item: DnDEntityMin) : CharacterFullScreenContract
 }

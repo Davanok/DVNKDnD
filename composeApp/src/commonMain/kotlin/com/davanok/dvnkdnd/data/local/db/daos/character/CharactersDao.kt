@@ -21,6 +21,8 @@ import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterMainEntity
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterNote
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterOptionalValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterItemLink
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -104,5 +106,23 @@ interface CharactersDao: CharacterMainDao,
             .let { insertCharacterNotes(it) }
 
         return characterId
+    }
+
+    @Transaction
+    suspend fun activateCharacterItem(
+        characterId: Uuid,
+        item: CharacterItemLink,
+        activation: FullItemActivation
+    ) {
+        if (activation.requiresAttunement && !item.attuned) return
+        addCharacterUsedActivations(characterId, activation.id, 1)
+        if (activation.givesState != null) {
+            val characterState = DbCharacterStateLink(
+                characterId = characterId,
+                stateId = activation.givesState,
+                sourceId = item.item
+            )
+            setCharacterState(characterState)
+        }
     }
 }

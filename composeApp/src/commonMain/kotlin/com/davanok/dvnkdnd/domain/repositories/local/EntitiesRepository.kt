@@ -6,6 +6,7 @@ import kotlin.uuid.Uuid
 
 interface EntitiesRepository {
     suspend fun getExistingEntities(entityIds: List<Uuid>): Result<List<Uuid>>
+    suspend fun getExistsEntity(entityId: Uuid): Result<Boolean>
 
     suspend fun getEntitiesWithSubList(entityIds: List<Uuid>): Result<List<DnDEntityWithSubEntities>>
     suspend fun getEntitiesWithSubList(type: DnDEntityTypes): Result<List<DnDEntityWithSubEntities>>

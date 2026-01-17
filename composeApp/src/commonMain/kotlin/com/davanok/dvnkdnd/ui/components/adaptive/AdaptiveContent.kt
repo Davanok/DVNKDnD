@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.ui.components.adaptive
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
@@ -51,9 +52,17 @@ class AdaptiveContentState<T>(
 
     fun hideContent(key: T) = _contents.remove(key)
     fun clear() = _contents.clear()
-    fun peek(): T? = _contents.firstOrNull()
     fun hasContent(): Boolean = _contents.isNotEmpty()
     fun isVisible(key: T) = _contents.contains(key)
+
+    fun peekEntry(withIgnoreWindow: Boolean = false): SupportEntry? {
+        return if (withIgnoreWindow)
+            _contents.firstNotNullOfOrNull { key ->
+                contentProvider(key)?.takeIf { it.ignoreWindows }
+            }
+        else
+            _contents.firstOrNull()?.let { contentProvider(it) }
+    }
 
     /** Returns first content's composable (or null). Useful for supportPane in single/multi-pane UI. */
     fun peekContentComposable(withIgnoreWindow: Boolean = false): (@Composable () -> Unit)? {
@@ -124,13 +133,15 @@ fun <T> AdaptiveContent(
     val showSupportPane = !showWindows || entries.values.any { it.ignoreWindows }
 
     // If windows are not used or pane ignore them, show supportPane (first item) inside adaptive width
+    val supportEntry = if (showSupportPane) state.peekEntry(showWindows) else null
     AdaptiveWidth(
         modifier = modifier,
         singlePaneContent = singlePaneContent,
         twoPaneContent = twoPaneContent,
-        supportPane = if (showSupportPane) state.peekContentComposable(showWindows) else null,
+        supportPane = supportEntry?.content,
+        supportPaneTitle = if (supportEntry?.titleGetter == null) { {} } else { { Text(text = supportEntry.titleGetter()) } },
         panesSpacing = panesSpacing,
-        onHideSupportPane = { state.clear() }
+        onHideSupportPane = state::clear
     )
 
     // When windows are available and entries don't ignore windows, open them as separate windows

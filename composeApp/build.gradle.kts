@@ -88,6 +88,9 @@ kotlin {
 
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+
+            implementation(libs.androidx.paging.common)
+            implementation(libs.androidx.paging.compose)
         }
         androidMain.dependencies {
             implementation(libs.koin.android)
