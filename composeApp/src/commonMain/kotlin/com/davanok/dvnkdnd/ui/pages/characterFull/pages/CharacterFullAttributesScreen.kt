@@ -30,7 +30,6 @@ import androidx.compose.ui.util.fastForEach
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.SkillsGroup
-import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
@@ -38,7 +37,7 @@ import dvnkdnd.composeapp.generated.resources.saving_throw
 import dvnkdnd.composeapp.generated.resources.skills
 import org.jetbrains.compose.resources.stringResource
 
-private val StatItemMinWidth = 150.dp
+private const val StatItemMinWidthDp = 200
 
 @Composable
 fun CharacterFullAttributesScreen(
@@ -54,7 +53,7 @@ fun CharacterFullAttributesScreen(
     val density = LocalDensity.current
     LazyVerticalGrid(
         modifier = modifier,
-        columns = GridCells.Adaptive(StatItemMinWidth),
+        columns = GridCells.Adaptive(StatItemMinWidthDp.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -96,8 +95,6 @@ private fun AttributeItem(
     onSkillClick: (Skills) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val calculatedModifier = remember(attributeValue) { calculateModifier(attributeValue) }
-
     OutlinedCard(modifier = modifier) {
         Column(
             modifier = Modifier
@@ -117,7 +114,7 @@ private fun AttributeItem(
                     maxLines = 1
                 )
                 Text(
-                    text = calculatedModifier.toSignedString(),
+                    text = attributeValue.toString(),
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 1
                 )

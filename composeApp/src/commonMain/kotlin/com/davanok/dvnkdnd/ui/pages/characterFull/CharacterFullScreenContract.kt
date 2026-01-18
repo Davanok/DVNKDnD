@@ -20,4 +20,5 @@ sealed interface CharacterFullScreenContract {
 
     data class AddState(val state: DnDEntityMin) : CharacterFullScreenContract
     data class AddItem(val item: DnDEntityMin) : CharacterFullScreenContract
+    data class AddSpell(val spell: DnDEntityMin) : CharacterFullScreenContract
 }

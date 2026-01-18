@@ -307,6 +307,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
 
     <string name="character_main_entities_dialog_title">Main entities</string>
     <string name="character_add_item_dialog_title">Add item</string>
+    <string name="character_add_spell_dialog_title">Add item</string>
     <string name="character_add_state_dialog_title">Add state</string>
     <!--notes screen-->
     <string name="delete_note">Delete note</string>
@@ -379,6 +380,8 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="character_has_no_spells">This character has no spells</string>
     <string name="character_has_no_states">This character has no states</string>
 
+    <string name="add_character_item">Add character item</string>
+    <string name="add_character_spell">Add character spell</string>
     <!--measurement system-->
     <string name="meter_short">%1$s m</string>
     <string name="centimeter_short">%1$s cm</string>

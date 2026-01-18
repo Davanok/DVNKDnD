@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,9 +14,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +40,7 @@ import com.davanok.dvnkdnd.ui.components.rememberCollapsingNestedScrollConnectio
 import com.davanok.dvnkdnd.ui.pages.characterFull.components.ImagesCarousel
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.add_character_state
 import dvnkdnd.composeapp.generated.resources.character_has_no_states
 import dvnkdnd.composeapp.generated.resources.state_from
 import org.jetbrains.compose.resources.stringResource
@@ -42,18 +49,33 @@ import org.jetbrains.compose.resources.stringResource
 fun CharacterStatesScreen(
     states: List<CharacterState>,
     onClick: (DnDFullEntity) -> Unit,
+    onAddStateClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (states.isEmpty())
-        FullScreenCard(modifier = modifier) {
-            Text(text = stringResource(Res.string.character_has_no_states))
+    Scaffold(
+        modifier = modifier,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddStateClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(Res.string.add_character_state)
+                )
+            }
         }
-    else
-        CharacterStatesScreenContent(
-            states = states,
-            onClick = onClick,
-            modifier = modifier
-        )
+    ) {
+        if (states.isEmpty())
+            FullScreenCard {
+                Text(text = stringResource(Res.string.character_has_no_states))
+            }
+        else
+            CharacterStatesScreenContent(
+                states = states,
+                onClick = onClick,
+                modifier = Modifier.fillMaxSize()
+            )
+    }
 }
 
 @Composable

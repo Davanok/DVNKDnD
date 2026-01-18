@@ -8,12 +8,14 @@ import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterMin
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterHealth
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterNote
+import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterSpell
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItemLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMin
 import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
+import com.davanok.dvnkdnd.domain.entities.character.CharacterSpellLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
@@ -84,6 +86,13 @@ class CharactersRepositoryImpl(
         state: CharacterStateLink
     ): Result<Unit> = runLogging("setCharacterState") {
         dao.setCharacterState(state.toDbCharacterStateLink(characterId))
+    }
+
+    override suspend fun setCharacterSpell(
+        characterId: Uuid,
+        spell: CharacterSpellLink
+    ): Result<Unit> = runLogging("setCharacterSpell") {
+        dao.setCharacterSpell(spell.toDbCharacterSpell(characterId))
     }
 
     override suspend fun activateCharacterItem(

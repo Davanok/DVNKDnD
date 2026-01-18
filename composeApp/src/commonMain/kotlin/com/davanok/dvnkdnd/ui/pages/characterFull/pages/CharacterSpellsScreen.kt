@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -19,15 +20,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
@@ -62,6 +67,7 @@ import com.davanok.dvnkdnd.ui.components.toSignedString
 import com.davanok.dvnkdnd.ui.pages.characterFull.components.ImagesCarousel
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.add_character_spell
 import dvnkdnd.composeapp.generated.resources.attack_bonus_short
 import dvnkdnd.composeapp.generated.resources.character_has_no_spells
 import dvnkdnd.composeapp.generated.resources.concentration
@@ -86,22 +92,37 @@ fun CharacterSpellsScreen(
     usedSpells: Map<Uuid?, IntArray>,
     onSpellClick: (DnDFullEntity) -> Unit,
     setUsedSpellsCount: (typeId: Uuid?, lvl: Int, count: Int) -> Unit,
+    onAddSpellClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (spells.isEmpty())
-        FullScreenCard(modifier = modifier) {
-            Text(text = stringResource(Res.string.character_has_no_spells))
+    Scaffold(
+        modifier = modifier,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddSpellClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(Res.string.add_character_spell)
+                )
+            }
         }
-    else
-        CharacterSpellsScreenContent(
-            spells = spells,
-            spellCastingValues = spellCastingValues,
-            availableSpellSlots = availableSpellSlots,
-            usedSpells = usedSpells,
-            onSpellClick = onSpellClick,
-            setUsedSpellsCount = setUsedSpellsCount,
-            modifier = modifier
-        )
+    ) {
+        if (spells.isEmpty())
+            FullScreenCard {
+                Text(text = stringResource(Res.string.character_has_no_spells))
+            }
+        else
+            CharacterSpellsScreenContent(
+                spells = spells,
+                spellCastingValues = spellCastingValues,
+                availableSpellSlots = availableSpellSlots,
+                usedSpells = usedSpells,
+                onSpellClick = onSpellClick,
+                setUsedSpellsCount = setUsedSpellsCount,
+                modifier = Modifier.fillMaxSize()
+            )
+    }
 }
 
 @Composable

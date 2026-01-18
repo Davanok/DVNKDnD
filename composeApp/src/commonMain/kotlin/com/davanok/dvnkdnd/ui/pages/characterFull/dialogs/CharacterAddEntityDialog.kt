@@ -141,7 +141,7 @@ private fun EntityCard(
                 ) {
                     Text(
                         text = entity.name,
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelLarge
                     )
                     Text(
                         text = entity.source,
@@ -162,7 +162,10 @@ private fun EntityCard(
                 }
             }
             AnimatedVisibility(visible = expanded) {
-                Text(text = entity.description)
+                Column {
+                    Spacer(Modifier.height(12.dp))
+                    Text(text = entity.description)
+                }
             }
 
             entity.subEntities.forEach { subEntity ->

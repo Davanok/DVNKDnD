@@ -9,6 +9,7 @@ import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.core.utils.getByKeyPredicate
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItemLink
+import com.davanok.dvnkdnd.domain.entities.character.CharacterSpellLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
@@ -17,6 +18,7 @@ import com.davanok.dvnkdnd.ui.components.UiMessage
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.character_add_item_dialog_title
+import dvnkdnd.composeapp.generated.resources.character_add_spell_dialog_title
 import dvnkdnd.composeapp.generated.resources.character_add_state_dialog_title
 import dvnkdnd.composeapp.generated.resources.character_full_attacks_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_attributes_page_title
@@ -191,6 +193,26 @@ class CharacterFullViewModel(
             )
     }
 
+    fun newCharacterSpell(spellId: Uuid) = viewModelScope.launch {
+        bootstrapper.checkAndLoadEntity(spellId)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
+            .onFailure { return@launch }
+
+
+        val spell = CharacterSpellLink(
+            ready = false,
+            spellId = spellId
+        )
+        repository.setCharacterSpell(characterId, spell)
+            .handleResult(
+                successMessage = { "TODO" },
+                failureMessage = { "TODO" }
+            )
+    }
+
     fun activateCharacterItem(item: CharacterItem, activation: FullItemActivation) = viewModelScope.launch {
         repository
             .activateCharacterItem(characterId, item.toCharacterItemLink(), activation)
@@ -208,6 +230,7 @@ class CharacterFullViewModel(
         is CharacterFullScreenContract.UpdateOrNewNote -> updateOrNewNote(action.note)
         is CharacterFullScreenContract.ActivateCharacterItem -> activateCharacterItem(action.item, action.activation)
         is CharacterFullScreenContract.AddItem -> newCharacterItem(action.item.id)
+        is CharacterFullScreenContract.AddSpell -> newCharacterSpell(action.spell.id)
         is CharacterFullScreenContract.AddState -> newCharacterState(action.state.id, null)
     }
 }
@@ -231,6 +254,7 @@ data class CharacterFullUiState(
         HEALTH(Res.string.character_health_dialog_title),
         MAIN_ENTITIES(Res.string.character_main_entities_dialog_title),
         ADD_ITEM(Res.string.character_add_item_dialog_title),
+        ADD_SPELL(Res.string.character_add_spell_dialog_title),
         ADD_STATE(Res.string.character_add_state_dialog_title),
         NONE(Res.string.app_name)
     }

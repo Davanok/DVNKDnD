@@ -148,6 +148,15 @@ private fun Content(
                     onEntityInfoClick = navigateToEntityInfo
                 )
             }
+            CharacterFullUiState.Dialog.ADD_SPELL -> SupportEntry(
+                titleGetter = { stringResource(entry.titleStringRes) }
+            ) {
+                CharacterAddEntityDialogContent(
+                    entityType = DnDEntityTypes.SPELL,
+                    onSelectEntityClick = { action(CharacterFullScreenContract.AddSpell(it)) },
+                    onEntityInfoClick = navigateToEntityInfo
+                )
+            }
             CharacterFullUiState.Dialog.NONE -> null
         }
     }
@@ -215,7 +224,16 @@ private fun Content(
                         character = character,
                         skipAttributes = false,
                         onEntityClick = navigateToEntityInfo,
-                        action = action
+                        action = action,
+                        onAddItemClick = {
+                            adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_ITEM)
+                        },
+                        onAddSpellClick = {
+                            adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_SPELL)
+                        },
+                        onAddStateClick = {
+                            adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_STATE)
+                        }
                     )
                 }
             },
@@ -237,7 +255,7 @@ private fun Content(
                         )
                         CharacterFullAttributesScreen(
                             modifier = Modifier.weight(1f),
-                            attributes = character.appliedValues.savingThrowModifiers,
+                            attributes = character.appliedValues.attributes,
                             savingThrows = character.appliedValues.savingThrowModifiers,
                             skills = character.appliedValues.skillModifiers,
                             onAttributeClick = { TODO() },
@@ -252,7 +270,16 @@ private fun Content(
                         character = character,
                         skipAttributes = true,
                         onEntityClick = navigateToEntityInfo,
-                        action = action
+                        action = action,
+                        onAddItemClick = {
+                            adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_ITEM)
+                        },
+                        onAddSpellClick = {
+                            adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_SPELL)
+                        },
+                        onAddStateClick = {
+                            adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.ADD_STATE)
+                        }
                     )
                 }
             )
@@ -285,6 +312,9 @@ private fun CharacterPages(
     skipAttributes: Boolean,
     onEntityClick: (DnDEntityMin) -> Unit,
     action: (CharacterFullScreenContract) -> Unit,
+    onAddItemClick: () -> Unit,
+    onAddSpellClick: () -> Unit,
+    onAddStateClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pages = remember(skipAttributes) {
@@ -304,7 +334,7 @@ private fun CharacterPages(
         ) { index ->
             when (pages[index]) {
                 CharacterFullUiState.Page.ATTRIBUTES -> CharacterFullAttributesScreen(
-                    attributes = character.appliedValues.savingThrowModifiers,
+                    attributes = character.appliedValues.attributes,
                     savingThrows = character.appliedValues.savingThrowModifiers,
                     skills = character.appliedValues.skillModifiers,
                     modifier = Modifier.fillMaxSize(),
@@ -327,6 +357,7 @@ private fun CharacterPages(
                     onActivateItem = { item, activation ->
                         action(CharacterFullScreenContract.ActivateCharacterItem(item, activation))
                     },
+                    onAddCharacterItemClick = onAddItemClick,
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.SPELLS -> CharacterSpellsScreen(
@@ -337,7 +368,8 @@ private fun CharacterPages(
                     onSpellClick = { onEntityClick(it.toDnDEntityMin()) },
                     setUsedSpellsCount = { typeId, lvl, count ->
                         action(CharacterFullScreenContract.SetUsedSpellsCount(typeId, lvl, count))
-                                         },
+                    },
+                    onAddSpellClick = onAddSpellClick,
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.SPELL_SLOTS -> CharacterSpellSlotsScreen(
@@ -351,6 +383,7 @@ private fun CharacterPages(
                 CharacterFullUiState.Page.STATES -> CharacterStatesScreen(
                     states = character.states,
                     onClick = { onEntityClick(it.toDnDEntityMin()) },
+                    onAddStateClick = onAddStateClick,
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(

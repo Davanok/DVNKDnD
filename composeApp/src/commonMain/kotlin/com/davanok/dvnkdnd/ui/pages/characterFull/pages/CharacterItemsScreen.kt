@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +43,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.RichTooltip
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
@@ -85,6 +88,7 @@ import com.davanok.dvnkdnd.ui.providers.LocalMeasurementSystem
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.activated_items_filter_name
+import dvnkdnd.composeapp.generated.resources.add_character_item
 import dvnkdnd.composeapp.generated.resources.attack_bonus_short_value
 import dvnkdnd.composeapp.generated.resources.attuned
 import dvnkdnd.composeapp.generated.resources.attuned_items_filter_name
@@ -184,25 +188,40 @@ fun CharacterItemsScreen(
     onUpdateCharacterItem: (CharacterItem) -> Unit,
     onActivateItem: (CharacterItem, FullItemActivation) -> Unit,
     onOpenInfo: (DnDEntityMin) -> Unit,
+    onAddCharacterItemClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (items.isEmpty())
-        Column(modifier = modifier) {
-            Text(text = characterCoins.buildAnnotatedString())
-            FullScreenCard(modifier = modifier) {
-                Text(text = stringResource(Res.string.character_has_no_items))
+    Scaffold(
+        modifier = modifier,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddCharacterItemClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(Res.string.add_character_item)
+                )
             }
         }
-    else
-        CharacterItemsScreenContent(
-            characterCoins = characterCoins,
-            items = items,
-            usedActivations = usedActivations,
-            onUpdateCharacterItem = onUpdateCharacterItem,
-            onActivateItem = onActivateItem,
-            onOpenInfo = onOpenInfo,
-            modifier = modifier
-        )
+    ) {
+        if (items.isEmpty())
+            Column {
+                Text(text = characterCoins.buildAnnotatedString())
+                FullScreenCard {
+                    Text(text = stringResource(Res.string.character_has_no_items))
+                }
+            }
+        else
+            CharacterItemsScreenContent(
+                characterCoins = characterCoins,
+                items = items,
+                usedActivations = usedActivations,
+                onUpdateCharacterItem = onUpdateCharacterItem,
+                onActivateItem = onActivateItem,
+                onOpenInfo = onOpenInfo,
+                modifier = Modifier.fillMaxSize()
+            )
+    }
 }
 
 @Composable
