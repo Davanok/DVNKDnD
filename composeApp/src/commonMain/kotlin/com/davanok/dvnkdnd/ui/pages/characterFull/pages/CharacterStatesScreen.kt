@@ -28,16 +28,36 @@ import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.domain.entities.character.CharacterState
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.ui.components.BaseEntityImage
+import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.rememberCollapsingNestedScrollConnection
 import com.davanok.dvnkdnd.ui.pages.characterFull.components.ImagesCarousel
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.character_has_no_states
 import dvnkdnd.composeapp.generated.resources.state_from
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CharacterStatesScreen(
+    states: List<CharacterState>,
+    onClick: (DnDFullEntity) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (states.isEmpty())
+        FullScreenCard(modifier = modifier) {
+            Text(text = stringResource(Res.string.character_has_no_states))
+        }
+    else
+        CharacterStatesScreenContent(
+            states = states,
+            onClick = onClick,
+            modifier = modifier
+        )
+}
+
+@Composable
+private fun CharacterStatesScreenContent(
     states: List<CharacterState>,
     onClick: (DnDFullEntity) -> Unit,
     modifier: Modifier = Modifier

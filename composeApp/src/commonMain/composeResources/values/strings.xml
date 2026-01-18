@@ -372,6 +372,13 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
 
     <string name="search_entity_type">Search entity (%1$d)</string>
 
+    <string name="character_has_no_attacks">This character has no attacks from equipped items.</string>
+    <string name="character_has_no_items">This character has no items.</string>
+    <string name="character_has_no_notes">This character has no notes.</string>
+    <string name="character_has_no_spell_slots">This character has no spell slots.</string>
+    <string name="character_has_no_spells">This character has no spells</string>
+    <string name="character_has_no_states">This character has no states</string>
+
     <!--measurement system-->
     <string name="meter_short">%1$s m</string>
     <string name="centimeter_short">%1$s cm</string>

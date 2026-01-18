@@ -28,11 +28,13 @@ import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.domain.entities.character.CharacterAttack
 import com.davanok.dvnkdnd.domain.entities.dndEntities.ItemProperty
 import com.davanok.dvnkdnd.ui.components.BaseEntityImage
+import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.text.buildDamagesString
 import com.davanok.dvnkdnd.ui.components.text.buildName
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.attack_bonus_short_value
+import dvnkdnd.composeapp.generated.resources.character_has_no_attacks
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -40,22 +42,27 @@ fun CharacterAttacksScreen(
     attacks: List<CharacterAttack>,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(
-            items = attacks,
-            key = { it.source.item.entity.id }
-        ) { attack ->
-            AttackCard(
-                attack = attack,
-                onClick = { },
-                modifier = Modifier.fillMaxWidth()
-            )
+    if (attacks.isEmpty())
+        FullScreenCard(modifier = modifier) {
+            Text(text = stringResource(Res.string.character_has_no_attacks))
         }
-    }
+    else
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(
+                items = attacks,
+                key = { it.source.item.entity.id }
+            ) { attack ->
+                AttackCard(
+                    attack = attack,
+                    onClick = { },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
 }
 
 @Composable

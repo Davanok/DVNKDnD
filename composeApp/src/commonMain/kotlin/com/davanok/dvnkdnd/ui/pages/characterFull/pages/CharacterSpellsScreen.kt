@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.davanok.dvnkdnd.core.utils.renameSpellSlots
 import com.davanok.dvnkdnd.domain.entities.character.CharacterSpell
 import com.davanok.dvnkdnd.domain.entities.character.SpellCastingValues
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
@@ -51,6 +52,7 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.FullSpellAttack
 import com.davanok.dvnkdnd.domain.entities.dndEntities.SpellSlotsType
 import com.davanok.dvnkdnd.ui.components.BaseEntityImage
 import com.davanok.dvnkdnd.ui.components.DEFAULT_PARTS_SEP
+import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.adaptive.alternativeClickable
 import com.davanok.dvnkdnd.ui.components.rememberCollapsingNestedScrollConnection
@@ -61,6 +63,7 @@ import com.davanok.dvnkdnd.ui.pages.characterFull.components.ImagesCarousel
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.attack_bonus_short
+import dvnkdnd.composeapp.generated.resources.character_has_no_spells
 import dvnkdnd.composeapp.generated.resources.concentration
 import dvnkdnd.composeapp.generated.resources.difficulty_class_short
 import dvnkdnd.composeapp.generated.resources.multiclass_spell_slot_type_name
@@ -85,21 +88,34 @@ fun CharacterSpellsScreen(
     setUsedSpellsCount: (typeId: Uuid?, lvl: Int, count: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val preparedSpellSlots by remember(availableSpellSlots) {
-        derivedStateOf {
-            val namesCount = mutableMapOf<String, Int>()
-            availableSpellSlots
-                .mapKeys { (type, _) ->
-                    if (type == null) null
-                    else {
-                        val name = type.name
-                        val count = namesCount.getOrElse(name) { 0 }
-                        namesCount[name] = count + 1
-                        if (count == 0) type
-                        else type.copy(name = "$name ($count)")
-                    }
-                }
+    if (spells.isEmpty())
+        FullScreenCard(modifier = modifier) {
+            Text(text = stringResource(Res.string.character_has_no_spells))
         }
+    else
+        CharacterSpellsScreenContent(
+            spells = spells,
+            spellCastingValues = spellCastingValues,
+            availableSpellSlots = availableSpellSlots,
+            usedSpells = usedSpells,
+            onSpellClick = onSpellClick,
+            setUsedSpellsCount = setUsedSpellsCount,
+            modifier = modifier
+        )
+}
+
+@Composable
+private fun CharacterSpellsScreenContent(
+    spells: List<CharacterSpell>,
+    spellCastingValues: SpellCastingValues,
+    availableSpellSlots: Map<SpellSlotsType?, IntArray>,
+    usedSpells: Map<Uuid?, IntArray>,
+    onSpellClick: (DnDFullEntity) -> Unit,
+    setUsedSpellsCount: (typeId: Uuid?, lvl: Int, count: Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val preparedSpellSlots by remember(availableSpellSlots) {
+        derivedStateOf { renameSpellSlots(availableSpellSlots) }
     }
 
     val visibleSpells by remember(spells) {
@@ -121,6 +137,11 @@ fun CharacterSpellsScreen(
 
     var showSelectSpellSlotDialog: DnDFullEntity? by remember { mutableStateOf(null) }
 
+    val changeSpellSlotsCount: (typeId: Uuid?, lvl: Int, addValue: Int) -> Unit = { typeId, lvl, addValue ->
+        val currentCount = usedSpells[typeId]?.get(lvl - 1) ?: 0
+        setUsedSpellsCount(typeId, lvl, currentCount + addValue)
+    }
+
     Column(
         modifier = modifier
     ) {
@@ -132,12 +153,10 @@ fun CharacterSpellsScreen(
                 availableSpellSlots = preparedSpellSlots,
                 usedSpells = usedSpells,
                 onMarkSpellSlotAsUsed = { typeId, lvl ->
-                    val currentCount = usedSpells[typeId]?.get(lvl - 1) ?: 0
-                    setUsedSpellsCount(typeId, lvl, currentCount + 1)
-                                        },
+                    changeSpellSlotsCount(typeId, lvl, 1)
+                },
                 onMarkSpellSlotAsNotUsed = { typeId, lvl ->
-                    val currentCount = usedSpells[typeId]?.get(lvl - 1) ?: 0
-                    setUsedSpellsCount(typeId, lvl, currentCount - 1)
+                    changeSpellSlotsCount(typeId, lvl, -1)
                 },
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
@@ -168,8 +187,7 @@ fun CharacterSpellsScreen(
             usedSpells = usedSpells,
             onDismissRequest = { showSelectSpellSlotDialog = null },
             onCast = { typeId, lvl ->
-                val currentCount = usedSpells[typeId]?.get(lvl - 1) ?: 0
-                setUsedSpellsCount(typeId, lvl, currentCount + 1)
+                changeSpellSlotsCount(typeId, lvl, 1)
             }
         )
     }

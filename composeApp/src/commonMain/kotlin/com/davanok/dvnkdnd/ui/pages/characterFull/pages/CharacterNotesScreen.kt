@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -38,7 +38,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,17 +57,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.window.Dialog
 import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
+import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_tag
 import dvnkdnd.composeapp.generated.resources.cancel
 import dvnkdnd.composeapp.generated.resources.cancel_delete_note
+import dvnkdnd.composeapp.generated.resources.character_has_no_notes
 import dvnkdnd.composeapp.generated.resources.confirm_delete_note
 import dvnkdnd.composeapp.generated.resources.delete
 import dvnkdnd.composeapp.generated.resources.delete_note
@@ -119,57 +122,35 @@ fun CharacterNotesScreen(
         }
     }
     Column(modifier = modifier) {
-        Box(
+        NotesTopBar(
+            tagsListState = tagsListState,
+            allTags = allTags,
+            filterTag = filterTag,
+            onTagClick = { filterTag = it.takeIf { it != filterTag } },
+            onAddTagClick = { editNoteDialog = CharacterNote(id = Uuid.NIL) },
             modifier = Modifier.fillMaxWidth()
-        ) {
-            LazyRow(
-                state = tagsListState,
-                modifier = Modifier.align(Alignment.CenterStart),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = allTags,
-                    key = { it }
-                ) { tag ->
-                    val selected = filterTag == tag
-                    FilterChip(
-                        modifier = Modifier.height(FilterChipDefaults.Height),
-                        selected = selected,
-                        onClick = { filterTag = tag.takeUnless { selected } },
-                        label = { Text(tag) }
-                    )
-                }
-                item {
-                    Spacer(Modifier.width(48.dp))
-                }
-            }
-
-            FilledIconButton(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                onClick = { editNoteDialog = CharacterNote(Uuid.NIL) }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(Res.string.new_note)
-                )
-            }
-        }
+        )
 
         HorizontalDivider(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp))
 
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(items = filtered, key = { it.id }) { note ->
-                CharacterNoteCard(
-                    note = note,
-                    onTagClick = { filterTag = it.takeIf { filterTag != it } },
-                    onEdit = { editNoteDialog = it },
-                    onDelete = onDeleteNote
-                )
+        if (notes.isEmpty())
+            FullScreenCard(modifier = modifier) {
+                Text(text = stringResource(Res.string.character_has_no_notes))
             }
-        }
+        else
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(items = filtered, key = { it.id }) { note ->
+                    CharacterNoteCard(
+                        note = note,
+                        onTagClick = { filterTag = it.takeIf { filterTag != it } },
+                        onEdit = { editNoteDialog = it },
+                        onDelete = onDeleteNote
+                    )
+                }
+            }
     }
 
     editNoteDialog?.let { note ->
@@ -182,6 +163,58 @@ fun CharacterNotesScreen(
             },
             onDelete = onDeleteNote
         )
+    }
+}
+
+@Composable
+private fun NotesTopBar(
+    tagsListState: LazyListState,
+    allTags: List<String>,
+    filterTag: String?,
+    onTagClick: (String) -> Unit,
+    onAddTagClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val density = LocalDensity.current
+
+    var buttonWidth by remember { mutableStateOf(48.dp) }
+
+    Box(
+        modifier = modifier
+    ) {
+        LazyRow(
+            state = tagsListState,
+            modifier = Modifier.align(Alignment.CenterStart),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                items = allTags,
+                key = { it }
+            ) { tag ->
+                FilterChip(
+                    selected = filterTag == tag,
+                    onClick = { onTagClick(tag) },
+                    label = { Text(tag, maxLines = 1) }
+                )
+            }
+            item {
+                Spacer(Modifier.width(buttonWidth))
+            }
+        }
+
+        FilledIconButton(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .onSizeChanged {
+                    with(density) { buttonWidth = it.width.toDp() }
+                },
+            onClick = onAddTagClick
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = stringResource(Res.string.new_note)
+            )
+        }
     }
 }
 
@@ -370,7 +403,8 @@ private fun UpdateNoteDialog(
                                 contentDescription = stringResource(Res.string.add_tag)
                             )
                         }
-                    }
+                    },
+                    maxLines = 1
                 )
 
                 OutlinedTextField(

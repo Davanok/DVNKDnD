@@ -71,6 +71,7 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.ItemProperty
 import com.davanok.dvnkdnd.domain.enums.configs.MeasurementSystem
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Coins
 import com.davanok.dvnkdnd.ui.components.BaseEntityImage
+import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.components.rememberCollapsingNestedScrollConnection
 import com.davanok.dvnkdnd.ui.components.text.MeasurementConverter
@@ -88,6 +89,7 @@ import dvnkdnd.composeapp.generated.resources.attack_bonus_short_value
 import dvnkdnd.composeapp.generated.resources.attuned
 import dvnkdnd.composeapp.generated.resources.attuned_items_filter_name
 import dvnkdnd.composeapp.generated.resources.casts_spell
+import dvnkdnd.composeapp.generated.resources.character_has_no_items
 import dvnkdnd.composeapp.generated.resources.cost
 import dvnkdnd.composeapp.generated.resources.decrement_count
 import dvnkdnd.composeapp.generated.resources.equipped
@@ -183,6 +185,35 @@ fun CharacterItemsScreen(
     onActivateItem: (CharacterItem, FullItemActivation) -> Unit,
     onOpenInfo: (DnDEntityMin) -> Unit,
     modifier: Modifier = Modifier,
+) {
+    if (items.isEmpty())
+        Column(modifier = modifier) {
+            Text(text = characterCoins.buildAnnotatedString())
+            FullScreenCard(modifier = modifier) {
+                Text(text = stringResource(Res.string.character_has_no_items))
+            }
+        }
+    else
+        CharacterItemsScreenContent(
+            characterCoins = characterCoins,
+            items = items,
+            usedActivations = usedActivations,
+            onUpdateCharacterItem = onUpdateCharacterItem,
+            onActivateItem = onActivateItem,
+            onOpenInfo = onOpenInfo,
+            modifier = modifier
+        )
+}
+
+@Composable
+private fun CharacterItemsScreenContent(
+    characterCoins: CoinsGroup,
+    items: List<CharacterItem>,
+    usedActivations: Map<Uuid, Int>,
+    onUpdateCharacterItem: (CharacterItem) -> Unit,
+    onActivateItem: (CharacterItem, FullItemActivation) -> Unit,
+    onOpenInfo: (DnDEntityMin) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var characterItemInfoDialog: CharacterItem? by remember { mutableStateOf(null) }
     var itemsInfoExpanded by remember { mutableStateOf(true) }
