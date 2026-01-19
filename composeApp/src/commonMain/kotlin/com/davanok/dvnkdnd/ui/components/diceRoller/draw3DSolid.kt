@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.ui.components.diceRoller
 
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -18,17 +17,6 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 private const val PROJ_EPS = 1e-4f
-
-@Immutable
-data class Rotation(
-    val x: Float,
-    val y: Float,
-    val z: Float
-) {
-    companion object {
-        val Zero = Rotation(0f, 0f, 0f)
-    }
-}
 
 data class Vec3(val x: Float, val y: Float, val z: Float) {
     operator fun minus(o: Vec3) = Vec3(x - o.x, y - o.y, z - o.z)

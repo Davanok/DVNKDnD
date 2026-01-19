@@ -36,9 +36,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -51,14 +48,16 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
-import com.davanok.dvnkdnd.ui.model.isCritical
-import com.davanok.dvnkdnd.ui.model.toUiMessage
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
-import com.davanok.dvnkdnd.ui.components.diceRoller.rememberDiceRoller
+import com.davanok.dvnkdnd.ui.components.diceRoller.AnimationState
+import com.davanok.dvnkdnd.ui.components.diceRoller.DiceRollerDialog
+import com.davanok.dvnkdnd.ui.components.diceRoller.rememberDiceRollerState
+import com.davanok.dvnkdnd.ui.model.isCritical
+import com.davanok.dvnkdnd.ui.model.toUiMessage
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.continue_str
@@ -142,19 +141,19 @@ private fun Content(
     constitutionModifier: Int,
     healthDice: Dices?
 ) {
+    val diceRollerState = rememberDiceRollerState {
+        onHealthChange(it.first().second.first())
+    }
+    val isRunning = diceRollerState.animationState == AnimationState.Running
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        var isRolling by remember { mutableStateOf(false) }
         val displayedTotal by animateIntAsState(targetValue = health + constitutionModifier)
 
         val focusManager = LocalFocusManager.current
         val haptic = LocalHapticFeedback.current
-        val diceRoller = rememberDiceRoller {
-            onHealthChange(it.first().second.first())
-            isRolling = false
-        }
 
         OutlinedCard(
             modifier = Modifier
@@ -221,13 +220,12 @@ private fun Content(
 
                         Button(
                             onClick = {
-                                isRolling = true
-                                diceRoller.roll(healthDice)
+                                diceRollerState.roll(healthDice)
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             },
-                            enabled = !isRolling
+                            enabled = !isRunning
                         ) {
-                            if (isRolling) {
+                            if (isRunning) {
                                 CircularProgressIndicator(
                                     strokeWidth = 2.dp,
                                     modifier = Modifier.size(20.dp)
@@ -248,4 +246,8 @@ private fun Content(
             }
         }
     }
+
+    DiceRollerDialog(
+        state = diceRollerState
+    )
 }
