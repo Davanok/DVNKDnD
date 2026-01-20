@@ -277,7 +277,7 @@ private fun AttributeItem(
                                         value = firstModInfo.state.selected,
                                         enabled = firstModInfo.state.selectable,
                                         role = Role.Checkbox,
-                                        onValueChange = { onSelectSkill(firstModInfo.modifier.id) }
+                                        onValueChange = { onSelectSkill(firstModInfo.id) }
                                     )
                                 ),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -333,7 +333,7 @@ private fun AttributeItem(
 private fun ModifierChip(info: ModifierExtendedInfo, onClick: (Uuid) -> Unit) {
     FilterChip(
         selected = info.state.selected,
-        onClick = { if (info.state.selectable) onClick(info.modifier.id) },
+        onClick = { if (info.state.selectable) onClick(info.id) },
         label = { Text(info.buildPreviewString()) },
         enabled = info.state.selectable,
     )

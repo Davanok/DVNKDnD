@@ -128,14 +128,23 @@ class NewCharacterThrowsViewModel(
         selectable: Boolean,
         selected: Boolean
     ) = ModifierExtendedInfo(
+        id = modifier.id,
+        isCustom = false,
         groupId = group.id,
         groupName = group.name,
-        modifier = modifier,
+        target = modifier.target,
         operation = group.operation,
         valueSource = group.valueSource,
         value = group.value,
         state = UiSelectableState(selectable = selectable, selected = selected),
-        resolvedValue = resolveValueSource(group)
+        resolvedValue = resolveValueSource(group),
+        priority = group.priority,
+        targetGlobal = group.target,
+        valueSourceTarget = group.valueSourceTarget,
+        clampMin = group.clampMin,
+        clampMax = group.clampMax,
+        minBaseValue = group.minBaseValue,
+        maxBaseValue = group.maxBaseValue
     )
 
     // toggle selection; returns early if not selectable

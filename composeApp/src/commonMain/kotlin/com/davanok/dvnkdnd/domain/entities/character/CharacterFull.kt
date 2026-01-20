@@ -55,7 +55,7 @@ data class CharacterFull(
 ) {
     val entitiesWithLevel: List<Pair<DnDFullEntity, Int>> by lazy { getEntitiesWithLevel() }
 
-   val entities = entitiesWithLevel.map { it.first }
+    val entities = entitiesWithLevel.map { it.first }
 
     val appliedValues: CharacterModifiedValues by lazy { getAppliedValues() }
 

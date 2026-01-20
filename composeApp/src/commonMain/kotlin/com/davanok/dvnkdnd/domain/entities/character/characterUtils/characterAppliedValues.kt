@@ -4,159 +4,48 @@ import com.davanok.dvnkdnd.core.utils.applyOperation
 import com.davanok.dvnkdnd.domain.dnd.calculateArmorClass
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
-import com.davanok.dvnkdnd.domain.entities.character.CustomModifier
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifierExtendedInfo
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toSkillsGroup
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierHealthTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
 
-
+/**
+ * Computes the final, modified values for the character by applying all active modifiers
+ * to their respective base stats.
+ *
+ * This includes primary attributes, derived stats (saving throws/skills), health,
+ * and secondary combat stats like AC, Speed, and Initiative.
+ *
+ * @return A [CharacterModifiedValues] object containing the fully resolved state.
+ */
 fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
-    val groupIdToEntityId =
-        entities.flatMap { e -> e.modifiersGroups.map { it.id to e.entity.id } }.toMap()
+    // 1. Resolve Map-based Groups (Attributes, Saves, Skills)
+    val modifiedAttributes = calculateAttributeGroup()
+    val modifiedSavingThrows = calculateSavingThrows()
+    val modifiedSkills = calculateSkills()
 
-    val resolveGroupValue: (group: ModifiersGroup) -> Double = { group ->
-        resolveValueSource(
-            group.valueSource,
-            group.valueSourceTarget,
-            groupIdToEntityId[group.id],
-            group.value
-        )
-    }
+    // 2. Resolve Health
+    val modifiedHealth = calculateModifiedHealth()
 
-    // 1. Pre-calculate and group modifiers once to avoid repeated iteration
-    val targetGroups = entities.asSequence()
-        .flatMap { it.modifiersGroups }
-        .filter { it.id in selectedModifiers }
-        .sortedBy { it.priority }
-        .groupBy { it.target }
-
-    val customModifiersGrouped = customModifiers.asSequence()
-        .sortedBy { it.priority }
-        .groupBy { it.targetGlobal }
-
-    // Helper to resolve dynamic values for CustomModifiers
-    val valueSourceProvider: (DnDModifierValueSource, String?, Double) -> Double =
-        { source, target, value ->
-            resolveValueSource(source, target, null, value)
-        }
-
-    // --- Attributes ---
-    // Use EnumMap for performance when keys are Enums
-    val attributeValues = attributes
-        .toMap()
-        .toMutableMap()
-
-    applyModifiers(
-        targetType = DnDModifierTargetType.ATTRIBUTE,
-        values = attributeValues,
-        modifierGroups = targetGroups,
-        customModifiers = customModifiersGrouped,
-        groupValueProvider = resolveGroupValue,
-        customValueProvider = valueSourceProvider
-    )
-    val modifiedAttributes = attributeValues.toAttributesGroup()
-
-    // --- Saving Throws ---
-    // Base saves are the modifiers of the base attributes
-    val savingThrowsValues = attributes
-        .toMap()
-        .mapValues { calculateModifier(it.value) }
-        .toMutableMap()
-
-    applyModifiers(
-        targetType = DnDModifierTargetType.SAVING_THROW,
-        values = savingThrowsValues,
-        modifierGroups = targetGroups,
-        customModifiers = customModifiersGrouped,
-        groupValueProvider = resolveGroupValue,
-        customValueProvider = valueSourceProvider
-    )
-    val modifiedSavingThrows = savingThrowsValues.toAttributesGroup()
-
-    // --- Skills ---
-    // Base skills are the modifiers of the specific attribute they rely on
-    val skillValues = attributes
-        .toSkillsGroup()
-        .toMap()
-        .mapValues { calculateModifier(it.value) }
-        .toMutableMap()
-
-    applyModifiers(
-        targetType = DnDModifierTargetType.SKILL,
-        values = skillValues,
-        modifierGroups = targetGroups,
-        customModifiers = customModifiersGrouped,
-        groupValueProvider = resolveGroupValue,
-        customValueProvider = valueSourceProvider
-    )
-    val modifiedSkills = skillValues.toSkillsGroup()
-
-    // --- Health ---
-    val defaultMaxHealth = health.max + calculateModifier(attributes[Attributes.CONSTITUTION])
-    val healthValues = mutableMapOf(
-        DnDModifierHealthTarget.CURRENT to health.current,
-        DnDModifierHealthTarget.MAX to defaultMaxHealth
+    // 3. Resolve Single Values (AC, Initiative, Speed)
+    val armorClass = calculateTargetValue(
+        target = DnDModifierTargetType.ARMOR_CLASS,
+        base = optionalValues.armorClass ?: calculateBaseArmorClass()
     )
 
-    applyModifiers(
-        targetType = DnDModifierTargetType.HEALTH,
-        values = healthValues,
-        modifierGroups = targetGroups,
-        customModifiers = customModifiersGrouped,
-        groupValueProvider = resolveGroupValue,
-        customValueProvider = valueSourceProvider
-    )
-    val modifiedHealth = health.copy(
-        current = healthValues.getOrElse(DnDModifierHealthTarget.CURRENT) { health.current },
-        max = healthValues.getOrElse(DnDModifierHealthTarget.MAX) { health.max }
+    val initiative = calculateTargetValue(
+        target = DnDModifierTargetType.INITIATIVE,
+        base = optionalValues.initiative ?: calculateModifier(attributes[Attributes.DEXTERITY])
     )
 
-    // --- Armor Class ---
-    val baseArmor = optionalValues.armorClass ?: calculateArmorClass(
-        attributes[Attributes.DEXTERITY],
-        items.firstOrNull { it.equipped && it.item.item?.armor != null }?.item?.item?.armor
-    )
-
-    val finalArmorClass = applySingleValueModifiers(
-        targetType = DnDModifierTargetType.ARMOR_CLASS,
-        baseValue = baseArmor,
-        modifierGroups = targetGroups,
-        customModifiers = customModifiersGrouped,
-        groupValueProvider = resolveGroupValue,
-        customValueProvider = valueSourceProvider
-    )
-
-    // --- Initiative ---
-    val baseInitiative =
-        optionalValues.initiative ?: calculateModifier(attributes[Attributes.DEXTERITY])
-
-    val finalInitiative = applySingleValueModifiers(
-        targetType = DnDModifierTargetType.INITIATIVE,
-        baseValue = baseInitiative,
-        modifierGroups = targetGroups,
-        customModifiers = customModifiersGrouped,
-        groupValueProvider = resolveGroupValue,
-        customValueProvider = valueSourceProvider
-    )
-
-    // --- Speed ---
-    val baseSpeed = optionalValues.speed ?: mainEntities
-        .filter { it.entity.entity.type == DnDEntityTypes.RACE }
-        .maxOfOrNull { it.entity.race?.speed ?: 0 } ?: 0
-
-    val finalSpeed = applySingleValueModifiers(
-        targetType = DnDModifierTargetType.SPEED,
-        baseValue = baseSpeed,
-        modifierGroups = targetGroups,
-        customModifiers = customModifiersGrouped,
-        groupValueProvider = resolveGroupValue,
-        customValueProvider = valueSourceProvider
+    val speed = calculateTargetValue(
+        target = DnDModifierTargetType.SPEED,
+        base = optionalValues.speed ?: calculateBaseSpeed()
     )
 
     return CharacterModifiedValues(
@@ -164,87 +53,92 @@ fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
         savingThrowModifiers = modifiedSavingThrows,
         skillModifiers = modifiedSkills,
         health = modifiedHealth,
-        armorClass = finalArmorClass,
-        initiative = finalInitiative,
-        speed = finalSpeed
+        armorClass = armorClass,
+        initiative = initiative,
+        speed = speed
     )
 }
 
-// -----------------------------------------------------------------------------
-// Private Helper Functions (Generic & Consolidated)
-// -----------------------------------------------------------------------------
+// --- Internal Helper Extensions ---
 
-/**
- * Applies both standard modifiers and custom modifiers to a Map of values (e.g. Attributes, Skills).
- */
-private inline fun <reified K : Enum<K>> applyModifiers(
-    targetType: DnDModifierTargetType,
-    values: MutableMap<K, Int>,
-    modifierGroups: Map<DnDModifierTargetType, List<ModifiersGroup>>,
-    customModifiers: Map<DnDModifierTargetType, List<CustomModifier>>,
-    crossinline groupValueProvider: (ModifiersGroup) -> Double,
-    crossinline customValueProvider: (DnDModifierValueSource, String?, Double) -> Double
-) {
-    // 1. Standard Groups
-    modifierGroups[targetType]?.forEach { group ->
-        val groupValue = groupValueProvider(group)
-        group.modifiers.forEach { modifier ->
-            val targetKey = modifier.targetAs<K>() ?: return@forEach
-            val currentVal = values[targetKey] ?: return@forEach
+private fun CharacterFull.calculateAttributeGroup() = applyModifiersInfo(
+    values = attributes.toMap(),
+    modifiers = appliedModifiers[DnDModifierTargetType.ATTRIBUTE].orEmpty()
+).toAttributesGroup()
 
-            if (shouldSkip(group, currentVal)) return@forEach
+private fun CharacterFull.calculateSavingThrows() = applyModifiersInfo(
+    values = attributes.toMap().mapValues { calculateModifier(it.value) },
+    modifiers = appliedModifiers[DnDModifierTargetType.SAVING_THROW].orEmpty()
+).toAttributesGroup()
 
-            val result = applyOperation(currentVal, groupValue, group.operation)
-            values[targetKey] = result.coerceIn(group.clampMin, group.clampMax)
-        }
-    }
+private fun CharacterFull.calculateSkills() = applyModifiersInfo(
+    values = attributes.toSkillsGroup().toMap().mapValues { calculateModifier(it.value) },
+    modifiers = appliedModifiers[DnDModifierTargetType.SKILL].orEmpty()
+).toSkillsGroup()
 
-    // 2. Custom Modifiers
-    customModifiers[targetType]?.forEach { modifier ->
-        val targetKey = modifier.targetAs<K>() ?: return@forEach
-        val currentVal = values[targetKey] ?: return@forEach
-
-        val modValue =
-            customValueProvider(modifier.valueSource, modifier.valueSourceTarget, modifier.value)
-        val result = applyOperation(currentVal, modValue, modifier.operation)
-        values[targetKey] = result
-    }
+private fun CharacterFull.calculateModifiedHealth(): CharacterHealth {
+    val healthMap = mapOf(
+        DnDModifierHealthTarget.CURRENT to health.current,
+        DnDModifierHealthTarget.MAX to health.max
+    )
+    val modified = applyModifiersInfo(
+        values = healthMap,
+        modifiers = appliedModifiers[DnDModifierTargetType.HEALTH].orEmpty()
+    )
+    return health.copy(
+        current = modified.getOrElse(DnDModifierHealthTarget.CURRENT) { health.current },
+        max = modified.getOrElse(DnDModifierHealthTarget.MAX) { health.max }
+    )
 }
 
-/**
- * Applies both standard modifiers and custom modifiers to a single Integer value (e.g. Speed, AC).
- */
-private inline fun applySingleValueModifiers(
-    targetType: DnDModifierTargetType,
-    baseValue: Int,
-    modifierGroups: Map<DnDModifierTargetType, List<ModifiersGroup>>,
-    customModifiers: Map<DnDModifierTargetType, List<CustomModifier>>,
-    crossinline groupValueProvider: (ModifiersGroup) -> Double,
-    crossinline customValueProvider: (DnDModifierValueSource, String?, Double) -> Double
-): Int {
-    var current = baseValue
+private fun CharacterFull.calculateTargetValue(target: DnDModifierTargetType, base: Int): Int {
+    return applySingleValueModifiersInfo(base, appliedModifiers[target].orEmpty())
+}
 
-    // 1. Standard Groups
-    modifierGroups[targetType]?.forEach { group ->
-        val groupValue = groupValueProvider(group)
-        group.modifiers.forEach { _ ->
-            // Note: Single value modifiers usually don't have a specific 'target' string to parse
-            if (shouldSkip(group, current)) return@forEach
+private fun CharacterFull.calculateBaseArmorClass(): Int {
+    val equippedArmor =
+        items.firstOrNull { it.equipped && it.item.item?.armor != null }?.item?.item?.armor
+    return calculateArmorClass(attributes[Attributes.DEXTERITY], equippedArmor)
+}
 
-            val result = applyOperation(current, groupValue, group.operation)
-            current = result.coerceIn(group.clampMin, group.clampMax)
-        }
+private fun CharacterFull.calculateBaseSpeed(): Int {
+    return mainEntities
+        .filter { it.entity.entity.type == DnDEntityTypes.RACE }
+        .maxOfOrNull { it.entity.race?.speed ?: 0 } ?: 0
+}
+
+// --- Logic Processors ---
+
+private inline fun <reified K : Enum<K>> applyModifiersInfo(
+    values: Map<K, Int>,
+    modifiers: List<ModifierExtendedInfo>
+): Map<K, Int> {
+    val current = values.toMutableMap()
+    modifiers.forEach { modifier ->
+        val key = modifier.targetAs<K>() ?: return@forEach
+        val base = current[key] ?: return@forEach
+
+        if (modifier.shouldSkip(base)) return@forEach
+
+        val result = applyOperation(base, modifier.resolvedValue, modifier.operation)
+        current[key] = result.coerceIn(modifier.clampMin, modifier.clampMax)
     }
-
-    // 2. Custom Modifiers
-    customModifiers[targetType]?.forEach { modifier ->
-        val modValue =
-            customValueProvider(modifier.valueSource, modifier.valueSourceTarget, modifier.value)
-        current = applyOperation(current, modValue, modifier.operation)
-    }
-
     return current
 }
 
-private fun shouldSkip(group: ModifiersGroup, currentValue: Int): Boolean =
-    (group.minBaseValue != null && currentValue < group.minBaseValue) || (group.maxBaseValue != null && currentValue > group.maxBaseValue)
+private fun applySingleValueModifiersInfo(
+    baseValue: Int,
+    modifiers: List<ModifierExtendedInfo>
+): Int {
+    return modifiers.fold(baseValue) { acc, mod ->
+        if (mod.shouldSkip(acc)) acc
+        else applyOperation(acc, mod.resolvedValue, mod.operation).coerceIn(
+            mod.clampMin,
+            mod.clampMax
+        )
+    }
+}
+
+private fun ModifierExtendedInfo.shouldSkip(currentValue: Int): Boolean =
+    (minBaseValue != null && currentValue < minBaseValue) ||
+            (maxBaseValue != null && currentValue > maxBaseValue)
