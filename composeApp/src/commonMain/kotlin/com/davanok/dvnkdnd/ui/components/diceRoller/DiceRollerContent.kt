@@ -46,8 +46,8 @@ fun ManyDicesDialogContent(
     animationState: AnimationState,
     animRequest: AnimRequest,
     rotAnimsMap: Map<Dices, RotAnims>,
-    diceCompanionContent: @Composable ((state: AnimationState, value: Int) -> Unit)?,
-    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)?,
+    diceCompanionContent: @Composable ((AnimationState, Int, ThrowSpec) -> Unit)?,
+    groupCompanionContent: @Composable ((AnimationState, List<Int>, ThrowSpec) -> Unit)?,
     minItemWidth: Dp = DiceRollerDefaults.DEFAULT_MIN_ITEM_WIDTH
 ) {
     val textMeasurer = rememberTextMeasurer()
@@ -56,23 +56,25 @@ fun ManyDicesDialogContent(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxWidth()
     ) {
-        animRequest.dices.fastForEach { (dice, values) ->
+        animRequest.dices.fastForEach { (throwSpec, values) ->
             stickyHeader {
                 DicesGroupHeader(
                     animationState = animationState,
-                    dice = dice,
+                    throwSpec = throwSpec,
                     values = values,
                     groupCompanionContent = groupCompanionContent
                 )
             }
-            val diceSpan = GridItemSpan(if (dice == Dices.D100) 2 else 1)
-            items(items = values, span = { diceSpan }) { value ->
+            items(
+                items = values,
+                span = { GridItemSpan(if (throwSpec.dice == Dices.D100) 2 else 1) }
+            ) { value ->
                 SingleDiceContent(
                     textMeasurer = textMeasurer,
                     animationState = animationState,
-                    dice = dice,
+                    throwSpec = throwSpec,
                     value = value,
-                    rotation = rotAnimsMap.getValue(dice).toRotation(),
+                    rotation = rotAnimsMap.getValue(throwSpec.dice).toRotation(),
                     diceCompanionContent = diceCompanionContent
                 )
             }
@@ -83,11 +85,11 @@ fun ManyDicesDialogContent(
 @Composable
 fun SomeDicesDialogContent(
     animationState: AnimationState,
-    dice: Dices,
+    throwSpec: ThrowSpec,
     values: List<Int>,
     rotation: Rotation,
-    diceCompanionContent: @Composable ((state: AnimationState, value: Int) -> Unit)?,
-    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)?,
+    diceCompanionContent: @Composable ((AnimationState, Int, ThrowSpec) -> Unit)?,
+    groupCompanionContent: @Composable ((AnimationState, List<Int>, ThrowSpec) -> Unit)?,
     minItemWidth: Dp = DiceRollerDefaults.DEFAULT_MIN_ITEM_WIDTH
 ) {
     BoxWithConstraints {
@@ -111,17 +113,19 @@ fun SomeDicesDialogContent(
             stickyHeader {
                 DicesGroupHeader(
                     animationState = animationState,
-                    dice = dice,
+                    throwSpec = throwSpec,
                     values = values,
                     groupCompanionContent = groupCompanionContent
                 )
             }
-            val diceSpan = GridItemSpan(if (dice == Dices.D100) 2 else 1)
-            items(items = values, span = { diceSpan }) { value ->
+            items(
+                items = values,
+                span = { GridItemSpan(if (throwSpec.dice == Dices.D100) 2 else 1) }
+            ) { value ->
                 SingleDiceContent(
                     textMeasurer = textMeasurer,
                     animationState = animationState,
-                    dice = dice,
+                    throwSpec = throwSpec,
                     value = value,
                     rotation = rotation,
                     diceCompanionContent = diceCompanionContent
@@ -136,20 +140,20 @@ fun DicesGroupHeader(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     animationState: AnimationState,
-    dice: Dices,
+    throwSpec: ThrowSpec,
     values: List<Int>,
-    groupCompanionContent: @Composable ((state: AnimationState, values: List<Int>) -> Unit)?
+    groupCompanionContent: @Composable ((AnimationState, List<Int>, ThrowSpec) -> Unit)?,
 ) {
     Surface(modifier = modifier, color = backgroundColor) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
             Row {
-                Text(text = stringResource(dice.stringRes))
+                Text(text = stringResource(throwSpec.dice.stringRes))
                 Spacer(Modifier.width(16.dp))
                 AnimatedVisibility(visible = animationState == AnimationState.Finished) {
                     Text(values.sum().toString())
                 }
             }
-            groupCompanionContent?.invoke(animationState, values)
+            groupCompanionContent?.invoke(animationState, values, throwSpec)
         }
     }
 }
@@ -158,12 +162,14 @@ fun DicesGroupHeader(
 fun SingleDiceContent(
     textMeasurer: TextMeasurer,
     animationState: AnimationState,
-    dice: Dices,
+    throwSpec: ThrowSpec,
     value: Int,
     rotation: Rotation,
-    diceCompanionContent: @Composable ((state: AnimationState, value: Int) -> Unit)?,
+    diceCompanionContent: @Composable ((AnimationState, Int, ThrowSpec) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
+    val dice = throwSpec.dice
+
     val valueToShow = when (animationState) {
         AnimationState.Idle -> dice.faces
         AnimationState.Running -> null
@@ -218,6 +224,6 @@ fun SingleDiceContent(
             }
         }
 
-        diceCompanionContent?.invoke(animationState, value)
+        diceCompanionContent?.invoke(animationState, value, throwSpec)
     }
 }

@@ -6,13 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.util.fastMap
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import kotlin.random.Random
 
 @Stable
 class DiceRollerState internal constructor(
-    private val onRolled: (List<Pair<Dices, List<Int>>>) -> Unit
+    private val onRolled: (List<Pair<ThrowSpec, List<Int>>>) -> Unit
 ) {
     var animRequest by mutableStateOf<AnimRequest?>(null)
         private set
@@ -31,23 +30,21 @@ class DiceRollerState internal constructor(
         _animationState.value = AnimationState.Idle
     }
 
-    fun roll(dices: List<Pair<Dices, Int>>) {
-        val diceValues = dices.fastMap { (dice, count) ->
-            val maxValue = dice.faces + 1
-            dice to List(count) { Random.nextInt(1, maxValue) }
+    fun roll(specs: List<ThrowSpec>) {
+        val results = specs.map { spec ->
+            val maxValue = spec.dice.faces + 1
+            spec to List(spec.count) { Random.nextInt(1, maxValue) }
         }
 
-        animRequest = AnimRequest(
-            dices = diceValues
-        )
+        animRequest = AnimRequest(results)
         _animationState.value = AnimationState.Idle
     }
 
-    fun roll(dice: Dices, count: Int) = roll(listOf(dice to count))
-
-    fun roll(dice: Dices) = roll(listOf(dice to 1))
+    fun roll(dice: Dices, count: Int = 1, modifier: Any? = null) {
+        roll(listOf(ThrowSpec(dice, count, modifier)))
+    }
 }
 
 @Composable
-fun rememberDiceRollerState(onRolled: (List<Pair<Dices, List<Int>>>) -> Unit): DiceRollerState =
+fun rememberDiceRollerState(onRolled: (List<Pair<ThrowSpec, List<Int>>>) -> Unit): DiceRollerState =
     remember { DiceRollerState(onRolled) }

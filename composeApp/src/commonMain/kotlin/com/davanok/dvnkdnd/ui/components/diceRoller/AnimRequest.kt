@@ -1,11 +1,10 @@
 package com.davanok.dvnkdnd.ui.components.diceRoller
 
 import androidx.compose.runtime.Immutable
-import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 
 @Immutable
 data class AnimRequest(
-    val dices: List<Pair<Dices, List<Int>>>
+    val dices: List<Pair<ThrowSpec, List<Int>>>
 ) {
     init {
         require(dices.isNotEmpty())
