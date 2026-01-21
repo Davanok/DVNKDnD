@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -23,7 +22,6 @@ fun CornerBasedShape.start() = copy(
 
 
 @Stable
-@ExperimentalMaterial3Api
 object SideSheetDefaults {
     /** The default shape for Side sheets in a [Hidden] state. */
     val HiddenShape: Shape
@@ -37,15 +35,9 @@ object SideSheetDefaults {
     val ContainerColor: Color
         @Composable get() = MaterialTheme.colorScheme.surface
 
-    /** The default elevation for a Side sheet. */
-    val Elevation = 1.0.dp
-
     /** The default color of the scrim overlay for background content. */
     val ScrimColor: Color
         @Composable get() = MaterialTheme.colorScheme.scrim.copy(0.32f)
-
-    /** The default peek height used by [SideSheetScaffold]. */
-    val SheetPeekHeight = 56.dp
 
     /** The default max width used by [ModalSideSheet] and [SideSheetScaffold] */
     val SheetMaxWidth = 400.dp
@@ -53,4 +45,11 @@ object SideSheetDefaults {
     /** Default insets to be used and consumed by the [ModalSideSheet]'s content. */
     val windowInsets: WindowInsets
         @Composable get() = WindowInsets.safeDrawing.only(WindowInsetsSides.End)
+}
+
+object ModalSideSheetDefaults {
+    val properties = ModalSideSheetProperties(
+        shouldDismissOnBackPress = true,
+        shouldDismissOnClickOutside = true
+    )
 }
