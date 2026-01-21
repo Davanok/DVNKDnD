@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.davanok.dvnkdnd"
+    namespace = "com.davanok.dvnkdnd.androidApp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     val versionCodeValue = projectVersion

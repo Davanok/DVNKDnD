@@ -13,11 +13,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.davanok.dvnkdnd.MainKt"
+        mainClass = "MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.davanok.dvnkdnd"
+            packageName = "DVNKDnD"
             packageVersion = libs.versions.project.get()
 
             linux {
@@ -29,7 +29,7 @@ compose.desktop {
             }
             macOS {
                 iconFile.set(project.file("appIcons/MacosIcon.icns"))
-                bundleID = "org.company.app.desktopApp"
+                bundleID = "com.davanok.DVNKDnD.desktopApp"
             }
         }
     }

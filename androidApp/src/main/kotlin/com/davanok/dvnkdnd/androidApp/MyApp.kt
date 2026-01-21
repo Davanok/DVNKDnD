@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd
+package com.davanok.dvnkdnd.androidApp
 
 import android.app.Application
 import com.davanok.dvnkdnd.data.platform.appCacheDir

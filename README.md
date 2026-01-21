@@ -159,6 +159,8 @@ DVNKDnD/
 ```bash
 # Run desktop app (JVM)
 ./gradlew :desktopApp:run
+# Hot run desktop app (JVM)
+./gradlew :desktopApp:hotRun
 
 # Package desktop distributables
 ./gradlew :desktopApp:createDistributable
