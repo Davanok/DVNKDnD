@@ -52,10 +52,12 @@ fun ErrorCard(
     text: String,
     exception: Throwable? = null,
     onBack: (() -> Unit)? = null,
-    onRefresh: (() -> Unit)? = null
+    onRefresh: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
     var exceptionInfo by remember { mutableStateOf<Throwable?>(null) }
     FullScreenCard(
+        modifier = modifier,
         heroIcon = {
             Icon(
                 painter = painterResource(Res.drawable.error),

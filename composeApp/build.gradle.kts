@@ -37,6 +37,9 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(libs.androidx.nav3.ui)
+            implementation(libs.androidx.nav3.runtime)
+            implementation(libs.androidx.material3.adaptive.nav3)
+            implementation(libs.androidx.lifecycle.viewmodel.nav3)
 
             implementation(libs.markdown.parser.core)
             implementation(libs.markdown.parser.m3)
@@ -68,10 +71,6 @@ kotlin {
 
             implementation(libs.filekit.core)
             implementation(libs.filekit.compose)
-
-            implementation(libs.jetbrains.compose.material3.adaptive)
-            implementation(libs.jetbrains.compose.material3.adaptive.layout)
-            implementation(libs.jetbrains.compose.material3.adaptive.navigation)
 
             implementation(libs.material3.adaptive.navigation.suite)
 

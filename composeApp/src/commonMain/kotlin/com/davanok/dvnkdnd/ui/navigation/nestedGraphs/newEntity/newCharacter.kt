@@ -1,12 +1,11 @@
 package com.davanok.dvnkdnd.ui.navigation.nestedGraphs.newEntity
 
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.davanok.dvnkdnd.ui.navigation.Route
 import com.davanok.dvnkdnd.ui.navigation.RouterEntryProvider
+import com.davanok.dvnkdnd.ui.navigation.navEntryDecorators
 import com.davanok.dvnkdnd.ui.navigation.rememberBackStack
-import com.davanok.dvnkdnd.ui.navigation.rememberViewModelStoreNavEntryDecorator
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen.LoadingDataScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterAttributesScreen
@@ -32,10 +31,7 @@ fun RouterEntryProvider.characterCreationFlow(
     NavDisplay(
         backStack = backStack,
         onBack = nestedOnBack,
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
+        entryDecorators = navEntryDecorators(),
         entryProvider = entryProvider {
             entry<Route.New.Character.LoadData> {
                 LoadingDataScreen(

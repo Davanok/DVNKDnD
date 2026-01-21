@@ -9,7 +9,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.characterFull.characterFullDestinations
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.entityInfo.entityInfoDestinations
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.newEntity.newEntityDestinations
-import com.davanok.dvnkdnd.ui.pages.charactersList.CharactersListScreen
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.charactersList.charactersListDestinations
 
 @Composable
 fun NavigationHost(
@@ -18,7 +19,10 @@ fun NavigationHost(
     val backStack = rememberBackStack(Route.Main.CharactersList)
 
     val onBack: () -> Unit = { backStack.removeLastOrNull() }
-    val navigate: (Route) -> Unit = { backStack.add(it) }
+    val navigate: (Route) -> Unit = {
+        if (backStack.lastOrNull() != it)
+            backStack.add(it)
+    }
     val replace: (Route) -> Unit = { backStack[backStack.lastIndex] = it }
 
     NavDisplay(
@@ -47,14 +51,7 @@ fun NavigationHost(
 private fun RouterEntryProvider.mainDestinations(
     navigate: (route: Route) -> Unit
 ) {
-    entry<Route.Main.CharactersList> {
-        DefaultNavigationWrapper(Route.Main.CharactersList, navigate) {
-            CharactersListScreen(
-                onNewCharacter = { navigate(Route.New) },
-                navigateToCharacter = { navigate(Route.CharacterFull(it.id)) }
-            )
-        }
-    }
+    charactersListDestinations(navigate)
     entry<Route.Main.Items> {
         DefaultNavigationWrapper(Route.Main.Items, navigate) {
 

@@ -10,7 +10,10 @@ sealed interface Route {
     @Serializable data object Unknown: Route
     @Serializable
     data object Main {
-        @Serializable data object CharactersList : Route
+        @Serializable data object CharactersList : Route {
+            @Serializable data object CharactersList : Route
+            @Serializable data class CharacterShortInfo(val characterId: Uuid) : Route
+        }
         @Serializable data object Items : Route
         @Serializable data object Browse : Route
         @Serializable data object Profile : Route

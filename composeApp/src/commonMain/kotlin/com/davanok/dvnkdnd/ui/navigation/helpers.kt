@@ -6,7 +6,10 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import kotlinx.serialization.json.Json
 
 
@@ -24,3 +27,9 @@ private val backStackSaver = Saver<SnapshotStateList<Route>, List<String>>(
 fun rememberBackStack(startDestination: Route) = rememberSaveable(saver = backStackSaver) {
     mutableStateListOf(startDestination)
 }
+
+@Composable
+fun <T : Any> navEntryDecorators(): List<NavEntryDecorator<T>> = listOf(
+    rememberSaveableStateHolderNavEntryDecorator(),
+    rememberViewModelStoreNavEntryDecorator()
+)
