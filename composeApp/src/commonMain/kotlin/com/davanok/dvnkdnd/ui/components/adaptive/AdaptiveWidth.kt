@@ -18,14 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.Placeable
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
@@ -33,7 +32,10 @@ import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.close_side_sheet
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun rememberMovableContentOf(content: @Composable () -> Unit) =
+    remember(content) { movableContentOf(content) }
+
 @Composable
 fun AdaptiveWidth(
     singlePaneContent: @Composable () -> Unit,
@@ -45,33 +47,33 @@ fun AdaptiveWidth(
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
     modifier: Modifier = Modifier
 ) {
-    val density = LocalDensity.current
+    val movableSingle = rememberMovableContentOf(singlePaneContent)
+    val movablePrimary = rememberMovableContentOf(twoPaneContent.first)
+    val movableSecondary = rememberMovableContentOf(twoPaneContent.second)
+    val movableSupport = supportPane?.let { rememberMovableContentOf(supportPane) }
 
     /**
      * BoxWithConstraints provides the actual rendered width of this composable.
      * This value reflects the real container size rather than the window size class.
      */
     BoxWithConstraints(modifier = modifier) {
-        val actualWidth = maxWidth
+        val containerWidthPx = constraints.maxWidth
 
         /**
          * Determine the adaptive layout configuration based on:
          * - current window adaptive info
-         * - actual container width
-         * - display density
+         * - container width
          * - presence of an optional support pane
          */
         val layoutConfig by remember(
             windowAdaptiveInfo,
-            actualWidth,
-            density,
+            containerWidthPx,
             supportPane != null
         ) {
             derivedStateOf {
                 calculateAdaptiveConfig(
                     windowInfo = windowAdaptiveInfo,
-                    containerWidth = actualWidth,
-                    density = density,
+                    containerWidthPx = containerWidthPx,
                     hasSupportPane = supportPane != null
                 )
             }
@@ -83,30 +85,18 @@ fun AdaptiveWidth(
         AdaptiveLayout(
             config = layoutConfig,
             panesSpacing = panesSpacing,
-            singleContent = singlePaneContent,
-            primaryContent = twoPaneContent.first,
-            secondaryContent = twoPaneContent.second,
-            tertiaryContent = if (supportPane == null) null else { {
-                Row {
-                    VerticalDivider()
-                    Column {
-                        TopAppBar(
-                            title = supportPaneTitle,
-                            actions = {
-                                IconButton(
-                                    onClick = onHideSupportPane
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = stringResource(Res.string.close_side_sheet)
-                                    )
-                                }
-                            }
-                        )
-                        supportPane()
-                    }
+            singleContent = movableSingle,
+            primaryContent = movablePrimary,
+            secondaryContent = movableSecondary,
+            tertiaryContent = movableSupport?.let {
+                {
+                    SupportPane(
+                        title = supportPaneTitle,
+                        onHideSupportPane = onHideSupportPane,
+                        content = movableSupport
+                    )
                 }
-            } }
+            }
         )
 
         /**
@@ -114,7 +104,7 @@ fun AdaptiveWidth(
          * in the current layout configuration.
          */
         val showModalSupport =
-            supportPane != null &&
+            movableSupport != null &&
                     (layoutConfig is AdaptiveConfig.Single ||
                             layoutConfig is AdaptiveConfig.Split)
 
@@ -122,8 +112,34 @@ fun AdaptiveWidth(
             AdaptiveModalSheet(
                 onDismissRequest = onHideSupportPane,
                 title = supportPaneTitle,
-                content = supportPane
+                content = movableSupport
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SupportPane(
+    title: @Composable () -> Unit,
+    onHideSupportPane: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Row {
+        VerticalDivider()
+        Column {
+            TopAppBar(
+                title = title,
+                actions = {
+                    IconButton(onClick = onHideSupportPane) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(Res.string.close_side_sheet)
+                        )
+                    }
+                }
+            )
+            content()
         }
     }
 }
@@ -156,10 +172,7 @@ private fun AdaptiveLayout(
                 is AdaptiveConfig.HingeTriple -> {
                     Box { primaryContent() }
                     Box { secondaryContent() }
-                    Box {
-
-                        tertiaryContent?.invoke()
-                    }
+                    Box { tertiaryContent?.invoke() }
                 }
             }
         }
@@ -317,8 +330,7 @@ private sealed interface AdaptiveConfig {
 
 private fun calculateAdaptiveConfig(
     windowInfo: WindowAdaptiveInfo,
-    containerWidth: Dp,
-    density: Density,
+    containerWidthPx: Int,
     hasSupportPane: Boolean
 ): AdaptiveConfig {
     val hingeBounds =
@@ -330,8 +342,6 @@ private fun calculateAdaptiveConfig(
      * Foldable device handling (hinge-aware layouts).
      */
     if (hingeBounds.isNotEmpty()) {
-        val containerWidthPx =
-            with(density) { containerWidth.roundToPx() }
         val sortedBounds =
             hingeBounds.sortedBy { it.left }
 
