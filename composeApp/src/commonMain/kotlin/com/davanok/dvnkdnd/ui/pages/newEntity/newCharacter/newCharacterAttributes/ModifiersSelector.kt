@@ -67,7 +67,7 @@ import com.davanok.dvnkdnd.domain.dnd.calculateBuyingModifiersSum
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.ui.components.text.buildPreviewString
 import com.davanok.dvnkdnd.ui.components.toSignedString
-import com.davanok.dvnkdnd.ui.presentation.applyForString
+import com.davanok.dvnkdnd.ui.components.text.applyForString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.decrease_modifier_value
 import dvnkdnd.composeapp.generated.resources.increase_modifier_value

@@ -1,10 +1,15 @@
 package com.davanok.dvnkdnd.ui.components
 
 import androidx.compose.ui.text.AnnotatedString
+import com.davanok.dvnkdnd.data.platform.toString
 
 fun Int.toSignedString() = if (this > 0) "+$this" else toString()
 fun Int.toSignedSpacedString() = if (this > 0) "+ $this" else toString()
 fun Float.toSignedString() = if (this > 0f) "+$this" else toString()
+
+fun Double.toCompactString(): String {
+    return if (this % 1.0 == 0.0) this.toInt().toString() else this.toString(2)
+}
 
 
 const val DEFAULT_PARTS_SEP = " • "

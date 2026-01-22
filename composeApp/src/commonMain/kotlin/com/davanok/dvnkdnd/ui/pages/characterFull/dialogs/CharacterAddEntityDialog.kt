@@ -30,7 +30,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,7 +55,6 @@ import dvnkdnd.composeapp.generated.resources.loading
 import dvnkdnd.composeapp.generated.resources.refresh
 import dvnkdnd.composeapp.generated.resources.search_entity_type
 import dvnkdnd.composeapp.generated.resources.show_description
-import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -121,10 +119,6 @@ private fun EntitiesColumn(
     onEntityInfoClick: (DnDEntityMin) -> Unit,
     onSelectEntityClick: (DnDEntityMin) -> Unit,
 ) {
-    LaunchedEffect(entities.loadState) {
-        Napier.d { entities.loadState.toString() }
-    }
-
     val prependState = entities.loadState.prepend
     val refreshState = entities.loadState.refresh
     val appendState = entities.loadState.append

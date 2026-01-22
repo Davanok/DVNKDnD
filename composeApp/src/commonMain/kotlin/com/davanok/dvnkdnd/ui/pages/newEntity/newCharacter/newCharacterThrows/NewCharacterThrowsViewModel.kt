@@ -7,6 +7,7 @@ import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.davanok.dvnkdnd.core.utils.applyOperation
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
@@ -20,7 +21,6 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifierExtendedInfo
 import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.ui.model.UiSelectableState
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
-import com.davanok.dvnkdnd.core.utils.calculateModifierSum
 import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
 import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
@@ -131,7 +131,7 @@ class NewCharacterThrowsViewModel(
         id = modifier.id,
         isCustom = false,
         groupId = group.id,
-        groupName = group.name,
+        name = group.name,
         target = modifier.target,
         operation = group.operation,
         valueSource = group.valueSource,
@@ -211,15 +211,27 @@ class NewCharacterThrowsViewModel(
         // For each enum entry compute the final modifier value using calculateModifierSum.
         val groupsForTarget = modifierGroups.fastFilter { it.target == target }
         return modifiersByEnum.mapValues { (enumKey, extList) ->
-            val value = calculateModifierSum(
-                baseValue = baseValueGetter(enumKey),
-                groups = groupsForTarget,
-                modifierFilter = { it.target == enumKey.name && it.id in selectedModifiers },
-                // Provide group-level value once per group (map group.valueSource -> value)
-                groupValueProvider = ::resolveValueSource
-            )
+            var result = baseValueGetter(enumKey)
+            groupsForTarget
+                .sortedBy { it.priority }
+                .forEach { group ->
+                    // compute group-level value once (nullable => use modifier.value when null)
+                    val value = resolveValueSource(group)
 
-            extList to value
+                    group.modifiers.forEach modifier@{ modifier ->
+                        if (modifier.target != enumKey.name || modifier.id !in selectedModifiers) return@modifier
+
+                        // skip modifier if current base (result) not in group's base range
+                        if (group.minBaseValue?.let { result < it } == true) return@modifier
+                        if (group.maxBaseValue?.let { result > it } == true) return@modifier
+
+                        // apply operation and clamp to group's limits
+                        result = applyOperation(result, value, group.operation)
+                            .coerceIn(group.clampMin, group.clampMax)
+                    }
+                }
+
+            extList to result
         }
     }
 

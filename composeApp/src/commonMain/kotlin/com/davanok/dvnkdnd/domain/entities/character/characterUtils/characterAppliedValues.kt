@@ -1,6 +1,5 @@
 package com.davanok.dvnkdnd.domain.entities.character.characterUtils
 
-import com.davanok.dvnkdnd.core.utils.applyOperation
 import com.davanok.dvnkdnd.domain.dnd.calculateArmorClass
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
@@ -118,10 +117,7 @@ private inline fun <reified K : Enum<K>> applyModifiersInfo(
         val key = modifier.targetAs<K>() ?: return@forEach
         val base = current[key] ?: return@forEach
 
-        if (modifier.shouldSkip(base)) return@forEach
-
-        val result = applyOperation(base, modifier.resolvedValue, modifier.operation)
-        current[key] = result.coerceIn(modifier.clampMin, modifier.clampMax)
+        current[key] = modifier.applyForValue(base)
     }
     return current
 }
@@ -131,14 +127,6 @@ private fun applySingleValueModifiersInfo(
     modifiers: List<ModifierExtendedInfo>
 ): Int {
     return modifiers.fold(baseValue) { acc, mod ->
-        if (mod.shouldSkip(acc)) acc
-        else applyOperation(acc, mod.resolvedValue, mod.operation).coerceIn(
-            mod.clampMin,
-            mod.clampMax
-        )
+        mod.applyForValue(acc)
     }
 }
-
-private fun ModifierExtendedInfo.shouldSkip(currentValue: Int): Boolean =
-    (minBaseValue != null && currentValue < minBaseValue) ||
-            (maxBaseValue != null && currentValue > maxBaseValue)

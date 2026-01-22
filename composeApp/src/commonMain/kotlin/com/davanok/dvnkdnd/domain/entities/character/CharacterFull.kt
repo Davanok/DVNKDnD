@@ -71,16 +71,16 @@ data class CharacterFull(
             DnDModifierValueSource.PROFICIENCY_BONUS -> proficiencyBonus
             DnDModifierValueSource.ATTRIBUTE -> valueSourceTarget
                 ?.let { enumValueOfOrNull<Attributes>(it) }
-                ?.let { appliedValues.attributes[it] }
+                ?.let { attributes[it] }
             DnDModifierValueSource.ATTRIBUTE_MODIFIER -> valueSourceTarget
                 ?.let { enumValueOfOrNull<Attributes>(it) }
-                ?.let { calculateModifier(appliedValues.attributes[it]) }
+                ?.let { calculateModifier(attributes[it]) }
             DnDModifierValueSource.SAVING_THROW -> valueSourceTarget
                 ?.let { enumValueOfOrNull<Attributes>(it) }
-                ?.let { appliedValues.savingThrowModifiers[it] }
+                ?.let { calculateModifier(attributes[it]) }
             DnDModifierValueSource.SKILL -> valueSourceTarget
                 ?.let { enumValueOfOrNull<Skills>(it) }
-                ?.let { appliedValues.skillModifiers[it] }
+                ?.let { calculateModifier(attributes[it.attribute]) }
         }.let { it ?: 0 } + modifierValue
 
     val appliedModifiers by lazy { calculateModifiers() }

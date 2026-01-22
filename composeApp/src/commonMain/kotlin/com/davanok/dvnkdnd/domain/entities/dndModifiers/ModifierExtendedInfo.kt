@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.entities.dndModifiers
 
+import com.davanok.dvnkdnd.core.utils.applyOperation
 import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierOperation
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
@@ -13,7 +14,7 @@ data class ModifierExtendedInfo(
     val priority: Int,
 
     val groupId: Uuid?,
-    val groupName: String?,
+    val name: String,
 
     val targetGlobal: DnDModifierTargetType,
     val target: String?,
@@ -32,4 +33,16 @@ data class ModifierExtendedInfo(
     val resolvedValue: Double,
 ) {
     inline fun <reified E: Enum<E>>targetAs(): E? = target?.let { enumValueOfOrNull<E>(it) }
+
+    fun shouldSkip(currentValue: Int): Boolean =
+        (minBaseValue != null && currentValue < minBaseValue) ||
+                (maxBaseValue != null && currentValue > maxBaseValue)
+
+    fun applyForValue(baseValue: Int): Int {
+        if (shouldSkip(baseValue)) return baseValue
+
+        val result = applyOperation(baseValue, resolvedValue, operation)
+
+        return result.coerceIn(clampMin, clampMax)
+    }
 }

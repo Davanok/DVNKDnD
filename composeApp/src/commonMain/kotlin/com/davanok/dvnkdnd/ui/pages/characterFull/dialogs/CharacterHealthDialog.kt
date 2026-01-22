@@ -80,7 +80,7 @@ fun CharacterHealthDialogContent(
         val modifiersText =
             buildString {
                 healthModifiers.fastForEach { modifier ->
-                    append(modifier.groupName)
+                    append(modifier.name)
 
                     append(modifier.buildPreviewString())
 

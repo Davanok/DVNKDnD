@@ -209,7 +209,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="operation_sign_mul">* %1$d</string>
     <string name="operation_sign_div">/ %1$d</string>
     <string name="operation_sign_sqrt">√(%1$s)</string>
-    <string name="operation_sign_mod">%% %1$d</string>
+    <string name="operation_sign_mod">% %1$d</string>
     <string name="operation_sign_pow">^ %1$d</string>
     <string name="operation_sign_other">? %1$d</string>
     <!-- type 2 (two args) -->
@@ -423,4 +423,6 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="damage_condition_sneak_attack">Sneak attack</string>
     <string name="damage_condition_off_hand">Off-hand</string>
     <string name="damage_condition_specific_property">Specific property</string>
+
+    <string name="dice_throw_result_preview">Throw result</string>
 </resources>
