@@ -1,39 +1,39 @@
 package com.davanok.dvnkdnd.data.local.mappers.entities
 
-import com.davanok.dvnkdnd.domain.entities.dndEntities.AbilityInfo
-import com.davanok.dvnkdnd.domain.entities.dndEntities.AbilityLink
-import com.davanok.dvnkdnd.domain.entities.dndEntities.AbilityRegain
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityAbility
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbAbility
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbAbilityRegain
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityFeature
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullFeature
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FeatureLink
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FeatureRegain
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeature
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeatureRegain
 import kotlin.uuid.Uuid
 
 
-fun AbilityInfo.toDbAbility(entityId: Uuid) = DbAbility(
+fun FullFeature.toDbFeature(entityId: Uuid) = DbFeature(
     id = entityId,
     usageLimitByLevel = usageLimitByLevel,
     givesStateSelf = givesStateSelf,
     givesStateTarget = givesStateTarget
 )
-fun AbilityRegain.toDbAbilityRegain(abilityId: Uuid) = DbAbilityRegain(
+fun FeatureRegain.toDbFeatureRegain(featureId: Uuid) = DbFeatureRegain(
     id = id,
-    abilityId = abilityId,
+    featureId = featureId,
     regainsCount = regainsCount,
     timeUnit = timeUnit,
     timeUnitCount = timeUnitCount
 )
-fun DbAbilityRegain.toAbilityRegain() = AbilityRegain(
+fun DbFeatureRegain.toFeatureRegain() = FeatureRegain(
     id = id,
     regainsCount = regainsCount,
     timeUnit = timeUnit,
     timeUnitCount = timeUnitCount
 )
-fun DbEntityAbility.toAbilityLink() = AbilityLink(
-    abilityId = abilityId,
+fun DbEntityFeature.toFeatureLink() = FeatureLink(
+    featureId = featureId,
     level = level
 )
-fun AbilityLink.toDbEntityAbility(entityId: Uuid) = DbEntityAbility(
+fun FeatureLink.toDbEntityFeature(entityId: Uuid) = DbEntityFeature(
     entityId = entityId,
-    abilityId = abilityId,
+    featureId = featureId,
     level = level
 )

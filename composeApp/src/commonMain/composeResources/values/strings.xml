@@ -25,7 +25,7 @@
     <string name="sub_race">Sub race</string>
     <string name="background">Background</string>
     <string name="sub_background">Sub background</string>
-    <string name="ability">Ability</string>
+    <string name="feature">Feature</string>
     <string name="feat">Feat</string>
     <string name="state">State</string>
 
@@ -203,36 +203,51 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
 
     <!-- operation signs -->
     <string name="base_value_replace">Current</string>
-    <!-- type 1 (infix/unary with one param) -->
-    <string name="operation_sign_sum">+ %1$d</string>
-    <string name="operation_sign_sub">- %1$d</string>
-    <string name="operation_sign_mul">* %1$d</string>
-    <string name="operation_sign_div">/ %1$d</string>
-    <string name="operation_sign_sqrt">√(%1$s)</string>
-    <string name="operation_sign_mod">% %1$d</string>
-    <string name="operation_sign_pow">^ %1$d</string>
-    <string name="operation_sign_other">? %1$d</string>
-    <!-- type 2 (two args) -->
-    <string name="operation_sign_min">min(%1$s, %2$s)</string>
-    <string name="operation_sign_max">max(%1$s, %2$s)</string>
-    <string name="operation_sign_avg">avg(%1$s, %2$s)</string>
-    <string name="operation_sign_root">√[%2$d](%1$s)</string>
-    <!-- type 3 (unary wrappers) -->
-    <string name="operation_sign_fact">%1$s!</string>
-    <string name="operation_sign_abs">|%1$s|</string>
-    <string name="operation_sign_round">round(%1$s)</string>
-    <string name="operation_sign_ceil">ceil(%1$s)</string>
-    <string name="operation_sign_floor">floor(%1$s)</string>
+    <string name="modifier_operation_name_bonus">Bonus</string>
+    <string name="modifier_operation_name_set">Set</string>
+    <string name="modifier_operation_name_set_min">Set min</string>
+    <string name="modifier_operation_name_set_max">Set max</string>
+    <string name="modifier_operation_name_advantage">Advantage</string>
+    <string name="modifier_operation_name_disadvantage">Disadvantage</string>
+    <string name="modifier_operation_name_resistance">Resistance</string>
+    <string name="modifier_operation_name_immunity">Immunity</string>
+    <string name="modifier_operation_name_vulnerability">Vulnerability</string>
+    <string name="modifier_operation_name_proficiency">Proficiency</string>
+
+    <!-- operations -->
+    <string name="modifier_operation_place_bonus">Add %1$s</string>
+    <string name="modifier_operation_place_set">Set to %1$s</string>
+    <string name="modifier_operation_place_set_min">Cannot be bigger then %1$s</string>
+    <string name="modifier_operation_place_set_max">Cannot be less then %1$s</string>
 
     <!--value sources-->
-    <string name="value_source_constant">CONST</string>
+    <string name="value_source_flat">FLAT</string>
     <string name="value_source_character_level">LVL</string>
     <string name="value_source_entity_level">E LVL</string>
     <string name="value_source_proficiency_bonus">PB</string>
     <string name="value_source_attribute">ATTR</string>
     <string name="value_source_attribute_modifier">ATTR MOD</string>
-    <string name="value_source_saving_throw">ST</string>
-    <string name="value_source_skill">SKILL</string>
+    <string name="value_source_skill_modifier">SKILL MOD</string>
+
+    <string name="modifier_value_target_attribute">Attribute</string>
+    <string name="modifier_value_target_saving_throw">Saving throw</string>
+    <string name="modifier_value_target_skill">Skill</string>
+    <string name="modifier_value_target_derived_stat">Derived</string>
+    <string name="modifier_value_target_speed">Speed</string>
+    <string name="modifier_value_target_spell_attack">Spell attack</string>
+    <string name="modifier_value_target_spell_dc">Spell DC</string>
+    <string name="modifier_value_target_carry_weight">Carry weight</string>
+    <string name="modifier_value_target_health">Health</string>
+
+    <string name="modifier_health_value_target_max">Max</string>
+    <string name="modifier_health_value_target_current">Current</string>
+    <string name="modifier_derived_value_target_armor_class">Armor class</string>
+    <string name="modifier_derived_value_target_initiative">Initiative</string>
+    <string name="modifier_derived_value_target_passive_perception">Passive perception</string>
+    <string name="modifier_speed_value_target_walk">Walk</string>
+    <string name="modifier_speed_value_target_fly">Fly</string>
+    <string name="modifier_speed_value_target_swim">Swim</string>
+    <string name="modifier_speed_value_target_climb">Climb</string>
 
     <string name="spell_cantrip">Cantrip</string>
     <string name="spell_level">Lvl %1$d</string>

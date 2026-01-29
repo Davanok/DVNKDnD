@@ -8,7 +8,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbBackgrou
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbRace
 
 @Dao
-interface EntityInfoDao: AbilityDao, ClassDao, ItemDao, SpellDao, StateDao {
+interface EntityInfoDao: FeatureDao, ClassDao, ItemDao, SpellDao, StateDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRace(race: DbRace)
 

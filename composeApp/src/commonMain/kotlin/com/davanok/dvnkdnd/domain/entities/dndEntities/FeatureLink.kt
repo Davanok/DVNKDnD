@@ -6,8 +6,8 @@ import kotlin.uuid.Uuid
 
 
 @Serializable
-data class AbilityLink(
-    @SerialName("ability_id")
-    val abilityId: Uuid,
+data class FeatureLink(
+    @SerialName("feature_id")
+    val featureId: Uuid,
     val level: Int
 )

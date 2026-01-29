@@ -6,17 +6,17 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-data class AbilityInfo(
+data class FullFeature(
     @SerialName("usage_limit_by_level")
     val usageLimitByLevel: List<Int>,
-    val regains: List<AbilityRegain>,
+    val regains: List<FeatureRegain>,
     @SerialName("gives_state_self")
     val givesStateSelf: Uuid?,
     @SerialName("gives_state_target")
     val givesStateTarget: Uuid?
 )
 @Serializable
-data class AbilityRegain(
+data class FeatureRegain(
     val id: Uuid = Uuid.random(),
     @SerialName("regains_count")
     val regainsCount: Int?,

@@ -1,10 +1,10 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.ability
 import dvnkdnd.composeapp.generated.resources.background
 import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.feat
+import dvnkdnd.composeapp.generated.resources.feature
 import dvnkdnd.composeapp.generated.resources.item
 import dvnkdnd.composeapp.generated.resources.race
 import dvnkdnd.composeapp.generated.resources.spell
@@ -21,7 +21,7 @@ enum class DnDEntityTypes(val stringRes: StringResource) {
     SUB_RACE(Res.string.sub_race),
     BACKGROUND(Res.string.background),
     SUB_BACKGROUND(Res.string.sub_background),
-    ABILITY(Res.string.ability),
+    FEATURE(Res.string.feature),
     FEAT(Res.string.feat),
     SPELL(Res.string.spell),
     ITEM(Res.string.item),

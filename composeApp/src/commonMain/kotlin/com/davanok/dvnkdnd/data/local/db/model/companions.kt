@@ -3,8 +3,8 @@ package com.davanok.dvnkdnd.data.local.db.model
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityProficiency
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbAbility
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbAbilityRegain
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeature
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeatureRegain
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbProficiency
 
 data class DbJoinProficiency(
@@ -16,11 +16,11 @@ data class DbJoinProficiency(
     val proficiency: DbProficiency
 )
 
-data class DbAbilityInfo(
-    @Embedded val ability: DbAbility,
+data class DbFullFeature(
+    @Embedded val feature: DbFeature,
     @Relation(
         parentColumn = "id",
-        entityColumn = "ability_id"
+        entityColumn = "feature_id"
     )
-    val regains: List<DbAbilityRegain>
+    val regains: List<DbFeatureRegain>
 )

@@ -43,14 +43,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifierExtendedInfo
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.model.toUiMessage
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
-import com.davanok.dvnkdnd.ui.components.text.buildPreviewString
+import com.davanok.dvnkdnd.ui.components.text.buildPreview
 import com.davanok.dvnkdnd.ui.components.toSignedString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
@@ -121,10 +121,10 @@ fun NewCharacterStatsLargeScreen(
             Content(
                 modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp),
                 attributes = uiState.attributes,
-                savingThrows = uiState.savingThrows.mapValues { (_, v) -> v.first },
-                savingThrowValues = uiState.savingThrows.mapValues { (_, v) -> v.second },
-                skills = uiState.skills.mapValues { (_, v) -> v.first },
-                skillsValues = uiState.skills.mapValues { (_, v) -> v.second },
+                savingThrows = uiState.savingThrows.mapValues { (_, v) -> v.modifiers },
+                savingThrowValues = uiState.savingThrows.mapValues { (_, v) -> v.resultValue },
+                skills = uiState.skills.mapValues { (_, v) -> v.modifiers },
+                skillsValues = uiState.skills.mapValues { (_, v) -> v.resultValue },
                 onSelectSavingThrow = viewModel::selectSavingThrow,
                 onSelectSkill = viewModel::selectSkill
             )
@@ -135,9 +135,9 @@ fun NewCharacterStatsLargeScreen(
 @Composable
 private fun Content(
     attributes: AttributesGroup,
-    savingThrows: Map<Attributes, List<ModifierExtendedInfo>>,
+    savingThrows: Map<Attributes, List<ValueModifierInfo>>,
     savingThrowValues: Map<Attributes, Int>,
-    skills: Map<Skills, List<ModifierExtendedInfo>>,
+    skills: Map<Skills, List<ValueModifierInfo>>,
     skillsValues: Map<Skills, Int>,
     onSelectSavingThrow: (Uuid) -> Unit,
     onSelectSkill: (Uuid) -> Unit,
@@ -185,9 +185,9 @@ private fun Content(
 private fun AttributeItem(
     attribute: Attributes,
     attributeValue: Int,
-    savingThrowModifiers: List<ModifierExtendedInfo>,
+    savingThrowModifiers: List<ValueModifierInfo>,
     savingThrowValue: Int,
-    skillsModifiers: Map<Skills, List<ModifierExtendedInfo>>,
+    skillsModifiers: Map<Skills, List<ValueModifierInfo>>,
     skillsValues: Map<Skills, Int>,
     onSelectSavingThrow: (Uuid) -> Unit,
     onSelectSkill: (Uuid) -> Unit,
@@ -277,7 +277,7 @@ private fun AttributeItem(
                                         value = firstModInfo.state.selected,
                                         enabled = firstModInfo.state.selectable,
                                         role = Role.Checkbox,
-                                        onValueChange = { onSelectSkill(firstModInfo.id) }
+                                        onValueChange = { onSelectSkill(firstModInfo.modifier.id) }
                                     )
                                 ),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -330,11 +330,11 @@ private fun AttributeItem(
 }
 
 @Composable
-private fun ModifierChip(info: ModifierExtendedInfo, onClick: (Uuid) -> Unit) {
+private fun ModifierChip(info: ValueModifierInfo, onClick: (Uuid) -> Unit) {
     FilterChip(
         selected = info.state.selected,
-        onClick = { if (info.state.selectable) onClick(info.id) },
-        label = { Text(info.buildPreviewString()) },
+        onClick = { if (info.state.selectable) onClick(info.modifier.id) },
+        label = { Text(info.buildPreview()) },
         enabled = info.state.selectable,
     )
 }

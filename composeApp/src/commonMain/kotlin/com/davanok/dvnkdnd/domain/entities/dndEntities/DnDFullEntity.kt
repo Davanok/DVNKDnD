@@ -18,13 +18,13 @@ data class DnDFullEntity(
     val modifiersGroups: List<ModifiersGroup>,
 
     val proficiencies: List<JoinProficiency>,
-    val abilities: List<AbilityLink>,
+    val features: List<FeatureLink>,
 
     val cls: ClassWithSpells? = null,
     val race: RaceInfo? = null,
     val background: Unit? = null,
     val feat: FeatInfo? = null,
-    val ability: AbilityInfo? = null,
+    val feature: FullFeature? = null,
     val spell: FullSpell? = null,
     val item: FullItem? = null,
     val state: FullState? = null,
@@ -35,9 +35,9 @@ data class DnDFullEntity(
     fun toDnDEntityMin() = entity.toEntityMin(images.getMainImage()?.path)
 
     fun getCompanionEntitiesIds() =
-        abilities.map { it.abilityId } +
+        features.map { it.featureId } +
                 cls?.spells.orEmpty() +
-                ability?.let { listOfNotNull(it.givesStateSelf, it.givesStateTarget) }.orEmpty() +
+                feature?.let { listOfNotNull(it.givesStateSelf, it.givesStateTarget) }.orEmpty() +
                 spell?.attacks?.mapNotNull { it.givesState }.orEmpty() +
                 item?.let { fullItem ->
                     fullItem.effects.map { it.givesState } +

@@ -33,7 +33,6 @@ sealed interface Route {
         @Serializable data object Item : Route
         // custom
         @Serializable data object Spell : Route
-        @Serializable data object Ability : Route
         @Serializable data object Feature : Route
         // homebrew
         @Serializable data object Class : Route

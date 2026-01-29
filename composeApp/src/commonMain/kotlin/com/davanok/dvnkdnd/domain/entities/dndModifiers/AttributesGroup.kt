@@ -58,9 +58,14 @@ fun Map<Attributes, Int>.toAttributesGroup() = AttributesGroup(
     wisdom = get(Attributes.WISDOM) ?: 0,
     charisma = get(Attributes.CHARISMA) ?: 0,
 )
-fun AttributesGroup.map(transform: (Int) -> Int) = toMap()
-    .mapValues { transform(it.value) }
-    .toAttributesGroup()
+fun AttributesGroup.map(transform: (Int) -> Int) = AttributesGroup(
+    strength = transform(strength),
+    dexterity = transform(dexterity),
+    constitution = transform(constitution),
+    intelligence = transform(intelligence),
+    wisdom = transform(wisdom),
+    charisma = transform(charisma)
+)
 fun AttributesGroup.modifiers() = listOf(
     strength,
     dexterity,

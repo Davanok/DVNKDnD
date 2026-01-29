@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
+import com.davanok.dvnkdnd.domain.entities.character.CharacterSpeed
 import com.davanok.dvnkdnd.domain.entities.character.CharacterState
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.text.MeasurementConverter
@@ -94,8 +95,8 @@ fun CharacterMainValuesWidget(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalArrangement = Arrangement.Center
             ) {
-                InitiativeWidget(values.initiative, onClick = onInitiativeClick)
-                ArmorClassWidget(values.armorClass, onClick = onArmorClassClick)
+                InitiativeWidget(values.derivedStats.initiative, onClick = onInitiativeClick)
+                ArmorClassWidget(values.derivedStats.armorClass, onClick = onArmorClassClick)
                 HealthWidget(values.health, onClick = onHealthClick)
                 SpeedWidget(values.speed, onClick = onSpeedClick)
             }
@@ -188,11 +189,11 @@ private fun HealthWidget(
 
 @Composable
 private fun SpeedWidget(
-    speed: Int,
+    speed: CharacterSpeed,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val speed = MeasurementConverter.convertLength(speed, LocalMeasurementSystem.current.length)
+    val speed = MeasurementConverter.convertLength(speed.walk /*TODO:*/, LocalMeasurementSystem.current.length)
     SuggestionChip(
         modifier = modifier,
         onClick = onClick,

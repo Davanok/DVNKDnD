@@ -6,8 +6,8 @@ import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.domain.dnd.calculateSpellDifficultyClass
 import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.domain.entities.DatabaseImage
-import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateModifiers
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateSpellSlots
+import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateValueModifiers
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.findAttacks
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.getAppliedValues
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.getEntitiesWithLevel
@@ -17,8 +17,8 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.SkillsGroup
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.CasterProgression
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -44,10 +44,10 @@ data class CharacterFull(
 
     val feats: List<DnDFullEntity> = emptyList(),
 
-    val selectedModifiers: Set<Uuid> = emptySet(),
-    val selectedProficiencies: Set<Uuid> = emptySet(),
+    val customModifiers: List<CharacterCustomModifier>,
 
-    val customModifiers: List<CustomModifier> = emptyList(),
+    val selectedModifiers: CharacterSelectedModifiers,
+    val selectedProficiencies: Set<Uuid> = emptySet(),
 
     val states: List<CharacterState> = emptyList(),
 
@@ -62,28 +62,28 @@ data class CharacterFull(
     val proficiencyBonus: Int
         get() = optionalValues.proficiencyBonus ?: proficiencyBonusByLevel(character.level)
 
-    fun resolveValueSource(source: DnDModifierValueSource, valueSourceTarget: String?, entityId: Uuid?, modifierValue: Double): Double =
-        when(source) {
-            DnDModifierValueSource.CONSTANT -> 0
-            DnDModifierValueSource.CHARACTER_LEVEL -> character.level
-            DnDModifierValueSource.ENTITY_LEVEL -> entityId
-                ?.let { id -> mainEntities.firstOrNull { id in it }?.level }
-            DnDModifierValueSource.PROFICIENCY_BONUS -> proficiencyBonus
-            DnDModifierValueSource.ATTRIBUTE -> valueSourceTarget
-                ?.let { enumValueOfOrNull<Attributes>(it) }
-                ?.let { attributes[it] }
-            DnDModifierValueSource.ATTRIBUTE_MODIFIER -> valueSourceTarget
-                ?.let { enumValueOfOrNull<Attributes>(it) }
-                ?.let { calculateModifier(attributes[it]) }
-            DnDModifierValueSource.SAVING_THROW -> valueSourceTarget
-                ?.let { enumValueOfOrNull<Attributes>(it) }
-                ?.let { calculateModifier(attributes[it]) }
-            DnDModifierValueSource.SKILL -> valueSourceTarget
-                ?.let { enumValueOfOrNull<Skills>(it) }
-                ?.let { calculateModifier(attributes[it.attribute]) }
-        }.let { it ?: 0 } + modifierValue
+    fun resolveValueSource(
+        source: ValueSourceType,
+        valueSourceTarget: String?,
+        entityId: Uuid?
+    ): Int = when(source) {
+        ValueSourceType.FLAT -> null
+        ValueSourceType.CHARACTER_LEVEL -> character.level
+        ValueSourceType.ENTITY_LEVEL -> entityId
+            ?.let { id -> mainEntities.firstOrNull { id in it }?.level }
+        ValueSourceType.PROFICIENCY_BONUS -> proficiencyBonus
+        ValueSourceType.ATTRIBUTE_MODIFIER -> valueSourceTarget
+            ?.let { enumValueOfOrNull<Attributes>(it) }
+            ?.let { calculateModifier(attributes[it]) }
+        ValueSourceType.ATTRIBUTE -> valueSourceTarget
+            ?.let { enumValueOfOrNull<Attributes>(it) }
+            ?.let { attributes[it] }
+        ValueSourceType.SKILL_MODIFIER -> valueSourceTarget
+            ?.let { enumValueOfOrNull<Skills>(it) }
+            ?.let { attributes[it.attribute] }
+    }.let { it ?: 0 }
 
-    val appliedModifiers by lazy { calculateModifiers() }
+    val appliedModifiers by lazy { calculateValueModifiers() }
 
     val spellSlots by lazy { calculateSpellSlots() }
 
@@ -123,10 +123,33 @@ data class CharacterModifiedValues(
     val savingThrowModifiers: AttributesGroup,
     val skillModifiers: SkillsGroup,
     val health: CharacterHealth,
+    val derivedStats: CharacterDerivedStats,
+    val speed: CharacterSpeed
+)
+
+data class CharacterDerivedStats(
     val initiative: Int,
     val armorClass: Int,
-    val speed: Int
+    val passivePerception: Int
 )
+data class CharacterSpeed(
+    val walk: Int,
+    val swim: Int,
+    val fly: Int,
+    val climb: Int
+)
+
+@Serializable
+data class CharacterSelectedModifiers(
+    val valueModifiers: Set<Uuid> = emptySet(),
+    val rollModifiers: Set<Uuid> = emptySet(),
+    val damageModifiers: Set<Uuid> = emptySet()
+) {
+    operator fun contains(element: Uuid) =
+        element in valueModifiers || element in rollModifiers || element in damageModifiers
+
+    fun toSet(): Set<Uuid> = valueModifiers + rollModifiers + damageModifiers
+}
 
 @Serializable
 data class CharacterMainEntityInfo(

@@ -41,7 +41,7 @@ import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxBy
 import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.ui.navigation.Route
-import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Ability
+import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Feature
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Background
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Character
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Class
@@ -49,12 +49,12 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Item
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Race
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Spell
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.ability
 import dvnkdnd.composeapp.generated.resources.background
 import dvnkdnd.composeapp.generated.resources.character
 import dvnkdnd.composeapp.generated.resources.cls
 import dvnkdnd.composeapp.generated.resources.custom
 import dvnkdnd.composeapp.generated.resources.fantasy
+import dvnkdnd.composeapp.generated.resources.feature
 import dvnkdnd.composeapp.generated.resources.fighter
 import dvnkdnd.composeapp.generated.resources.fireball
 import dvnkdnd.composeapp.generated.resources.homebrew
@@ -238,7 +238,7 @@ private enum class EntityItem(
     Character(Res.string.character, Res.drawable.fighter, Route.New.Character),
     Item(Res.string.item, Res.drawable.sword, Route.New.Item),
     Spell(Res.string.spell, Res.drawable.fireball, Route.New.Spell),
-    Ability(Res.string.ability, Res.drawable.fantasy, Route.New.Ability),
+    Feature(Res.string.feature, Res.drawable.fantasy, Route.New.Feature),
     Class(Res.string.cls, Res.drawable.rogue, Route.New.Class),
     Race(Res.string.race, Res.drawable.tiefling, Route.New.Race),
     Background(Res.string.background, Res.drawable.urchin, Route.New.Background)
@@ -249,6 +249,6 @@ private enum class EntityGroup(
     val items: List<EntityItem>
 ) {
     Main(Res.string.main, listOf(Character, Item)),
-    Custom(Res.string.custom, listOf(Spell, Ability)),
+    Custom(Res.string.custom, listOf(Spell, Feature)),
     Homebrew(Res.string.homebrew, listOf(Class, Race, Background))
 }

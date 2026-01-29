@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.data.local.db.entities.dndEntities
+package com.davanok.dvnkdnd.data.local.db.entities.character
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -14,14 +14,18 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "entity_value_modifier",
+    tableName = "character_custom_value_modifier",
     foreignKeys = [
-        ForeignKey(DbEntityModifiersGroup::class, ["id"], ["group_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DbEntityValueModifier(
+data class DbCharacterCustomValueModifier(
     @PrimaryKey val id: Uuid,
-    @ColumnInfo("group_id", index = true) val groupId: Uuid,
+    @ColumnInfo("character_id", index = true)
+    val characterId: Uuid,
+
+    val name: String,
+    val description: String,
 
     val priority: Int,
     // What are we modifying? (e.g., ATTRIBUTE -> STR)
@@ -50,15 +54,18 @@ data class DbEntityValueModifier(
 )
 
 @Entity(
-    tableName = "entity_roll_modifier",
+    tableName = "character_custom_roll_modifier",
     foreignKeys = [
-        ForeignKey(DbEntityModifiersGroup::class, ["id"], ["group_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DbEntityRollModifier(
+data class DbCharacterCustomRollModifier(
     @PrimaryKey val id: Uuid,
-    @ColumnInfo("group_id", index = true)
-    val groupId: Uuid,
+    @ColumnInfo("character_id", index = true)
+    val characterId: Uuid,
+
+    val name: String,
+    val description: String,
 
     @ColumnInfo("target_scope")
     val targetScope: ModifierRollTarget,    // SAVING_THROW
@@ -67,45 +74,28 @@ data class DbEntityRollModifier(
 
     val operation: RollOperation,           // ADVANTAGE
 
-    // Crucial for Rolls: Conditions are very common
-    val condition: String?                  // "Against spells", "While heavily obscured"
+    // Optional: Condition text for UI (e.g., "When wearing no armor")
+    val condition: String? = null
 )
 
 @Entity(
-    tableName = "entity_damage_modifier",
+    tableName = "character_custom_damage_modifier",
     foreignKeys = [
-        ForeignKey(DbEntityModifiersGroup::class, ["id"], ["group_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DbEntityDamageModifier(
+data class DbCharacterCustomDamageModifier(
     @PrimaryKey val id: Uuid,
-    @ColumnInfo("group_id", index = true)
-    val groupId: Uuid,
+    @ColumnInfo("character_id", index = true)
+    val characterId: Uuid,
+
+    val name: String,
+    val description: String,
 
     @ColumnInfo("damage_type")
     val damageType: DamageTypes,            // "FIRE", "SLASHING"
     val interaction: DamageInteractionType, // RESISTANCE, IMMUNITY
 
-    val condition: String?                  // "From non-magical attacks"
-)
-
-@Entity(
-    tableName = "entity_modifiers_group",
-    foreignKeys = [
-        ForeignKey(DbBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class DbEntityModifiersGroup(
-    @PrimaryKey val id: Uuid,
-    @ColumnInfo("entity_id", index = true)
-    val entityId: Uuid,
-
-    val name: String,
-    val description: String,
-
-    // LOGIC FOR CHOICES
-    // If > 0, the user must select this many modifiers from this feature.
-    // If 0, all modifiers in this feature are automatically active.
-    @ColumnInfo("selection_limit")
-    val selectionLimit: Int = 0
+    // Optional: Condition text for UI (e.g., "When wearing no armor")
+    val condition: String? = null
 )

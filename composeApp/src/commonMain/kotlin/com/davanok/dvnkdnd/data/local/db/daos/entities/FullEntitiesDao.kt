@@ -6,7 +6,7 @@ import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbBackground
 import com.davanok.dvnkdnd.data.local.db.model.DbFullEntity
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbBaseEntity
-import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityAbility
+import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityFeature
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityImage
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityProficiency
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbFeat
@@ -51,12 +51,12 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
         fullEntity.race?.let { insertRace(it.toDbRace(entityId)) }
         fullEntity.background?.let { insertBackground(DbBackground(entityId)) }
         fullEntity.feat?.let { insertFeat(it.toDbFeat(entityId)) }
-        fullEntity.ability?.let { insertAbilityInfo(entityId, it) }
+        fullEntity.feature?.let { insertFullFeature(entityId, it) }
         fullEntity.spell?.let { insertFullSpell(entityId, it) }
         fullEntity.item?.let { insertFullItem(entityId, it) }
         fullEntity.state?.let { insertState(entityId, it) }
 
         insertProficiencyLinks(fullEntity.proficiencies.map { it.toDbEntityProficiency(entityId) })
-        insertAbilityLinks(fullEntity.abilities.map { it.toDbEntityAbility(entityId) })
+        insertFeaturesLinks(fullEntity.features.map { it.toDbEntityFeature(entityId) })
     }
 }

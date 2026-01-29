@@ -2,16 +2,23 @@ package com.davanok.dvnkdnd.domain.entities.character.characterUtils
 
 import com.davanok.dvnkdnd.domain.dnd.calculateArmorClass
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
+import com.davanok.dvnkdnd.domain.entities.character.CharacterDerivedStats
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifierExtendedInfo
+import com.davanok.dvnkdnd.domain.entities.character.CharacterSpeed
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.map
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toSkillsGroup
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierHealthTarget
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierDerivedStatTargets
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierHealthTargets
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierSpeedTargets
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
+import io.github.aakira.napier.Napier
 
 /**
  * Computes the final, modified values for the character by applying all active modifiers
@@ -23,37 +30,25 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
  * @return A [CharacterModifiedValues] object containing the fully resolved state.
  */
 fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
-    // 1. Resolve Map-based Groups (Attributes, Saves, Skills)
+    // 1. Resolve Map-based Groups (Attributes, Skills)
     val modifiedAttributes = calculateAttributeGroup()
-    val modifiedSavingThrows = calculateSavingThrows()
-    val modifiedSkills = calculateSkills()
+    val modifiedSavingThrows = calculateSavingThrows(modifiedAttributes)
+    val modifiedSkills = calculateSkills(modifiedAttributes)
 
-    // 2. Resolve Health
+    // 2. Resolve other
     val modifiedHealth = calculateModifiedHealth()
-
-    // 3. Resolve Single Values (AC, Initiative, Speed)
-    val armorClass = calculateTargetValue(
-        target = DnDModifierTargetType.ARMOR_CLASS,
-        base = optionalValues.armorClass ?: calculateBaseArmorClass()
+    val derivedStats = calculateModifiedDerivedStats(
+        dexterityAttribute = modifiedAttributes.dexterity,
+        perceptionSkill = modifiedSkills.perception
     )
-
-    val initiative = calculateTargetValue(
-        target = DnDModifierTargetType.INITIATIVE,
-        base = optionalValues.initiative ?: calculateModifier(attributes[Attributes.DEXTERITY])
-    )
-
-    val speed = calculateTargetValue(
-        target = DnDModifierTargetType.SPEED,
-        base = optionalValues.speed ?: calculateBaseSpeed()
-    )
+    val speed = calculateSpeedValues()
 
     return CharacterModifiedValues(
         attributes = modifiedAttributes,
         savingThrowModifiers = modifiedSavingThrows,
         skillModifiers = modifiedSkills,
         health = modifiedHealth,
-        armorClass = armorClass,
-        initiative = initiative,
+        derivedStats = derivedStats,
         speed = speed
     )
 }
@@ -62,36 +57,71 @@ fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
 
 private fun CharacterFull.calculateAttributeGroup() = applyModifiersInfo(
     values = attributes.toMap(),
-    modifiers = appliedModifiers[DnDModifierTargetType.ATTRIBUTE].orEmpty()
+    modifiers = appliedModifiers[ModifierValueTarget.ATTRIBUTE].orEmpty()
 ).toAttributesGroup()
 
-private fun CharacterFull.calculateSavingThrows() = applyModifiersInfo(
-    values = attributes.toMap().mapValues { calculateModifier(it.value) },
-    modifiers = appliedModifiers[DnDModifierTargetType.SAVING_THROW].orEmpty()
+private fun CharacterFull.calculateSavingThrows(modifiedAttributes: AttributesGroup) = applyModifiersInfo(
+    values = modifiedAttributes.map { calculateModifier(it) }.toMap(),
+    modifiers = appliedModifiers[ModifierValueTarget.SAVING_THROW].orEmpty()
 ).toAttributesGroup()
 
-private fun CharacterFull.calculateSkills() = applyModifiersInfo(
-    values = attributes.toSkillsGroup().toMap().mapValues { calculateModifier(it.value) },
-    modifiers = appliedModifiers[DnDModifierTargetType.SKILL].orEmpty()
+private fun CharacterFull.calculateSkills(modifiedAttributes: AttributesGroup) = applyModifiersInfo(
+    values = modifiedAttributes.toSkillsGroup().toMap().mapValues { calculateModifier(it.value) },
+    modifiers = appliedModifiers[ModifierValueTarget.SKILL].orEmpty()
 ).toSkillsGroup()
 
 private fun CharacterFull.calculateModifiedHealth(): CharacterHealth {
     val healthMap = mapOf(
-        DnDModifierHealthTarget.CURRENT to health.current,
-        DnDModifierHealthTarget.MAX to health.max
+        DnDModifierHealthTargets.CURRENT to health.current,
+        DnDModifierHealthTargets.MAX to health.max
     )
     val modified = applyModifiersInfo(
         values = healthMap,
-        modifiers = appliedModifiers[DnDModifierTargetType.HEALTH].orEmpty()
+        modifiers = appliedModifiers[ModifierValueTarget.HEALTH].orEmpty()
     )
     return health.copy(
-        current = modified.getOrElse(DnDModifierHealthTarget.CURRENT) { health.current },
-        max = modified.getOrElse(DnDModifierHealthTarget.MAX) { health.max }
+        current = modified.getValue(DnDModifierHealthTargets.CURRENT),
+        max = modified.getValue(DnDModifierHealthTargets.MAX)
     )
 }
 
-private fun CharacterFull.calculateTargetValue(target: DnDModifierTargetType, base: Int): Int {
-    return applySingleValueModifiersInfo(base, appliedModifiers[target].orEmpty())
+private fun CharacterFull.calculateModifiedDerivedStats(
+    dexterityAttribute: Int,
+    perceptionSkill: Int
+): CharacterDerivedStats {
+    val statsMap = mapOf(
+        DnDModifierDerivedStatTargets.ARMOR_CLASS to (optionalValues.armorClass ?: calculateBaseArmorClass()),
+        DnDModifierDerivedStatTargets.INITIATIVE to (optionalValues.initiative ?: calculateModifier(dexterityAttribute)),
+        DnDModifierDerivedStatTargets.PASSIVE_PERCEPTION to (10 + perceptionSkill)
+    )
+    val modified = applyModifiersInfo(
+        values = statsMap,
+        modifiers = appliedModifiers[ModifierValueTarget.DERIVED_STAT].orEmpty()
+    )
+    return CharacterDerivedStats(
+        initiative = modified.getValue(DnDModifierDerivedStatTargets.ARMOR_CLASS),
+        armorClass = modified.getValue(DnDModifierDerivedStatTargets.INITIATIVE),
+        passivePerception = modified.getValue(DnDModifierDerivedStatTargets.PASSIVE_PERCEPTION)
+    )
+}
+private fun CharacterFull.calculateSpeedValues(): CharacterSpeed {
+    val baseSpeed = calculateBaseSpeed()
+    val speedMap = mapOf(
+        DnDModifierSpeedTargets.WALK to baseSpeed,
+        DnDModifierSpeedTargets.FLY to 0,
+        DnDModifierSpeedTargets.SWIM to baseSpeed / 2,
+        DnDModifierSpeedTargets.CLIMB to 0,
+    )
+    val modified = applyModifiersInfo(
+        values = speedMap,
+        modifiers = appliedModifiers[ModifierValueTarget.SPEED].orEmpty()
+    )
+    return CharacterSpeed(
+        walk = modified.getValue(DnDModifierSpeedTargets.WALK),
+        fly = modified.getValue(DnDModifierSpeedTargets.FLY),
+        swim = modified.getValue(DnDModifierSpeedTargets.SWIM),
+        climb = modified.getValue(DnDModifierSpeedTargets.CLIMB)
+    )
 }
 
 private fun CharacterFull.calculateBaseArmorClass(): Int {
@@ -108,25 +138,17 @@ private fun CharacterFull.calculateBaseSpeed(): Int {
 
 // --- Logic Processors ---
 
-private inline fun <reified K : Enum<K>> applyModifiersInfo(
+inline fun <reified K : Enum<K>> applyModifiersInfo(
     values: Map<K, Int>,
-    modifiers: List<ModifierExtendedInfo>
+    modifiers: List<ValueModifierInfo>
 ): Map<K, Int> {
     val current = values.toMutableMap()
     modifiers.forEach { modifier ->
+        Napier.d { current.toString() }
         val key = modifier.targetAs<K>() ?: return@forEach
         val base = current[key] ?: return@forEach
 
         current[key] = modifier.applyForValue(base)
     }
     return current
-}
-
-private fun applySingleValueModifiersInfo(
-    baseValue: Int,
-    modifiers: List<ModifierExtendedInfo>
-): Int {
-    return modifiers.fold(baseValue) { acc, mod ->
-        mod.applyForValue(acc)
-    }
 }

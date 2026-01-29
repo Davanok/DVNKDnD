@@ -5,7 +5,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterFeat
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficiency
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.data.local.db.model.character.DbCharacterWithImages
@@ -13,7 +12,6 @@ import com.davanok.dvnkdnd.data.local.db.model.character.DbFullCharacter
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacter
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterAttributes
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterCoins
-import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterCustomModifier
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterHealth
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterImage
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterItemLink
@@ -85,17 +83,12 @@ interface CharactersDao: CharacterMainDao,
             .map { DbCharacterFeat(characterId, it.entity.id) }
             .let { insertCharacterFeats(it) }
 
-        character.selectedModifiers
-            .map { DbCharacterSelectedModifier(characterId, it) }
-            .let { insertCharacterSelectedModifiers(it) }
+        insertCharacterSelectedModifiers(characterId, character.selectedModifiers)
+        insertCharacterCustomModifiers(characterId, character.customModifiers)
 
         character.selectedProficiencies
             .map { DbCharacterProficiency(characterId, it) }
             .let { insertCharacterSelectedProficiencies(it) }
-
-        character.customModifiers
-            .map { it.toDbCharacterCustomModifier(characterId) }
-            .let { insertCharacterCustomModifiers(it) }
 
         character.states
             .map { DbCharacterStateLink(characterId, it.state.entity.id, it.source?.entity?.id) }

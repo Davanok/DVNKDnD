@@ -2,9 +2,10 @@ package com.davanok.dvnkdnd.ui.components
 
 import androidx.compose.ui.text.AnnotatedString
 import com.davanok.dvnkdnd.data.platform.toString
+import kotlin.math.absoluteValue
 
 fun Int.toSignedString() = if (this > 0) "+$this" else toString()
-fun Int.toSignedSpacedString() = if (this > 0) "+ $this" else toString()
+fun Int.toSignedSpacedString() = if (this > 0) "+ $this" else "- $absoluteValue"
 fun Float.toSignedString() = if (this > 0f) "+$this" else toString()
 
 fun Double.toCompactString(): String {

@@ -3,26 +3,23 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrows
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastFlatMap
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.core.utils.applyOperation
-import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
-import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
+import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
+import com.davanok.dvnkdnd.domain.dnd.calculateModifier
+import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
+import com.davanok.dvnkdnd.domain.entities.character.ValueModifiersGroupWithResolvedValues
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroupInfo
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.map
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifierExtendedInfo
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.ui.model.UiSelectableState
-import com.davanok.dvnkdnd.domain.dnd.calculateModifier
-import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
-import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.not_all_available_saving_throws_selected
@@ -48,14 +45,19 @@ class NewCharacterThrowsViewModel(
 
     private var attributeModifiers: AttributesGroup = AttributesGroup.Default
         .map(::calculateModifier)
-
-    private var modifierGroups: List<ModifiersGroup> = emptyList()
-    private var groupIdToEntityLevel: Map<Uuid, Int> = emptyMap()
-    private var groupIdToGroup: Map<Uuid, ModifiersGroup> = emptyMap()
-    private var modifierIdToGroupId: Map<Uuid, Uuid> = emptyMap()
-    private var modifierIdToModifier: Map<Uuid, DnDModifier> = emptyMap()
+    var modifierGroups = emptyList<ValueModifiersGroupWithResolvedValues>()
 
     private val selectedModifiers = mutableSetOf<Uuid>()
+
+    private fun updateModifiersCache(groupWithResolvedValues: List<ValueModifiersGroupWithResolvedValues>) {
+        modifierGroups = groupWithResolvedValues
+            .filter { group ->
+                group.modifiers.all {
+                    it.modifier.targetScope == ModifierValueTarget.SAVING_THROW ||
+                            it.modifier.targetScope == ModifierValueTarget.SKILL
+                }
+            }
+    }
 
     fun loadCharacter() = viewModelScope.launch {
         val character = newCharacterViewModel.getCharacterWithAllModifiers()
@@ -64,20 +66,9 @@ class NewCharacterThrowsViewModel(
         selectedModifiers.clear()
         selectedModifiers.addAll(character.selectedModifiers)
 
-        modifierGroups = character.entities
-            .fastFlatMap { it.modifiersGroups }
-            .fastFilter { it.target == DnDModifierTargetType.SAVING_THROW || it.target == DnDModifierTargetType.SKILL }
-            .sortedBy { it.priority }
-
-        groupIdToGroup = modifierGroups.associateBy { it.id }
-        modifierIdToGroupId = modifierGroups
-            .fastFlatMap { g -> g.modifiers.map { it.id to g.id } }
-            .toMap()
-        modifierIdToModifier = modifierGroups
-            .fastFlatMap { g -> g.modifiers.map { it.id to it } }
-            .toMap()
-
         attributeModifiers = character.attributes.map(::calculateModifier)
+
+        updateModifiersCache(character.modifierGroups)
 
         // update UI state once
         _uiState.update { state ->
@@ -86,69 +77,14 @@ class NewCharacterThrowsViewModel(
                 character = character.character,
                 proficiencyBonus = proficiencyBonusByLevel(character.character.level),
                 attributes = character.attributes,
-                savingThrows = getModifiersInfo(DnDModifierTargetType.SAVING_THROW) { attributeModifiers[it] },
-                skills = getModifiersInfo(DnDModifierTargetType.SKILL) { attributeModifiers[it.attribute] }
+                savingThrows = getModifiersInfo(ModifierValueTarget.SAVING_THROW) { attributeModifiers[it] },
+                skills = getModifiersInfo(ModifierValueTarget.SKILL) { attributeModifiers[it.attribute] }
             )
         }
     }
 
-    private fun resolveValueSource(group: ModifiersGroup): Double {
-        val stateSnapshot = uiState.value
-
-        val value = when (group.valueSource) {
-            DnDModifierValueSource.CONSTANT -> 0
-            DnDModifierValueSource.CHARACTER_LEVEL -> stateSnapshot.characterLevel
-            DnDModifierValueSource.ENTITY_LEVEL -> groupIdToEntityLevel[group.id] ?: 0
-            DnDModifierValueSource.PROFICIENCY_BONUS -> stateSnapshot.proficiencyBonus
-
-            DnDModifierValueSource.ATTRIBUTE -> group.valueSourceTarget
-                ?.let { enumValueOfOrNull<Attributes>(it) }
-                ?.let { stateSnapshot.attributes[it] } ?: 0
-
-            DnDModifierValueSource.ATTRIBUTE_MODIFIER -> group.valueSourceTarget
-                ?.let { enumValueOfOrNull<Attributes>(it) }
-                ?.let { stateSnapshot.attributes[it] }
-                ?.let { calculateModifier(it) } ?: 0
-
-            DnDModifierValueSource.SAVING_THROW -> group.valueSourceTarget
-                ?.let { enumValueOfOrNull<Attributes>(it) }
-                ?.let { stateSnapshot.savingThrows[it]?.second } ?: 0
-
-            DnDModifierValueSource.SKILL -> group.valueSourceTarget
-                ?.let { enumValueOfOrNull<Skills>(it) }
-                ?.let { stateSnapshot.skills[it]?.second } ?: 0
-        } + group.value
-
-        return value
-    }
-
-    private fun buildExtInfo(
-        modifier: DnDModifier,
-        group: ModifiersGroup,
-        selectable: Boolean,
-        selected: Boolean
-    ) = ModifierExtendedInfo(
-        id = modifier.id,
-        isCustom = false,
-        groupId = group.id,
-        name = group.name,
-        target = modifier.target,
-        operation = group.operation,
-        valueSource = group.valueSource,
-        value = group.value,
-        state = UiSelectableState(selectable = selectable, selected = selected),
-        resolvedValue = resolveValueSource(group),
-        priority = group.priority,
-        targetGlobal = group.target,
-        valueSourceTarget = group.valueSourceTarget,
-        clampMin = group.clampMin,
-        clampMax = group.clampMax,
-        minBaseValue = group.minBaseValue,
-        maxBaseValue = group.maxBaseValue
-    )
-
     // toggle selection; returns early if not selectable
-    private fun toggleSelectionFor(modifierId: Uuid, target: DnDModifierTargetType) {
+    private fun toggleSelectionFor(modifierId: Uuid, target: ModifierValueTarget) {
         if (selectedModifiers.remove(modifierId)) {
             updateUiFor(target); return
         }
@@ -159,18 +95,18 @@ class NewCharacterThrowsViewModel(
         updateUiFor(target)
     }
 
-    fun selectSavingThrow(modifierId: Uuid) = toggleSelectionFor(modifierId, DnDModifierTargetType.SAVING_THROW)
-    fun selectSkill(modifierId: Uuid) = toggleSelectionFor(modifierId, DnDModifierTargetType.SKILL)
+    fun selectSavingThrow(modifierId: Uuid) = toggleSelectionFor(modifierId, ModifierValueTarget.SAVING_THROW)
+    fun selectSkill(modifierId: Uuid) = toggleSelectionFor(modifierId, ModifierValueTarget.SKILL)
 
-    private fun updateUiFor(target: DnDModifierTargetType) {
+    private fun updateUiFor(target: ModifierValueTarget) {
         _uiState.update { state ->
             when (target) {
-                DnDModifierTargetType.SAVING_THROW -> state.copy(
-                    savingThrows = getModifiersInfo(DnDModifierTargetType.SAVING_THROW) { attribute -> attributeModifiers[attribute] }
+                ModifierValueTarget.SAVING_THROW -> state.copy(
+                    savingThrows = getModifiersInfo(ModifierValueTarget.SAVING_THROW) { attribute -> attributeModifiers[attribute] }
                 )
 
-                DnDModifierTargetType.SKILL -> state.copy(
-                    skills = getModifiersInfo(DnDModifierTargetType.SKILL) { skill -> attributeModifiers[skill.attribute] }
+                ModifierValueTarget.SKILL -> state.copy(
+                    skills = getModifiersInfo(ModifierValueTarget.SKILL) { skill -> attributeModifiers[skill.attribute] }
                 )
 
                 else -> state
@@ -180,80 +116,90 @@ class NewCharacterThrowsViewModel(
 
     // Generic function to build modifiers list + computed values for a target
     private inline fun <reified E : Enum<E>> getModifiersInfo(
-        target: DnDModifierTargetType,
+        target: ModifierValueTarget,
         baseValueGetter: (E) -> Int
-    ): Map<E, Pair<List<ModifierExtendedInfo>, Int>> {
-        // collect ModifierExtendedInfo grouped by target name
-        val raw = mutableMapOf<String?, MutableList<ModifierExtendedInfo>>()
+    ): Map<E, ModifierResultValue> {
+        // 1. Prepare the container for the results using an EnumMap (efficient for Enums)
+        // using a generic MutableMap here for compatibility, but ideally use EnumMap<E, ...> if possible.
+        val modifiersByEnum = mutableMapOf<E, MutableList<ValueModifierInfo>>()
 
-        modifierGroups.fastForEach { group ->
-            if (group.target != target) return@fastForEach
+        // 2. Identify relevant groups once
+        val groupsForTarget = modifierGroups.filter { group ->
+            group.modifiers.all { it.modifier.targetScope == target }
+        }
 
-            val selectedInGroup = group.modifiers.count { it.id in selectedModifiers }
-            val groupAllowsExtra = selectedInGroup < group.selectionLimit
+        // 3. Single Pass: Build UI state and group modifiers by Enum
+        groupsForTarget.forEach { group ->
+            val groupInfo = ModifiersGroupInfo(
+                id = group.id,
+                name = group.name,
+                description = group.description,
+                selectionLimit = group.selectionLimit
+            )
 
-            group.modifiers.fastForEach { modifier ->
-                val selected = modifier.id in selectedModifiers
-                val selectable = modifier.selectable && (selected || groupAllowsExtra)
+            // Calculate group selection state
+            val selectedCount = group.modifiers.count { it.modifier.id in selectedModifiers }
+            val groupAllowsExtra = selectedCount < group.selectionLimit
+            val isGroupSelectable = group.selectionLimit in 1..<group.modifiers.size
 
-                val ext = buildExtInfo(modifier, group, selectable, selected)
-                raw.getOrPut(modifier.target, ::mutableListOf).add(ext)
+            group.modifiers.forEach { (modifier, resolvedValue) ->
+                // Resolve String key to Enum immediately. Skip if invalid or null.
+                val enumKey = modifier.targetKey?.let { enumValueOfOrNull<E>(it) } ?: return@forEach
+
+                val isSelected = modifier.id in selectedModifiers
+                val isSelectable = isGroupSelectable && (isSelected || groupAllowsExtra)
+
+                val info = ValueModifierInfo(
+                    modifier = modifier,
+                    group = groupInfo,
+                    resolvedValue = resolvedValue,
+                    state = UiSelectableState(isSelectable, isSelected)
+                )
+
+                modifiersByEnum.getOrPut(enumKey) { mutableListOf() }.add(info)
             }
         }
 
-        // convert keys that match enum names to the enum
-        val modifiersByEnum = mutableMapOf<E, List<ModifierExtendedInfo>>()
-        raw.forEach { (k, v) ->
-            k
-                ?.let { enumValueOfOrNull<E>(it) }
-                ?.let { modifiersByEnum[it] = v }
-        }
-        // For each enum entry compute the final modifier value using calculateModifierSum.
-        val groupsForTarget = modifierGroups.fastFilter { it.target == target }
-        return modifiersByEnum.mapValues { (enumKey, extList) ->
+        // 4. Calculate Final Values
+        // We only iterate over the Enums that actually have modifiers (or all Enums if required, see note below)
+        return modifiersByEnum.mapValues { (enumKey, infoList) ->
             var result = baseValueGetter(enumKey)
-            groupsForTarget
-                .sortedBy { it.priority }
-                .forEach { group ->
-                    // compute group-level value once (nullable => use modifier.value when null)
-                    val value = resolveValueSource(group)
 
-                    group.modifiers.forEach modifier@{ modifier ->
-                        if (modifier.target != enumKey.name || modifier.id !in selectedModifiers) return@modifier
+            // Get only the SELECTED modifiers for this specific Enum to calculate the value
+            val activeModifiers = infoList
+                .filter { it.state.selected } // Only apply selected modifiers
+                .sortedBy { it.modifier.priority } // Sort by priority
 
-                        // skip modifier if current base (result) not in group's base range
-                        if (group.minBaseValue?.let { result < it } == true) return@modifier
-                        if (group.maxBaseValue?.let { result > it } == true) return@modifier
+            activeModifiers.forEach { info ->
+                result = applyOperation(result, info.resolvedValue, info.modifier.operation)
+            }
 
-                        // apply operation and clamp to group's limits
-                        result = applyOperation(result, value, group.operation)
-                            .coerceIn(group.clampMin, group.clampMax)
-                    }
-                }
-
-            extList to result
+            ModifierResultValue(
+                modifiers = infoList,
+                resultValue = result
+            )
         }
     }
 
     private fun checkIsModifierSelectable(modifierId: Uuid): Boolean {
-        val modifier = modifierIdToModifier[modifierId] ?: return false
-        if (!modifier.selectable) return false
+        val modifierGroup = modifierGroups.firstOrNull { group ->
+            group.modifiers.map { it.modifier.id }.contains(modifierId)
+        } ?: return false
+        val modifierSelectable = modifierGroup.selectionLimit <= 0
+        if (!modifierSelectable) return false
 
-        val groupId = modifierIdToGroupId[modifierId] ?: return false
-        val group = groupIdToGroup[groupId] ?: return false
-
-        val alreadySelected = group.modifiers.count { it.id in selectedModifiers }
-        return alreadySelected < group.selectionLimit
+        val alreadySelected = modifierGroup.modifiers.count { it.modifier.id in selectedModifiers }
+        return alreadySelected < modifierGroup.selectionLimit
     }
 
     fun commit(onSuccess: () -> Unit) = viewModelScope.launch {
         val isSavingThrowsValid = modifierGroups
-            .fastFilter { it.target == DnDModifierTargetType.SAVING_THROW }
-            .fastAll { group -> group.modifiers.count { it.id in selectedModifiers } >= group.selectionLimit }
+            .fastFilter { group -> group.modifiers.all { it.modifier.targetScope == ModifierValueTarget.SAVING_THROW } }
+            .fastAll { group -> group.modifiers.count { it.modifier.id in selectedModifiers } >= group.selectionLimit }
 
         val isSkillsValid = modifierGroups
-            .fastFilter { it.target == DnDModifierTargetType.SKILL }
-            .fastAll { group -> group.modifiers.count { it.id in selectedModifiers } >= group.selectionLimit }
+            .fastFilter { group -> group.modifiers.all { it.modifier.targetScope == ModifierValueTarget.SKILL } }
+            .fastAll { group -> group.modifiers.count { it.modifier.id in selectedModifiers } >= group.selectionLimit }
 
         if (!isSavingThrowsValid) {
             _uiState.update {
@@ -281,6 +227,11 @@ class NewCharacterThrowsViewModel(
     }
 }
 
+data class ModifierResultValue(
+    val modifiers: List<ValueModifierInfo>,
+    val resultValue: Int
+)
+
 @Immutable
 data class NewCharacterThrowsUiState(
     val isLoading: Boolean = false,
@@ -291,6 +242,6 @@ data class NewCharacterThrowsUiState(
     val proficiencyBonus: Int = proficiencyBonusByLevel(characterLevel),
     val attributes: AttributesGroup = AttributesGroup.Default,
 
-    val savingThrows: Map<Attributes, Pair<List<ModifierExtendedInfo>, Int>> = emptyMap(),// SavingThrows to (modifiers to result value)
-    val skills: Map<Skills, Pair<List<ModifierExtendedInfo>, Int>> = emptyMap() // Skill to (modifiers to result value)
+    val savingThrows: Map<Attributes, ModifierResultValue> = emptyMap(),// SavingThrows to (modifiers to result value)
+    val skills: Map<Skills, ModifierResultValue> = emptyMap() // Skill to (modifiers to result value)
 )

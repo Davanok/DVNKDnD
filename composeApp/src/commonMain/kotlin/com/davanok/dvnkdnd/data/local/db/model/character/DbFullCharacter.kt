@@ -6,7 +6,9 @@ import androidx.room.Relation
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacter
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterAttributes
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCoins
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomDamageModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomRollModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomValueModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterFeat
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterHealth
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterImage
@@ -16,7 +18,9 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterMainEntit
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterOptionalValues
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficiency
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedDamageModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedRollModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedValueModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSpellLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
@@ -27,7 +31,7 @@ data class DbFullCharacter(
     @Embedded val character: DbCharacter,
 
     @Relation(parentColumn = "id", entityColumn = "id")
-    val optionalValues: DbCharacterOptionalValues,
+    val optionalValues: DbCharacterOptionalValues?,
 
     @Relation(parentColumn = "id", entityColumn = "character_id")
     val images: List<DbCharacterImage>,
@@ -69,22 +73,25 @@ data class DbFullCharacter(
     )
     val feats: List<DbFullEntity>,
 
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "character_id"
-    )
-    val selectedModifiers: List<DbCharacterSelectedModifier>,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "character_id"
-    )
-    val selectedProficiencies: List<DbCharacterProficiency>,
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val selectedValueModifiers: List<DbCharacterSelectedValueModifier>,
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val selectedRollModifiers: List<DbCharacterSelectedRollModifier>,
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val selectedDamageModifiers: List<DbCharacterSelectedDamageModifier>,
+
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val customValueModifiers: List<DbCharacterCustomValueModifier>,
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val customRollModifiers: List<DbCharacterCustomRollModifier>,
+    @Relation(parentColumn = "id", entityColumn = "character_id")
+    val customDamageModifiers: List<DbCharacterCustomDamageModifier>,
 
     @Relation(
         parentColumn = "id",
         entityColumn = "character_id"
     )
-    val customModifiers: List<DbCharacterCustomModifier>,
+    val selectedProficiencies: List<DbCharacterProficiency>,
 
     @Relation(
         entity = DbCharacterStateLink::class,

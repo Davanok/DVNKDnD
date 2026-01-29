@@ -1,12 +1,5 @@
 package com.davanok.dvnkdnd.ui.pages.characterFull
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -26,7 +19,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
@@ -36,25 +28,19 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifierExtendedInfo
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierOperation
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
@@ -62,12 +48,10 @@ import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveContent
 import com.davanok.dvnkdnd.ui.components.adaptive.SupportEntry
 import com.davanok.dvnkdnd.ui.components.adaptive.rememberAdaptiveContentState
-import com.davanok.dvnkdnd.ui.components.diceRoller.AnimationState
-import com.davanok.dvnkdnd.ui.components.diceRoller.DiceRollerDialog
 import com.davanok.dvnkdnd.ui.components.diceRoller.rememberDiceRollerState
-import com.davanok.dvnkdnd.ui.components.text.buildPreviewString
-import com.davanok.dvnkdnd.ui.model.UiSelectableState
 import com.davanok.dvnkdnd.ui.model.isCritical
+import com.davanok.dvnkdnd.ui.pages.characterFull.components.CharacterThrowsDiceRoller
+import com.davanok.dvnkdnd.ui.pages.characterFull.components.ThrowsDiceRollerModifier
 import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterAddEntityDialogContent
 import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterHealthDialogContent
 import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterMainEntitiesDialog
@@ -80,13 +64,10 @@ import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterSpellsScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterStatesScreen
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
-import dvnkdnd.composeapp.generated.resources.dice_throw_result_preview
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import kotlin.uuid.Uuid
 
 @Composable
 fun CharacterFullScreen(
@@ -127,12 +108,6 @@ fun CharacterFullScreen(
     }
 }
 
-private sealed interface ThrowsModifier {
-    data class AttributesModifier(val attribute: Attributes) : ThrowsModifier
-    data class SavingThrowsModifier(val attribute: Attributes) : ThrowsModifier
-    data class SkillsModifier(val skill: Skills) : ThrowsModifier
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
@@ -154,13 +129,13 @@ private fun Content(
     val appBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     val onAttributeClick: (Attributes) -> Unit = {
-        diceRollerState.roll(Dices.D20, modifier = ThrowsModifier.AttributesModifier(it))
+        diceRollerState.roll(Dices.D20, modifier = ThrowsDiceRollerModifier.AttributesModifier(it))
     }
     val onSavingThrowClick: (Attributes) -> Unit = {
-        diceRollerState.roll(Dices.D20, modifier = ThrowsModifier.SavingThrowsModifier(it))
+        diceRollerState.roll(Dices.D20, modifier = ThrowsDiceRollerModifier.SavingThrowsModifier(it))
     }
     val onSkillClick: (Skills) -> Unit = {
-        diceRollerState.roll(Dices.D20, modifier = ThrowsModifier.SkillsModifier(it))
+        diceRollerState.roll(Dices.D20, modifier = ThrowsDiceRollerModifier.SkillsModifier(it))
     }
 
     Scaffold(
@@ -292,82 +267,10 @@ private fun Content(
         )
     }
 
-    DiceRollerDialog(
+    CharacterThrowsDiceRoller(
         state = diceRollerState,
-        diceCompanionContent = { animState, resultDiceValue, throwSpec ->
-            val throwType = throwSpec.modifier as? ThrowsModifier ?: return@DiceRollerDialog
-
-            // 1. Centralize data extraction using a helper or extension
-            val (targetType, targetName, attribute) = remember(throwType) {
-                when (throwType) {
-                    is ThrowsModifier.AttributesModifier -> Triple(DnDModifierTargetType.ATTRIBUTE, throwType.attribute.name, throwType.attribute)
-                    is ThrowsModifier.SavingThrowsModifier -> Triple(DnDModifierTargetType.SAVING_THROW, throwType.attribute.name, throwType.attribute)
-                    is ThrowsModifier.SkillsModifier -> Triple(DnDModifierTargetType.SKILL, throwType.skill.name, throwType.skill.attribute)
-                }
-            }
-
-            // 2. Calculate the base modifier (Ability Score Modifier)
-
-            val startModifierAsInfo = remember(targetType, targetName) {
-                val baseModValue = calculateModifier(character.attributes[attribute])
-
-                ModifierExtendedInfo(
-                    id = Uuid.NIL,
-                    isCustom = true,
-                    targetGlobal = targetType,
-                    target = targetName,
-                    operation = DnDModifierOperation.SUM,
-                    valueSource = DnDModifierValueSource.CONSTANT,
-                    value = baseModValue.toDouble(),
-                    state = UiSelectableState(selectable = false, selected = true),
-                    resolvedValue = baseModValue.toDouble(),
-                    priority = 0,
-                    groupId = null,
-                    name = "",
-                    valueSourceTarget = null,
-                )
-            }
-
-            // 3. Collect applicable modifiers
-            val modifiers = remember(throwType, startModifierAsInfo) {
-                val applied = character.appliedModifiers[targetType]
-                    ?.filter { it.target == targetName }
-                    .orEmpty()
-                listOf(startModifierAsInfo) + applied
-            }
-
-            when (animState) {
-                AnimationState.Idle, AnimationState.Running -> {
-                    val preview = modifiers.fold(stringResource(Res.string.dice_throw_result_preview)) { acc, info ->
-                        info.buildPreviewString(acc)
-                    }
-                    Text(text = preview)
-                }
-
-                AnimationState.Finished -> {
-                    val currentValue by produceState(resultDiceValue) {
-                        modifiers.forEach { mod ->
-                            delay(300)
-                            val newValue = mod.applyForValue(value)
-                            Napier.d { "${mod.name}: $value ${mod.operation} (${mod.resolvedValue}) = $newValue" }
-                            value = newValue
-                        }
-                    }
-                    val resultValue by animateIntAsState(targetValue = currentValue)
-
-                    AnimatedContent(
-                        targetState = resultValue,
-                        transitionSpec = { slideInVertically() + fadeIn() togetherWith slideOutVertically() + fadeOut() }
-                    ) { value ->
-                        Text(
-                            text = value.toString(),
-                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
-        }
+        characterModifiedAttributes = character.appliedValues.attributes,
+        characterModifiers = character.appliedModifiers
     )
 }
 
@@ -506,7 +409,7 @@ private fun rememberAdaptiveCharacterContentState(
                 baseHealth = character.health,
                 updateHealth = { action(CharacterFullScreenContract.SetHealth(it)) },
                 healthModifiers = character.appliedModifiers
-                    .getOrElse(DnDModifierTargetType.HEALTH, ::emptyList)
+                    .getOrElse(ModifierValueTarget.HEALTH, ::emptyList)
             )
         }
         CharacterFullUiState.Dialog.MAIN_ENTITIES -> SupportEntry(

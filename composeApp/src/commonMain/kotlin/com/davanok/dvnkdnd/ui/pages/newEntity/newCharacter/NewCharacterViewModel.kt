@@ -1,31 +1,38 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
 
 import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastFilteredMap
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
+import com.davanok.dvnkdnd.domain.dnd.calculateModifier
+import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.domain.entities.DatabaseImage
 import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityInfo
+import com.davanok.dvnkdnd.domain.entities.character.CharacterSelectedModifiers
 import com.davanok.dvnkdnd.domain.entities.character.CharacterWithAllModifiers
 import com.davanok.dvnkdnd.domain.entities.character.CharacterWithHealth
 import com.davanok.dvnkdnd.domain.entities.character.CoinsGroup
-import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
-import com.davanok.dvnkdnd.domain.entities.character.toEntityWithModifiers
+import com.davanok.dvnkdnd.domain.entities.character.DnDValueModifierWithResolvedValue
+import com.davanok.dvnkdnd.domain.entities.character.ValueModifiersGroupWithResolvedValues
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndEntities.EntityBase
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
-import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
-import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDValueModifier
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import com.davanok.dvnkdnd.domain.repositories.local.FilesRepository
 import com.davanok.dvnkdnd.domain.repositories.local.FullEntitiesRepository
+import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
 import com.davanok.dvnkdnd.domain.values.FilePaths
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMain
 import okio.Path
@@ -104,12 +111,28 @@ class NewCharacterViewModel(
             character = toCharacterBase(),
             attributes = attributes,
             selectedModifiers = selectedModifiers,
-            entities = character.entities.map(DnDFullEntity::toEntityWithModifiers),
-            entityIdToLevel = character.mainEntities
-                .flatMap { e ->
-                    listOfNotNull(e.entity, e.subEntity)
-                        .map { it.entity.id to e.level }
-                }.toMap()
+            modifierGroups = character.entities.flatMap { entity ->
+                entity.modifiersGroups.map { group ->
+                    ValueModifiersGroupWithResolvedValues(
+                        id = group.id,
+                        name = group.name,
+                        description = group.description,
+                        selectionLimit = group.selectionLimit,
+                        modifiers = group.modifiers
+                            .filterIsInstance<DnDValueModifier>()
+                            .map { modifier ->
+                                DnDValueModifierWithResolvedValue(
+                                    modifier = modifier,
+                                    resolvedValue = resolveModifierValueSource(
+                                        source = modifier.sourceType,
+                                        valueSourceTarget = modifier.sourceKey,
+                                        entityId = entity.entity.id
+                                    )
+                                )
+                            }
+                    )
+                }
+            }
         )
     }
 
@@ -195,15 +218,12 @@ private data class NewCharacterWithFullEntities(
         )
     }
 
-    fun getNotSelectableModifiers(): Set<Uuid> =
-        entities
-            .fastFlatMap { it.modifiersGroups }
-            .fastFlatMap { it.modifiers }
-            .fastFilteredMap(
-                predicate = { !it.selectable },
-                transform = { it.id }
-            )
-            .toSet()
+    fun getNotSelectableModifiers(): Set<Uuid> = buildSet {
+        entities.flatMap { it.modifiersGroups }.forEach { group ->
+            if (group.selectionLimit <= 1 || group.selectionLimit > group.modifiers.size)
+                addAll(group.modifiers.map { it.id })
+        }
+    }
 
     companion object {
         private fun EntityBase.toEntityWithSubEntities(subEntities: List<DnDEntityMin>) =
@@ -251,8 +271,9 @@ private data class NewCharacter(
             usedSpells = emptyMap(),
             mainEntities = character.mainEntities,
             feats = emptyList(),
-            selectedModifiers = selectedModifiers,
-            selectedProficiencies = emptySet()
+            selectedModifiers = CharacterSelectedModifiers(valueModifiers = selectedModifiers),
+            selectedProficiencies = emptySet(),
+            customModifiers = emptyList()
         )
     }
 
@@ -263,4 +284,24 @@ private data class NewCharacter(
         description = character.description,
         level = level
     )
-}
+
+    fun resolveModifierValueSource(
+        source: ValueSourceType,
+        valueSourceTarget: String?,
+        entityId: Uuid?
+    ): Int = when(source) {
+        ValueSourceType.FLAT -> null
+        ValueSourceType.CHARACTER_LEVEL -> level
+        ValueSourceType.ENTITY_LEVEL -> entityId
+            ?.let { id -> character.mainEntities.firstOrNull { id in it }?.level }
+        ValueSourceType.PROFICIENCY_BONUS -> proficiencyBonus
+        ValueSourceType.ATTRIBUTE_MODIFIER -> valueSourceTarget
+            ?.let { enumValueOfOrNull<Attributes>(it) }
+            ?.let { calculateModifier(attributes[it]) }
+        ValueSourceType.ATTRIBUTE -> valueSourceTarget
+            ?.let { enumValueOfOrNull<Attributes>(it) }
+            ?.let { attributes[it] }
+        ValueSourceType.SKILL_MODIFIER -> valueSourceTarget
+            ?.let { enumValueOfOrNull<Skills>(it) }
+            ?.let { attributes[it.attribute] }
+    }.let { it ?: 0 }}

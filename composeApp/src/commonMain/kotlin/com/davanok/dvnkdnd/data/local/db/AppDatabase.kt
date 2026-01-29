@@ -6,39 +6,50 @@ import androidx.room.TypeConverters
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
+import com.davanok.dvnkdnd.data.local.adapters.EnumListAdapters
+import com.davanok.dvnkdnd.data.local.adapters.MainAdapters
 import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
 import com.davanok.dvnkdnd.data.local.db.daos.entities.BaseEntityDao
 import com.davanok.dvnkdnd.data.local.db.daos.entities.FullEntitiesDao
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacter
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterAttributes
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCoins
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomDamageModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomRollModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterCustomValueModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterFeat
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterHealth
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterImage
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemActivationsCount
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterMainEntity
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterOptionalValues
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficiency
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedRollModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedValueModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedDamageModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSpellLink
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityAbility
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityDamageModifier
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityFeature
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifiersGroup
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityFullDescription
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityImage
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifier
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifiersGroup
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityProficiency
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityRollModifier
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityValueModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpell
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellArea
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellAttack
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellAttackLevelModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellAttackSave
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbState
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbAbility
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbAbilityRegain
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbStateDuration
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeature
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeatureRegain
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeat
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbProficiency
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbBackground
@@ -49,34 +60,31 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbRace
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbSpellSlotType
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbArmor
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItem
-import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemProperty
-import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemPropertyLink
-import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeapon
-import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
-import com.davanok.dvnkdnd.data.local.adapters.EnumListAdapters
-import com.davanok.dvnkdnd.data.local.adapters.MainAdapters
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemActivationsCount
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbStateDuration
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivation
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationCastsSpell
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivationRegain
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemEffect
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemProperty
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemPropertyLink
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeapon
+import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamage
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbWeaponDamageCondition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
 @Database(
     entities = [
-        DbAbility::class,
-        DbAbilityRegain::class,
+        DbFeature::class,
+        DbFeatureRegain::class,
         DbArmor::class,
         DbBackground::class,
         DbBaseEntity::class,
         DbCharacter::class,
         DbCharacterAttributes::class,
         DbCharacterCoins::class,
-        DbCharacterCustomModifier::class,
+        DbCharacterCustomValueModifier::class,
+        DbCharacterCustomRollModifier::class,
+        DbCharacterCustomDamageModifier::class,
         DbCharacterFeat::class,
         DbCharacterHealth::class,
         DbCharacterImage::class,
@@ -85,7 +93,9 @@ import kotlinx.coroutines.IO
         DbCharacterNote::class,
         DbCharacterOptionalValues::class,
         DbCharacterProficiency::class,
-        DbCharacterSelectedModifier::class,
+        DbCharacterSelectedValueModifier::class,
+        DbCharacterSelectedRollModifier::class,
+        DbCharacterSelectedDamageModifier::class,
         DbCharacterSpellLink::class,
         DbCharacterUsedSpellSlots::class,
         DbCharacterStateLink::class,
@@ -94,11 +104,9 @@ import kotlinx.coroutines.IO
         DbClass::class,
         DbClassSpell::class,
         DbClassSpellSlots::class,
-        DbEntityAbility::class,
+        DbEntityFeature::class,
         DbEntityFullDescription::class,
         DbEntityImage::class,
-        DbEntityModifier::class,
-        DbEntityModifiersGroup::class,
         DbEntityProficiency::class,
         DbFeat::class,
         DbItem::class,
@@ -119,7 +127,11 @@ import kotlinx.coroutines.IO
         DbItemEffect::class,
         DbItemActivation::class,
         DbItemActivationRegain::class,
-        DbStateDuration::class
+        DbStateDuration::class,
+        DbEntityModifiersGroup::class,
+        DbEntityValueModifier::class,
+        DbEntityRollModifier::class,
+        DbEntityDamageModifier::class
     ],
     version = 1
 )

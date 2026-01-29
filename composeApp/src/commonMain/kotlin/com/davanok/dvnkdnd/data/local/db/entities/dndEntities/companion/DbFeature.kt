@@ -10,14 +10,14 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "abilities",
+    tableName = "features",
     foreignKeys = [
         ForeignKey(DbBaseEntity::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(DbState::class, ["id"], ["gives_state_self"], onDelete = ForeignKey.SET_NULL),
         ForeignKey(DbState::class, ["id"], ["gives_state_target"], onDelete = ForeignKey.SET_NULL),
     ]
 )
-data class DbAbility(
+data class DbFeature(
     @PrimaryKey val id: Uuid,
     @ColumnInfo("usage_limit_by_level")
     val usageLimitByLevel: List<Int>,
@@ -27,14 +27,14 @@ data class DbAbility(
     val givesStateTarget: Uuid?
 )
 @Entity(
-    tableName = "ability_regains",
+    tableName = "feature_regains",
     foreignKeys = [
-        ForeignKey(DbAbility::class, ["id"], ["ability_id"], onDelete = ForeignKey.CASCADE)
+        ForeignKey(DbFeature::class, ["id"], ["feature_id"], onDelete = ForeignKey.CASCADE)
     ]
 )
-data class DbAbilityRegain(
+data class DbFeatureRegain(
     @PrimaryKey val id: Uuid = Uuid.random(),
-    @ColumnInfo("ability_id", index = true) val abilityId: Uuid,
+    @ColumnInfo("feature_id", index = true) val featureId: Uuid,
     @ColumnInfo("regains_count") val regainsCount: Int?, // how many is regain. null for all
     @ColumnInfo("time_unit") val timeUnit: TimeUnit,
     @ColumnInfo("time_unit_count") val timeUnitCount: Int

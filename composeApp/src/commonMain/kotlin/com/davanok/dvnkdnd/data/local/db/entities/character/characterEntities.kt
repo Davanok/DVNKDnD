@@ -6,7 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpell
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbState
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeat
@@ -14,9 +13,6 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbProfic
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbSpellSlotType
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItem
 import com.davanok.dvnkdnd.data.local.db.entities.items.DbItemActivation
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierOperation
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierTargetType
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierValueSource
 import kotlin.uuid.Uuid
 
 // one to one
@@ -62,19 +58,6 @@ data class DbCharacterUsedSpellSlots(
     val spellSlotTypeId: Uuid?,
     @ColumnInfo("used_spells")
     val usedSpells: List<Int>, // used spells for every spell level
-)
-
-@Entity(
-    tableName = "character_selected_modifier",
-    primaryKeys = ["character_id", "modifier_id"],
-    foreignKeys = [
-        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(DbEntityModifier::class, ["id"], ["modifier_id"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class DbCharacterSelectedModifier(
-    @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    @ColumnInfo("modifier_id", index = true) val modifierId: Uuid
 )
 
 // many to many
@@ -133,35 +116,6 @@ data class DbCharacterCoins(
     val electrum: Int,
     val gold: Int,
     val platinum: Int
-)
-
-@Entity(
-    tableName = "character_custom_modifiers",
-    foreignKeys = [
-        ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
-    ]
-)
-data class DbCharacterCustomModifier(
-    @PrimaryKey
-    val id: Uuid,
-    @ColumnInfo("character_id", index = true)
-    val characterId: Uuid,
-
-    @ColumnInfo("target_global")
-    val targetGlobal: DnDModifierTargetType,
-    val operation: DnDModifierOperation,
-    @ColumnInfo("value_source")
-    val valueSource: DnDModifierValueSource,
-    @ColumnInfo("value_source_target")
-    val valueSourceTarget: String?,
-
-    val name: String,
-    val description: String?,
-    @ColumnInfo("selection_limit") val selectionLimit: Int,
-    val priority: Int,
-
-    val target: String?,
-    val value: Double
 )
 
 @Entity(

@@ -6,18 +6,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.DropdownMenuItem
@@ -27,13 +27,12 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,32 +41,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastFilteredMap
-import androidx.compose.ui.util.fastFlatMap
-import androidx.compose.ui.util.fastFold
-import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapIndexed
-import androidx.window.core.layout.WindowSizeClass
-import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierOperation
+import com.davanok.dvnkdnd.core.utils.applyOperation
+import com.davanok.dvnkdnd.core.utils.asEnum
+import com.davanok.dvnkdnd.domain.dnd.DnDConstants
+import com.davanok.dvnkdnd.domain.dnd.calculateBuyingModifiersSum
+import com.davanok.dvnkdnd.domain.entities.character.DnDValueModifierWithResolvedValue
+import com.davanok.dvnkdnd.domain.entities.character.ValueModifiersGroupWithResolvedValues
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.modifiers
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.toAttributesGroup
+import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.ui.model.UiSelectableState
-import com.davanok.dvnkdnd.domain.dnd.DnDConstants
-import com.davanok.dvnkdnd.core.utils.applyOperation
-import com.davanok.dvnkdnd.domain.dnd.calculateBuyingModifiersSum
-import com.davanok.dvnkdnd.domain.dnd.calculateModifier
-import com.davanok.dvnkdnd.ui.components.text.buildPreviewString
-import com.davanok.dvnkdnd.ui.components.toSignedString
-import com.davanok.dvnkdnd.ui.components.text.applyForString
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.decrease_modifier_value
 import dvnkdnd.composeapp.generated.resources.increase_modifier_value
@@ -79,27 +70,10 @@ import kotlin.uuid.Uuid
 
 private val ATTRIBUTE_FIELD_MAX_WIDTH = 488.dp
 
-private data class AppliedModifier(
-    val value: Double,
-    val operation: DnDModifierOperation
-)
-
-private fun applyModifiers(base: Int, modifiers: List<AppliedModifier>) =
-    modifiers.fastFold(base) { acc, modifier -> applyOperation(acc, modifier.value, modifier.operation) }
-
-private fun List<ModifiersGroup>.appliedModifiers(attribute: Attributes, selectedModifiers: Set<Uuid>) =
-    fastFlatMap { group ->
-        group.modifiers.fastFilteredMap(
-            predicate = {
-                it.targetAs<Attributes>() == attribute && it.id in selectedModifiers
-            },
-            transform = {
-                AppliedModifier(group.value, group.operation)
-            }
-        )
-    }
-
-private fun approximateToDefault(input: AttributesGroup): AttributesGroup {
+private fun approximateToDefault(
+    primaryAttributes: List<Attributes>, // TODO
+    input: AttributesGroup
+): AttributesGroup {
     val statsList = input.modifiers().withIndex()
 
     val assignment = statsList
@@ -122,12 +96,33 @@ private fun approximateToDefault(input: AttributesGroup): AttributesGroup {
 @Composable
 fun ModifiersSelector(
     selectedCreationOption: AttributesSelectorType,
-    allModifiersGroups: List<ModifiersGroup>,
+    allModifiersGroups: List<ValueModifiersGroupWithResolvedValues>,
     selectedAttributeModifiers: Set<Uuid>,
-    modifiers: AttributesGroup,
+    attributes: AttributesGroup,
     onModifiersChange: (AttributesGroup) -> Unit,
     onSelectModifiers: (DnDModifier) -> Unit,
 ) {
+    val appliedModifiers = remember(allModifiersGroups, selectedAttributeModifiers) {
+        allModifiersGroups
+            .flatMap { it.modifiers }
+            .filter { it.modifier.id in selectedAttributeModifiers }
+            .sortedBy { it.modifier.priority }
+    }
+
+    val resultValues = remember(attributes, appliedModifiers) {
+        val baseValues = attributes.toMap().toMutableMap()
+
+        appliedModifiers
+            .forEach { (modifier, resolvedValue) ->
+                val key = modifier.targetKey?.asEnum<Attributes>() ?: return@forEach
+                val baseValue = baseValues[key]!!
+                val applied = applyOperation(baseValue, resolvedValue, modifier.operation)
+                baseValues[key] = applied
+            }
+
+        baseValues.toAttributesGroup()
+    }
+
     Crossfade(
         modifier = Modifier.fillMaxSize(),
         targetState = selectedCreationOption
@@ -138,27 +133,33 @@ fun ModifiersSelector(
         ) {
             when (selectorType) {
                 AttributesSelectorType.POINT_BUY -> PointBuyModifiersSelector(
-                    character = modifiers,
+                    attributes = attributes,
                     onChange = onModifiersChange,
                     allModifiersGroups = allModifiersGroups,
                     selectedAttributeModifiers = selectedAttributeModifiers,
-                    onModifierSelected = onSelectModifiers
+                    onModifierSelected = onSelectModifiers,
+                    appliedModifiers = appliedModifiers,
+                    resultValues = resultValues
                 )
 
                 AttributesSelectorType.STANDARD_ARRAY -> DefaultArrayModifiersSelector(
-                    character = modifiers,
+                    attributes = attributes,
                     onChange = onModifiersChange,
                     allModifiersGroups = allModifiersGroups,
                     selectedAttributeModifiers = selectedAttributeModifiers,
-                    onModifierSelected = onSelectModifiers
+                    onModifierSelected = onSelectModifiers,
+                    appliedModifiers = appliedModifiers,
+                    resultValues = resultValues
                 )
 
                 AttributesSelectorType.MANUAL -> ManualModifiersSelector(
-                    character = modifiers,
+                    attributes = attributes,
                     onChange = onModifiersChange,
                     allModifiersGroups = allModifiersGroups,
                     selectedAttributeModifiers = selectedAttributeModifiers,
-                    onModifierSelected = onSelectModifiers
+                    onModifierSelected = onSelectModifiers,
+                    appliedModifiers = appliedModifiers,
+                    resultValues = resultValues
                 )
             }
         }
@@ -166,14 +167,16 @@ fun ModifiersSelector(
 }
 
 @Composable
-private fun ColumnScope.PointBuyModifiersSelector(
-    character: AttributesGroup,
+private fun PointBuyModifiersSelector(
+    attributes: AttributesGroup,
     onChange: (AttributesGroup) -> Unit,
-    allModifiersGroups: List<ModifiersGroup>,
+    allModifiersGroups: List<ValueModifiersGroupWithResolvedValues>,
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
+    appliedModifiers: List<DnDValueModifierWithResolvedValue>,
+    resultValues: AttributesGroup
 ) {
-    val modifiersSum = calculateBuyingModifiersSum(character.modifiers())
+    val modifiersSum = calculateBuyingModifiersSum(attributes.modifiers())
     Text(
         modifier = Modifier.padding(top = 8.dp),
         text = (DnDConstants.BUYING_BALANCE - modifiersSum).toString(),
@@ -186,18 +189,16 @@ private fun ColumnScope.PointBuyModifiersSelector(
         onModifierSelected = onModifierSelected,
     ) { attribute ->
         ModifierSelectorRow(
-            value = character[attribute],
-            onValueChange = { onChange(character.set(attribute, it)) },
+            value = attributes[attribute],
+            onValueChange = { onChange(attributes.set(attribute, it)) },
             label = stringResource(attribute.stringRes),
             minValueCheck = { it >= DnDConstants.MIN_VALUE_TO_BUY },
             maxValueCheck = {
                 it <= DnDConstants.MAX_VALUE_TO_BUY && DnDConstants.BUYING_BALANCE >=
-                        calculateBuyingModifiersSum(
-                            character.set(attribute, it).modifiers()
-                        )
+                        calculateBuyingModifiersSum(attributes.set(attribute, it).modifiers())
             },
-            appliedModifiers = allModifiersGroups
-                .appliedModifiers(attribute, selectedAttributeModifiers)
+            appliedModifiers = appliedModifiers,
+            resultValue = resultValues[attribute]
         )
     }
 }
@@ -205,18 +206,25 @@ private fun ColumnScope.PointBuyModifiersSelector(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DefaultArrayModifiersSelector(
-    character: AttributesGroup,
+    attributes: AttributesGroup,
     onChange: (AttributesGroup) -> Unit,
-    allModifiersGroups: List<ModifiersGroup>,
+    allModifiersGroups: List<ValueModifiersGroupWithResolvedValues>,
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
+    appliedModifiers: List<DnDValueModifierWithResolvedValue>,
+    resultValues: AttributesGroup
 ) {
     LaunchedEffect(Unit) {
-        onChange(approximateToDefault(character))
+        onChange(
+            approximateToDefault(
+                emptyList(), // TODO
+                attributes
+            )
+        )
     }
 
-    val attributes = remember(character) { character.modifiers() }
-    val copies = attributes.fastFilter { a -> attributes.count { it == a } > 1 }
+    val attributesList = remember(attributes) { attributes.modifiers() }
+    val copies = attributesList.fastFilter { a -> attributesList.count { it == a } > 1 }
     Row(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 6.dp)
@@ -226,7 +234,7 @@ private fun DefaultArrayModifiersSelector(
         DnDConstants.DEFAULT_ARRAY.forEach { value ->
             SuggestionChip(
                 onClick = { /* noop */ },
-                enabled = value !in attributes || value in copies,
+                enabled = value !in attributesList || value in copies,
                 label = { Text(text = value.toString()) },
                 colors = if (value in copies) SuggestionChipDefaults.suggestionChipColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer,
@@ -258,9 +266,9 @@ private fun DefaultArrayModifiersSelector(
                 ModifiersText(
                     modifier = Modifier.padding(start = 16.dp),
                     label = stringResource(attribute.stringRes),
-                    value = character[attribute],
-                    appliedModifiers = allModifiersGroups
-                        .appliedModifiers(attribute, selectedAttributeModifiers)
+                    baseValue = attributes[attribute],
+                    appliedModifiers = appliedModifiers,
+                    resultValue = resultValues[attribute]
                 )
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = selectorExpanded)
             }
@@ -272,7 +280,7 @@ private fun DefaultArrayModifiersSelector(
                     DropdownMenuItem(
                         text = { Text(value.toString()) },
                         onClick = {
-                            onChange(character.set(attribute, value))
+                            onChange(attributes.set(attribute, value))
                             selectorExpanded = false
                         }
                     )
@@ -284,11 +292,13 @@ private fun DefaultArrayModifiersSelector(
 
 @Composable
 private fun ManualModifiersSelector(
-    character: AttributesGroup,
+    attributes: AttributesGroup,
     onChange: (AttributesGroup) -> Unit,
-    allModifiersGroups: List<ModifiersGroup>,
+    allModifiersGroups: List<ValueModifiersGroupWithResolvedValues>,
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
+    appliedModifiers: List<DnDValueModifierWithResolvedValue>,
+    resultValues: AttributesGroup
 ) {
     ModifiersSelectionTable(
         allModifiersGroups = allModifiersGroups,
@@ -296,146 +306,163 @@ private fun ManualModifiersSelector(
         onModifierSelected = onModifierSelected
     ) { attribute ->
         ModifierSelectorRow(
-            value = character[attribute],
-            onValueChange = { onChange(character.set(attribute, it)) },
+            value = attributes[attribute],
+            onValueChange = { onChange(attributes.set(attribute, it)) },
             label = stringResource(attribute.stringRes),
             minValueCheck = { true },
             maxValueCheck = { true },
-            appliedModifiers = allModifiersGroups
-                .appliedModifiers(attribute, selectedAttributeModifiers)
+            appliedModifiers = appliedModifiers,
+            resultValue = resultValues[attribute]
         )
     }
 }
 
 @Composable
 fun ModifiersSelectionTable(
-    allModifiersGroups: List<ModifiersGroup>,
+    allModifiersGroups: List<ValueModifiersGroupWithResolvedValues>,
     selectedAttributeModifiers: Set<Uuid>,
     onModifierSelected: (DnDModifier) -> Unit,
     modifier: Modifier = Modifier,
     cellContent: @Composable (attribute: Attributes) -> Unit
 ) {
-    val modifierGroupsByAttributes = remember(allModifiersGroups, selectedAttributeModifiers) {
-        allModifiersGroups.fastMap { group ->
-            val attributesMap = mutableMapOf<Attributes?, MutableList<Pair<DnDModifier, UiSelectableState>>>()
+    // 1. Optimized Data Structure: Map<Attribute, List<ModifierState>>
+    // This avoids nested loops inside the LazyColumn rows.
+    val tableData = remember(allModifiersGroups, selectedAttributeModifiers) {
+        Attributes.entries.associateWith { attribute ->
+            allModifiersGroups.map { group ->
+                val groupModifiers = group.modifiers.filter {
+                    it.modifier.targetKey?.asEnum<Attributes>() == attribute
+                }
 
-            val limitNotExceeded = group.modifiers.count { it.id in selectedAttributeModifiers } < group.selectionLimit
+                val limitExceeded = group.modifiers
+                    .count { it.modifier.id in selectedAttributeModifiers } >= group.selectionLimit
 
-            group.modifiers.fastForEach { mod ->
-                val selected = mod.id in selectedAttributeModifiers
-                val selectable = mod.selectable && (limitNotExceeded || selected)
+                // If limit is 0 or less, we assume unlimited
+                val isUnlimited = group.selectionLimit <= 0
 
-                attributesMap
-                    .getOrPut(mod.targetAs<Attributes>(), ::mutableListOf)
-                    .add(mod to UiSelectableState(selectable, selected))
+                groupModifiers.map { mod ->
+                    val isSelected = mod.modifier.id in selectedAttributeModifiers
+                    val isSelectable = isUnlimited || isSelected || !limitExceeded
+
+                    mod.modifier to UiSelectableState(isSelectable, isSelected)
+                }
             }
-
-            attributesMap.filterKeys { it != null }.mapValues { it.value.toList() }
         }
     }
-    BoxWithConstraints {
+
+    BoxWithConstraints(modifier = modifier) {
         val groupsCount = allModifiersGroups.size
-        val isWideLayout = remember(maxWidth, groupsCount) {
-            maxWidth > ATTRIBUTE_FIELD_MAX_WIDTH + 48.dp * groupsCount
-        }
+        val isWideLayout = maxWidth > ATTRIBUTE_FIELD_MAX_WIDTH + (48.dp * groupsCount)
 
         val columnWidth = remember(maxWidth, groupsCount) {
             if (groupsCount == 0) 48.dp
             else {
-                val available = if (isWideLayout) (maxWidth - ATTRIBUTE_FIELD_MAX_WIDTH) else (48.dp * min(groupsCount, 3))
-                val per = if (available > 0.dp) available / groupsCount else 48.dp
-                maxOf(48.dp, per)
+                val available = if (isWideLayout) (maxWidth - ATTRIBUTE_FIELD_MAX_WIDTH)
+                else (48.dp * min(groupsCount, 3))
+                (available / groupsCount).coerceAtLeast(48.dp)
             }
         }
 
-        val commonLazyRowState = rememberLazyListState()
+        val scrollState = rememberLazyListState()
 
-        Column(modifier = modifier) {
-            // Header row (labels for groups)
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                val attributeFieldModifier = if (isWideLayout) Modifier.width(ATTRIBUTE_FIELD_MAX_WIDTH) else Modifier.weight(1f)
-                val groupsModifier = if (isWideLayout) Modifier.fillMaxWidth() else Modifier.width(columnWidth * min(groupsCount, 3))
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            // 2. Sticky Header for Group Names
+            stickyHeader {
+                Surface(color = MaterialTheme.colorScheme.surface) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val labelModifier = if (isWideLayout) Modifier.width(ATTRIBUTE_FIELD_MAX_WIDTH)
+                        else Modifier.weight(1f)
 
-                Box(modifier = attributeFieldModifier)
+                        Spacer(modifier = labelModifier)
 
-                LazyRow(
-                    modifier = groupsModifier,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    state = commonLazyRowState
-                ) {
-                    items(allModifiersGroups, key = { it.id }) { group ->
-                        Column(
-                            modifier = Modifier
-                                .width(columnWidth)
-                                .padding(horizontal = 4.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                        SyncLazyRow(
+                            state = scrollState,
+                            count = groupsCount,
+                            columnWidth = columnWidth,
+                            isWideLayout = isWideLayout
+                        ) { index ->
                             Text(
-                                text = group.name,
-                                style = MaterialTheme.typography.bodySmall,
+                                text = allModifiersGroups[index].name,
+                                style = MaterialTheme.typography.labelSmall,
                                 textAlign = TextAlign.Center,
-                                maxLines = 1
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.width(columnWidth).padding(horizontal = 4.dp)
                             )
-                            val value = group.buildPreviewString()
-                            Text(text = value)
                         }
                     }
                 }
+                HorizontalDivider()
             }
 
-            HorizontalDivider()
+            // 3. Attribute Rows
+            items(Attributes.entries) { attribute ->
+                val rowData = tableData[attribute] ?: emptyList()
 
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Attributes.entries.fastForEach { attribute ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val attributeFieldModifier = if (isWideLayout) Modifier.width(ATTRIBUTE_FIELD_MAX_WIDTH) else Modifier.weight(1f)
-                        val groupsModifier = if (isWideLayout) Modifier.fillMaxWidth() else Modifier.width(columnWidth * min(groupsCount, 3))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val labelModifier = if (isWideLayout) Modifier.width(ATTRIBUTE_FIELD_MAX_WIDTH)
+                    else Modifier.weight(1f)
+
+                    Box(modifier = labelModifier.padding(8.dp)) {
+                        cellContent(attribute)
+                    }
+
+                    SyncLazyRow(
+                        state = scrollState,
+                        count = groupsCount,
+                        columnWidth = columnWidth,
+                        isWideLayout = isWideLayout
+                    ) { groupIndex ->
+                        val modifiersInCell = rowData.getOrNull(groupIndex) ?: emptyList()
 
                         Box(
-                            modifier = attributeFieldModifier,
-                            contentAlignment = Alignment.CenterStart
-                        ) { cellContent(attribute) }
-
-                        LazyRow(
-                            modifier = groupsModifier,
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            state = commonLazyRowState
+                            modifier = Modifier.width(columnWidth).fillMaxHeight(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            items(modifierGroupsByAttributes) { attrModifiers ->
-                                Box(
-                                    modifier = Modifier
-                                        .width(columnWidth),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    val modsForAttr = remember(attrModifiers) { attrModifiers[attribute].orEmpty() }
-                                    if (modsForAttr.isEmpty())
-                                        Box(modifier = Modifier.fillMaxSize())
-                                    else
-                                        modsForAttr.fastForEach { (mod, state) ->
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxSize(),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                RadioButton(
-                                                    selected = state.selected,
-                                                    onClick = { if (state.selectable) onModifierSelected(mod) },
-                                                    enabled = state.selectable
-                                                )
-                                            }
-                                        }
-                                }
+                            modifiersInCell.forEach { (mod, state) ->
+                                RadioButton(
+                                    selected = state.selected,
+                                    onClick = { if (state.selectable) onModifierSelected(mod) },
+                                    enabled = state.selectable
+                                )
                             }
-                        } // end groups LazyRow
-                    } // end attribute Row
-                    HorizontalDivider()
+                        }
+                    }
                 }
-            } // end LazyColumn
+                HorizontalDivider()
+            }
+        }
+    }
+}
+
+/**
+ * Reusable Row that handles the conditional width and scroll sync
+ */
+@Composable
+private fun SyncLazyRow(
+    state: LazyListState,
+    count: Int,
+    columnWidth: Dp,
+    isWideLayout: Boolean,
+    content: @Composable (Int) -> Unit
+) {
+    val rowModifier = if (isWideLayout) Modifier.fillMaxWidth()
+    else Modifier.width(columnWidth * min(count, 3))
+
+    LazyRow(
+        state = state,
+        modifier = rowModifier,
+        userScrollEnabled = !isWideLayout, // Disable scroll if everything fits
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        items(count) { index ->
+            content(index)
         }
     }
 }
@@ -449,7 +476,8 @@ private fun ModifierSelectorRow(
     onValueChange: (Int) -> Unit,
     minValueCheck: (Int) -> Boolean,
     maxValueCheck: (Int) -> Boolean,
-    appliedModifiers: List<AppliedModifier>,
+    appliedModifiers: List<DnDValueModifierWithResolvedValue>,
+    resultValue: Int,
     modifier: Modifier = Modifier,
     label: String,
 ) {
@@ -465,9 +493,10 @@ private fun ModifierSelectorRow(
         }
         ModifiersText(
             label = label,
-            value = value,
+            baseValue = value,
             appliedModifiers = appliedModifiers,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            resultValue = resultValue
         )
         IconButton(
             onClick = { onValueChange(value + 1) },
@@ -484,14 +513,11 @@ private fun ModifierSelectorRow(
 @Composable
 private fun ModifiersText(
     label: String,
-    value: Int,
+    baseValue: Int,
     modifier: Modifier = Modifier,
-    appliedModifiers: List<AppliedModifier>
+    appliedModifiers: List<DnDValueModifierWithResolvedValue>,
+    resultValue: Int
 ) {
-    val sum = remember(value, appliedModifiers) {
-        applyModifiers(value, appliedModifiers)
-    }
-
     Column(modifier = modifier) {
         Text(
             text = label,
@@ -499,27 +525,14 @@ private fun ModifiersText(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary
         )
-        val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-        val text = buildAnnotatedString {
-            if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND))
-                appliedModifiers.fastFold(value.toString()) { acc, modifier ->
-                    modifier.operation.applyForString(acc, modifier.value)
-                }.let { append(it) }
-            else
-                append(value.toString())
-            append(": ")
-            withStyle(LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.tertiary).toSpanStyle()) {
-                append(sum.toString())
-            }
-            append(" (")
-            append(calculateModifier(sum).toSignedString())
-            append(')')
-        }
 
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            maxLines = 1
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(text = baseValue.toString())
+
+            Text(text = resultValue.toString())
+        }
     }
 }

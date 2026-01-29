@@ -21,14 +21,14 @@ fun CharacterFull.getEntitiesWithLevel(): List<Pair<DnDFullEntity, Int>> {
 
         // 2. Process children (Abilities)
         // We map abilities to the actual entity data located in 'companionEntities'
-        val abilities = entity.abilities
+        val features = entity.features
             .asSequence()
             .filter { it.level <= effectiveLevel } // Only include unlocked abilities
-            .mapNotNull { abilityLink ->
-                entity.companionEntities.firstOrNull { it.entity.id == abilityLink.abilityId }
+            .mapNotNull { featureLink ->
+                entity.companionEntities.firstOrNull { it.entity.id == featureLink.featureId }
             }
 
-        abilities.forEach { childEntity ->
+        features.forEach { childEntity ->
             // 3. Recurse with the parent's effective level
             yieldAll(collectRecursive(childEntity, effectiveLevel))
         }

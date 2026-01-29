@@ -5,7 +5,7 @@ import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen.Loading
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth.NewCharacterHealthViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.searchSheet.SearchSheetViewModel
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterStatsViewModel
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterAttributesViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrows.NewCharacterThrowsViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterViewModel
 import org.koin.core.module.dsl.viewModel
@@ -27,7 +27,7 @@ fun newCharacterViewModelsModule() = module {
         )
     }
     viewModel { 
-        NewCharacterStatsViewModel(it.get())
+        NewCharacterAttributesViewModel(it.get())
     }
     viewModel { 
         NewCharacterThrowsViewModel(it.get())

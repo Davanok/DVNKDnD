@@ -16,8 +16,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -31,24 +29,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
+import com.davanok.dvnkdnd.domain.entities.character.ValueModifiersGroupWithResolvedValues
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
-import com.davanok.dvnkdnd.ui.model.isCritical
-import com.davanok.dvnkdnd.ui.model.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
-import com.davanok.dvnkdnd.ui.components.text.applyForString
+import com.davanok.dvnkdnd.ui.model.isCritical
+import com.davanok.dvnkdnd.ui.model.toUiMessage
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
@@ -56,7 +47,6 @@ import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.continue_str
 import dvnkdnd.composeapp.generated.resources.modifiers_selectors_hint
 import dvnkdnd.composeapp.generated.resources.new_character_attributes_screen_title
-import dvnkdnd.composeapp.generated.resources.no_modifiers_for_info
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
 
@@ -65,7 +55,7 @@ import kotlin.uuid.Uuid
 fun NewCharacterAttributesScreen(
     onBack: () -> Unit,
     onContinue: () -> Unit,
-    viewModel: NewCharacterStatsViewModel
+    viewModel: NewCharacterAttributesViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -132,7 +122,7 @@ private fun Content(
     modifier: Modifier = Modifier,
     selectedCreationOption: AttributesSelectorType,
     onOptionSelected: (AttributesSelectorType) -> Unit,
-    allModifiersGroups: List<ModifiersGroup>,
+    allModifiersGroups: List<ValueModifiersGroupWithResolvedValues>,
     selectedModifiersBonuses: Set<Uuid>,
     modifiers: AttributesGroup,
     onModifiersChange: (AttributesGroup) -> Unit,
@@ -154,17 +144,13 @@ private fun Content(
             selectedCreationOption = selectedCreationOption,
             allModifiersGroups = allModifiersGroups,
             selectedAttributeModifiers = selectedModifiersBonuses,
-            modifiers = modifiers,
+            attributes = modifiers,
             onModifiersChange = onModifiersChange,
             onSelectModifiers = onSelectModifier
         )
     }
     if (showInfoDialog)
-        AboutModifiersSelectorsDialog(
-            allModifiersGroups = allModifiersGroups,
-            selectedModifiersBonuses = selectedModifiersBonuses,
-            onDismiss = { showInfoDialog = false }
-        )
+        AboutModifiersSelectorsDialog(onDismiss = { showInfoDialog = false })
 }
 
 @Composable
@@ -214,8 +200,6 @@ private fun CreationOptionsSelector(
 
 @Composable
 private fun AboutModifiersSelectorsDialog(
-    allModifiersGroups: List<ModifiersGroup>,
-    selectedModifiersBonuses: Set<Uuid>,
     onDismiss: () -> Unit
 ) {
     val markdownString = stringResource(Res.string.modifiers_selectors_hint)
@@ -224,53 +208,10 @@ private fun AboutModifiersSelectorsDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.about_modifiers_selectors)) }
     ) {
-        Column(
+        Markdown(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(12.dp),
-        ) {
-            Markdown(content = markdownString)
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            val infoText = buildAnnotatedString {
-                allModifiersGroups.sortedBy { it.priority }.fastForEach { group ->
-                    if (group.modifiers.isEmpty()) return@fastForEach
-                    withStyle(MaterialTheme.typography.labelLarge.toSpanStyle()) {
-                        append(group.name)
-                    }
-                    group.modifiers
-                        .groupBy { it.targetAs<Attributes>() }
-                        .forEach { (attribute, modifiers) ->
-                            if (attribute == null) return@forEach
-
-                            val attributeStr = stringResource(attribute.stringRes)
-                            append("\n\t")
-                            append(attributeStr)
-                            modifiers.fastForEach {
-                                append("\n\t\t")
-                                val textToAppend = group.operation.applyForString(attributeStr, group.value)
-                                if (it.id in selectedModifiersBonuses) {
-                                    withStyle(
-                                        LocalTextStyle.current
-                                            .copy(textDecoration = TextDecoration.Underline)
-                                            .toSpanStyle()
-                                    ) {
-                                        append(textToAppend)
-                                    }
-                                } else {
-                                    append(textToAppend)
-                                }
-                                append(' ')
-                            }
-                        }
-                    append('\n')
-                }
-            }
-
-            Text(
-                text = infoText.ifBlank { AnnotatedString(stringResource(Res.string.no_modifiers_for_info)) }
-            )
-        }
+            content = markdownString)
     }
 }
