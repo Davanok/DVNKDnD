@@ -244,10 +244,10 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="modifier_derived_value_target_armor_class">Armor class</string>
     <string name="modifier_derived_value_target_initiative">Initiative</string>
     <string name="modifier_derived_value_target_passive_perception">Passive perception</string>
-    <string name="modifier_speed_value_target_walk">Walk</string>
-    <string name="modifier_speed_value_target_fly">Fly</string>
-    <string name="modifier_speed_value_target_swim">Swim</string>
-    <string name="modifier_speed_value_target_climb">Climb</string>
+    <string name="character_movement_type_walk">Walk</string>
+    <string name="character_movement_type_fly">Fly</string>
+    <string name="character_movement_type_swim">Swim</string>
+    <string name="character_movement_type_climb">Climb</string>
 
     <string name="spell_cantrip">Cantrip</string>
     <string name="spell_level">Lvl %1$d</string>

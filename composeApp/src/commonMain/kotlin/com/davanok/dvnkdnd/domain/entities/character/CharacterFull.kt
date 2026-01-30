@@ -132,12 +132,6 @@ data class CharacterDerivedStats(
     val armorClass: Int,
     val passivePerception: Int
 )
-data class CharacterSpeed(
-    val walk: Int,
-    val swim: Int,
-    val fly: Int,
-    val climb: Int
-)
 
 @Serializable
 data class CharacterSelectedModifiers(

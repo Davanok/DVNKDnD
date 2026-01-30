@@ -17,8 +17,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -30,6 +35,7 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterSpeed
 import com.davanok.dvnkdnd.domain.entities.character.CharacterState
+import com.davanok.dvnkdnd.domain.entities.character.toMap
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.text.MeasurementConverter
 import com.davanok.dvnkdnd.ui.components.toSignedString
@@ -187,26 +193,45 @@ private fun HealthWidget(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SpeedWidget(
-    speed: CharacterSpeed,
+    speedValues: CharacterSpeed,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val speed = MeasurementConverter.convertLength(speed.walk /*TODO:*/, LocalMeasurementSystem.current.length)
-    SuggestionChip(
-        modifier = modifier,
-        onClick = onClick,
-        label = {
-            Text(text = speed)
+    val measurementSystem = LocalMeasurementSystem.current.length
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            RichTooltip(
+                title = { Text(text = stringResource(Res.string.character_speed)) }
+            ) {
+                Column {
+                    speedValues.toMap().forEach { (type, speed) ->
+                        val convertedSpeed = MeasurementConverter.convertLength(speed, measurementSystem)
+                        Text(text = "${stringResource(type.stringRes)}: $convertedSpeed")
+                    }
+                }
+            }
         },
-        icon = {
-            Icon(
-                imageVector = Icons.Default.Speed,
-                contentDescription = stringResource(Res.string.character_speed)
-            )
-        }
-    )
+        state = rememberTooltipState()
+    ) {
+        val baseSpeed = MeasurementConverter.convertLength(speedValues.walk, measurementSystem)
+        SuggestionChip(
+            modifier = modifier,
+            onClick = onClick,
+            label = {
+                Text(text = baseSpeed)
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Speed,
+                    contentDescription = stringResource(Res.string.character_speed)
+                )
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

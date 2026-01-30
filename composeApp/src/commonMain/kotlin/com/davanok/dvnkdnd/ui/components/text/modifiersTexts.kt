@@ -7,7 +7,7 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierDerivedStatTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierHealthTargets
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierSpeedTargets
+import com.davanok.dvnkdnd.domain.enums.dndEnums.CharacterMovementType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueOperation
@@ -168,7 +168,7 @@ private fun getTargetKeyName(
         ?.let { stringResource(it.stringRes) }
 
     ModifierValueTarget.SPEED -> targetKey
-        ?.let { enumValueOfOrNull<DnDModifierSpeedTargets>(it) }
+        ?.let { enumValueOfOrNull<CharacterMovementType>(it) }
         ?.let { stringResource(it.stringRes) }
 
     ModifierValueTarget.SPELL_ATTACK -> null

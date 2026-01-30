@@ -7,6 +7,8 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterSpeed
+import com.davanok.dvnkdnd.domain.entities.character.toCharacterSpeed
+import com.davanok.dvnkdnd.domain.entities.character.toMap
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.map
@@ -16,7 +18,6 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierDerivedStatTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierHealthTargets
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierSpeedTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import io.github.aakira.napier.Napier
 
@@ -106,22 +107,17 @@ private fun CharacterFull.calculateModifiedDerivedStats(
 }
 private fun CharacterFull.calculateSpeedValues(): CharacterSpeed {
     val baseSpeed = calculateBaseSpeed()
-    val speedMap = mapOf(
-        DnDModifierSpeedTargets.WALK to baseSpeed,
-        DnDModifierSpeedTargets.FLY to 0,
-        DnDModifierSpeedTargets.SWIM to baseSpeed / 2,
-        DnDModifierSpeedTargets.CLIMB to 0,
-    )
+    val speedMap = CharacterSpeed(
+        walk = baseSpeed,
+        swim = baseSpeed / 2,
+        fly = 0,
+        climb = 0
+    ).toMap()
     val modified = applyModifiersInfo(
         values = speedMap,
         modifiers = appliedModifiers[ModifierValueTarget.SPEED].orEmpty()
     )
-    return CharacterSpeed(
-        walk = modified.getValue(DnDModifierSpeedTargets.WALK),
-        fly = modified.getValue(DnDModifierSpeedTargets.FLY),
-        swim = modified.getValue(DnDModifierSpeedTargets.SWIM),
-        climb = modified.getValue(DnDModifierSpeedTargets.CLIMB)
-    )
+    return modified.toCharacterSpeed()
 }
 
 private fun CharacterFull.calculateBaseArmorClass(): Int {
