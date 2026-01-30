@@ -88,6 +88,13 @@ class CharactersRepositoryImpl(
         dao.setCharacterState(state.toDbCharacterStateLink(characterId))
     }
 
+    override suspend fun deleteCharacterState(
+        characterId: Uuid,
+        state: CharacterStateLink
+    ): Result<Unit> = runLogging("deleteCharacterState") {
+        dao.deleteCharacterState(state.toDbCharacterStateLink(characterId))
+    }
+
     override suspend fun setCharacterSpell(
         characterId: Uuid,
         spell: CharacterSpellLink

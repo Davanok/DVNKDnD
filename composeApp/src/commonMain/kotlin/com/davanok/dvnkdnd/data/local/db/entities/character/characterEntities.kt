@@ -202,5 +202,6 @@ data class DbCharacterNote(
 data class DbCharacterStateLink(
     @ColumnInfo("character_id", index = true) val characterId: Uuid,
     @ColumnInfo("state_id", index = true) val stateId: Uuid,
-    @ColumnInfo("source_id", index = true) val sourceId: Uuid?
+    @ColumnInfo("source_id", index = true) val sourceId: Uuid?,
+    val deletable: Boolean
 )

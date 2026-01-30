@@ -25,6 +25,7 @@ interface CharactersRepository {
     suspend fun setCharacterUsedSpells(characterId: Uuid, typeId: Uuid?, usedSpells: IntArray): Result<Unit>
     suspend fun setCharacterItem(characterId: Uuid, item: CharacterItemLink): Result<Unit>
     suspend fun setCharacterState(characterId: Uuid, state: CharacterStateLink): Result<Unit>
+    suspend fun deleteCharacterState(characterId: Uuid, state: CharacterStateLink): Result<Unit>
     suspend fun setCharacterSpell(characterId: Uuid, spell: CharacterSpellLink): Result<Unit>
     suspend fun activateCharacterItem(characterId: Uuid, item: CharacterItemLink, activation: FullItemActivation): Result<Unit>
 }

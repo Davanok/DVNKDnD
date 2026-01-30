@@ -440,4 +440,22 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="damage_condition_specific_property">Specific property</string>
 
     <string name="dice_throw_result_preview">Throw result</string>
+
+    <string name="failed_to_update_character_health">Failed to update character health</string>
+    <string name="failed_to_set_character_note">Failed to set character note</string>
+    <string name="character_note_deleted">Character note deleted</string>
+    <string name="failed_to_delete_character_note">Failed to delete character note</string>
+    <string name="failed_to_update_character_used_spells">Failed to update character used spells</string>
+    <string name="failed_to_update_character_item">Failed to update character item</string>
+    <string name="failed_to_add_character_item">Failed to add character item</string>
+    <string name="failed_to_add_character_state">Failed to add character state</string>
+    <string name="failed_to_add_character_spell">Failed to add character spell</string>
+    <string name="item_activated">Item activated</string>
+    <string name="item_require_attunement_to_activate">Item require attunement to activate</string>
+    <string name="failed_to_activate_character_item">Failed to activate item</string>
+    <string name="failed_to_delete_character_state">Failed to delete state</string>
+    <string name="character_state_not_deletable">This state cannot be deleted</string>
+
+    <string name="entity_downloaded_from_external_source">Entity downloaded from external source</string>
+    <string name="failed_to_download_entity_from_external_source">Failed to load entity from external source</string>
 </resources>

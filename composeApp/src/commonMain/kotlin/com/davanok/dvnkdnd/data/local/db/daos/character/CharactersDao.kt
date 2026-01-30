@@ -18,6 +18,7 @@ import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterMainEntity
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterNote
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterOptionalValues
+import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItemLink
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
@@ -91,7 +92,7 @@ interface CharactersDao: CharacterMainDao,
             .let { insertCharacterSelectedProficiencies(it) }
 
         character.states
-            .map { DbCharacterStateLink(characterId, it.state.entity.id, it.source?.entity?.id) }
+            .map { it.toDbCharacterStateLink(characterId) }
             .let { insertCharacterStates(it) }
 
         character.notes
@@ -107,13 +108,13 @@ interface CharactersDao: CharacterMainDao,
         item: CharacterItemLink,
         activation: FullItemActivation
     ) {
-        if (activation.requiresAttunement && !item.attuned) return
         addCharacterUsedActivations(characterId, activation.id, 1)
         if (activation.givesState != null) {
             val characterState = DbCharacterStateLink(
                 characterId = characterId,
                 stateId = activation.givesState,
-                sourceId = item.item
+                sourceId = item.item,
+                deletable = true
             )
             setCharacterState(characterState)
         }

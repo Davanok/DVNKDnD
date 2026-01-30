@@ -55,14 +55,16 @@ class EntitiesBootstrapperImpl(
             emit(CheckingDataStates.FINISH)
         }
 
-    override suspend fun checkAndLoadEntity(entityId: Uuid): Result<Unit> =
+    override suspend fun checkAndLoadEntity(entityId: Uuid): Result<Boolean> =
         runLogging("checkAndLoadEntity (entityId: $entityId)") {
             if (entitiesRepository.getExistsEntity(entityId).getOrThrow())
-                return@runLogging
+                return@runLogging false
 
             val entity = browseRepository.loadEntityFullInfo(entityId).getOrThrow()
             requireNotNull(entity) { "entity from external storage not found" }
 
             fullEntitiesRepository.insertFullEntity(entity).getOrThrow()
+
+            true
         }
 }

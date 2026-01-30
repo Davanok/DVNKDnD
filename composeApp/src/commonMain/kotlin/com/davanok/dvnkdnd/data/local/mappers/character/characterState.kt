@@ -10,11 +10,20 @@ import kotlin.uuid.Uuid
 
 fun DbJoinCharacterState.toCharacterState() = CharacterState(
     state = state.toDnDFullEntity(),
-    source = source?.toDnDFullEntity()
+    source = source?.toDnDFullEntity(),
+    deletable = link.deletable
 )
 
 fun CharacterStateLink.toDbCharacterStateLink(characterId: Uuid) = DbCharacterStateLink(
     characterId = characterId,
     stateId = stateId,
-    sourceId = sourceId
+    sourceId = sourceId,
+    deletable = deletable
+)
+
+fun CharacterState.toDbCharacterStateLink(characterId: Uuid) = DbCharacterStateLink(
+    characterId = characterId,
+    stateId = state.entity.id,
+    sourceId = source?.entity?.id,
+    deletable = deletable
 )

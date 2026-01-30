@@ -29,6 +29,22 @@ import dvnkdnd.composeapp.generated.resources.character_full_spells_page_title
 import dvnkdnd.composeapp.generated.resources.character_full_states_page_title
 import dvnkdnd.composeapp.generated.resources.character_health_dialog_title
 import dvnkdnd.composeapp.generated.resources.character_main_entities_dialog_title
+import dvnkdnd.composeapp.generated.resources.character_note_deleted
+import dvnkdnd.composeapp.generated.resources.character_state_not_deletable
+import dvnkdnd.composeapp.generated.resources.entity_downloaded_from_external_source
+import dvnkdnd.composeapp.generated.resources.failed_to_activate_character_item
+import dvnkdnd.composeapp.generated.resources.failed_to_add_character_item
+import dvnkdnd.composeapp.generated.resources.failed_to_add_character_spell
+import dvnkdnd.composeapp.generated.resources.failed_to_add_character_state
+import dvnkdnd.composeapp.generated.resources.failed_to_delete_character_note
+import dvnkdnd.composeapp.generated.resources.failed_to_delete_character_state
+import dvnkdnd.composeapp.generated.resources.failed_to_download_entity_from_external_source
+import dvnkdnd.composeapp.generated.resources.failed_to_set_character_note
+import dvnkdnd.composeapp.generated.resources.failed_to_update_character_health
+import dvnkdnd.composeapp.generated.resources.failed_to_update_character_item
+import dvnkdnd.composeapp.generated.resources.failed_to_update_character_used_spells
+import dvnkdnd.composeapp.generated.resources.item_activated
+import dvnkdnd.composeapp.generated.resources.item_require_attunement_to_activate
 import dvnkdnd.composeapp.generated.resources.loading_character_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -79,39 +95,54 @@ class CharacterFullViewModel(
         state.copy(messages = state.messages.filter { it.id == messageId })
     }
 
-    private fun <T> Result<T>.handleResult(
-        successMessage: (T) -> String?,
-        failureMessage: (Throwable) -> String?
-    ) : Result<T> =
-        onSuccess {
-            val text = successMessage(it) ?: return@onSuccess
-            val message = UiMessage.Success(message = text)
-            addMessage(message)
-        }.onFailure {
-            val text = failureMessage(it) ?: return@onFailure
-            val message = UiMessage.Error(message = text, error = it)
-            addMessage(message)
-        }
+    private suspend fun <T> Result<T>.handleResult(
+        successMessage: (suspend (T) -> String?)?,
+        failureMessage: (suspend (Throwable) -> String?)?
+    ) : Result<T> {
+        if (successMessage != null)
+            onSuccess {
+                successMessage(it)?.let { text ->
+                    val message = UiMessage.Success(message = text)
+                    addMessage(message)
+                }
+            }
+        if (failureMessage != null)
+            onFailure {
+                failureMessage(it)?.let { text ->
+                    val message = UiMessage.Error(message = text, error = it)
+                    addMessage(message)
+                }
+            }
+        return this
+    }
+    private suspend fun Result<Boolean>.handleBootstrapperResult() =
+        handleResult(
+            successMessage = { downloaded ->
+                if (downloaded) getString(Res.string.entity_downloaded_from_external_source)
+                else null
+            },
+            failureMessage = { getString(Res.string.failed_to_download_entity_from_external_source) }
+        )
 
     fun updateHealth(health: CharacterHealth) = viewModelScope.launch {
         repository.setCharacterHealth(characterId, health)
             .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
+                successMessage = null,
+                failureMessage = { getString(Res.string.failed_to_update_character_health) }
             )
     }
     fun updateOrNewNote(note: CharacterNote) = viewModelScope.launch {
         repository.setCharacterNote(characterId, note)
             .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
+                successMessage = null,
+                failureMessage = { getString(Res.string.failed_to_set_character_note) }
             )
     }
     fun deleteNote(note: CharacterNote) = viewModelScope.launch {
         repository.deleteCharacterNote(note.id)
             .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
+                successMessage = { getString(Res.string.character_note_deleted) },
+                failureMessage = { getString(Res.string.failed_to_delete_character_note) }
             )
     }
 
@@ -139,8 +170,8 @@ class CharacterFullViewModel(
             typeId = typeId,
             usedSpells = newArray
         ).handleResult(
-            successMessage = { "TODO" },
-            failureMessage = { "TODO" }
+            successMessage = null,
+            failureMessage = { getString(Res.string.failed_to_update_character_used_spells) }
         )
     }
 
@@ -148,16 +179,13 @@ class CharacterFullViewModel(
         repository
             .setCharacterItem(characterId, item.toCharacterItemLink())
             .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
+                successMessage = null,
+                failureMessage = { getString(Res.string.failed_to_update_character_item) }
             )
     }
     fun newCharacterItem(itemId: Uuid) = viewModelScope.launch {
         bootstrapper.checkAndLoadEntity(itemId)
-            .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
-            )
+            .handleBootstrapperResult()
             .onFailure { return@launch }
 
         val item = CharacterItemLink(
@@ -168,37 +196,32 @@ class CharacterFullViewModel(
         )
         repository.setCharacterItem(characterId, item)
             .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
+                successMessage = null,
+                failureMessage = { getString(Res.string.failed_to_add_character_item) }
             )
     }
 
     fun newCharacterState(stateId: Uuid, sourceId: Uuid?) = viewModelScope.launch {
         bootstrapper.checkAndLoadEntity(stateId)
-            .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
-            )
+            .handleBootstrapperResult()
             .onFailure { return@launch }
 
 
         val state = CharacterStateLink(
             stateId = stateId,
-            sourceId = sourceId
+            sourceId = sourceId,
+            deletable = true
         )
         repository.setCharacterState(characterId, state)
             .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
+                successMessage = null,
+                failureMessage = { getString(Res.string.failed_to_add_character_state) }
             )
     }
 
     fun newCharacterSpell(spellId: Uuid) = viewModelScope.launch {
         bootstrapper.checkAndLoadEntity(spellId)
-            .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
-            )
+            .handleBootstrapperResult()
             .onFailure { return@launch }
 
 
@@ -208,18 +231,37 @@ class CharacterFullViewModel(
         )
         repository.setCharacterSpell(characterId, spell)
             .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
+                successMessage = null,
+                failureMessage = { getString(Res.string.failed_to_add_character_spell) }
             )
     }
 
     fun activateCharacterItem(item: CharacterItem, activation: FullItemActivation) = viewModelScope.launch {
-        repository
-            .activateCharacterItem(characterId, item.toCharacterItemLink(), activation)
-            .handleResult(
-                successMessage = { "TODO" },
-                failureMessage = { "TODO" }
+        if (item.attuned || !activation.requiresAttunement)
+            repository
+                .activateCharacterItem(characterId, item.toCharacterItemLink(), activation)
+                .handleResult(
+                    successMessage = { getString(Res.string.item_activated) },
+                    failureMessage = { getString(Res.string.failed_to_activate_character_item) }
+                )
+        else
+            addMessage(
+                UiMessage.Info(
+                    getString(Res.string.item_require_attunement_to_activate)
+                )
             )
+    }
+
+    fun deleteCharacterState(state: CharacterStateLink) = viewModelScope.launch {
+        if (state.deletable)
+            repository
+                .deleteCharacterState(characterId, state)
+                .handleResult(
+                    successMessage = null,
+                    failureMessage = { getString(Res.string.failed_to_delete_character_state) }
+                )
+        else
+            addMessage(UiMessage.Info(getString(Res.string.character_state_not_deletable)))
     }
 
     fun action(action: CharacterFullScreenContract) = when (action) {
@@ -229,6 +271,7 @@ class CharacterFullViewModel(
         is CharacterFullScreenContract.UpdateCharacterItem -> updateCharacterItem(action.item)
         is CharacterFullScreenContract.UpdateOrNewNote -> updateOrNewNote(action.note)
         is CharacterFullScreenContract.ActivateCharacterItem -> activateCharacterItem(action.item, action.activation)
+        is CharacterFullScreenContract.DeleteCharacterState -> deleteCharacterState(action.state)
         is CharacterFullScreenContract.AddItem -> newCharacterItem(action.item.id)
         is CharacterFullScreenContract.AddSpell -> newCharacterSpell(action.spell.id)
         is CharacterFullScreenContract.AddState -> newCharacterState(action.state.id, null)

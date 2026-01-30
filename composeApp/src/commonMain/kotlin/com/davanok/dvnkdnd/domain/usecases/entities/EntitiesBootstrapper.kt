@@ -7,5 +7,8 @@ import kotlin.uuid.Uuid
 interface EntitiesBootstrapper {
     fun checkAndLoadEntities(entitiesIds: List<Uuid>): Flow<CheckingDataStates>
 
-    suspend fun checkAndLoadEntity(entityId: Uuid): Result<Unit>
+    /**
+     * @return true if entity downloaded from remote source, false if entity was in local source
+     */
+    suspend fun checkAndLoadEntity(entityId: Uuid): Result<Boolean>
 }

@@ -19,7 +19,6 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierDerivedStatTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierHealthTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
-import io.github.aakira.napier.Napier
 
 /**
  * Computes the final, modified values for the character by applying all active modifiers
@@ -140,7 +139,6 @@ inline fun <reified K : Enum<K>> applyModifiersInfo(
 ): Map<K, Int> {
     val current = values.toMutableMap()
     modifiers.forEach { modifier ->
-        Napier.d { current.toString() }
         val key = modifier.targetAs<K>() ?: return@forEach
         val base = current[key] ?: return@forEach
 

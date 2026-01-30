@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.toCharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
@@ -376,6 +377,7 @@ private fun CharacterPages(
                     states = character.states,
                     onClick = { onEntityClick(it.toDnDEntityMin()) },
                     onAddStateClick = onAddStateClick,
+                    onDeleteStateClick = { action(CharacterFullScreenContract.DeleteCharacterState(it.toCharacterStateLink())) },
                     modifier = Modifier.fillMaxSize()
                 )
                 CharacterFullUiState.Page.NOTES -> CharacterNotesScreen(

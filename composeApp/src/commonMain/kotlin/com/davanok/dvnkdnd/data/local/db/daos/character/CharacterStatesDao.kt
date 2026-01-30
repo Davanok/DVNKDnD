@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.data.local.db.daos.character
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
@@ -12,4 +13,7 @@ interface CharacterStatesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun setCharacterState(state: DbCharacterStateLink)
+
+    @Delete
+    suspend fun deleteCharacterState(state: DbCharacterStateLink)
 }
