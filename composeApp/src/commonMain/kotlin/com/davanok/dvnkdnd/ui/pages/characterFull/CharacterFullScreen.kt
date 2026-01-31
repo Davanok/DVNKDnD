@@ -16,6 +16,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,6 +66,7 @@ import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterSpellsScreen
 import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterStatesScreen
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
+import dvnkdnd.composeapp.generated.resources.edit_character
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
@@ -73,6 +75,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CharacterFullScreen(
     navigateBack: () -> Unit,
+    navigateToEditCharacter: () -> Unit,
     navigateToEntityInfo: (DnDEntityMin) -> Unit,
     viewModel: CharacterFullViewModel
 ) {
@@ -101,6 +104,7 @@ fun CharacterFullScreen(
             else
                 Content(
                     navigateBack = navigateBack,
+                    navigateToEditCharacter = navigateToEditCharacter,
                     navigateToEntityInfo = navigateToEntityInfo,
                     character = character,
                     action = viewModel::action
@@ -113,6 +117,7 @@ fun CharacterFullScreen(
 @Composable
 private fun Content(
     navigateBack: () -> Unit,
+    navigateToEditCharacter: () -> Unit,
     navigateToEntityInfo: (DnDEntityMin) -> Unit,
     character: CharacterFull,
     action: (CharacterFullScreenContract) -> Unit
@@ -166,6 +171,14 @@ private fun Content(
                             entities = character.mainEntities,
                             onClick = { adaptiveContentState.toggleContent(CharacterFullUiState.Dialog.MAIN_ENTITIES) },
                             modifier = Modifier.padding(horizontal = 8.dp).fillMaxHeight()
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = navigateToEditCharacter) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(Res.string.edit_character)
                         )
                     }
                 },

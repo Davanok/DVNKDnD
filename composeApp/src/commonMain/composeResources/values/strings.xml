@@ -466,4 +466,6 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="state_type_buff">Buff</string>
     <string name="state_type_debuff">Debuff</string>
     <string name="state_type_other">Other</string>
+
+    <string name="edit_character">Edit character</string>
 </resources>
