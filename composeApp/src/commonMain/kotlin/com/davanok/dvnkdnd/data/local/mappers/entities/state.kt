@@ -8,6 +8,7 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.StateDuration
 import kotlin.uuid.Uuid
 
 fun DbFullState.toFullState() = FullState(
+    type = state.type,
     duration = duration?.toStateDuration()
 )
 
@@ -22,4 +23,7 @@ fun StateDuration.toDbStateDuration(stateId: Uuid) = DbStateDuration(
     timeUnitsCount = timeUnitsCount
 )
 
-fun FullState.toDbState(entityId: Uuid) = DbState(entityId)
+fun FullState.toDbState(entityId: Uuid) = DbState(
+    id = entityId,
+    type = type
+)

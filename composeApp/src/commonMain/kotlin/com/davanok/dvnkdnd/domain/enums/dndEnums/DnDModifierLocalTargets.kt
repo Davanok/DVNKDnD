@@ -13,7 +13,7 @@ enum class DnDModifierHealthTargets(val stringRes: StringResource) {
     MAX(Res.string.modifier_health_value_target_max)
 }
 
-enum class DnDModifierDerivedStatTargets(val stringRes: StringResource) {
+enum class DnDModifierDerivedValuesTargets(val stringRes: StringResource) {
     ARMOR_CLASS(Res.string.modifier_derived_value_target_armor_class),
     INITIATIVE(Res.string.modifier_derived_value_target_initiative),
     PASSIVE_PERCEPTION(Res.string.modifier_derived_value_target_passive_perception)

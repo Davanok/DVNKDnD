@@ -2,11 +2,12 @@ package com.davanok.dvnkdnd.domain.entities.character.characterUtils
 
 import com.davanok.dvnkdnd.domain.dnd.calculateArmorClass
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
-import com.davanok.dvnkdnd.domain.entities.character.CharacterDerivedStats
+import com.davanok.dvnkdnd.domain.entities.character.CharacterDerivedValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterSpeed
+import com.davanok.dvnkdnd.domain.entities.character.toCharacterDerivedValues
 import com.davanok.dvnkdnd.domain.entities.character.toCharacterSpeed
 import com.davanok.dvnkdnd.domain.entities.character.toMap
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
@@ -16,7 +17,6 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toSkillsGroup
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierDerivedStatTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierHealthTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 
@@ -88,21 +88,17 @@ private fun CharacterFull.calculateModifiedHealth(): CharacterHealth {
 private fun CharacterFull.calculateModifiedDerivedStats(
     dexterityAttribute: Int,
     perceptionSkill: Int
-): CharacterDerivedStats {
-    val statsMap = mapOf(
-        DnDModifierDerivedStatTargets.ARMOR_CLASS to (optionalValues.armorClass ?: calculateBaseArmorClass()),
-        DnDModifierDerivedStatTargets.INITIATIVE to (optionalValues.initiative ?: calculateModifier(dexterityAttribute)),
-        DnDModifierDerivedStatTargets.PASSIVE_PERCEPTION to (10 + perceptionSkill)
-    )
+): CharacterDerivedValues {
+    val derivedValuesMap = CharacterDerivedValues(
+        initiative = optionalValues.initiative ?: calculateModifier(dexterityAttribute),
+        armorClass = optionalValues.armorClass ?: calculateBaseArmorClass(),
+        passivePerception = 10 + perceptionSkill
+    ).toMap()
     val modified = applyModifiersInfo(
-        values = statsMap,
+        values = derivedValuesMap,
         modifiers = appliedModifiers[ModifierValueTarget.DERIVED_STAT].orEmpty()
     )
-    return CharacterDerivedStats(
-        initiative = modified.getValue(DnDModifierDerivedStatTargets.ARMOR_CLASS),
-        armorClass = modified.getValue(DnDModifierDerivedStatTargets.INITIATIVE),
-        passivePerception = modified.getValue(DnDModifierDerivedStatTargets.PASSIVE_PERCEPTION)
-    )
+    return modified.toCharacterDerivedValues()
 }
 private fun CharacterFull.calculateSpeedValues(): CharacterSpeed {
     val baseSpeed = calculateBaseSpeed()

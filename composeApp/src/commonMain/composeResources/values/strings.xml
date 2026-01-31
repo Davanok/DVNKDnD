@@ -458,4 +458,12 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
 
     <string name="entity_downloaded_from_external_source">Entity downloaded from external source</string>
     <string name="failed_to_download_entity_from_external_source">Failed to load entity from external source</string>
+
+    <string name="state_type_condition">Condition</string>
+    <string name="state_type_exhaustion">Exhaustion</string>
+    <string name="state_type_blessing">Blessing</string>
+    <string name="state_type_curse">Curse</string>
+    <string name="state_type_buff">Buff</string>
+    <string name="state_type_debuff">Debuff</string>
+    <string name="state_type_other">Other</string>
 </resources>

@@ -1,11 +1,13 @@
 package com.davanok.dvnkdnd.domain.entities.dndEntities
 
+import com.davanok.dvnkdnd.domain.enums.dndEnums.StateType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class FullState(
+    val type: StateType,
     val duration: StateDuration?
 )
 

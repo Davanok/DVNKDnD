@@ -5,7 +5,7 @@ import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDValueModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierDerivedStatTargets
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierDerivedValuesTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierHealthTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.CharacterMovementType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
@@ -164,7 +164,7 @@ private fun getTargetKeyName(
         ?.let { stringResource(it.stringRes) }
 
     ModifierValueTarget.DERIVED_STAT -> targetKey
-        ?.let { enumValueOfOrNull<DnDModifierDerivedStatTargets>(it) }
+        ?.let { enumValueOfOrNull<DnDModifierDerivedValuesTargets>(it) }
         ?.let { stringResource(it.stringRes) }
 
     ModifierValueTarget.SPEED -> targetKey

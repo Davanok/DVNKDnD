@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.davanok.dvnkdnd.domain.enums.dndEnums.StateType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.TimeUnit
 import kotlin.uuid.Uuid
 
@@ -14,7 +15,8 @@ import kotlin.uuid.Uuid
     ]
 )
 data class DbState(
-    @PrimaryKey val id: Uuid
+    @PrimaryKey val id: Uuid,
+    val type: StateType
 )
 
 @Entity(

@@ -123,14 +123,8 @@ data class CharacterModifiedValues(
     val savingThrowModifiers: AttributesGroup,
     val skillModifiers: SkillsGroup,
     val health: CharacterHealth,
-    val derivedStats: CharacterDerivedStats,
+    val derivedStats: CharacterDerivedValues,
     val speed: CharacterSpeed
-)
-
-data class CharacterDerivedStats(
-    val initiative: Int,
-    val armorClass: Int,
-    val passivePerception: Int
 )
 
 @Serializable
