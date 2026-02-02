@@ -13,6 +13,6 @@ fun main() = application {
         with (LocalDensity.current) {
             window.minimumSize = Dimension(640.dp.roundToPx(), 480.dp.roundToPx())
         }
-        App()
+        App(onThemeChanged = {})
     }
 }
