@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
     alias(libs.plugins.buildConfig)
+    alias(libs.plugins.metro)
 }
 
 kotlin {
@@ -54,9 +55,8 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
 
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.viewmodel)
+            implementation(libs.metrox.viewmodel)
+            implementation(libs.metrox.viewmodel.compose)
 
             implementation(libs.supabase.gotrue)
             implementation(libs.supabase.postgrest)
@@ -92,8 +92,6 @@ kotlin {
             implementation(libs.androidx.paging.compose)
         }
         androidMain.dependencies {
-            implementation(libs.koin.android)
-
             implementation(libs.androidx.activity.compose)
         }
         jvmMain.dependencies {

@@ -1,7 +1,9 @@
 package com.davanok.dvnkdnd.data.local.implementations
 
 import com.davanok.dvnkdnd.core.utils.runLogging
+import com.davanok.dvnkdnd.domain.DataDirectories
 import com.davanok.dvnkdnd.domain.repositories.local.FilesRepository
+import dev.zacsweers.metro.Inject
 import okio.FileSystem
 import okio.IOException
 import okio.Path
@@ -9,9 +11,9 @@ import okio.Path.Companion.toPath
 import okio.SYSTEM
 import kotlin.uuid.Uuid
 
+@Inject
 class FilesRepositoryImpl(
-    private val defaultDir: Path,
-    private val cacheDir: Path
+    private val directories: DataDirectories
 ): FilesRepository {
     private val fs: FileSystem = FileSystem.SYSTEM
 
@@ -44,7 +46,7 @@ class FilesRepositoryImpl(
         }
 
     override fun getFilename(dir: Path, extension: String, temp: Boolean): Path {
-        val root = if (temp) cacheDir else defaultDir
+        val root = if (temp) directories.cacheDirectory else directories.dataDirectory
         val result = root / dir / (Uuid.random().toHexString() + "." + extension).toPath()
         return result
     }

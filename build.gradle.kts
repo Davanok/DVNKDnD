@@ -11,4 +11,5 @@ plugins {
     alias(libs.plugins.ksp).apply(false)
     alias(libs.plugins.buildConfig).apply(false)
     alias(libs.plugins.composeHotReload).apply(false)
+    alias(libs.plugins.metro).apply(false)
 }

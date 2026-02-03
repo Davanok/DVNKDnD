@@ -35,9 +35,16 @@ import com.davanok.dvnkdnd.domain.repositories.local.FullEntitiesRepository
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
 import com.davanok.dvnkdnd.domain.values.FilePaths
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMain
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import okio.Path
 import kotlin.uuid.Uuid
 
+@Inject
+@ViewModelKey(NewCharacterViewModel::class)
+@ContributesIntoMap(AppScope::class)
 class NewCharacterViewModel(
     private val fullEntitiesRepository: FullEntitiesRepository,
     private val browseRepository: BrowseRepository,

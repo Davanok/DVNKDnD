@@ -23,13 +23,13 @@ import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.adaptive.alternativeClickable
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.navigation.NavigationFABScaffold
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.no_characters_yet
 import dvnkdnd.composeapp.generated.resources.sentiment_dissatisfied
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,7 +38,7 @@ fun CharactersListScreen(
     onNewCharacter: () -> Unit,
     navigateToCharacter: (CharacterMin) -> Unit,
     navigateToCharacterFull: (CharacterMin) -> Unit,
-    viewModel: CharactersListViewModel = koinViewModel()
+    viewModel: CharactersListViewModel = metroViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

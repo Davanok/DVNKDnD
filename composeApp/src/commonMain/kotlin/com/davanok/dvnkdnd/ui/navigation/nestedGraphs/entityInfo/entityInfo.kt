@@ -3,8 +3,8 @@ package com.davanok.dvnkdnd.ui.navigation.nestedGraphs.entityInfo
 import com.davanok.dvnkdnd.ui.navigation.Route
 import com.davanok.dvnkdnd.ui.navigation.RouterEntryProvider
 import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfo
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import com.davanok.dvnkdnd.ui.pages.dndEntityInfo.DnDEntityInfoViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 
 fun RouterEntryProvider.entityInfoDestinations(
@@ -13,7 +13,7 @@ fun RouterEntryProvider.entityInfoDestinations(
 ) {
     entry<Route.EntityInfoDialog> { route ->
         DnDEntityInfo(
-            viewModel = koinViewModel { parametersOf(route.entityId) },
+            viewModel = assistedMetroViewModel<DnDEntityInfoViewModel, DnDEntityInfoViewModel.Factory> { create(route.entityId) },
             navigateBack = onBack
         )
     }

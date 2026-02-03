@@ -2,19 +2,26 @@ package com.davanok.dvnkdnd.ui.pages.characterFull
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
-import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
-import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
-import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.core.utils.getByKeyPredicate
+import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItemLink
+import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
 import com.davanok.dvnkdnd.domain.entities.character.CharacterSpellLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import com.davanok.dvnkdnd.domain.usecases.entities.EntitiesBootstrapper
 import com.davanok.dvnkdnd.ui.components.UiMessage
+import com.davanok.dvnkdnd.ui.model.UiError
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
 import dvnkdnd.composeapp.generated.resources.character_add_item_dialog_title
@@ -56,8 +63,9 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import kotlin.uuid.Uuid
 
+@AssistedInject
 class CharacterFullViewModel(
-    private val characterId: Uuid,
+    @Assisted private val characterId: Uuid,
     private val bootstrapper: EntitiesBootstrapper,
     private val repository: CharactersRepository
 ) : ViewModel() {
@@ -275,6 +283,13 @@ class CharacterFullViewModel(
         is CharacterFullScreenContract.AddItem -> newCharacterItem(action.item.id)
         is CharacterFullScreenContract.AddSpell -> newCharacterSpell(action.spell.id)
         is CharacterFullScreenContract.AddState -> newCharacterState(action.state.id, null)
+    }
+
+    @AssistedFactory
+    @ManualViewModelAssistedFactoryKey(Factory::class)
+    @ContributesIntoMap(AppScope::class)
+    fun interface Factory : ManualViewModelAssistedFactory {
+        fun create(@Assisted characterId: Uuid): CharacterFullViewModel
     }
 }
 

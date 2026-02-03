@@ -19,12 +19,14 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterSpellLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.mapLatest
 import kotlin.uuid.Uuid
 
+@Inject
 class CharactersRepositoryImpl(
     private val dao: CharactersDao,
 ) : CharactersRepository {

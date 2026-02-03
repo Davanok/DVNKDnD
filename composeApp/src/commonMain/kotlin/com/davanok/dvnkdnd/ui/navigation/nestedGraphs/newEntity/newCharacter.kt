@@ -9,12 +9,17 @@ import com.davanok.dvnkdnd.ui.navigation.rememberBackStack
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen.LoadingDataScreen
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterAttributesScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterAttributes.NewCharacterAttributesViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth.NewCharacterHealthScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterHealth.NewCharacterHealthViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainScreen
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrows.NewCharacterStatsLargeScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMainViewModel
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrows.NewCharacterThrowsScreen
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterThrows.NewCharacterThrowsViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterScreen
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.savingNewCharacter.SavingNewCharacterViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 
 fun RouterEntryProvider.characterCreationFlow(
@@ -22,7 +27,7 @@ fun RouterEntryProvider.characterCreationFlow(
     replace: (Route) -> Unit
 ) = entry<Route.New.Character> {
     val backStack = rememberBackStack(Route.New.Character.LoadData)
-    val sharedViewModel: NewCharacterViewModel = koinViewModel()
+    val sharedViewModel: NewCharacterViewModel = metroViewModel()
 
     val nestedOnBack: () -> Unit = { backStack.removeLastOrNull() }
     val nestedNavigate: (route: Route) -> Unit = { backStack.add(it) }
@@ -37,7 +42,7 @@ fun RouterEntryProvider.characterCreationFlow(
                 LoadingDataScreen(
                     onBack = onBack,
                     onContinue = { nestedReplace(Route.New.Character.Main) },
-                    viewModel = koinViewModel()
+                    viewModel = metroViewModel()
                 )
             }
             entry<Route.New.Character.Main> {
@@ -45,35 +50,35 @@ fun RouterEntryProvider.characterCreationFlow(
                     navigateToEntityInfo = { id -> nestedNavigate(Route.EntityInfoDialog(id)) },
                     onBack = onBack,
                     onContinue = { nestedNavigate(Route.New.Character.Stats) },
-                    viewModel = koinViewModel { parametersOf(sharedViewModel) }
+                    viewModel = assistedMetroViewModel<NewCharacterMainViewModel, NewCharacterMainViewModel.Factory> { create(sharedViewModel) }
                 )
             }
             entry<Route.New.Character.Stats> {
                 NewCharacterAttributesScreen(
                     onBack = nestedOnBack,
                     onContinue = { nestedNavigate(Route.New.Character.Throws) },
-                    viewModel = koinViewModel { parametersOf(sharedViewModel) }
+                    viewModel = assistedMetroViewModel<NewCharacterAttributesViewModel, NewCharacterAttributesViewModel.Factory> { create(sharedViewModel) }
                 )
             }
             entry<Route.New.Character.Throws> {
-                NewCharacterStatsLargeScreen(
+                NewCharacterThrowsScreen(
                     onBack = nestedOnBack,
                     onContinue = { nestedNavigate(Route.New.Character.Health) },
-                    viewModel = koinViewModel { parametersOf(sharedViewModel) }
+                    viewModel = assistedMetroViewModel<NewCharacterThrowsViewModel, NewCharacterThrowsViewModel.Factory> { create(sharedViewModel) }
                 )
             }
             entry<Route.New.Character.Health> {
                 NewCharacterHealthScreen(
                     onBack = nestedOnBack,
                     onContinue = { nestedNavigate(Route.New.Character.Save) },
-                    viewModel = koinViewModel { parametersOf(sharedViewModel) }
+                    viewModel = assistedMetroViewModel<NewCharacterHealthViewModel, NewCharacterHealthViewModel.Factory> { create(sharedViewModel) }
                 )
             }
             entry<Route.New.Character.Save> {
                 SavingNewCharacterScreen(
                     onBack = onBack,
                     onGoToCharacter = { id -> replace(Route.CharacterFull(id)) },
-                    viewModel = koinViewModel { parametersOf(sharedViewModel) }
+                    viewModel = assistedMetroViewModel<SavingNewCharacterViewModel, SavingNewCharacterViewModel.Factory> { create(sharedViewModel) }
                 )
             }
         }

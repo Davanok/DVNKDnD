@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMin
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import com.davanok.dvnkdnd.ui.model.UiError
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.loading_characters_error
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,6 +17,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.compose.resources.getString
 
+@Inject
+@ViewModelKey(CharactersListViewModel::class)
+@ContributesIntoMap(AppScope::class)
 class CharactersListViewModel(
     repository: CharactersRepository
 ) : ViewModel() {

@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.metro)
 }
 
 android {
@@ -51,4 +52,5 @@ dependencies {
     implementation(project(":composeApp"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.ui.tooling)
+    implementation(libs.metrox.viewmodel)
 }

@@ -11,9 +11,9 @@ import com.davanok.dvnkdnd.ui.navigation.RouterEntryProvider
 import com.davanok.dvnkdnd.ui.navigation.navEntryDecorators
 import com.davanok.dvnkdnd.ui.navigation.rememberBackStack
 import com.davanok.dvnkdnd.ui.pages.charactersList.characterShortInfo.CharacterShortInfoScreen
+import com.davanok.dvnkdnd.ui.pages.charactersList.characterShortInfo.CharacterShortInfoViewModel
 import com.davanok.dvnkdnd.ui.pages.charactersList.charactersList.CharactersListScreen
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 fun RouterEntryProvider.charactersListDestinations(
@@ -49,7 +49,7 @@ fun RouterEntryProvider.charactersListDestinations(
                     CharacterShortInfoScreen(
                         navigateToCharacter = { navigate(Route.CharacterFull(route.characterId)) },
                         navigateBack = nestedBack,
-                        viewModel = koinViewModel { parametersOf(route.characterId) }
+                        viewModel = assistedMetroViewModel< CharacterShortInfoViewModel,   CharacterShortInfoViewModel.Factory> { create(route.characterId) }
                     )
                 }
             }

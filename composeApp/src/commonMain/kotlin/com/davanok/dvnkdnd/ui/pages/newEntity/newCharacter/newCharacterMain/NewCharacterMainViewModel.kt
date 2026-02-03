@@ -15,6 +15,13 @@ import com.davanok.dvnkdnd.domain.repositories.local.FilesRepository
 import com.davanok.dvnkdnd.domain.values.FilePaths
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.searchSheet.SearchSheetViewModel
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.loading_entities_error
 import dvnkdnd.composeapp.generated.resources.saving_data_error
@@ -26,11 +33,12 @@ import okio.Path
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 
+@AssistedInject
 class NewCharacterMainViewModel(
     private val filesRepository: FilesRepository,
     private val entitiesRepository: EntitiesRepository,
     val searchSheetViewModel: SearchSheetViewModel,
-    private val newCharacterViewModel: NewCharacterViewModel
+    @Assisted private val newCharacterViewModel: NewCharacterViewModel
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NewCharacterMainUiState(isLoading = true))
     val uiState: StateFlow<NewCharacterMainUiState> = _uiState
@@ -245,6 +253,13 @@ class NewCharacterMainViewModel(
 
     init {
         loadMainValues()
+    }
+
+    @AssistedFactory
+    @ManualViewModelAssistedFactoryKey(Factory::class)
+    @ContributesIntoMap(AppScope::class)
+    fun interface Factory : ManualViewModelAssistedFactory {
+        fun create(@Assisted newCharacterViewModel: NewCharacterViewModel): NewCharacterMainViewModel
     }
 }
 

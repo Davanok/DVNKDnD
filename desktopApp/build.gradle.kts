@@ -5,10 +5,13 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.metro)
 }
 
 dependencies {
     implementation(project(":composeApp"))
+
+    implementation(libs.metrox.viewmodel)
 }
 
 compose.desktop {

@@ -6,8 +6,10 @@ import com.davanok.dvnkdnd.data.local.mappers.entities.toEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.repositories.local.EntitiesRepository
+import dev.zacsweers.metro.Inject
 import kotlin.uuid.Uuid
 
+@Inject
 class EntitiesRepositoryImpl(
     private val dao: BaseEntityDao,
 ) : EntitiesRepository {

@@ -7,9 +7,10 @@ import com.davanok.dvnkdnd.ui.navigation.RouterEntryProvider
 import com.davanok.dvnkdnd.ui.navigation.navEntryDecorators
 import com.davanok.dvnkdnd.ui.navigation.rememberBackStack
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullScreen
+import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterFullViewModel
 import com.davanok.dvnkdnd.ui.pages.editCharacter.EditCharacterScreen
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import com.davanok.dvnkdnd.ui.pages.editCharacter.EditCharacterViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 
 fun RouterEntryProvider.characterFullDestinations(
@@ -29,13 +30,13 @@ fun RouterEntryProvider.characterFullDestinations(
                     navigateBack = onBack,
                     navigateToEditCharacter = { backStack.add(Route.CharacterFull.Edit) },
                     navigateToEntityInfo = { navigate(Route.EntityInfoDialog(it.id)) },
-                    viewModel = koinViewModel { parametersOf(characterId) }
+                    viewModel = assistedMetroViewModel<CharacterFullViewModel, CharacterFullViewModel.Factory> { create(characterId) }
                 )
             }
 
             entry<Route.CharacterFull.Edit> {
                 EditCharacterScreen(
-                    viewModel = koinViewModel { parametersOf(characterId) }
+                    viewModel = assistedMetroViewModel<EditCharacterViewModel,  EditCharacterViewModel.Factory> { create(characterId) }
                 )
             }
         }

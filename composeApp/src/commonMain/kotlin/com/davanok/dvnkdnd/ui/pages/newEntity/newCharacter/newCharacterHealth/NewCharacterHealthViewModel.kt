@@ -5,6 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterViewModel
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.health_cant_be_less_than_zero
 import dvnkdnd.composeapp.generated.resources.saving_data_error
@@ -14,8 +21,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
+@AssistedInject
 class NewCharacterHealthViewModel(
-    private val newCharacterViewModel: NewCharacterViewModel
+    @Assisted private val newCharacterViewModel: NewCharacterViewModel
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NewCharacterHealthUiState())
     val uiState: StateFlow<NewCharacterHealthUiState> = _uiState
@@ -62,6 +70,13 @@ class NewCharacterHealthViewModel(
 
     init {
         loadCharacter()
+    }
+
+    @AssistedFactory
+    @ManualViewModelAssistedFactoryKey(Factory::class)
+    @ContributesIntoMap(AppScope::class)
+    fun interface Factory : ManualViewModelAssistedFactory {
+        fun create(@Assisted newCharacterViewModel: NewCharacterViewModel): NewCharacterHealthViewModel
     }
 }
 

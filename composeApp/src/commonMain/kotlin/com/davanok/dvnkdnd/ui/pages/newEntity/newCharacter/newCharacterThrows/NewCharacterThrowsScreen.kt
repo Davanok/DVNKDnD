@@ -59,19 +59,18 @@ import dvnkdnd.composeapp.generated.resources.new_character_throws_screen_title
 import dvnkdnd.composeapp.generated.resources.saving_throw
 import dvnkdnd.composeapp.generated.resources.skills
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
 
 
-private val StatItemMinWidth = 260.dp
+private const val StatItemMinWidthDp = 260
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewCharacterStatsLargeScreen(
+fun NewCharacterThrowsScreen(
     onBack: () -> Unit,
     onContinue: () -> Unit,
-    viewModel: NewCharacterThrowsViewModel = koinViewModel()
+    viewModel: NewCharacterThrowsViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -147,7 +146,7 @@ private fun Content(
     val density = LocalDensity.current
     LazyVerticalGrid(
         modifier = modifier,
-        columns = GridCells.Adaptive(StatItemMinWidth),
+        columns = GridCells.Adaptive(StatItemMinWidthDp.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {

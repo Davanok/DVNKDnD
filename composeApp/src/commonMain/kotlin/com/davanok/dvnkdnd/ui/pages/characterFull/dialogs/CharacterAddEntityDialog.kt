@@ -48,6 +48,7 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.BaseEntityImage
 import com.davanok.dvnkdnd.ui.pages.characterFull.CharacterAddEntityViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.hide_description
@@ -56,8 +57,6 @@ import dvnkdnd.composeapp.generated.resources.refresh
 import dvnkdnd.composeapp.generated.resources.search_entity_type
 import dvnkdnd.composeapp.generated.resources.show_description
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +65,7 @@ fun CharacterAddEntityDialogContent(
     entityType: DnDEntityTypes,
     onSelectEntityClick: (DnDEntityMin) -> Unit,
     onEntityInfoClick: (DnDEntityMin) -> Unit,
-    viewModel: CharacterAddEntityViewModel = koinViewModel(key = entityType.name) { parametersOf(entityType) }
+    viewModel: CharacterAddEntityViewModel = assistedMetroViewModel<CharacterAddEntityViewModel, CharacterAddEntityViewModel.Factory>(key = entityType.name) { create(entityType) }
 ) {
     val entities = viewModel.entitiesFlow.collectAsLazyPagingItems()
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()

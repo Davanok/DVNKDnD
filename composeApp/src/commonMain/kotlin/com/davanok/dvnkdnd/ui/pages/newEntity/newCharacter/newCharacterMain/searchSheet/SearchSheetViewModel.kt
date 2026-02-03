@@ -7,6 +7,10 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.ui.model.UiError
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.loading_entities_error
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +41,9 @@ private data class TypeCache(
 )
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+@Inject
+@ViewModelKey(SearchSheetViewModel::class)
+@ContributesIntoMap(AppScope::class)
 class SearchSheetViewModel(
     private val browseRepository: BrowseRepository
 ) : ViewModel() {

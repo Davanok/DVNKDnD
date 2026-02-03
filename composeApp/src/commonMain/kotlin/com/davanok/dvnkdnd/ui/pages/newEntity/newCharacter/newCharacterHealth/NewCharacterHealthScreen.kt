@@ -68,14 +68,13 @@ import dvnkdnd.composeapp.generated.resources.rolling_in_progress
 import dvnkdnd.composeapp.generated.resources.total_health_points_short
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewCharacterHealthScreen(
     onBack: () -> Unit,
     onContinue: () -> Unit,
-    viewModel: NewCharacterHealthViewModel = koinViewModel()
+    viewModel: NewCharacterHealthViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

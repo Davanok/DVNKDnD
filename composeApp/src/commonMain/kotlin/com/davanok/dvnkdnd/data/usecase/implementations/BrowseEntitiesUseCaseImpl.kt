@@ -8,11 +8,10 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
 import com.davanok.dvnkdnd.domain.usecases.entities.BrowseEntitiesUseCase
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 
-
-private const val PAGE_SIZE = 20
-
+@Inject
 class BrowseEntitiesUseCaseImpl(
     val browseRepository: BrowseRepository
 ): BrowseEntitiesUseCase {
@@ -28,4 +27,9 @@ class BrowseEntitiesUseCaseImpl(
                 query = query
             )
         }.flow
+
+
+    companion object {
+        private const val PAGE_SIZE = 20
+    }
 }

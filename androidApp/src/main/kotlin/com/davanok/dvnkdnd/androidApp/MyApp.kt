@@ -1,13 +1,9 @@
 package com.davanok.dvnkdnd.androidApp
 
 import android.app.Application
-import com.davanok.dvnkdnd.data.platform.appCacheDir
-import com.davanok.dvnkdnd.data.platform.appDataDir
+import com.davanok.dvnkdnd.di.AndroidAppGraph
+import dev.zacsweers.metro.createGraphFactory
 
 class MyApp: Application() {
-    override fun onCreate() {
-        super.onCreate()
-        appDataDir = filesDir.absolutePath
-        appCacheDir = cacheDir.absolutePath
-    }
+    val appGraph by lazy { createGraphFactory<AndroidAppGraph.Factory>().create(this) }
 }

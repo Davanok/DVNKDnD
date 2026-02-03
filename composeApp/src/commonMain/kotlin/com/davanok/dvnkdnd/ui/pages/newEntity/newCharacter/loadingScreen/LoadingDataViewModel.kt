@@ -6,6 +6,10 @@ import com.davanok.dvnkdnd.core.CheckingDataStates
 import com.davanok.dvnkdnd.core.InternetConnectionException
 import com.davanok.dvnkdnd.domain.repositories.remote.ExternalKeyValueRepository
 import com.davanok.dvnkdnd.domain.usecases.entities.EntitiesBootstrapper
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.error
 import dvnkdnd.composeapp.generated.resources.finish
@@ -24,6 +28,9 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.Uuid
 
+@Inject
+@ViewModelKey(LoadingDataViewModel::class)
+@ContributesIntoMap(AppScope::class)
 class LoadingDataViewModel(
     private val entitiesBootstrapper: EntitiesBootstrapper,
     private val externalKeyValueRepository: ExternalKeyValueRepository
