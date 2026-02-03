@@ -5,7 +5,7 @@ import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import com.davanok.dvnkdnd.ui.navigation.DefaultNavigationWrapper
+import com.davanok.dvnkdnd.ui.navigation.components.DefaultNavigationWrapper
 import com.davanok.dvnkdnd.ui.navigation.Route
 import com.davanok.dvnkdnd.ui.navigation.RouterEntryProvider
 import com.davanok.dvnkdnd.ui.navigation.navEntryDecorators

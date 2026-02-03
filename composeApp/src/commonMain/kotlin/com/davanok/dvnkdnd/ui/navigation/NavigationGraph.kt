@@ -10,6 +10,8 @@ import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.characterFull.characterFul
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.entityInfo.entityInfoDestinations
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.newEntity.newEntityDestinations
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import com.davanok.dvnkdnd.ui.navigation.components.DefaultNavigationWrapper
+import com.davanok.dvnkdnd.ui.navigation.components.NotImplementedYetScreen
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.charactersList.charactersListDestinations
 
 @Composable

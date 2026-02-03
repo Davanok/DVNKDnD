@@ -51,10 +51,10 @@ import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveContent
 import com.davanok.dvnkdnd.ui.components.adaptive.SupportEntry
 import com.davanok.dvnkdnd.ui.components.adaptive.rememberAdaptiveContentState
 import com.davanok.dvnkdnd.ui.components.diceRoller.rememberDiceRollerState
+import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityScaffold
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.pages.characterFull.components.CharacterThrowsDiceRoller
 import com.davanok.dvnkdnd.ui.pages.characterFull.components.ThrowsDiceRollerModifier
-import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterAddEntityDialogContent
 import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterHealthDialogContent
 import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterMainEntitiesDialog
 import com.davanok.dvnkdnd.ui.pages.characterFull.pages.CharacterAttacksScreen
@@ -437,28 +437,31 @@ private fun rememberAdaptiveCharacterContentState(
         CharacterFullUiState.Dialog.ADD_ITEM -> SupportEntry(
             titleGetter = { stringResource(entry.titleStringRes) }
         ) {
-            CharacterAddEntityDialogContent(
+            SearchEntityScaffold(
                 entityType = DnDEntityTypes.ITEM,
-                onSelectEntityClick = { action(CharacterFullScreenContract.AddItem(it)) },
-                onEntityInfoClick = navigateToEntityInfo
+                onEntityClick = { action(CharacterFullScreenContract.AddItem(it.childEntity ?: it.parentEntity.toDnDEntityMin())) },
+                onEntityInfoClick = navigateToEntityInfo,
+                modifier = Modifier.fillMaxSize()
             )
         }
         CharacterFullUiState.Dialog.ADD_STATE -> SupportEntry(
             titleGetter = { stringResource(entry.titleStringRes) }
         ) {
-            CharacterAddEntityDialogContent(
+            SearchEntityScaffold(
                 entityType = DnDEntityTypes.STATE,
-                onSelectEntityClick = { action(CharacterFullScreenContract.AddState(it)) },
-                onEntityInfoClick = navigateToEntityInfo
+                onEntityClick = { action(CharacterFullScreenContract.AddState(it.childEntity ?: it.parentEntity.toDnDEntityMin())) },
+                onEntityInfoClick = navigateToEntityInfo,
+                modifier = Modifier.fillMaxSize()
             )
         }
         CharacterFullUiState.Dialog.ADD_SPELL -> SupportEntry(
             titleGetter = { stringResource(entry.titleStringRes) }
         ) {
-            CharacterAddEntityDialogContent(
+            SearchEntityScaffold(
                 entityType = DnDEntityTypes.SPELL,
-                onSelectEntityClick = { action(CharacterFullScreenContract.AddSpell(it)) },
-                onEntityInfoClick = navigateToEntityInfo
+                onEntityClick = { action(CharacterFullScreenContract.AddSpell(it.childEntity ?: it.parentEntity.toDnDEntityMin())) },
+                onEntityInfoClick = navigateToEntityInfo,
+                modifier = Modifier.fillMaxSize()
             )
         }
         CharacterFullUiState.Dialog.NONE -> null

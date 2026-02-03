@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.navigation
+package com.davanok.dvnkdnd.ui.navigation.components
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveNavigationWrapper
+import com.davanok.dvnkdnd.ui.navigation.Route
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.browse
 import dvnkdnd.composeapp.generated.resources.category

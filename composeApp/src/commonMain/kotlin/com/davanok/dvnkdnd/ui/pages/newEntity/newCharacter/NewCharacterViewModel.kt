@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastFlatMap
@@ -34,7 +35,6 @@ import com.davanok.dvnkdnd.domain.repositories.local.FilesRepository
 import com.davanok.dvnkdnd.domain.repositories.local.FullEntitiesRepository
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
 import com.davanok.dvnkdnd.domain.values.FilePaths
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.NewCharacterMain
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -312,3 +312,26 @@ private data class NewCharacter(
             ?.let { enumValueOfOrNull<Skills>(it) }
             ?.let { attributes[it.attribute] }
     }.let { it ?: 0 }}
+
+@Immutable
+data class NewCharacterMain(
+    val images: List<Path> = emptyList(),
+    val mainImage: Path? = null,
+    val name: String = "",
+    val description: String = "",
+    val cls: DnDEntityWithSubEntities? = null,
+    val subCls: DnDEntityMin? = null,
+    val race: DnDEntityWithSubEntities? = null,
+    val subRace: DnDEntityMin? = null,
+    val background: DnDEntityWithSubEntities? = null,
+    val subBackground: DnDEntityMin? = null,
+) {
+    fun getEntitiesIds() = listOfNotNull(
+        cls?.id,
+        subCls?.id,
+        race?.id,
+        subRace?.id,
+        background?.id,
+        subBackground?.id
+    )
+}

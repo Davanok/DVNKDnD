@@ -47,7 +47,7 @@ fun RouterEntryProvider.characterCreationFlow(
             }
             entry<Route.New.Character.Main> {
                 NewCharacterMainScreen(
-                    navigateToEntityInfo = { id -> nestedNavigate(Route.EntityInfoDialog(id)) },
+                    navigateToEntityInfo = { nestedNavigate(Route.EntityInfoDialog(it.id)) },
                     onBack = onBack,
                     onContinue = { nestedNavigate(Route.New.Character.Stats) },
                     viewModel = assistedMetroViewModel<NewCharacterMainViewModel, NewCharacterMainViewModel.Factory> { create(sharedViewModel) }

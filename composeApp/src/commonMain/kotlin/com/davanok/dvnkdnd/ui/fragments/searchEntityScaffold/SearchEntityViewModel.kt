@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.pages.characterFull
+package com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 
 @AssistedInject
-class CharacterAddEntityViewModel(
+class SearchEntityViewModel(
     @Assisted private val entitiesType: DnDEntityTypes,
     private val browseEntitiesUseCase: BrowseEntitiesUseCase
 ) : ViewModel() {
@@ -42,12 +42,10 @@ class CharacterAddEntityViewModel(
 
     fun setSearchQuery(query: String) = _searchQuery.update { query }
 
-
-
     @AssistedFactory
     @ManualViewModelAssistedFactoryKey(Factory::class)
     @ContributesIntoMap(AppScope::class)
     fun interface Factory : ManualViewModelAssistedFactory {
-        fun create(@Assisted entitiesType: DnDEntityTypes): CharacterAddEntityViewModel
+        fun create(@Assisted entitiesType: DnDEntityTypes): SearchEntityViewModel
     }
 }

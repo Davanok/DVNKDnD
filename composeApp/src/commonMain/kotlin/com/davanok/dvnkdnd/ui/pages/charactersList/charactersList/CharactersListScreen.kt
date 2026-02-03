@@ -22,7 +22,7 @@ import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.adaptive.alternativeClickable
 import com.davanok.dvnkdnd.ui.model.isCritical
-import com.davanok.dvnkdnd.ui.navigation.NavigationFABScaffold
+import com.davanok.dvnkdnd.ui.navigation.components.NavigationFABScaffold
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name

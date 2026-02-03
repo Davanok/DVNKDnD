@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.navigation
+package com.davanok.dvnkdnd.ui.navigation.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -33,7 +33,6 @@ fun NavigationFABScaffold(
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-
     Scaffold(
         modifier = modifier,
         topBar = topBar,

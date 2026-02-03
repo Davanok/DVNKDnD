@@ -66,7 +66,7 @@ import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
-import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain.searchSheet.SearchSheet
+import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterMain
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
@@ -91,7 +91,6 @@ import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.launch
 import okio.Path
 import org.jetbrains.compose.resources.stringResource
-import kotlin.uuid.Uuid
 
 
 private const val textFieldMaxWidthDp = 488
@@ -101,7 +100,7 @@ private const val preferredImagesWidthDp = 300
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewCharacterMainScreen(
-    navigateToEntityInfo: (Uuid) -> Unit,
+    navigateToEntityInfo: (DnDEntityMin) -> Unit,
     onBack: () -> Unit,
     onContinue: () -> Unit,
     viewModel: NewCharacterMainViewModel
@@ -157,16 +156,17 @@ fun NewCharacterMainScreen(
                 character = uiState.character,
                 entities = uiState.entities,
                 empties = uiState.emptyFields,
-                viewModel = viewModel
+                eventSink = viewModel::evenSink
             )
         }
     }
 
-    if (uiState.showSearchSheet)
+    if (uiState.showSearchSheet != null)
         SearchSheet(
-            onDismiss = viewModel::hideSearchSheet,
-            onGetEntityInfo = { navigateToEntityInfo(it.id) },
-            viewModel = viewModel.searchSheetViewModel
+            entityType = uiState.showSearchSheet!!,
+            onSelectEntity = { viewModel.selectSearchSheetEntity(it.parentEntity, it.childEntity) },
+            onEntityInfo = navigateToEntityInfo,
+            onDismissRequest = viewModel::hideSearchSheet
         )
 }
 
@@ -174,7 +174,7 @@ fun NewCharacterMainScreen(
 private fun Content(
     character: NewCharacterMain,
     entities: DownloadableValues,
-    viewModel: NewCharacterMainViewModel,
+    eventSink: (NewCharacterMainEvent) -> Unit,
     empties: NewCharacterMainUiState.EmptyFields,
     modifier: Modifier = Modifier,
 ) {
@@ -189,24 +189,24 @@ private fun Content(
                 .widthIn(max = 488.dp),
             images = character.images,
             mainImage = character.mainImage,
-            onAddImage = viewModel::addCharacterImage,
-            onRemoveImage = viewModel::removeCharacterImage,
-            onSetImageMain = viewModel::setCharacterMainImage
+            onAddImage = { eventSink(NewCharacterMainEvent.AddImage(it)) },
+            onRemoveImage = { eventSink(NewCharacterMainEvent.RemoveImage(it)) },
+            onSetImageMain = { eventSink(NewCharacterMainEvent.SetMainImage(it)) }
         )
         Spacer(modifier = Modifier.height(24.dp))
         TextFields(
             state = character,
             empties = empties,
             entities = entities,
-            onNameChange = viewModel::setCharacterName,
-            onDescriptionChange = viewModel::setCharacterDescription,
-            onClassChange = viewModel::setCharacterClass,
-            onSubClassSelected = viewModel::setCharacterSubClass,
-            onRaceSelected = viewModel::setCharacterRace,
-            onSubRaceSelected = viewModel::setCharacterSubRace,
-            onBackgroundSelected = viewModel::setCharacterBackground,
-            onSubBackgroundSelected = viewModel::setCharacterSubBackground,
-            onOpenExtendedSearch = viewModel::openSearchSheet
+            onNameChange = { eventSink(NewCharacterMainEvent.SetName(it)) },
+            onDescriptionChange = { eventSink(NewCharacterMainEvent.SetDescription(it)) },
+            onClassChange = { eventSink(NewCharacterMainEvent.SetClass(it, null)) },
+            onSubClassSelected = { eventSink(NewCharacterMainEvent.SetSubClass(it)) },
+            onRaceSelected = { eventSink(NewCharacterMainEvent.SetRace(it, null)) },
+            onSubRaceSelected = { eventSink(NewCharacterMainEvent.SetSubRace(it)) },
+            onBackgroundSelected = { eventSink(NewCharacterMainEvent.SetBackground(it, null)) },
+            onSubBackgroundSelected = { eventSink(NewCharacterMainEvent.SetSubBackground(it)) },
+            onOpenExtendedSearch = { type, query -> eventSink(NewCharacterMainEvent.OpenSearchSheet(type, query)) }
         )
     }
 }

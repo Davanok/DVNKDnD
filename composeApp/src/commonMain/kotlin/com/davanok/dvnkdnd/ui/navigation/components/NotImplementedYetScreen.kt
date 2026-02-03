@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.navigation
+package com.davanok.dvnkdnd.ui.navigation.components
 
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
