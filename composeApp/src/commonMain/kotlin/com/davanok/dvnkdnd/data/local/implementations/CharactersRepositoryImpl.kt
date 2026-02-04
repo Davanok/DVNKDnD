@@ -28,7 +28,7 @@ import kotlin.uuid.Uuid
 
 @Inject
 class CharactersRepositoryImpl(
-    private val dao: CharactersDao,
+    private val dao: CharactersDao
 ) : CharactersRepository {
     override suspend fun getFullCharacter(characterId: Uuid): Result<CharacterFull> =
         runLogging("getFullCharacter") {

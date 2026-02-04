@@ -100,7 +100,7 @@ class CharacterFullViewModel(
         _uiState.update { it.copy(messages = it.messages + message) }
 
     fun removeMessage(messageId: Uuid) = _uiState.update { state ->
-        state.copy(messages = state.messages.filter { it.id == messageId })
+        state.copy(messages = state.messages.filter { it.id != messageId })
     }
 
     private suspend fun <T> Result<T>.handleResult(

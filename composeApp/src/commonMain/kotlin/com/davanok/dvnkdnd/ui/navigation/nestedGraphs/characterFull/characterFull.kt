@@ -36,6 +36,8 @@ fun RouterEntryProvider.characterFullDestinations(
 
             entry<Route.CharacterFull.Edit> {
                 EditCharacterScreen(
+                    navigateBack = { backStack.removeLastOrNull() },
+                    navigateToEntityInfo = { navigate(Route.EntityInfoDialog(it.id)) },
                     viewModel = assistedMetroViewModel<EditCharacterViewModel,  EditCharacterViewModel.Factory> { create(characterId) }
                 )
             }
