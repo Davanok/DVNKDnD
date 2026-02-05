@@ -474,4 +474,10 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="edit_character_attributes_pane_title">Attributes</string>
     <string name="edit_character_modifiers_pane_title">Modifiers</string>
     <string name="edit_character_health_pane_title">Health</string>
+
+    <!-- floating action menu -->
+    <string name="floating_action_menu_toggle_menu">Toggle menu</string>
+    <string name="floating_action_menu_expanded">Expanded</string>
+    <string name="floating_action_menu_collapsed">Collapsed</string>
+    <string name="floating_action_menu_close_menu">Close menu</string>
 </resources>

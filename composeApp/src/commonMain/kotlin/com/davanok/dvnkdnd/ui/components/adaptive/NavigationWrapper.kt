@@ -2,14 +2,11 @@ package com.davanok.dvnkdnd.ui.components.adaptive
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
@@ -31,7 +28,6 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.PermanentDrawerSheet
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItemColors
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldLayout
@@ -66,8 +62,6 @@ fun AdaptiveNavigationWrapper(
     floatingActionButton: (AdaptiveFloatingActionButtonScope.() -> Unit)? = null,
     showNavigationItems: Boolean = true,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
-    contentColor: Color = contentColorFor(containerColor),
     content: @Composable () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -78,44 +72,38 @@ fun AdaptiveNavigationWrapper(
     val scope = rememberStateOfItems(navigationItems)
     val fabScope = if (floatingActionButton == null) null else rememberStateOfFAB(floatingActionButton)
 
-    Surface(modifier = modifier, color = containerColor, contentColor = contentColor) {
-        ModalNavigationDrawer(
-            modifier = modifier,
-            drawerState = drawerState,
-            gesturesEnabled = gesturesEnabled,
-            drawerContent = {
-                ModalNavigationDrawerContent(
-                    scope = scope.value,
-                    onDrawerClicked = {
-                        coroutineScope.launch { drawerState.close() }
-                    },
-                    onItemClicked = {
-                        coroutineScope.launch { drawerState.close() }
-                    },
-                    fabScope = fabScope?.value,
-                )
+    ModalNavigationDrawer(
+        modifier = modifier,
+        drawerState = drawerState,
+        gesturesEnabled = gesturesEnabled,
+        drawerContent = {
+            ModalNavigationDrawerContent(
+                scope = scope.value,
+                onDrawerClicked = {
+                    coroutineScope.launch { drawerState.close() }
+                },
+                onItemClicked = {
+                    coroutineScope.launch { drawerState.close() }
+                },
+                fabScope = fabScope?.value,
+            )
+        },
+    ) {
+        NavigationSuiteScaffoldLayout(
+            layoutType = layoutType,
+            navigationSuite = {
+                if (showNavigationItems)
+                    AdaptiveNavigationSuite(
+                        layoutType,
+                        scope.value,
+                        onDrawerClicked = {
+                            coroutineScope.launch { drawerState.open() }
+                        },
+                        fabScope = fabScope?.value
+                    )
             },
-        ) {
-            Box(
-                modifier = Modifier.safeDrawingPadding().imePadding()
-            ) {
-                NavigationSuiteScaffoldLayout(
-                    layoutType = layoutType,
-                    navigationSuite = {
-                        if (showNavigationItems)
-                            AdaptiveNavigationSuite(
-                                layoutType,
-                                scope.value,
-                                onDrawerClicked = {
-                                    coroutineScope.launch { drawerState.open() }
-                                },
-                                fabScope = fabScope?.value
-                            )
-                    },
-                    content = content
-                )
-            }
-        }
+            content = content
+        )
     }
 }
 
