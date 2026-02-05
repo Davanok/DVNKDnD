@@ -11,9 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -126,6 +127,7 @@ class CropState(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ImageCropDialog(
     bytes: ByteArray,
@@ -144,7 +146,7 @@ fun ImageCropDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         if (imageBitmap == null)
-            CircularProgressIndicator()
+            LoadingIndicator()
         else
             ImageCropDialogContent(
                 imageBitmap = imageBitmap!!,

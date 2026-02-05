@@ -7,7 +7,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LoadingCard(
     progress: (() -> Float)? = null,
@@ -41,8 +43,8 @@ fun LoadingCard(
 ) = FullScreenCard(
     modifier = modifier,
     content = {
-        if (progress == null) CircularProgressIndicator()
-        else CircularProgressIndicator(progress=progress)
+        if (progress == null) CircularWavyProgressIndicator()
+        else CircularWavyProgressIndicator(progress=progress)
     },
     supportContent = support
 )

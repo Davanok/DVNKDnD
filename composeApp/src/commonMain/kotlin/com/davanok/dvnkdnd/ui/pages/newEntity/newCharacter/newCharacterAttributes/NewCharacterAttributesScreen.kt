@@ -13,7 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -153,48 +158,55 @@ private fun Content(
         AboutModifiersSelectorsDialog(onDismiss = { showInfoDialog = false })
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun CreationOptionsSelector(
     selectedCreationOption: AttributesSelectorType,
     onOptionSelected: (AttributesSelectorType) -> Unit,
     onInfoClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        SingleChoiceSegmentedButtonRow(
-            modifier = Modifier
-                .weight(1f)
-        ) {
-            AttributesSelectorType.entries.forEachIndexed { index, option ->
-                SegmentedButton(
-                    selected = selectedCreationOption == option,
-                    onClick = { onOptionSelected(option) },
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = AttributesSelectorType.entries.size
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(option.title),
-                            maxLines = 1
-                        )
-                    }
-                )
-            }
+    val options = AttributesSelectorType.entries.associateWith {
+        stringResource(it.title)
+    }
+
+    ButtonGroup(
+        overflowIndicator = {
+            ButtonGroupDefaults.OverflowIndicator(it)
         }
-        IconButton(
-            onClick = onInfoClick,
-            modifier = Modifier.padding(start = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = stringResource(Res.string.about_modifiers_selectors)
+    ) {
+        options.forEach { (option, title) ->
+            toggleableItem(
+                weight = 1f,
+                checked = selectedCreationOption == option,
+                label = title,
+                onCheckedChange = { if (it) onOptionSelected(option) }
             )
         }
+
+        customItem(
+            buttonGroupContent = {
+                IconButton(
+                    onClick = onInfoClick
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = stringResource(Res.string.about_modifiers_selectors)
+                    )
+                }
+            },
+            menuContent = {
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(Res.string.about_modifiers_selectors)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = stringResource(Res.string.about_modifiers_selectors)
+                        )
+                    },
+                    onClick = onInfoClick
+                )
+            }
+        )
     }
 }
 
