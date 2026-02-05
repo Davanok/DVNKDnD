@@ -139,15 +139,6 @@ data class CharacterSelectedModifiers(
     fun toSet(): Set<Uuid> = valueModifiers + rollModifiers + damageModifiers
 }
 
-@Serializable
-data class CharacterMainEntityInfo(
-    val level: Int,
-    val entity: DnDFullEntity,
-    val subEntity: DnDFullEntity?
-) {
-    operator fun contains(element: Uuid) = entity.entity.id == element || subEntity?.entity?.id == element
-}
-
 data class SpellCastingValues(
     val attackBonus: Int,
     val saveDifficultyClass: Int

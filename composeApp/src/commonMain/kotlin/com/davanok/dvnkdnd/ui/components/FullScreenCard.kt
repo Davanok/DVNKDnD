@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,14 +29,9 @@ fun FullScreenCard(
             .then(modifier),
         contentAlignment = Alignment.Center
     ) {
-        val aspectRatio =
-            if (maxWidth > maxHeight) 4/3f
-            else 0.75f
-
         Card(
             modifier = Modifier
-                .fillMaxWidth(0.66f)
-                .aspectRatio(aspectRatio)
+                .fillMaxSize(0.66f)
         ) {
             Column (
                 modifier = Modifier

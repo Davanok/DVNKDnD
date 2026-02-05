@@ -58,7 +58,9 @@ interface CharactersDao: CharacterMainDao,
         character.images
             .map { it.toDbCharacterImage(characterId) }
             .let { insertCharacterImages(it) }
-        character.coins.toDbCharacterCoins(characterId).let { insertCharacterCoins(it) }
+        character.coins
+            .toDbCharacterCoins(characterId)
+            .let { insertCharacterCoins(it) }
         character.items
             .map { it.toDbCharacterItemLink(characterId) }
             .let { insertCharacterItemLinks(it) }

@@ -103,6 +103,7 @@
     <string name="no_internet_exception">No internet</string>
     <string name="delete">Delete</string>
     <string name="save">Save</string>
+    <string name="todo">TODO</string>
 
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
@@ -468,4 +469,9 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="state_type_other">Other</string>
 
     <string name="edit_character">Edit character</string>
+
+    <string name="edit_character_main_pane_title">Main</string>
+    <string name="edit_character_attributes_pane_title">Attributes</string>
+    <string name="edit_character_modifiers_pane_title">Modifiers</string>
+    <string name="edit_character_health_pane_title">Health</string>
 </resources>

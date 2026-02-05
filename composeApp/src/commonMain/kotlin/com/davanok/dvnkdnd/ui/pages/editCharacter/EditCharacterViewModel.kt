@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.ui.pages.editCharacter
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.repositories.local.EditCharacterRepository
@@ -16,6 +17,10 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import dvnkdnd.composeapp.generated.resources.Res
+import dvnkdnd.composeapp.generated.resources.edit_character_attributes_pane_title
+import dvnkdnd.composeapp.generated.resources.edit_character_health_pane_title
+import dvnkdnd.composeapp.generated.resources.edit_character_main_pane_title
+import dvnkdnd.composeapp.generated.resources.edit_character_modifiers_pane_title
 import dvnkdnd.composeapp.generated.resources.loading_character_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +28,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import kotlin.uuid.Uuid
 
@@ -63,13 +69,19 @@ class EditCharacterViewModel(
         state.copy(messages = state.messages.filter { it.id != messageId })
     }
 
+    fun updateCharacterBase(character: CharacterBase) = viewModelScope.launch {
+        TODO()
+    }
     fun updateAttributes(attributes: AttributesGroup) = viewModelScope.launch {
-
+        TODO()
     }
 
     fun eventSink(event: EditCharacterScreenEvent) {
         when (event) {
+            is EditCharacterScreenEvent.UpdateCharacterBase -> updateCharacterBase(event.character)
             is EditCharacterScreenEvent.UpdateAttributes -> updateAttributes(event.attributes)
+            else -> { TODO() }
+
         }
     }
 
@@ -86,4 +98,11 @@ data class EditCharacterUiState(
     val error: UiError? = null,
     val character: CharacterFull? = null,
     val messages: List<UiMessage> = emptyList()
-)
+) {
+    enum class Page(val stringRes: StringResource) {
+        MAIN(Res.string.edit_character_main_pane_title),
+        ATTRIBUTES(Res.string.edit_character_attributes_pane_title),
+        MODIFIERS(Res.string.edit_character_modifiers_pane_title),
+        HEALTH(Res.string.edit_character_health_pane_title),
+    }
+}
