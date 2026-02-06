@@ -1,12 +1,9 @@
 package com.davanok.dvnkdnd.ui.pages.characterFull.pages
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -24,25 +20,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.domain.entities.character.CharacterState
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.ui.components.BaseEntityImage
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
+import com.davanok.dvnkdnd.ui.components.SwipeToActionBox
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_character_state
 import dvnkdnd.composeapp.generated.resources.character_has_no_states
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.absoluteValue
 
 @Composable
 fun CharacterStatesScreen(
@@ -96,8 +86,11 @@ private fun CharacterStatesScreenContent(
             contentType = { it.deletable }
         ) { state ->
             if (state.deletable) {
-                SwipeToDeleteStateCardBox(
-                    onDelete = { onDelete(state) },
+                SwipeToActionBox(
+                    onDismiss = { onDelete(state) },
+                    actionIcon = {
+                        Icon(Icons.Default.Delete, null)
+                    },
                     modifier = Modifier.animateItem()
                 ) {
                     StateCard(
@@ -115,62 +108,6 @@ private fun CharacterStatesScreenContent(
             }
         }
     }
-}
-
-@Composable
-private fun SwipeToDeleteStateCardBox(
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit
-) {
-    val state = rememberSwipeToDismissBoxState()
-    val (startButtonWidth, endButtonWidth) = if (state.dismissDirection == SwipeToDismissBoxValue.Settled) 0.dp to 0.dp
-    else with(LocalDensity.current) {
-        val offset = state.requireOffset()
-
-        val buttonWidth = maxOf(48.dp, state.requireOffset().absoluteValue.toDp() - 4.dp)
-
-        if (offset > 0) buttonWidth to 0.dp
-        else 0.dp to buttonWidth
-    }
-
-    SwipeToDismissBox(
-        state = state,
-        backgroundContent = {
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(startButtonWidth),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Delete, null)
-                }
-            }
-
-            Spacer(Modifier.weight(1f))
-
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(endButtonWidth),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Delete, null)
-                }
-            }
-        },
-        onDismiss = { onDelete() },
-        content = content,
-        modifier = modifier
-    )
 }
 
 @Composable

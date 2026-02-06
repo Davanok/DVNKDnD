@@ -68,6 +68,9 @@ class EditCharacterViewModel(
     fun removeMessage(messageId: Uuid) = _uiState.update { state ->
         state.copy(messages = state.messages.filter { it.id != messageId })
     }
+    fun setPage(page: EditCharacterUiState.Page) = _uiState.update {
+        it.copy(currentPage = page)
+    }
 
     fun updateCharacterBase(character: CharacterBase) = viewModelScope.launch {
         TODO()
@@ -97,7 +100,8 @@ data class EditCharacterUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
     val character: CharacterFull? = null,
-    val messages: List<UiMessage> = emptyList()
+    val messages: List<UiMessage> = emptyList(),
+    val currentPage: Page = Page.entries.first()
 ) {
     enum class Page(val stringRes: StringResource) {
         MAIN(Res.string.edit_character_main_pane_title),

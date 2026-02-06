@@ -29,11 +29,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
@@ -86,6 +83,8 @@ fun EditCharacterScreen(
                     onBack = navigateBack,
                     navigateToEntityInfo = navigateToEntityInfo,
                     character = character,
+                    currentPage = uiState.currentPage,
+                    onPageChanged = viewModel::setPage,
                     eventSink = viewModel::eventSink,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -99,6 +98,8 @@ private fun Content(
     onBack: () -> Unit,
     navigateToEntityInfo: (DnDEntityMin) -> Unit,
     character: CharacterFull,
+    currentPage: EditCharacterUiState.Page,
+    onPageChanged: (EditCharacterUiState.Page) -> Unit,
     eventSink: (EditCharacterScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -126,6 +127,8 @@ private fun Content(
         }
     ) { paddingValues ->
         ContentNavigationWrapper(
+            currentPage = currentPage,
+            onPageChanged = onPageChanged,
             expandedView = expandedView,
             modifier = Modifier.padding(paddingValues)
         ) { page ->
@@ -158,24 +161,24 @@ private fun Content(
 
 @Composable
 private fun ContentNavigationWrapper(
+    currentPage: EditCharacterUiState.Page,
+    onPageChanged: (EditCharacterUiState.Page) -> Unit,
     expandedView: Boolean,
     modifier: Modifier = Modifier,
     content: @Composable (page: EditCharacterUiState.Page) -> Unit
 ) {
-    var currentPage by rememberSaveable { mutableStateOf(EditCharacterUiState.Page.ATTRIBUTES) }
-
     AnimatedContent(expandedView) { expandedView ->
         if (expandedView) {
             ExpandedContent(
                 currentPage = currentPage,
-                onPageChange = { currentPage = it },
+                onPageChanged = onPageChanged,
                 modifier = modifier,
                 content = content
             )
         } else {
             CompactContent(
                 currentPage = currentPage,
-                onPageChange = { currentPage = it },
+                onPageChanged = onPageChanged,
                 modifier = modifier,
                 content = content
             )
@@ -186,7 +189,7 @@ private fun ContentNavigationWrapper(
 @Composable
 private fun CompactContent(
     currentPage: EditCharacterUiState.Page,
-    onPageChange: (EditCharacterUiState.Page) -> Unit,
+    onPageChanged: (EditCharacterUiState.Page) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (page: EditCharacterUiState.Page) -> Unit
 ) {
@@ -198,7 +201,7 @@ private fun CompactContent(
     LaunchedEffect(pagerState.currentPage) {
         val newPage = pages[pagerState.currentPage]
         if (newPage != currentPage) {
-            onPageChange(newPage)
+            onPageChanged(newPage)
         }
     }
 
@@ -228,7 +231,7 @@ private fun CompactContent(
 @Composable
 private fun ExpandedContent(
     currentPage: EditCharacterUiState.Page,
-    onPageChange: (EditCharacterUiState.Page) -> Unit,
+    onPageChanged: (EditCharacterUiState.Page) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (page: EditCharacterUiState.Page) -> Unit
 ) {
@@ -245,7 +248,7 @@ private fun ExpandedContent(
         listPane = {
             MenuListContent(
                 currentPage = currentPage,
-                onClick = onPageChange
+                onClick = onPageChanged
             )
         },
         detailPane = {

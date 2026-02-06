@@ -475,6 +475,22 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="edit_character_modifiers_pane_title">Modifiers</string>
     <string name="edit_character_health_pane_title">Health</string>
 
+    <string name="character_details">Character details</string>
+    <string name="character_name">Character name</string>
+    <string name="character_description">Description</string>
+    <string name="character_total_level">Total level</string>
+    <string name="classes">Classes</string>
+    <string name="races">Races</string>
+    <string name="backgrounds">Backgrounds</string>
+    <string name="no_classes_added_yet">No classes added yet</string>
+    <string name="no_races_added_yet">No races added yet</string>
+    <string name="no_backgrounds_added_yet">No backgrounds added yet</string>
+    <string name="entity_level">Entity level</string>
+    <string name="increase_level">Increase level</string>
+    <string name="decrease_level">Decrease level</string>
+    <string name="character_level_error">Total level of %1$s is %2$d but character level is %3$d</string>
+    <string name="remove">Remove</string>
+
     <!-- floating action menu -->
     <string name="floating_action_menu_toggle_menu">Toggle menu</string>
     <string name="floating_action_menu_expanded">Expanded</string>
