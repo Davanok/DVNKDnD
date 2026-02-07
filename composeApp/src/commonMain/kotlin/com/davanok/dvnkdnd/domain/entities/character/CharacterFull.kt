@@ -51,7 +51,9 @@ data class CharacterFull(
 
     val states: List<CharacterState> = emptyList(),
 
-    val notes: List<CharacterNote> = emptyList()
+    val notes: List<CharacterNote> = emptyList(),
+
+    val settings: CharacterSettings? = null
 ) {
     val entitiesWithLevel: List<Pair<DnDFullEntity, Int>> by lazy { getEntitiesWithLevel() }
 

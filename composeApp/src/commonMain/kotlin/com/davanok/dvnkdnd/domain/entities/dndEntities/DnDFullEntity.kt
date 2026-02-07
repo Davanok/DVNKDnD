@@ -6,6 +6,7 @@ import com.davanok.dvnkdnd.domain.entities.DatabaseImage
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
 
 @Immutable
 @Serializable
@@ -34,13 +35,31 @@ data class DnDFullEntity(
 ) {
     fun toDnDEntityMin() = entity.toEntityMin(images.getMainImage()?.path)
 
-    fun getCompanionEntitiesIds() =
-        features.map { it.featureId } +
-                cls?.spells.orEmpty() +
-                feature?.let { listOfNotNull(it.givesStateSelf, it.givesStateTarget) }.orEmpty() +
-                spell?.attacks?.mapNotNull { it.givesState }.orEmpty() +
-                item?.let { fullItem ->
-                    fullItem.effects.map { it.givesState } +
-                            fullItem.activations.flatMap { listOfNotNull(it.givesState, it.castsSpell?.spellId) }
-                }.orEmpty()
+    fun getCompanionEntitiesIds(): List<Uuid> = buildSet {
+        if (entity.parentId != null) add(entity.parentId)
+
+        features.forEach {
+            add(it.featureId)
+        }
+
+        if (!cls?.spells.isNullOrEmpty())
+            addAll(cls.spells)
+
+        feature?.run {
+            if (givesStateSelf != null) add(givesStateSelf)
+            if (givesStateTarget != null) add(givesStateTarget)
+        }
+
+        spell?.attacks?.forEach {
+            if (it.givesState != null) add(it.givesState)
+        }
+
+        item?.effects?.forEach {
+            add(it.givesState)
+        }
+        item?.activations?.forEach {
+            if (it.givesState != null) add(it.givesState)
+            if (it.castsSpell != null) add(it.castsSpell.spellId)
+        }
+    }.toList()
 }

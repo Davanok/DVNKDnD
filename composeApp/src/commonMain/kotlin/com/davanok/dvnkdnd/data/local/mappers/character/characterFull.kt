@@ -45,5 +45,6 @@ fun DbFullCharacter.toCharacterFull(): CharacterFull = CharacterFull(
     selectedModifiers = convertSelectedModifiers(),
     selectedProficiencies = selectedProficiencies.map { it.proficiencyId }.toSet(),
     states = states.map(DbJoinCharacterState::toCharacterState),
-    notes = notes.map(DbCharacterNote::toCharacterNote)
+    notes = notes.map(DbCharacterNote::toCharacterNote),
+    settings = settings?.toCharacterSettings()
 )

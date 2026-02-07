@@ -48,7 +48,7 @@ class FullEntitiesRepositoryImpl(
 
             // 2. Stop recursion if limit reached or no entities found
             if (currentDepth >= MAX_RECURSION_DEPTH || entities.isEmpty()) {
-                return@runLogging entities
+                throw IllegalStateException("getFullEntitiesRecursive max depth exceeded")
             }
 
             // 3. Aggregate ALL companion IDs for this entire level (Batching Optimization)

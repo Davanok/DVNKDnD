@@ -18,6 +18,7 @@ import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterMainEntity
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterNote
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterOptionalValues
+import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterSettings
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterItemLink
@@ -100,6 +101,10 @@ interface CharactersDao: CharacterMainDao,
         character.notes
             .map { it.toDbCharacterNote(characterId) }
             .let { insertCharacterNotes(it) }
+
+        character.settings
+            ?.toDbCharacterSettings(characterId)
+            ?.let { setCharacterSettings(it) }
 
         return characterId
     }

@@ -23,6 +23,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterImage
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemActivationsCount
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterMainEntity
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSettings
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterOptionalValues
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficiency
@@ -100,6 +101,7 @@ import kotlinx.coroutines.IO
         DbCharacterUsedSpellSlots::class,
         DbCharacterStateLink::class,
         DbCharacterItemActivationsCount::class,
+        DbCharacterSettings::class,
         DbItemActivationCastsSpell::class,
         DbClass::class,
         DbClassSpell::class,
