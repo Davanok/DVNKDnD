@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
@@ -72,6 +73,7 @@ import dvnkdnd.composeapp.generated.resources.races
 import dvnkdnd.composeapp.generated.resources.remove
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.Uuid
+
 @Immutable
 data class EditCharacterMainPageUiState(
     val character: CharacterBase,
@@ -177,7 +179,6 @@ private fun Content(
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
             }
 
-            // Render sections
             val typesToRender = listOf(
                 DnDEntityTypes.CLASS,
                 DnDEntityTypes.RACE,
@@ -187,7 +188,7 @@ private fun Content(
             typesToRender.forEach { entityType ->
                 entitiesSection(
                     entityType = entityType,
-                    entities = uiState.entities[entityType] ?: emptyList(),
+                    entities = uiState.entities[entityType].orEmpty(),
                     setEntityLevel = setEntityLevel,
                     removeEntity = removeEntity
                 )
@@ -213,7 +214,7 @@ private fun LazyListScope.entitiesSection(
                 DnDEntityTypes.CLASS -> Res.string.classes
                 DnDEntityTypes.RACE -> Res.string.races
                 DnDEntityTypes.BACKGROUND -> Res.string.backgrounds
-                else -> throw IllegalStateException("Unknown entity type")
+                else -> throw IllegalStateException()
             }
             Text(
                 text = stringResource(stringRes),
@@ -238,13 +239,16 @@ private fun LazyListScope.entitiesSection(
                 text = stringResource(stringRes),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
             )
         }
     } else {
         items(
             items = entities,
-            key = { it.entity.entity.id } // Optimization: Unique Key
+            key = { it.entity.entity.id }
         ) { entity ->
             EntityCard(
                 entity = entity,
@@ -264,7 +268,6 @@ private fun AddEntityFloatingActionButton(
     fabVisible: Boolean,
     onAddNewClick: (DnDEntityTypes) -> Unit,
 ) {
-    // Assuming DefaultFloatingActionMenu and NavigationEventHandler are custom/library components
     var fabMenuExpanded by rememberSaveable { mutableStateOf(false) }
 
     NavigationEventHandler(fabMenuExpanded) { fabMenuExpanded = false }
@@ -296,7 +299,7 @@ private fun AddEntityFloatingActionButton(
                 text = { Text(text = stringResource(item.stringRes)) },
                 icon = {
                     Icon(
-                        imageVector = Icons.Default.Add, // Changed to a generic 'add' style icon
+                        imageVector = Icons.Default.Add,
                         contentDescription = null
                     )
                 }
@@ -376,6 +379,9 @@ private fun EntityCard(
     onRemove: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val entityBase = entity.entity.entity
+    val subEntityBase = entity.subEntity?.entity
+
     SwipeToActionBox(
         modifier = modifier,
         onDismiss = { onRemove() },
@@ -390,15 +396,26 @@ private fun EntityCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-                    val entityBase = entity.entity.entity
                     Column(modifier = Modifier.weight(1f)) {
+                        val entityName = remember(entityBase, subEntityBase) {
+                            buildString {
+                                append(entityBase.name)
+                                if (subEntityBase != null) {
+                                    append(" (")
+                                    append(subEntityBase.name)
+                                    append(')')
+                                }
+                            }
+                        }
+
                         Text(
-                            text = entityBase.name,
+                            text = entityName,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
+                        val entitySource = subEntityBase?.source ?: entityBase.source
                         Text(
-                            text = entityBase.source,
+                            text = entitySource,
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -411,15 +428,6 @@ private fun EntityCard(
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
-                }
-
-                if (entity.subEntity != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Subclass: ${entity.subEntity.entity.name}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
