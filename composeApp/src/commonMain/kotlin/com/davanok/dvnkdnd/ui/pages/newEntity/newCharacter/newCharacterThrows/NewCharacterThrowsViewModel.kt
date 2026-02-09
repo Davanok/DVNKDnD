@@ -158,6 +158,7 @@ class NewCharacterThrowsViewModel(
                 val isSelectable = isGroupSelectable && (isSelected || groupAllowsExtra)
 
                 val info = ValueModifierInfo(
+                    isCustom = false,
                     modifier = modifier,
                     group = groupInfo,
                     resolvedValue = resolvedValue,

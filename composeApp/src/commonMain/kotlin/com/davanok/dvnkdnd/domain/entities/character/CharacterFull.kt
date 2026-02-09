@@ -14,6 +14,7 @@ import com.davanok.dvnkdnd.domain.entities.character.characterUtils.getEntitiesW
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.SkillsGroup
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.CasterProgression
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
@@ -85,7 +86,8 @@ data class CharacterFull(
             ?.let { attributes[it.attribute] }
     }.let { it ?: 0 }
 
-    val appliedModifiers by lazy { calculateValueModifiers() }
+    val calculatedValueModifiers: List<ValueModifierInfo>
+        get() = calculateValueModifiers()
 
     val spellSlots by lazy { calculateSpellSlots() }
 
@@ -126,7 +128,8 @@ data class CharacterModifiedValues(
     val skillModifiers: SkillsGroup,
     val health: CharacterHealth,
     val derivedStats: CharacterDerivedValues,
-    val speed: CharacterSpeed
+    val speed: CharacterSpeed,
+    // TODO: implement other modifier value targets
 )
 
 @Serializable

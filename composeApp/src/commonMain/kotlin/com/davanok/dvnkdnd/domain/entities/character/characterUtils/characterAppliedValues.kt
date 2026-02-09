@@ -30,18 +30,24 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
  * @return A [CharacterModifiedValues] object containing the fully resolved state.
  */
 fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
+    val characterModifiersByTarget = calculatedValueModifiers
+        .groupBy { it.modifier.targetScope }
+
     // 1. Resolve Map-based Groups (Attributes, Skills)
-    val modifiedAttributes = calculateAttributeGroup()
-    val modifiedSavingThrows = calculateSavingThrows(modifiedAttributes)
-    val modifiedSkills = calculateSkills(modifiedAttributes)
+    val modifiedAttributes = calculateAttributeGroup(characterModifiersByTarget[ModifierValueTarget.ATTRIBUTE].orEmpty())
+    val modifiedSavingThrows = calculateSavingThrows(modifiedAttributes, characterModifiersByTarget[ModifierValueTarget.SAVING_THROW].orEmpty())
+    val modifiedSkills = calculateSkills(modifiedAttributes, characterModifiersByTarget[ModifierValueTarget.SKILL].orEmpty())
 
     // 2. Resolve other
-    val modifiedHealth = calculateModifiedHealth()
+    val modifiedHealth = calculateModifiedHealth(characterModifiersByTarget[ModifierValueTarget.HEALTH].orEmpty())
     val derivedStats = calculateModifiedDerivedStats(
         dexterityAttribute = modifiedAttributes.dexterity,
-        perceptionSkill = modifiedSkills.perception
+        perceptionSkill = modifiedSkills.perception,
+        modifiers = characterModifiersByTarget[ModifierValueTarget.DERIVED_STAT].orEmpty()
     )
-    val speed = calculateSpeedValues()
+    val speed = calculateSpeedValues(characterModifiersByTarget[ModifierValueTarget.SPEED].orEmpty())
+
+    // TODO: implement other modifier value targets
 
     return CharacterModifiedValues(
         attributes = modifiedAttributes,
@@ -55,29 +61,29 @@ fun CharacterFull.getAppliedValues(): CharacterModifiedValues {
 
 // --- Internal Helper Extensions ---
 
-private fun CharacterFull.calculateAttributeGroup() = applyModifiersInfo(
+private fun CharacterFull.calculateAttributeGroup(modifiers: List<ValueModifierInfo>) = applyModifiersInfo(
     values = attributes.toMap(),
-    modifiers = appliedModifiers[ModifierValueTarget.ATTRIBUTE].orEmpty()
+    modifiers = modifiers
 ).toAttributesGroup()
 
-private fun CharacterFull.calculateSavingThrows(modifiedAttributes: AttributesGroup) = applyModifiersInfo(
+private fun calculateSavingThrows(modifiedAttributes: AttributesGroup, modifiers: List<ValueModifierInfo>) = applyModifiersInfo(
     values = modifiedAttributes.map { calculateModifier(it) }.toMap(),
-    modifiers = appliedModifiers[ModifierValueTarget.SAVING_THROW].orEmpty()
+    modifiers = modifiers
 ).toAttributesGroup()
 
-private fun CharacterFull.calculateSkills(modifiedAttributes: AttributesGroup) = applyModifiersInfo(
+private fun calculateSkills(modifiedAttributes: AttributesGroup, modifiers: List<ValueModifierInfo>) = applyModifiersInfo(
     values = modifiedAttributes.toSkillsGroup().toMap().mapValues { calculateModifier(it.value) },
-    modifiers = appliedModifiers[ModifierValueTarget.SKILL].orEmpty()
+    modifiers = modifiers
 ).toSkillsGroup()
 
-private fun CharacterFull.calculateModifiedHealth(): CharacterHealth {
+private fun CharacterFull.calculateModifiedHealth(modifiers: List<ValueModifierInfo>): CharacterHealth {
     val healthMap = mapOf(
         DnDModifierHealthTargets.CURRENT to health.current,
         DnDModifierHealthTargets.MAX to health.max
     )
     val modified = applyModifiersInfo(
         values = healthMap,
-        modifiers = appliedModifiers[ModifierValueTarget.HEALTH].orEmpty()
+        modifiers = modifiers
     )
     return health.copy(
         current = modified.getValue(DnDModifierHealthTargets.CURRENT),
@@ -87,7 +93,8 @@ private fun CharacterFull.calculateModifiedHealth(): CharacterHealth {
 
 private fun CharacterFull.calculateModifiedDerivedStats(
     dexterityAttribute: Int,
-    perceptionSkill: Int
+    perceptionSkill: Int,
+    modifiers: List<ValueModifierInfo>
 ): CharacterDerivedValues {
     val derivedValuesMap = CharacterDerivedValues(
         initiative = optionalValues.initiative ?: calculateModifier(dexterityAttribute),
@@ -96,11 +103,11 @@ private fun CharacterFull.calculateModifiedDerivedStats(
     ).toMap()
     val modified = applyModifiersInfo(
         values = derivedValuesMap,
-        modifiers = appliedModifiers[ModifierValueTarget.DERIVED_STAT].orEmpty()
+        modifiers = modifiers
     )
     return modified.toCharacterDerivedValues()
 }
-private fun CharacterFull.calculateSpeedValues(): CharacterSpeed {
+private fun CharacterFull.calculateSpeedValues(modifiers: List<ValueModifierInfo>): CharacterSpeed {
     val baseSpeed = calculateBaseSpeed()
     val speedMap = CharacterSpeed(
         walk = baseSpeed,
@@ -110,7 +117,7 @@ private fun CharacterFull.calculateSpeedValues(): CharacterSpeed {
     ).toMap()
     val modified = applyModifiersInfo(
         values = speedMap,
-        modifiers = appliedModifiers[ModifierValueTarget.SPEED].orEmpty()
+        modifiers = modifiers
     )
     return modified.toCharacterSpeed()
 }

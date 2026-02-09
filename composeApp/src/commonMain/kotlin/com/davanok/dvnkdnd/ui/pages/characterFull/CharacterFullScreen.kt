@@ -284,7 +284,7 @@ private fun Content(
     CharacterThrowsDiceRoller(
         state = diceRollerState,
         characterModifiedAttributes = character.appliedValues.attributes,
-        characterModifiers = character.appliedModifiers
+        characterModifiers = character.calculatedValueModifiers
     )
 }
 
@@ -420,11 +420,13 @@ private fun rememberAdaptiveCharacterContentState(
         CharacterFullUiState.Dialog.HEALTH -> SupportEntry(
             titleGetter = { stringResource(entry.titleStringRes) }
         ) {
+            val healthModifiers = remember(character) {
+                character.calculatedValueModifiers.filter { it.modifier.targetScope == ModifierValueTarget.HEALTH }
+            }
             CharacterHealthDialogContent(
                 baseHealth = character.health,
                 updateHealth = { action(CharacterFullScreenContract.SetHealth(it)) },
-                healthModifiers = character.appliedModifiers
-                    .getOrElse(ModifierValueTarget.HEALTH, ::emptyList)
+                healthModifiers = healthModifiers
             )
         }
         CharacterFullUiState.Dialog.MAIN_ENTITIES -> SupportEntry(

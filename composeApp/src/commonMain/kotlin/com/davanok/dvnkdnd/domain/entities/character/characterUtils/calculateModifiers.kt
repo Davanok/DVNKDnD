@@ -25,13 +25,13 @@ import kotlin.uuid.Uuid
  *
  * The modifiers list is processed in ascending order of [DnDValueModifier.priority].
  */
-fun CharacterFull.calculateValueModifiers(): Map<ModifierValueTarget, List<ValueModifierInfo>> {
+fun CharacterFull.calculateValueModifiers(): List<ValueModifierInfo> {
     // 1. Gather and sort all modifiers by priority
     val allRawModifiers = collectRawModifiers().sortedBy { it.modifier.priority }
 
     // 2. Initialize running contexts (mutable) with base values
     val currentAttributes = attributes.toMap().toMutableMap()
-    val currentSkills = currentAttributes.toAttributesGroup().toSkillsGroup().toMap().toMutableMap()
+    val currentSkills = attributes.toSkillsGroup().toMap().toMutableMap()
 
     // 3. Sequential resolution: each modifier sees the latest context
     val resolvedResults = allRawModifiers.map { wrapper ->
@@ -46,11 +46,12 @@ fun CharacterFull.calculateValueModifiers(): Map<ModifierValueTarget, List<Value
     }
 
     // 5. Group for UI
-    return resolvedResults.groupBy { it.modifier.targetScope }
+    return resolvedResults
 }
 
 /** Lightweight wrapper for modifiers (entity-provided or custom). */
 private data class RawModifierWrapper(
+    val isCustom: Boolean,
     val modifier: DnDValueModifier,
     val group: ModifiersGroupInfo,
     val entityId: Uuid?, // null for custom modifiers
@@ -59,38 +60,42 @@ private data class RawModifierWrapper(
 )
 
 private fun CharacterFull.collectRawModifiers(): List<RawModifierWrapper> {
-    val entityModifiers = entities.flatMap { entity ->
-        entity.modifiersGroups.flatMap { group ->
-            group.modifiers
-                .filterIsInstance<DnDValueModifier>()
-                .filter { it.id in selectedModifiers } // only active/selected
-                .map { modifier ->
-                    RawModifierWrapper(
-                        modifier = modifier,
-                        group = ModifiersGroupInfo(
-                            id = group.id,
-                            name = group.name,
-                            description = group.description,
-                            selectionLimit = group.selectionLimit
-                        ),
-                        entityId = entity.entity.id,
-                        isSelectable = group.selectionLimit <= 0,
-                        isSelected = modifier.id in selectedModifiers.valueModifiers
-                    )
-                }
+    val entityModifiers = entitiesWithLevel
+        .filter { it.second <= character.level }
+        .flatMap { (entity, _) ->
+            entity.modifiersGroups.flatMap { group ->
+                group.modifiers
+                    .filterIsInstance<DnDValueModifier>()
+                    .filter { it.id in selectedModifiers.valueModifiers } // only active/selected
+                    .map { modifier ->
+                        RawModifierWrapper(
+                            isCustom = false,
+                            modifier = modifier,
+                            group = ModifiersGroupInfo(
+                                id = group.id,
+                                name = group.name,
+                                description = group.description,
+                                selectionLimit = group.selectionLimit
+                            ),
+                            entityId = entity.entity.id,
+                            isSelectable = group.selectionLimit <= 0,
+                            isSelected = true
+                        )
+                    }
+            }
         }
-    }
 
     val customModifiers = customModifiers
         .filterIsInstance<CharacterCustomValueModifier>()
-        .map { it.toDnDValueModifierWrapper(selectedModifiers.valueModifiers) }
+        .map { it.toDnDValueModifierWrapper() }
 
     return entityModifiers + customModifiers
 }
 
 /** Convert a custom modifier to the wrapper form used by the pipeline. */
-private fun CharacterCustomValueModifier.toDnDValueModifierWrapper(selectedModifiers: Set<Uuid>) =
+private fun CharacterCustomValueModifier.toDnDValueModifierWrapper() =
     RawModifierWrapper(
+        isCustom = true,
         modifier = toDnDValueModifier(),
         group = ModifiersGroupInfo(
             id = id,
@@ -100,7 +105,7 @@ private fun CharacterCustomValueModifier.toDnDValueModifierWrapper(selectedModif
         ),
         entityId = null,
         isSelectable = false,
-        isSelected = id in selectedModifiers
+        isSelected = true
     )
 
 /** Resolve a single wrapper into a ValueModifierInfo using the injected contexts. */
@@ -121,6 +126,7 @@ private fun RawModifierWrapper.toResolvedInfo(
     val resolved = (sourceValue * modifier.multiplier).toInt() + modifier.flatValue
 
     return ValueModifierInfo(
+        isCustom = isCustom,
         modifier = modifier,
         group = group,
         resolvedValue = resolved,

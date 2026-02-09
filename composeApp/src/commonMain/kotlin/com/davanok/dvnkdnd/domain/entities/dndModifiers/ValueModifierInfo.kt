@@ -7,6 +7,7 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueOperation
 import com.davanok.dvnkdnd.ui.model.UiSelectableState
 import kotlin.uuid.Uuid
 
+@Immutable
 data class ModifiersGroupInfo(
     val id: Uuid,
     val name: String,
@@ -16,12 +17,14 @@ data class ModifiersGroupInfo(
 
 @Immutable
 data class ValueModifierInfo(
+    val isCustom: Boolean,
     val modifier: DnDValueModifier,
     val group: ModifiersGroupInfo,
     val resolvedValue: Int,
     val state: UiSelectableState
 ) {
-    inline fun <reified E: Enum<E>>targetAs(): E? = modifier.targetKey?.let { enumValueOfOrNull<E>(it) }
+    inline fun <reified E : Enum<E>> targetAs(): E? =
+        modifier.targetKey?.let { enumValueOfOrNull<E>(it) }
 
     fun applyForValue(baseValue: Int): Int =
         applyOperation(baseValue, resolvedValue, modifier.operation)
