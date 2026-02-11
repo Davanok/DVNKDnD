@@ -10,6 +10,10 @@ import dvnkdnd.composeapp.generated.resources.modifier_value_target_skill
 import dvnkdnd.composeapp.generated.resources.modifier_value_target_speed
 import dvnkdnd.composeapp.generated.resources.modifier_value_target_spell_attack
 import dvnkdnd.composeapp.generated.resources.modifier_value_target_spell_dc
+import dvnkdnd.composeapp.generated.resources.roll_modifier_target_attack
+import dvnkdnd.composeapp.generated.resources.roll_modifier_target_death_save
+import dvnkdnd.composeapp.generated.resources.roll_modifier_target_saving_throw
+import dvnkdnd.composeapp.generated.resources.roll_modifier_target_skill_check
 import org.jetbrains.compose.resources.StringResource
 
 enum class ModifierValueTarget(val stringRes: StringResource) {
@@ -24,9 +28,9 @@ enum class ModifierValueTarget(val stringRes: StringResource) {
     HEALTH          (Res.string.modifier_value_target_health)           // Target Key: "MAX", "CURRENT"
 }
 
-enum class ModifierRollTarget {
-    ATTACK_ROLL,            // Key: "ALL", "MELEE", "SPELL", "RANGED"
-    SAVING_THROW,           // Key: "STR", "DEX", "ALL"
-    SKILL_CHECK,            // Key: "ATHLETICS", "ALL"
-    DEATH_SAVE
+enum class ModifierRollTarget(val stringRes: StringResource) {
+    ATTACK_ROLL     (Res.string.roll_modifier_target_attack),                 // Key: "MELEE", "SPELL", "RANGED"
+    SAVING_THROW    (Res.string.roll_modifier_target_saving_throw),           // Key: "STR", "DEX", "ALL"
+    SKILL_CHECK     (Res.string.roll_modifier_target_skill_check),            // Key: "ATHLETICS", "ALL"
+    DEATH_SAVE      (Res.string.roll_modifier_target_death_save)
 }

@@ -49,7 +49,7 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import com.davanok.dvnkdnd.ui.components.diceRoller.AnimationState
 import com.davanok.dvnkdnd.ui.components.diceRoller.DiceRollerDialog
 import com.davanok.dvnkdnd.ui.components.diceRoller.DiceRollerState
-import com.davanok.dvnkdnd.ui.components.text.buildPreview
+import com.davanok.dvnkdnd.ui.components.text.modifiersText.buildPreview
 import com.davanok.dvnkdnd.ui.model.UiSelectableState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

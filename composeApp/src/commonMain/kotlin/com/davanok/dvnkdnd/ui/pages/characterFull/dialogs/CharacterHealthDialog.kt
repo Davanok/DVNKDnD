@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
-import com.davanok.dvnkdnd.ui.components.text.buildPreview
+import com.davanok.dvnkdnd.ui.components.text.modifiersText.buildPreview
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.character_health_damage_button
 import dvnkdnd.composeapp.generated.resources.character_health_heal_button

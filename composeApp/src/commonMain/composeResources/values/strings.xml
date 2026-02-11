@@ -105,6 +105,12 @@
     <string name="save">Save</string>
     <string name="todo">TODO</string>
 
+    <!-- floating action menu -->
+    <string name="floating_action_menu_toggle_menu">Toggle menu</string>
+    <string name="floating_action_menu_expanded">Expanded</string>
+    <string name="floating_action_menu_collapsed">Collapsed</string>
+    <string name="floating_action_menu_close_menu">Close menu</string>
+
     <!--characters list screen-->
     <string name="loading_characters_error">Error while loading characters</string>
     <string name="no_characters_yet">You haven't added any characters yet. Create your first one now!</string>
@@ -208,18 +214,44 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="modifier_operation_name_set">Set</string>
     <string name="modifier_operation_name_set_min">Set min</string>
     <string name="modifier_operation_name_set_max">Set max</string>
-    <string name="modifier_operation_name_advantage">Advantage</string>
-    <string name="modifier_operation_name_disadvantage">Disadvantage</string>
-    <string name="modifier_operation_name_resistance">Resistance</string>
-    <string name="modifier_operation_name_immunity">Immunity</string>
-    <string name="modifier_operation_name_vulnerability">Vulnerability</string>
-    <string name="modifier_operation_name_proficiency">Proficiency</string>
 
     <!-- operations -->
     <string name="modifier_operation_place_bonus">Add %1$s</string>
     <string name="modifier_operation_place_set">Set to %1$s</string>
     <string name="modifier_operation_place_set_min">Cannot be bigger then %1$s</string>
     <string name="modifier_operation_place_set_max">Cannot be less then %1$s</string>
+
+    <string name="modifier_operation_with_target_place_bonus">Add %1$s to %2$s</string>
+    <string name="modifier_operation_with_target_place_set">Set %2$s to %1$s</string>
+    <string name="modifier_operation_with_target_place_set_min">%2$s cannot be bigger then %1$s</string>
+    <string name="modifier_operation_with_target_place_set_max">%2$s cannot be less then %1$s</string>
+
+    <string name="roll_modifier_operation_advantage">Advantage</string>
+    <string name="roll_modifier_operation_disadvantage">Disadvantage</string>
+    <string name="roll_modifier_operation_reroll">Reroll</string>
+    <string name="roll_modifier_operation_crit_threshold_reduce">Crit threshold reduce</string>
+
+    <string name="roll_modifier_operation_with_target_advantage">Advantage for %1$s rolls</string>
+    <string name="roll_modifier_operation_with_target_disadvantage">Disadvantage for %1$s rolls</string>
+    <string name="roll_modifier_operation_with_target_reroll">Reroll for %1$s rolls</string>
+    <string name="roll_modifier_operation_with_target_crit_threshold_reduce">Crit threshold reduce for %1$s rolls</string>
+
+    <string name="roll_modifier_target_attack">Attack</string>
+    <string name="roll_modifier_target_saving_throw">Saving throw</string>
+    <string name="roll_modifier_target_skill_check">Skill check</string>
+    <string name="roll_modifier_target_death_save">Death save</string>
+
+    <string name="roll_modifier_attack_target_melee">Melee</string>
+    <string name="roll_modifier_attack_target_ranged">Ranged</string>
+    <string name="roll_modifier_attack_target_spell">Spell</string>
+
+    <string name="damage_modifier_interaction_resistance">Resistance</string>
+    <string name="damage_modifier_interaction_immunity">Immunity</string>
+    <string name="damage_modifier_interaction_vulnerability">Vulnerability</string>
+
+    <string name="damage_modifier_interaction_with_target_resistance">Resistance to %1$s damage</string>
+    <string name="damage_modifier_interaction_with_target_immunity">Immunity to %1$s damage</string>
+    <string name="damage_modifier_interaction_with_target_vulnerability">Vulnerability to %1$s damage</string>
 
     <!--value sources-->
     <string name="value_source_flat">FLAT</string>
@@ -491,9 +523,11 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="character_level_error">Total level of %1$s is %2$d but character level is %3$d</string>
     <string name="remove">Remove</string>
 
-    <!-- floating action menu -->
-    <string name="floating_action_menu_toggle_menu">Toggle menu</string>
-    <string name="floating_action_menu_expanded">Expanded</string>
-    <string name="floating_action_menu_collapsed">Collapsed</string>
-    <string name="floating_action_menu_close_menu">Close menu</string>
+    <string name="add_character_custom_modifier">Add character custom modifier</string>
+
+    <string name="modifiers_type_value_title">Value</string>
+    <string name="modifiers_type_roll_title">Roll</string>
+    <string name="modifiers_type_damage_title">Damage</string>
+    <string name="modifiers_type_mixed_title">Mixed</string>
+    <string name="modifiers_type_custom_title">Custom</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.davanok.dvnkdnd.ui.components.text
+package com.davanok.dvnkdnd.ui.components.text.modifiersText
 
 import androidx.compose.runtime.Composable
 import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
@@ -20,6 +20,10 @@ import dvnkdnd.composeapp.generated.resources.modifier_operation_place_bonus
 import dvnkdnd.composeapp.generated.resources.modifier_operation_place_set
 import dvnkdnd.composeapp.generated.resources.modifier_operation_place_set_max
 import dvnkdnd.composeapp.generated.resources.modifier_operation_place_set_min
+import dvnkdnd.composeapp.generated.resources.modifier_operation_with_target_place_bonus
+import dvnkdnd.composeapp.generated.resources.modifier_operation_with_target_place_set
+import dvnkdnd.composeapp.generated.resources.modifier_operation_with_target_place_set_max
+import dvnkdnd.composeapp.generated.resources.modifier_operation_with_target_place_set_min
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -28,7 +32,7 @@ fun ValueModifierInfo.buildPreview() =
     modifier.buildPreview(resolvedValue)
 @Composable
 fun DnDValueModifier.buildPreview(sourceResolvedValue: Int? = null) =
-    buildModifierPreview(
+    buildValueModifierPreview(
         sourceType = sourceType,
         sourceKey = sourceKey,
         operation = operation,
@@ -38,7 +42,23 @@ fun DnDValueModifier.buildPreview(sourceResolvedValue: Int? = null) =
     )
 
 @Composable
-fun buildModifierPreview(
+fun ValueModifierInfo.buildPreviewWithTarget() =
+    modifier.buildPreviewWithTarget(resolvedValue)
+@Composable
+fun DnDValueModifier.buildPreviewWithTarget(sourceResolvedValue: Int? = null) =
+    buildValueModifierPreviewWithTarget(
+        targetScope = targetScope,
+        targetKey = targetKey,
+        sourceType = sourceType,
+        sourceKey = sourceKey,
+        operation = operation,
+        multiplier = multiplier,
+        flatValue = flatValue,
+        sourceResolvedValue = sourceResolvedValue
+    )
+
+@Composable
+fun buildValueModifierPreview(
     sourceType: ValueSourceType,
     sourceKey: String?,
     operation: ValueOperation,
@@ -63,6 +83,40 @@ fun buildModifierPreview(
     }
 
     return stringResource(stringRes, valueString)
+}
+
+@Composable
+fun buildValueModifierPreviewWithTarget(
+    targetScope: ModifierValueTarget,
+    targetKey: String?,
+    sourceType: ValueSourceType,
+    sourceKey: String?,
+    operation: ValueOperation,
+    multiplier: Double,
+    flatValue: Int,
+    sourceResolvedValue: Int?
+): String {
+    val valueString = buildValueString(
+        sourceType = sourceType,
+        sourceKey = sourceKey,
+        multiplier = multiplier,
+        flatValue = flatValue,
+        sourceResolvedValue = sourceResolvedValue
+    )
+    val targetString = buildTargetString(
+        targetScope = targetScope,
+        targetKey = targetKey
+    )
+
+    // 5. Build Final Phrase based on Operation
+    val stringRes = when (operation) {
+        ValueOperation.ADD -> Res.string.modifier_operation_with_target_place_bonus
+        ValueOperation.SET -> Res.string.modifier_operation_with_target_place_set
+        ValueOperation.SET_MIN -> Res.string.modifier_operation_with_target_place_set_min
+        ValueOperation.SET_MAX -> Res.string.modifier_operation_with_target_place_set_max
+    }
+
+    return stringResource(stringRes, valueString, targetString)
 }
 
 @Composable
@@ -141,52 +195,46 @@ private fun buildValueString(
 }
 
 @Composable
-fun buildTargetString(
+private fun buildTargetString(
     targetScope: ModifierValueTarget,
     targetKey: String?
-) = buildTargetString(
-    targetScopeName = stringResource(targetScope.stringRes),
-    targetKeyName = getTargetKeyName(targetScope, targetKey)
-)
+) = buildString {
+    append(stringResource(targetScope.stringRes))
+    getTargetKeyName(targetScope, targetKey)?.let {
+        append(" (")
+        append(it)
+        append(')')
+    }
+}
 
 @Composable
 private fun getTargetKeyName(
     targetScope: ModifierValueTarget,
     targetKey: String?
-) = when (targetScope) {
-    ModifierValueTarget.ATTRIBUTE,
-    ModifierValueTarget.SAVING_THROW -> targetKey
-        ?.let { enumValueOfOrNull<Attributes>(it) }
-        ?.let { stringResource(it.stringRes) }
+) = targetKey?.let {
+    when (targetScope) {
+        ModifierValueTarget.ATTRIBUTE,
+        ModifierValueTarget.SAVING_THROW ->
+            enumValueOfOrNull<Attributes>(targetKey)
+            ?.let { stringResource(it.stringRes) }
 
-    ModifierValueTarget.SKILL -> targetKey
-        ?.let { enumValueOfOrNull<Skills>(it) }
-        ?.let { stringResource(it.stringRes) }
+        ModifierValueTarget.SKILL ->
+            enumValueOfOrNull<Skills>(targetKey)
+            ?.let { stringResource(it.stringRes) }
 
-    ModifierValueTarget.DERIVED_STAT -> targetKey
-        ?.let { enumValueOfOrNull<DnDModifierDerivedValuesTargets>(it) }
-        ?.let { stringResource(it.stringRes) }
+        ModifierValueTarget.DERIVED_STAT ->
+            enumValueOfOrNull<DnDModifierDerivedValuesTargets>(targetKey)
+            ?.let { stringResource(it.stringRes) }
 
-    ModifierValueTarget.SPEED -> targetKey
-        ?.let { enumValueOfOrNull<CharacterMovementType>(it) }
-        ?.let { stringResource(it.stringRes) }
+        ModifierValueTarget.SPEED ->
+            enumValueOfOrNull<CharacterMovementType>(targetKey)
+            ?.let { stringResource(it.stringRes) }
 
-    ModifierValueTarget.SPELL_ATTACK -> null
-    ModifierValueTarget.SPELL_DC -> null
-    ModifierValueTarget.CARRY_WEIGHT -> null
-    ModifierValueTarget.HEALTH -> targetKey
-        ?.let { enumValueOfOrNull<DnDModifierHealthTargets>(it) }
-        ?.let { stringResource(it.stringRes) }
-} ?: targetKey
-
-private fun buildTargetString(
-    targetScopeName: String,
-    targetKeyName: String?
-): String = buildString {
-    append(targetScopeName)
-    if (targetKeyName != null) {
-        append(" (")
-        append(targetKeyName)
-        append(')')
-    }
+        ModifierValueTarget.SPELL_ATTACK -> null
+        ModifierValueTarget.SPELL_DC -> null
+        ModifierValueTarget.CARRY_WEIGHT -> null
+        ModifierValueTarget.HEALTH ->
+            enumValueOfOrNull<DnDModifierHealthTargets>(targetKey)
+            ?.let { stringResource(it.stringRes) }
+    } ?: targetKey
 }
