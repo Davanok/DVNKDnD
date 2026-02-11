@@ -14,7 +14,7 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "entity_value_modifier",
+    tableName = "entity_value_modifiers",
     foreignKeys = [
         ForeignKey(DbEntityModifiersGroup::class, ["id"], ["group_id"], onDelete = ForeignKey.CASCADE)
     ]
@@ -50,7 +50,7 @@ data class DbEntityValueModifier(
 )
 
 @Entity(
-    tableName = "entity_roll_modifier",
+    tableName = "entity_roll_modifiers",
     foreignKeys = [
         ForeignKey(DbEntityModifiersGroup::class, ["id"], ["group_id"], onDelete = ForeignKey.CASCADE)
     ]
@@ -72,7 +72,7 @@ data class DbEntityRollModifier(
 )
 
 @Entity(
-    tableName = "entity_damage_modifier",
+    tableName = "entity_damage_modifiers",
     foreignKeys = [
         ForeignKey(DbEntityModifiersGroup::class, ["id"], ["group_id"], onDelete = ForeignKey.CASCADE)
     ]
@@ -90,7 +90,7 @@ data class DbEntityDamageModifier(
 )
 
 @Entity(
-    tableName = "entity_modifiers_group",
+    tableName = "entity_modifiers_groups",
     foreignKeys = [
         ForeignKey(DbBaseEntity::class, ["id"], ["entity_id"], onDelete = ForeignKey.CASCADE)
     ]
