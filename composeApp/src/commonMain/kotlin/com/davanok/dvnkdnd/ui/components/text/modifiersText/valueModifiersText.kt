@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.ui.components.text.modifiersText
 
 import androidx.compose.runtime.Composable
 import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterCustomValueModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDValueModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
@@ -27,6 +28,28 @@ import dvnkdnd.composeapp.generated.resources.modifier_operation_with_target_pla
 import org.jetbrains.compose.resources.stringResource
 
 
+@Composable
+fun CharacterCustomValueModifier.buildPreview(sourceResolvedValue: Int? = null) =
+    buildValueModifierPreview(
+        sourceType = sourceType,
+        sourceKey = sourceKey,
+        operation = operation,
+        multiplier = multiplier,
+        flatValue = flatValue,
+        sourceResolvedValue = sourceResolvedValue
+    )
+@Composable
+fun CharacterCustomValueModifier.buildPreviewWithTarget(sourceResolvedValue: Int? = null) =
+    buildValueModifierPreviewWithTarget(
+        targetScope = targetScope,
+        targetKey = targetKey,
+        sourceType = sourceType,
+        sourceKey = sourceKey,
+        operation = operation,
+        multiplier = multiplier,
+        flatValue = flatValue,
+        sourceResolvedValue = sourceResolvedValue
+    )
 @Composable
 fun ValueModifierInfo.buildPreview() =
     modifier.buildPreview(resolvedValue)

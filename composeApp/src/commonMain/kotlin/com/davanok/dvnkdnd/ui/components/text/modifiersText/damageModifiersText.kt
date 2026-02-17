@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.ui.components.text.modifiersText
 
 import androidx.compose.runtime.Composable
+import com.davanok.dvnkdnd.domain.entities.character.CharacterCustomDamageModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDDamageModifier
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DamageInteractionType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DamageTypes
@@ -13,7 +14,12 @@ import dvnkdnd.composeapp.generated.resources.damage_modifier_interaction_with_t
 import dvnkdnd.composeapp.generated.resources.damage_modifier_interaction_with_target_vulnerability
 import org.jetbrains.compose.resources.stringResource
 
-
+@Composable
+fun CharacterCustomDamageModifier.buildPreview() =
+    buildDamageModifierPreview(interaction)
+@Composable
+fun CharacterCustomDamageModifier.buildPreviewWithTarget() =
+    buildDamageModifierPreviewWithTarget(damageType, interaction)
 @Composable
 fun DnDDamageModifier.buildPreview() = buildDamageModifierPreview(interaction)
 @Composable

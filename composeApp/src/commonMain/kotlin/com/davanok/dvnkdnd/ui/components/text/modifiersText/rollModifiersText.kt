@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.ui.components.text.modifiersText
 
 import androidx.compose.runtime.Composable
 import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterCustomRollModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDRollModifier
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierRollTarget
@@ -9,16 +10,18 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.RollModifierAttackTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.RollOperation
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.roll_modifier_operation_advantage
-import dvnkdnd.composeapp.generated.resources.roll_modifier_operation_crit_threshold_reduce
-import dvnkdnd.composeapp.generated.resources.roll_modifier_operation_disadvantage
-import dvnkdnd.composeapp.generated.resources.roll_modifier_operation_reroll
 import dvnkdnd.composeapp.generated.resources.roll_modifier_operation_with_target_advantage
 import dvnkdnd.composeapp.generated.resources.roll_modifier_operation_with_target_crit_threshold_reduce
 import dvnkdnd.composeapp.generated.resources.roll_modifier_operation_with_target_disadvantage
 import dvnkdnd.composeapp.generated.resources.roll_modifier_operation_with_target_reroll
 import org.jetbrains.compose.resources.stringResource
 
+@Composable
+fun CharacterCustomRollModifier.buildPreview() =
+    buildRollModifierPreview(operation)
+@Composable
+fun CharacterCustomRollModifier.buildPreviewWithTarget() =
+    buildRollModifierPreviewWithTarget(targetScope, targetKey, operation)
 @Composable
 fun DnDRollModifier.buildPreview() = buildRollModifierPreview(operation)
 @Composable
@@ -30,15 +33,7 @@ fun DnDRollModifier.buildPreviewWithTarget() = buildRollModifierPreviewWithTarge
 @Composable
 fun buildRollModifierPreview(
     operation: RollOperation
-): String {
-    val stringRes = when (operation) {
-        RollOperation.ADVANTAGE -> Res.string.roll_modifier_operation_advantage
-        RollOperation.DISADVANTAGE -> Res.string.roll_modifier_operation_disadvantage
-        RollOperation.REROLL -> Res.string.roll_modifier_operation_reroll
-        RollOperation.CRIT_THRESHOLD_REDUCE -> Res.string.roll_modifier_operation_crit_threshold_reduce
-    }
-    return stringResource(stringRes)
-}
+): String = stringResource(operation.stringRes)
 
 @Composable
 fun buildRollModifierPreviewWithTarget(
