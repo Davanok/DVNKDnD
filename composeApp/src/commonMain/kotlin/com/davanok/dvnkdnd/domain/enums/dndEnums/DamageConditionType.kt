@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
+import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.damage_condition_critical_hit
 import dvnkdnd.composeapp.generated.resources.damage_condition_off_hand
@@ -9,7 +10,7 @@ import dvnkdnd.composeapp.generated.resources.damage_condition_target_type
 import dvnkdnd.composeapp.generated.resources.damage_condition_versatile
 import org.jetbrains.compose.resources.StringResource
 
-enum class DamageConditionType(val stringRes: StringResource) {
+enum class DamageConditionType(override val stringRes: StringResource): UiEntry {
     CRITICAL_HIT(Res.string.damage_condition_critical_hit),
     TARGET_TYPE(Res.string.damage_condition_target_type),
     VERSATILE(Res.string.damage_condition_versatile),

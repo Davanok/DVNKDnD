@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
+import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.copper_pieces_full
 import dvnkdnd.composeapp.generated.resources.electrum_pieces_full
@@ -9,7 +10,7 @@ import dvnkdnd.composeapp.generated.resources.platinum_pieces_full
 import dvnkdnd.composeapp.generated.resources.silver_pieces_full
 import org.jetbrains.compose.resources.StringResource
 
-enum class Coins(val stringRes: StringResource) {
+enum class Coins(override val stringRes: StringResource): UiEntry {
     COPPER      (Res.string.copper_pieces_full),
     SILVER      (Res.string.silver_pieces_full),
     ELECTRUM    (Res.string.electrum_pieces_full),

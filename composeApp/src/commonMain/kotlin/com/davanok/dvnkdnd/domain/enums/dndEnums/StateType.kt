@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
+import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.state_type_blessing
 import dvnkdnd.composeapp.generated.resources.state_type_buff
@@ -10,7 +11,7 @@ import dvnkdnd.composeapp.generated.resources.state_type_exhaustion
 import dvnkdnd.composeapp.generated.resources.state_type_other
 import org.jetbrains.compose.resources.StringResource
 
-enum class StateType(val stringRes: StringResource) {
+enum class StateType(override val stringRes: StringResource): UiEntry {
     CONDITION   (Res.string.state_type_condition),
     EXHAUSTION  (Res.string.state_type_exhaustion),
     BLESSING    (Res.string.state_type_blessing),

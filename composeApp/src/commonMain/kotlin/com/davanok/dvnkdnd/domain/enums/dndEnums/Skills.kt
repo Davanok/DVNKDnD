@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
+import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.acrobatics
 import dvnkdnd.composeapp.generated.resources.animal_handling
@@ -21,7 +22,7 @@ import dvnkdnd.composeapp.generated.resources.stealth
 import dvnkdnd.composeapp.generated.resources.survival
 import org.jetbrains.compose.resources.StringResource
 
-enum class Skills(val attribute: Attributes, val stringRes: StringResource) {
+enum class Skills(val attribute: Attributes, override val stringRes: StringResource): UiEntry {
     ATHLETICS       (Attributes.STRENGTH,     Res.string.athletics),
     ACROBATICS      (Attributes.DEXTERITY,    Res.string.acrobatics),
     SLEIGHT_OF_HAND (Attributes.DEXTERITY,    Res.string.sleight_of_hand),

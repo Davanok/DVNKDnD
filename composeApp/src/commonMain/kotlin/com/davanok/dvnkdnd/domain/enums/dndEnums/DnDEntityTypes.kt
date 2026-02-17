@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
+import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.background
 import dvnkdnd.composeapp.generated.resources.cls
@@ -14,7 +15,7 @@ import dvnkdnd.composeapp.generated.resources.sub_class
 import dvnkdnd.composeapp.generated.resources.sub_race
 import org.jetbrains.compose.resources.StringResource
 
-enum class DnDEntityTypes(val stringRes: StringResource) {
+enum class DnDEntityTypes(override val stringRes: StringResource): UiEntry {
     CLASS(Res.string.cls),
     SUB_CLASS(Res.string.sub_class),
     RACE(Res.string.race),

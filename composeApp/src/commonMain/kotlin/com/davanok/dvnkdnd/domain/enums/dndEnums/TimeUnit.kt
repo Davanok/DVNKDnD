@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
+import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.time_unit_action
 import dvnkdnd.composeapp.generated.resources.time_unit_bonus_action
@@ -10,7 +11,7 @@ import dvnkdnd.composeapp.generated.resources.time_unit_reaction
 import dvnkdnd.composeapp.generated.resources.time_unit_ten_minutes
 import org.jetbrains.compose.resources.StringResource
 
-enum class TimeUnit(val stringRes: StringResource) {
+enum class TimeUnit(override val stringRes: StringResource): UiEntry {
     ACTION(Res.string.time_unit_action),
     BONUS_ACTION(Res.string.time_unit_bonus_action),
     REACTION(Res.string.time_unit_reaction),

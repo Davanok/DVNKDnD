@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
+import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.magic_school_abjuration
 import dvnkdnd.composeapp.generated.resources.magic_school_conjuration
@@ -12,7 +13,7 @@ import dvnkdnd.composeapp.generated.resources.magic_school_other
 import dvnkdnd.composeapp.generated.resources.magic_school_transmutation
 import org.jetbrains.compose.resources.StringResource
 
-enum class MagicSchools(val stringRes: StringResource) {
+enum class MagicSchools(override val stringRes: StringResource): UiEntry {
     ABJURATION(Res.string.magic_school_abjuration),
     CONJURATION(Res.string.magic_school_conjuration),
     DIVINATION(Res.string.magic_school_divination),

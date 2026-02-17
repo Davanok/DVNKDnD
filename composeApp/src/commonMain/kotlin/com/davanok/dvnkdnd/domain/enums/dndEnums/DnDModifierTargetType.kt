@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
+import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.modifier_value_target_attribute
 import dvnkdnd.composeapp.generated.resources.modifier_value_target_carry_weight
@@ -16,7 +17,7 @@ import dvnkdnd.composeapp.generated.resources.roll_modifier_target_saving_throw
 import dvnkdnd.composeapp.generated.resources.roll_modifier_target_skill_check
 import org.jetbrains.compose.resources.StringResource
 
-enum class ModifierValueTarget(val stringRes: StringResource) {
+enum class ModifierValueTarget(override val stringRes: StringResource): UiEntry {
     ATTRIBUTE       (Res.string.modifier_value_target_attribute),       // Target Key: "STRENGTH", "DEXTERITY"
     SAVING_THROW    (Res.string.modifier_value_target_saving_throw),    // Target Key: "STRENGTH", "DEXTERITY"
     SKILL           (Res.string.modifier_value_target_skill),           // Target Key: "ATHLETICS", "STEALTH"
@@ -28,7 +29,7 @@ enum class ModifierValueTarget(val stringRes: StringResource) {
     HEALTH          (Res.string.modifier_value_target_health)           // Target Key: "MAX", "CURRENT"
 }
 
-enum class ModifierRollTarget(val stringRes: StringResource) {
+enum class ModifierRollTarget(override val stringRes: StringResource): UiEntry {
     ATTACK_ROLL     (Res.string.roll_modifier_target_attack),                 // Key: "MELEE", "SPELL", "RANGED"
     SAVING_THROW    (Res.string.roll_modifier_target_saving_throw),           // Key: "STR", "DEX", "ALL"
     SKILL_CHECK     (Res.string.roll_modifier_target_skill_check),            // Key: "ATHLETICS", "ALL"
