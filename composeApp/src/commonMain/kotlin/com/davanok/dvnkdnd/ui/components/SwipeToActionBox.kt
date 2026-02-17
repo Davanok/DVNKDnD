@@ -31,10 +31,10 @@ fun SwipeToActionBox(
 ) = SwipeToActionBox(
     state = state,
     onDismiss = onDismiss,
-    leftToRightIcon = actionIcon,
-    leftToRightSurfaceColor = actionSurfaceColor,
-    rightToLeftIcon = actionIcon,
-    rightToLeftSurfaceColor = actionSurfaceColor,
+    startToEndIcon = actionIcon,
+    startToEndSurfaceColor = actionSurfaceColor,
+    endToStartIcon = actionIcon,
+    endToStartSurfaceColor = actionSurfaceColor,
     modifier = modifier,
     content = content
 )
@@ -43,10 +43,10 @@ fun SwipeToActionBox(
 fun SwipeToActionBox(
     state: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(),
     onDismiss: (SwipeToDismissBoxValue) -> Unit,
-    leftToRightIcon: @Composable () -> Unit,
-    leftToRightSurfaceColor: Color = MaterialTheme.colorScheme.primary,
-    rightToLeftIcon: @Composable () -> Unit,
-    rightToLeftSurfaceColor: Color = MaterialTheme.colorScheme.primary,
+    startToEndIcon: @Composable () -> Unit,
+    startToEndSurfaceColor: Color = MaterialTheme.colorScheme.primary,
+    endToStartIcon: @Composable () -> Unit,
+    endToStartSurfaceColor: Color = MaterialTheme.colorScheme.primary,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
@@ -65,28 +65,28 @@ fun SwipeToActionBox(
         backgroundContent = {
             Surface(
                 shape = CircleShape,
-                color = leftToRightSurfaceColor
+                color = startToEndSurfaceColor
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(startButtonWidth),
                     contentAlignment = Alignment.Center
-                ) { leftToRightIcon() }
+                ) { startToEndIcon() }
             }
 
             Spacer(Modifier.weight(1f))
 
             Surface(
                 shape = CircleShape,
-                color = rightToLeftSurfaceColor
+                color = endToStartSurfaceColor
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(endButtonWidth),
                     contentAlignment = Alignment.Center
-                ) { rightToLeftIcon() }
+                ) { endToStartIcon() }
             }
         },
         onDismiss = onDismiss,
