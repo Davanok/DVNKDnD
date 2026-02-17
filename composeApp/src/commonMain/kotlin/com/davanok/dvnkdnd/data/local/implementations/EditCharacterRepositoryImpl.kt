@@ -1,8 +1,16 @@
 package com.davanok.dvnkdnd.data.local.implementations
 
+import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedDamageModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedRollModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedValueModifier
 import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDDamageModifier
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDRollModifier
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDValueModifier
 import com.davanok.dvnkdnd.domain.repositories.local.EditCharacterRepository
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,4 +28,21 @@ class EditCharacterRepositoryImpl(
         dao.getFullCharacterFlow(characterId).mapLatest {
             Result.success(it.toCharacterFull())
         }.catch { thr -> emit(Result.failure(thr)) }
+
+    override suspend fun setModifierSelection(
+        characterId: Uuid,
+        modifier: DnDModifier,
+        selected: Boolean
+    ): Result<Unit> = runLogging("setModifierSelection") {
+        val selectedModifier = when (modifier) {
+            is DnDValueModifier -> DbCharacterSelectedValueModifier(characterId, modifier.id)
+            is DnDRollModifier -> DbCharacterSelectedRollModifier(characterId, modifier.id)
+            is DnDDamageModifier -> DbCharacterSelectedDamageModifier(characterId, modifier.id)
+        }
+
+        if (selected)
+            dao.insertCharacterSelectedModifier(selectedModifier)
+        else
+            dao.deleteCharacterSelectedModifier(selectedModifier)
+    }
 }

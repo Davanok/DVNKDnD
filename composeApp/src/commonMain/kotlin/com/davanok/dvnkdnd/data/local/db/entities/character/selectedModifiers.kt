@@ -8,6 +8,11 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityRollModifi
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityValueModifier
 import kotlin.uuid.Uuid
 
+interface DbCharacterSelectedModifier {
+    val characterId: Uuid
+    val modifierId: Uuid
+}
+
 
 @Entity(
     tableName = "character_selected_value_modifier",
@@ -18,9 +23,9 @@ import kotlin.uuid.Uuid
     ]
 )
 data class DbCharacterSelectedValueModifier(
-    @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    @ColumnInfo("modifier_id", index = true) val modifierId: Uuid
-)
+    @ColumnInfo("character_id", index = true) override val characterId: Uuid,
+    @ColumnInfo("modifier_id", index = true) override val modifierId: Uuid
+) : DbCharacterSelectedModifier
 
 
 @Entity(
@@ -32,9 +37,9 @@ data class DbCharacterSelectedValueModifier(
     ]
 )
 data class DbCharacterSelectedRollModifier(
-    @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    @ColumnInfo("modifier_id", index = true) val modifierId: Uuid
-)
+    @ColumnInfo("character_id", index = true) override val characterId: Uuid,
+    @ColumnInfo("modifier_id", index = true) override val modifierId: Uuid
+) : DbCharacterSelectedModifier
 
 
 @Entity(
@@ -46,6 +51,6 @@ data class DbCharacterSelectedRollModifier(
     ]
 )
 data class DbCharacterSelectedDamageModifier(
-    @ColumnInfo("character_id", index = true) val characterId: Uuid,
-    @ColumnInfo("modifier_id", index = true) val modifierId: Uuid
-)
+    @ColumnInfo("character_id", index = true) override val characterId: Uuid,
+    @ColumnInfo("modifier_id", index = true) override val modifierId: Uuid
+) : DbCharacterSelectedModifier

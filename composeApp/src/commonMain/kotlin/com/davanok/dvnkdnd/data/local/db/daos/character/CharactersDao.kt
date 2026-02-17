@@ -28,7 +28,8 @@ import kotlin.uuid.Uuid
 
 @Dao
 interface CharactersDao: CharacterMainDao,
-        CharacterModifiersDao,
+        CharacterSelectedModifiersDao,
+        CharacterCustomModifiersDao,
         CharacterSelectableEntitiesDao,
         CharacterSpellsDao,
         CharacterItemsDao,
