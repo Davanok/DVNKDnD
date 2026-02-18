@@ -20,3 +20,13 @@ enum class ValueSourceType(override val stringRes: StringResource): UiEntry {
     CHARACTER_LEVEL     (Res.string.value_source_character_level),        // Use Character Level
     ENTITY_LEVEL        (Res.string.value_source_entity_level)            // Use Level of entity that gives that modifier or character level.
 }
+
+fun ValueSourceType.targetKeys(): List<Enum<*>>? = when(this) {
+    ValueSourceType.FLAT -> null
+    ValueSourceType.ATTRIBUTE -> Attributes.entries
+    ValueSourceType.ATTRIBUTE_MODIFIER -> Attributes.entries
+    ValueSourceType.SKILL_MODIFIER -> Skills.entries
+    ValueSourceType.PROFICIENCY_BONUS -> null
+    ValueSourceType.CHARACTER_LEVEL -> null
+    ValueSourceType.ENTITY_LEVEL -> null
+}

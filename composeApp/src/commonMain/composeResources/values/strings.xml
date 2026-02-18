@@ -208,13 +208,6 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="state_loading_full_entities">Loading full entities</string>
     <string name="state_updating_entities">Updating entities</string>
 
-    <!-- operation signs -->
-    <string name="base_value_replace">Current</string>
-    <string name="modifier_operation_name_bonus">Bonus</string>
-    <string name="modifier_operation_name_set">Set</string>
-    <string name="modifier_operation_name_set_min">Set min</string>
-    <string name="modifier_operation_name_set_max">Set max</string>
-
     <!-- operations -->
     <string name="modifier_operation_place_bonus">Add %1$s</string>
     <string name="modifier_operation_place_set">Set to %1$s</string>
@@ -254,13 +247,13 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="damage_modifier_interaction_with_target_vulnerability">Vulnerability to %1$s damage</string>
 
     <!--value sources-->
-    <string name="value_source_flat">FLAT</string>
-    <string name="value_source_character_level">LVL</string>
-    <string name="value_source_entity_level">E LVL</string>
-    <string name="value_source_proficiency_bonus">PB</string>
-    <string name="value_source_attribute">ATTR</string>
-    <string name="value_source_attribute_modifier">ATTR MOD</string>
-    <string name="value_source_skill_modifier">SKILL MOD</string>
+    <string name="value_source_flat">Flat</string>
+    <string name="value_source_character_level">Level</string>
+    <string name="value_source_entity_level">Entity level</string>
+    <string name="value_source_proficiency_bonus">Prof. bonus</string>
+    <string name="value_source_attribute">Attribute</string>
+    <string name="value_source_attribute_modifier">Attribute modifier</string>
+    <string name="value_source_skill_modifier">Skill modifier</string>
 
     <string name="modifier_value_target_attribute">Attribute</string>
     <string name="modifier_value_target_saving_throw">Saving throw</string>
@@ -523,11 +516,26 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="character_level_error">Total level of %1$s is %2$d but character level is %3$d</string>
     <string name="remove">Remove</string>
 
+    <string name="no_modifiers">No modifiers</string>
     <string name="add_character_custom_modifier">Add character custom modifier</string>
+    <string name="delete_character_custom_modifier">Delete custom modifier</string>
+    <string name="edit_character_custom_modifier">Edit custom modifier</string>
 
+    <string name="modifiers_type_all_title">All</string>
     <string name="modifiers_type_value_title">Value</string>
     <string name="modifiers_type_roll_title">Roll</string>
     <string name="modifiers_type_damage_title">Damage</string>
     <string name="modifiers_type_mixed_title">Mixed</string>
     <string name="modifiers_type_custom_title">Custom</string>
+
+    <string name="modifier_type_value">Value</string>
+    <string name="modifier_type_roll">Roll</string>
+    <string name="modifier_type_damage">Damage</string>
+
+    <string name="value_operation_add">Add</string>
+    <string name="value_operation_set">Set</string>
+    <string name="value_operation_set_min">Set min</string>
+    <string name="value_operation_set_max">Set max</string>
+
+    <string name="value_modifiers_priority_hint_text">Negative values apply the modifier before the attribute modifier. Positive values apply it after.</string>
 </resources>

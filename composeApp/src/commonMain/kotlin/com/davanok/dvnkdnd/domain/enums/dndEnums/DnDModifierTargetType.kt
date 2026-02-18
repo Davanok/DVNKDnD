@@ -16,6 +16,7 @@ import dvnkdnd.composeapp.generated.resources.roll_modifier_target_death_save
 import dvnkdnd.composeapp.generated.resources.roll_modifier_target_saving_throw
 import dvnkdnd.composeapp.generated.resources.roll_modifier_target_skill_check
 import org.jetbrains.compose.resources.StringResource
+import kotlin.enums.EnumEntries
 
 enum class ModifierValueTarget(override val stringRes: StringResource): UiEntry {
     ATTRIBUTE       (Res.string.modifier_value_target_attribute),       // Target Key: "STRENGTH", "DEXTERITY"
@@ -34,4 +35,22 @@ enum class ModifierRollTarget(override val stringRes: StringResource): UiEntry {
     SAVING_THROW    (Res.string.roll_modifier_target_saving_throw),           // Key: "STR", "DEX", "ALL"
     SKILL_CHECK     (Res.string.roll_modifier_target_skill_check),            // Key: "ATHLETICS", "ALL"
     DEATH_SAVE      (Res.string.roll_modifier_target_death_save)
+}
+
+fun ModifierValueTarget.targetKeys(): EnumEntries<*>? = when(this) {
+    ModifierValueTarget.ATTRIBUTE -> Attributes.entries
+    ModifierValueTarget.SAVING_THROW -> Attributes.entries
+    ModifierValueTarget.SKILL -> Skills.entries
+    ModifierValueTarget.DERIVED_STAT -> DnDModifierDerivedValuesTargets.entries
+    ModifierValueTarget.SPEED -> CharacterMovementType.entries
+    ModifierValueTarget.SPELL_ATTACK -> null
+    ModifierValueTarget.SPELL_DC -> null
+    ModifierValueTarget.CARRY_WEIGHT -> null
+    ModifierValueTarget.HEALTH -> DnDModifierHealthTargets.entries
+}
+fun ModifierRollTarget.targetKeys(): EnumEntries<*>? = when(this) {
+    ModifierRollTarget.ATTACK_ROLL -> RollModifierAttackTargets.entries
+    ModifierRollTarget.SAVING_THROW -> Attributes.entries
+    ModifierRollTarget.SKILL_CHECK -> Skills.entries
+    ModifierRollTarget.DEATH_SAVE -> null
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.domain.repositories.local.EditCharacterRepository
 import com.davanok.dvnkdnd.domain.usecases.entities.EntitiesBootstrapper
 import com.davanok.dvnkdnd.ui.components.UiMessage
@@ -78,11 +79,15 @@ class EditCharacterViewModel(
     fun updateAttributes(attributes: AttributesGroup) = viewModelScope.launch {
         TODO()
     }
+    fun setModifierSelection(modifier: DnDModifier, selected: Boolean) = viewModelScope.launch {
+        repository.setModifierSelection(characterId, modifier, selected)
+    }
 
     fun eventSink(event: EditCharacterScreenEvent) {
         when (event) {
             is EditCharacterScreenEvent.UpdateCharacterBase -> updateCharacterBase(event.character)
             is EditCharacterScreenEvent.UpdateAttributes -> updateAttributes(event.attributes)
+            is EditCharacterScreenEvent.SetModifierSelection -> setModifierSelection(event.modifier, event.selected)
             else -> { TODO() }
 
         }

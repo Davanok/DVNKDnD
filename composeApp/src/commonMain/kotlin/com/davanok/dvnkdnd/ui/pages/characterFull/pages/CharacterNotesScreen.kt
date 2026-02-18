@@ -1,12 +1,5 @@
 package com.davanok.dvnkdnd.ui.pages.characterFull.pages
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -65,14 +57,13 @@ import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.window.Dialog
 import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
+import com.davanok.dvnkdnd.ui.components.DeleteWithConfirmationButton
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_tag
 import dvnkdnd.composeapp.generated.resources.cancel
-import dvnkdnd.composeapp.generated.resources.cancel_delete_note
 import dvnkdnd.composeapp.generated.resources.character_has_no_notes
-import dvnkdnd.composeapp.generated.resources.confirm_delete_note
 import dvnkdnd.composeapp.generated.resources.delete
 import dvnkdnd.composeapp.generated.resources.delete_note
 import dvnkdnd.composeapp.generated.resources.delete_tag
@@ -227,8 +218,6 @@ private fun CharacterNoteCard(
     onDelete: (CharacterNote) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var deleteConfirm by remember { mutableStateOf(false) }
-
     OutlinedCard(
         modifier = modifier,
         border = if (note.pinned)
@@ -260,37 +249,9 @@ private fun CharacterNoteCard(
                         }
                 }
 
-                AnimatedContent(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                    targetState = deleteConfirm,
-                    transitionSpec = { slideInHorizontally{ -it } + fadeIn() togetherWith slideOutHorizontally { it } + fadeOut() }
-                ) {
-                    Row {
-                        if (deleteConfirm) {
-                            IconButton(onClick = { deleteConfirm = false }) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(Res.string.cancel_delete_note)
-                                )
-                            }
-                            IconButton(onClick = { onDelete(note) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = stringResource(Res.string.confirm_delete_note)
-                                )
-                            }
-                        } else {
-                            IconButton(onClick = { deleteConfirm = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = stringResource(Res.string.delete_note)
-                                )
-                            }
-                        }
-                    }
-                }
+                DeleteWithConfirmationButton(
+                    onDeleteClick = { onDelete(note) }
+                )
             }
 
             HorizontalDivider(Modifier.fillMaxWidth().padding(vertical = 8.dp))

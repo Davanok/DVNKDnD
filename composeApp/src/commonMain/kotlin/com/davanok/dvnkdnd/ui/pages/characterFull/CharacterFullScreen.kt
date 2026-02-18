@@ -283,7 +283,6 @@ private fun Content(
 
     CharacterThrowsDiceRoller(
         state = diceRollerState,
-        characterModifiedAttributes = character.appliedValues.attributes,
         characterModifiers = character.calculatedValueModifiers
     )
 }

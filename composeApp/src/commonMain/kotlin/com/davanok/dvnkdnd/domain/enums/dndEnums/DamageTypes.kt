@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.domain.enums.dndEnums
 
 import androidx.compose.ui.graphics.Color
+import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.damage_type_acid
 import dvnkdnd.composeapp.generated.resources.damage_type_bludgeoning
@@ -19,7 +20,7 @@ import dvnkdnd.composeapp.generated.resources.magic_school_other
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
-enum class DamageTypes(val stringRes: StringResource, val drawableRes: DrawableResource?, val color: Color? = null) { // TODO: drawable nullable is temporary
+enum class DamageTypes(override val stringRes: StringResource, val drawableRes: DrawableResource?, val color: Color? = null): UiEntry { // TODO: drawable nullable is temporary
     ACID        (Res.string.damage_type_acid,           Res.drawable.damage_type_acid,      Color(0xFF80B000)),
     BLUDGEONING (Res.string.damage_type_bludgeoning,    null,                               null),
     COLD        (Res.string.damage_type_cold,           Res.drawable.damage_type_cold,      Color(0xFF3399CC)),
