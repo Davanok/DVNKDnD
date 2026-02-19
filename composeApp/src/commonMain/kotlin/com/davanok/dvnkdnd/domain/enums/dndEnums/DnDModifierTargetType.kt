@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.domain.enums.dndEnums
 import com.davanok.dvnkdnd.core.UiEntry
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.modifier_value_target_attribute
+import dvnkdnd.composeapp.generated.resources.modifier_value_target_attribute_throw
 import dvnkdnd.composeapp.generated.resources.modifier_value_target_carry_weight
 import dvnkdnd.composeapp.generated.resources.modifier_value_target_derived_stat
 import dvnkdnd.composeapp.generated.resources.modifier_value_target_health
@@ -19,9 +20,12 @@ import org.jetbrains.compose.resources.StringResource
 import kotlin.enums.EnumEntries
 
 enum class ModifierValueTarget(override val stringRes: StringResource): UiEntry {
+    /* position sensitive */
     ATTRIBUTE       (Res.string.modifier_value_target_attribute),       // Target Key: "STRENGTH", "DEXTERITY"
+    ATTRIBUTE_THROW (Res.string.modifier_value_target_attribute_throw), // Target Key: "STRENGTH", "DEXTERITY"
     SAVING_THROW    (Res.string.modifier_value_target_saving_throw),    // Target Key: "STRENGTH", "DEXTERITY"
     SKILL           (Res.string.modifier_value_target_skill),           // Target Key: "ATHLETICS", "STEALTH"
+    /* position insensitive */
     DERIVED_STAT    (Res.string.modifier_value_target_derived_stat),    // Target Key: "ARMOR_CLASS", "INITIATIVE", "PASSIVE_PERCEPTION"
     SPEED           (Res.string.modifier_value_target_speed),           // Target Key: "WALK", "FLY", "SWIM", "CLIMB", null for all
     SPELL_ATTACK    (Res.string.modifier_value_target_spell_attack),    // Target Key: "INTELLECT", "WISDOM", null for all
@@ -37,9 +41,11 @@ enum class ModifierRollTarget(override val stringRes: StringResource): UiEntry {
     DEATH_SAVE      (Res.string.roll_modifier_target_death_save)
 }
 
-fun ModifierValueTarget.targetKeys(): EnumEntries<*>? = when(this) {
-    ModifierValueTarget.ATTRIBUTE -> Attributes.entries
+fun ModifierValueTarget.targetKeys(): EnumEntries<*>? = when (this) {
+    ModifierValueTarget.ATTRIBUTE,
+    ModifierValueTarget.ATTRIBUTE_THROW,
     ModifierValueTarget.SAVING_THROW -> Attributes.entries
+
     ModifierValueTarget.SKILL -> Skills.entries
     ModifierValueTarget.DERIVED_STAT -> DnDModifierDerivedValuesTargets.entries
     ModifierValueTarget.SPEED -> CharacterMovementType.entries
@@ -48,7 +54,8 @@ fun ModifierValueTarget.targetKeys(): EnumEntries<*>? = when(this) {
     ModifierValueTarget.CARRY_WEIGHT -> null
     ModifierValueTarget.HEALTH -> DnDModifierHealthTargets.entries
 }
-fun ModifierRollTarget.targetKeys(): EnumEntries<*>? = when(this) {
+
+fun ModifierRollTarget.targetKeys(): EnumEntries<*>? = when (this) {
     ModifierRollTarget.ATTACK_ROLL -> RollModifierAttackTargets.entries
     ModifierRollTarget.SAVING_THROW -> Attributes.entries
     ModifierRollTarget.SKILL_CHECK -> Skills.entries

@@ -51,8 +51,7 @@ fun calculateBuyingModifiersSum(scores: List<Int>) =
 fun proficiencyBonusByLevel(level: Int): Int =
     level / 5 + 2
 
-fun calculateArmorClass(dexterity: Int, armor: ArmorInfo?): Int {
-    val dexterityModifier = calculateModifier(dexterity)
+fun calculateArmorClass(dexterityModifier: Int, armor: ArmorInfo?): Int {
     if (armor == null) return 10 + dexterityModifier
     if (armor.dexMaxModifier == null) return armor.armorClass + dexterityModifier
     return armor.armorClass + dexterityModifier.coerceAtMost(armor.dexMaxModifier)

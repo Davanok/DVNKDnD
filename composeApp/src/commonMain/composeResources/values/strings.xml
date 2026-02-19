@@ -256,6 +256,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="value_source_skill_modifier">Skill modifier</string>
 
     <string name="modifier_value_target_attribute">Attribute</string>
+    <string name="modifier_value_target_attribute_throw">Attribute throw</string>
     <string name="modifier_value_target_saving_throw">Saving throw</string>
     <string name="modifier_value_target_skill">Skill</string>
     <string name="modifier_value_target_derived_stat">Derived</string>
@@ -266,6 +267,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="modifier_value_target_health">Health</string>
 
     <string name="modifier_health_value_target_max">Max</string>
+    <string name="modifier_health_value_target_temp">Temp</string>
     <string name="modifier_health_value_target_current">Current</string>
     <string name="modifier_derived_value_target_armor_class">Armor class</string>
     <string name="modifier_derived_value_target_initiative">Initiative</string>

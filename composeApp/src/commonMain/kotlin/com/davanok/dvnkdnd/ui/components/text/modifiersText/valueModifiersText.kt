@@ -237,6 +237,7 @@ private fun getTargetKeyName(
 ) = targetKey?.let {
     when (targetScope) {
         ModifierValueTarget.ATTRIBUTE,
+        ModifierValueTarget.ATTRIBUTE_THROW,
         ModifierValueTarget.SAVING_THROW ->
             enumValueOfOrNull<Attributes>(targetKey)
             ?.let { stringResource(it.stringRes) }

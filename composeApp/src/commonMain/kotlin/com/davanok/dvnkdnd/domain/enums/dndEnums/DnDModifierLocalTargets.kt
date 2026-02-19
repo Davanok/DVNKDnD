@@ -7,6 +7,7 @@ import dvnkdnd.composeapp.generated.resources.modifier_derived_value_target_init
 import dvnkdnd.composeapp.generated.resources.modifier_derived_value_target_passive_perception
 import dvnkdnd.composeapp.generated.resources.modifier_health_value_target_current
 import dvnkdnd.composeapp.generated.resources.modifier_health_value_target_max
+import dvnkdnd.composeapp.generated.resources.modifier_health_value_target_temp
 import dvnkdnd.composeapp.generated.resources.roll_modifier_attack_target_melee
 import dvnkdnd.composeapp.generated.resources.roll_modifier_attack_target_ranged
 import dvnkdnd.composeapp.generated.resources.roll_modifier_attack_target_spell
@@ -14,7 +15,8 @@ import org.jetbrains.compose.resources.StringResource
 
 enum class DnDModifierHealthTargets(override val stringRes: StringResource): UiEntry {
     CURRENT(Res.string.modifier_health_value_target_current),
-    MAX(Res.string.modifier_health_value_target_max)
+    MAX(Res.string.modifier_health_value_target_max),
+    TEMP(Res.string.modifier_health_value_target_temp)
 }
 
 enum class DnDModifierDerivedValuesTargets(override val stringRes: StringResource): UiEntry {

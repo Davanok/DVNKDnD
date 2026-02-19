@@ -6,10 +6,9 @@ import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.domain.dnd.calculateSpellDifficultyClass
 import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.domain.entities.DatabaseImage
+import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateModifiers.calculateValueModifiers
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateSpellSlots
-import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateValueModifiers
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.findAttacks
-import com.davanok.dvnkdnd.domain.entities.character.characterUtils.getAppliedValues
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.getEntitiesWithLevel
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
@@ -18,6 +17,7 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.CasterProgression
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
+import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import kotlinx.serialization.Serializable
@@ -60,8 +60,6 @@ data class CharacterFull(
 
     val entities = entitiesWithLevel.map { it.first }
 
-    val appliedValues: CharacterModifiedValues by lazy { getAppliedValues() }
-
     val proficiencyBonus: Int
         get() = optionalValues.proficiencyBonus ?: proficiencyBonusByLevel(character.level)
 
@@ -86,8 +84,12 @@ data class CharacterFull(
             ?.let { attributes[it.attribute] }
     }.let { it ?: 0 }
 
-    val calculatedValueModifiers: List<ValueModifierInfo>
-        get() = calculateValueModifiers()
+    val calculatedModifiersResult by lazy { calculateValueModifiers() }
+
+    val calculatedValueModifiers: Map<ModifierValueTarget, List<ValueModifierInfo>>
+        get() = calculatedModifiersResult.modifiers
+    val appliedValues: CharacterModifiedValues
+        get() = calculatedModifiersResult.values
 
     val spellSlots by lazy { calculateSpellSlots() }
 
@@ -124,10 +126,11 @@ data class CharacterFull(
 
 data class CharacterModifiedValues(
     val attributes: AttributesGroup,
+    val attributeThrows: AttributesGroup,
     val savingThrowModifiers: AttributesGroup,
     val skillModifiers: SkillsGroup,
     val health: CharacterHealth,
-    val derivedStats: CharacterDerivedValues,
+    val derivedValues: CharacterDerivedValues,
     val speed: CharacterSpeed,
     // TODO: implement other modifier value targets
 )
