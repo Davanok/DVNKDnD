@@ -14,7 +14,7 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "character_custom_value_modifier",
+    tableName = "character_custom_value_modifiers",
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]
@@ -54,7 +54,7 @@ data class DbCharacterCustomValueModifier(
 )
 
 @Entity(
-    tableName = "character_custom_roll_modifier",
+    tableName = "character_custom_roll_modifiers",
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]
@@ -79,7 +79,7 @@ data class DbCharacterCustomRollModifier(
 )
 
 @Entity(
-    tableName = "character_custom_damage_modifier",
+    tableName = "character_custom_damage_modifiers",
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE)
     ]

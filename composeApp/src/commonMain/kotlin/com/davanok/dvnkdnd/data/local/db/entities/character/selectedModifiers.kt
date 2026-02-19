@@ -15,7 +15,7 @@ interface DbCharacterSelectedModifier {
 
 
 @Entity(
-    tableName = "character_selected_value_modifier",
+    tableName = "character_selected_value_modifiers",
     primaryKeys = ["character_id", "modifier_id"],
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
@@ -29,7 +29,7 @@ data class DbCharacterSelectedValueModifier(
 
 
 @Entity(
-    tableName = "character_selected_roll_modifier",
+    tableName = "character_selected_roll_modifiers",
     primaryKeys = ["character_id", "modifier_id"],
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
@@ -43,7 +43,7 @@ data class DbCharacterSelectedRollModifier(
 
 
 @Entity(
-    tableName = "character_damage_modifier",
+    tableName = "character_selected_damage_modifiers",
     primaryKeys = ["character_id", "modifier_id"],
     foreignKeys = [
         ForeignKey(DbCharacter::class, ["id"], ["character_id"], onDelete = ForeignKey.CASCADE),
