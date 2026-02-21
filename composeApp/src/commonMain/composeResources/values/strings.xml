@@ -543,4 +543,14 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
 
     <string name="attribute">Attribute</string>
     <string name="throw_name">Throw</string>
+
+    <string name="name_is_required">Name is required</string>
+    <string name="priority">Priority</string>
+    <string name="scope">Scope</string>
+    <string name="target_key">Target key</string>
+    <string name="operation">Operation</string>
+    <string name="value_source">Value source</string>
+    <string name="source_key">Source key</string>
+    <string name="multiplier">Multiplier</string>
+    <string name="flat_bonus_base">Flat bonus/base</string>
 </resources>

@@ -14,7 +14,7 @@ import com.davanok.dvnkdnd.domain.entities.character.ValueModifiersGroupWithReso
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroupInfo
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.map
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.mapValues
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
@@ -52,7 +52,7 @@ class NewCharacterThrowsViewModel(
     // backing caches populated on load
 
     private var attributeModifiers: AttributesGroup = AttributesGroup.Default
-        .map(::calculateModifier)
+        .mapValues(::calculateModifier)
     var modifierGroups = emptyList<ValueModifiersGroupWithResolvedValues>()
 
     private val selectedModifiers = mutableSetOf<Uuid>()
@@ -74,7 +74,7 @@ class NewCharacterThrowsViewModel(
         selectedModifiers.clear()
         selectedModifiers.addAll(character.selectedModifiers)
 
-        attributeModifiers = character.attributes.map(::calculateModifier)
+        attributeModifiers = character.attributes.mapValues(::calculateModifier)
 
         updateModifiersCache(character.modifierGroups)
 

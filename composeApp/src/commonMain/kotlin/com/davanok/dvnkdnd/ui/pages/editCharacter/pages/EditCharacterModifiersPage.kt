@@ -261,8 +261,6 @@ private fun getModifierIcon(modifier: CharacterCustomModifier): DrawableResource
     is CharacterCustomDamageModifier -> modifier.interaction.iconRes
 }
 
-// Note: prepareCustomModifiers kept as provided in original code (omitted for brevity)
-
 // -----------------------------------------------------------------------------
 // Composables
 // -----------------------------------------------------------------------------
@@ -303,7 +301,7 @@ fun EditCharacterModifiersPage(
                 CustomModifiersPage(
                     uiState = uiState,
                     onAddClick = { showAddDialog = true },
-                    onDeleteClick = { /* TODO: eventSink(DeleteEvent(it)) */ },
+                    onDeleteClick = { eventSink(EditCharacterScreenEvent.DeleteCharacterCustomModifier(it)) },
                     onEditClick = { activeCustomModifier = it }
                 )
             } else {
@@ -321,8 +319,16 @@ fun EditCharacterModifiersPage(
     if (showAddDialog || activeCustomModifier != null) {
         EditCustomModifierDialog(
             customModifier = activeCustomModifier,
-            onUpdate = { /* TODO */ },
-            onDelete = { /* TODO */ },
+            onUpdate = {
+                eventSink(EditCharacterScreenEvent.SetCharacterCustomModifier(it))
+                showAddDialog = false
+                activeCustomModifier = null
+                       },
+            onDelete = {
+                eventSink(EditCharacterScreenEvent.DeleteCharacterCustomModifier(it))
+                showAddDialog = false
+                activeCustomModifier = null
+                       },
             onDismiss = {
                 showAddDialog = false
                 activeCustomModifier = null
@@ -410,7 +416,7 @@ private fun CustomModifierItem(
     ModifierBaseItem(
         iconRes = getModifierIcon(mod),
         headline = mod.buildModifierPreviewWithTarget(),
-        supportingText = "${mod.name}\n${mod.description}",
+        supportingText = "${mod.name}\n${mod.description}".trim(),
         modifier = Modifier.clickable(onClick = onEditClick),
         trailingContent = {
             DeleteWithConfirmationButton(

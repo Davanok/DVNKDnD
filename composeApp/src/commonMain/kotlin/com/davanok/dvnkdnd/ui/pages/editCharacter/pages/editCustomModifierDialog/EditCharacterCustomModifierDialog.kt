@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
@@ -23,9 +24,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -47,11 +48,21 @@ import com.davanok.dvnkdnd.ui.components.UiEntriesDropdown
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_character_custom_modifier
+import dvnkdnd.composeapp.generated.resources.delete
 import dvnkdnd.composeapp.generated.resources.description
 import dvnkdnd.composeapp.generated.resources.edit_character_custom_modifier
+import dvnkdnd.composeapp.generated.resources.flat_bonus_base
+import dvnkdnd.composeapp.generated.resources.multiplier
 import dvnkdnd.composeapp.generated.resources.name
+import dvnkdnd.composeapp.generated.resources.name_is_required
+import dvnkdnd.composeapp.generated.resources.operation
+import dvnkdnd.composeapp.generated.resources.priority
 import dvnkdnd.composeapp.generated.resources.save
+import dvnkdnd.composeapp.generated.resources.scope
+import dvnkdnd.composeapp.generated.resources.source_key
+import dvnkdnd.composeapp.generated.resources.target_key
 import dvnkdnd.composeapp.generated.resources.value_modifiers_priority_hint_text
+import dvnkdnd.composeapp.generated.resources.value_source
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -76,17 +87,49 @@ fun EditCustomModifierDialog(
             Text(text = stringResource(stringRes))
         }
     ) {
-        if (customModifier == null) {
-            NewDialogContent(
-                state = state,
-                onUpdate = onUpdate,
-            )
-        } else {
-            EditDialogContent(
-                state = state,
-                onUpdate = onUpdate,
-                onDelete = onDelete
-            )
+        Column {
+            if (customModifier == null) {
+                NewDialogContent(
+                    state = state,
+                    modifier = Modifier.weight(1f)
+                )
+            } else {
+                EditDialogContent(
+                    state = state,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Row {
+                Button(
+                    onClick = { if (state.resultAvailable) onUpdate(state.getResult()) },
+                    enabled = state.resultAvailable
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                    )
+                    Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+                    Text(text = stringResource(Res.string.save))
+                }
+                if (customModifier != null) {
+                    Spacer(Modifier.width(16.dp))
+                    TextButton(
+                        onClick = { onDelete(customModifier) },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = null,
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+                        Text(text = stringResource(Res.string.delete))
+                    }
+                }
+            }
+
         }
     }
 }
@@ -94,36 +137,17 @@ fun EditCustomModifierDialog(
 @Composable
 private fun EditDialogContent(
     state: EditCharacterCustomModifierState,
-    onUpdate: (CharacterCustomModifier) -> Unit,
-    onDelete: (CharacterCustomModifier) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        CommonContent(
-            state = state,
-            modifier = Modifier.weight(1f)
-        )
-
-        Button(
-            modifier = Modifier.align(Alignment.End),
-            onClick = { if (state.resultAvailable) onUpdate(state.getResult()) },
-            enabled = state.resultAvailable
-        ) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = stringResource(Res.string.save),
-                modifier = Modifier.size(ButtonDefaults.IconSize)
-            )
-            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-            Text(text = stringResource(Res.string.save))
-        }
-    }
+    CommonContent(
+        state = state,
+        modifier = modifier
+    )
 }
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun NewDialogContent(
     state: EditCharacterCustomModifierState,
-    onUpdate: (CharacterCustomModifier) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val modifierTypeLabels = DnDModifierType.entries.associateWith {
@@ -145,23 +169,7 @@ private fun NewDialogContent(
             }
         }
 
-        CommonContent(
-            state = state,
-            modifier = Modifier.weight(1f)
-        )
-
-        Button(
-            onClick = { if (state.resultAvailable) onUpdate(state.getResult()) },
-            enabled = state.resultAvailable
-        ) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = stringResource(Res.string.save),
-                modifier = Modifier.size(ButtonDefaults.IconSize)
-            )
-            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-            Text(text = stringResource(Res.string.save))
-        }
+        CommonContent(state = state)
     }
 }
 
@@ -178,7 +186,10 @@ private fun CommonContent(
             value = state.name,
             onValueChange = { state.name = it },
             label = { Text(stringResource(Res.string.name)) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = state.isNameError,
+            supportingText = if (state.isNameError) { { Text(stringResource(Res.string.name_is_required)) } } else null,
+            singleLine = true
         )
 
         OutlinedTextField(
@@ -212,7 +223,7 @@ private fun EditCustomValueModifierDialogContent(
             OutlinedIntTextField(
                 value = state.priority,
                 onValueChange = { if (it != 0) state.priority = it },
-                label = { Text("Priority") },
+                label = { Text(stringResource(Res.string.priority)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -228,7 +239,7 @@ private fun EditCustomValueModifierDialogContent(
         // Target Configuration
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             UiEntriesDropdown(
-                label = { Text("Scope") },
+                label = { Text(stringResource(Res.string.scope)) },
                 current = state.targetScope,
                 options = ModifierValueTarget.entries,
                 onSelected = { state.targetScope = it },
@@ -243,17 +254,18 @@ private fun EditCustomValueModifierDialogContent(
                     current = state.targetKey,
                     onSelected = { state.targetKey = it },
                     options = options.keys,
-                    label = { Text("Target Key") },
+                    label = { Text(stringResource(Res.string.target_key)) },
                     toString = { options[it].orEmpty() },
                     modifier = Modifier.weight(1f),
-                    singleLine = true
+                    singleLine = true,
+                    isError = state.isTargetKeyError
                 )
             }
         }
 
         // Operation and Priority
         UiEntriesDropdown(
-            label = { Text("Operation") },
+            label = { Text(stringResource(Res.string.operation)) },
             current = state.operation,
             options = ValueOperation.entries,
             onSelected = { state.operation = it },
@@ -272,7 +284,7 @@ private fun EditCustomValueModifierDialogContent(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Source Configuration
             UiEntriesDropdown(
-                label = { Text("Value source") },
+                label = { Text(stringResource(Res.string.value_source)) },
                 current = state.sourceType,
                 options = ValueSourceType.entries,
                 onSelected = { state.sourceType = it },
@@ -285,13 +297,14 @@ private fun EditCustomValueModifierDialogContent(
                     it.name to if (it is UiEntry) stringResource(it.stringRes) else it.name
                 }
                 EntriesDropdown(
-                    current = state.targetKey,
-                    onSelected = { state.targetKey = it },
+                    current = state.sourceKey,
+                    onSelected = { state.sourceKey = it },
                     options = options.keys,
-                    label = { Text("Target Key") },
+                    label = { Text(stringResource(Res.string.source_key)) },
                     toString = { options[it].orEmpty() },
                     modifier = Modifier.weight(1f),
-                    singleLine = true
+                    singleLine = true,
+                    isError = state.isSourceKeyError
                 )
             }
         }
@@ -300,7 +313,7 @@ private fun EditCustomValueModifierDialogContent(
                 OutlinedDoubleTextField(
                     value = state.multiplier,
                     onValueChange = { state.multiplier = it },
-                    label = { Text("Multiplier") },
+                    label = { Text(stringResource(Res.string.multiplier)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.weight(1f)
                 )
@@ -309,7 +322,7 @@ private fun EditCustomValueModifierDialogContent(
             OutlinedIntTextField(
                 value = state.flatValue,
                 onValueChange = { state.flatValue = it },
-                label = { Text("Flat Bonus/Base") },
+                label = { Text(stringResource(Res.string.flat_bonus_base)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.weight(1f)
             )
@@ -346,7 +359,8 @@ private fun EditCustomRollModifierDialogContent(
                     label = { Text("Target Key") },
                     toString = { options[it].orEmpty() },
                     modifier = Modifier.weight(1f),
-                    singleLine = true
+                    singleLine = true,
+                    isError = state.isTargetKeyError
                 )
             }
         }

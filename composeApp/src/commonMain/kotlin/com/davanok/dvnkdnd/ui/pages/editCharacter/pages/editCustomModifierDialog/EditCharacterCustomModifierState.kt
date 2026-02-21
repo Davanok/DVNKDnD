@@ -31,6 +31,8 @@ class EditCharacterCustomModifierState(initialModifier: CharacterCustomModifier?
     var description by mutableStateOf(initialModifier?.description ?: "")
     var condition by mutableStateOf(initialModifier?.condition ?: "")
 
+    val isNameError by derivedStateOf { name.isBlank() }
+
     var activeType by mutableStateOf(
         when (initialModifier) {
             is CharacterCustomValueModifier -> DnDModifierType.VALUE
@@ -66,7 +68,7 @@ class EditCharacterCustomModifierState(initialModifier: CharacterCustomModifier?
     }
 
     val resultAvailable: Boolean by derivedStateOf {
-        name.isNotBlank() && activeDetailState.isValid
+        !isNameError && activeDetailState.isValid
     }
 
     fun getResult(): CharacterCustomModifier = activeDetailState.buildModifier(
@@ -132,10 +134,11 @@ class ValueModifierState(
     var multiplier by mutableDoubleStateOf(initial?.multiplier ?: 1.0)
     var flatValue by mutableIntStateOf(initial?.flatValue ?: 0)
 
+    val isTargetKeyError by derivedStateOf { targetScope.targetKeys()?.none { it.name == targetKey } ?: false }
+    val isSourceKeyError by derivedStateOf { sourceType.targetKeys()?.none { it.name == sourceKey } ?: false }
+
     override val isValid: Boolean by derivedStateOf {
-        val scopeValid = targetScope.targetKeys()?.any { it.name == targetKey } ?: true
-        val sourceValid = sourceType.targetKeys()?.any { it.name == sourceKey } ?: true
-        scopeValid && sourceValid
+        !isTargetKeyError && !isSourceKeyError
     }
 
     override fun buildModifier(name: String, description: String, condition: String?) =
@@ -175,8 +178,10 @@ class RollModifierState(
     var targetKey by mutableStateOf(initial?.targetKey ?: "")
     var operation by mutableStateOf(initial?.operation ?: RollOperation.entries.first())
 
+    val isTargetKeyError by derivedStateOf { targetScope.targetKeys()?.none { it.name == targetKey } ?: false }
+
     override val isValid: Boolean by derivedStateOf {
-        targetScope.targetKeys()?.any { it.name == targetKey } ?: true
+        !isTargetKeyError
     }
 
     override fun buildModifier(name: String, description: String, condition: String?) =

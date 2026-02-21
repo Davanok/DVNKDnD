@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.ui.pages.editCharacter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
+import com.davanok.dvnkdnd.domain.entities.character.CharacterCustomModifier
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
@@ -82,14 +83,21 @@ class EditCharacterViewModel(
     fun setModifierSelection(modifier: DnDModifier, selected: Boolean) = viewModelScope.launch {
         repository.setModifierSelection(characterId, modifier, selected)
     }
+    fun setCharacterCustomModifier(modifier: CharacterCustomModifier) = viewModelScope.launch {
+        repository.setCustomModifier(characterId, modifier)
+    }
+    fun deleteCharacterCustomModifier(modifier: CharacterCustomModifier) = viewModelScope.launch {
+        repository.deleteCustomModifier(characterId, modifier)
+    }
 
     fun eventSink(event: EditCharacterScreenEvent) {
         when (event) {
             is EditCharacterScreenEvent.UpdateCharacterBase -> updateCharacterBase(event.character)
             is EditCharacterScreenEvent.UpdateAttributes -> updateAttributes(event.attributes)
             is EditCharacterScreenEvent.SetModifierSelection -> setModifierSelection(event.modifier, event.selected)
+            is EditCharacterScreenEvent.SetCharacterCustomModifier -> setCharacterCustomModifier(event.modifier)
+            is EditCharacterScreenEvent.DeleteCharacterCustomModifier -> deleteCharacterCustomModifier(event.modifier)
             else -> { TODO() }
-
         }
     }
 
