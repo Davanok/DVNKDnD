@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.data.local.db.daos.character
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
@@ -40,5 +41,35 @@ interface CharacterCustomModifiersDao {
         if (valueModifiers.isNotEmpty()) insertCharacterCustomValueModifiers(valueModifiers)
         if (rollModifiers.isNotEmpty()) insertCharacterCustomRollModifiers(rollModifiers)
         if (damageModifiers.isNotEmpty()) insertCharacterCustomDamageModifiers(damageModifiers)
+    }
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCharacterCustomValueModifier(modifier: DbCharacterCustomValueModifier)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCharacterCustomRollModifier(modifier: DbCharacterCustomRollModifier)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCharacterCustomDamageModifier(modifier: DbCharacterCustomDamageModifier)
+
+    suspend fun setCharacterCustomModifier(characterId: Uuid, modifier: CharacterCustomModifier) {
+        when (modifier) {
+            is CharacterCustomValueModifier -> insertCharacterCustomValueModifier(modifier.toDbCharacterCustomModifier(characterId))
+            is CharacterCustomRollModifier -> insertCharacterCustomRollModifier(modifier.toDbCharacterCustomModifier(characterId))
+            is CharacterCustomDamageModifier -> insertCharacterCustomDamageModifier(modifier.toDbCharacterCustomModifier(characterId))
+        }
+    }
+
+    @Delete
+    suspend fun deleteCharacterCustomValueModifier(modifier: DbCharacterCustomValueModifier)
+    @Delete
+    suspend fun deleteCharacterCustomRollModifier(modifier: DbCharacterCustomRollModifier)
+    @Delete
+    suspend fun deleteCharacterCustomDamageModifier(modifier: DbCharacterCustomDamageModifier)
+
+    suspend fun deleteCharacterCustomModifier(characterId: Uuid, modifier: CharacterCustomModifier) {
+        when (modifier) {
+            is CharacterCustomValueModifier -> deleteCharacterCustomValueModifier(modifier.toDbCharacterCustomModifier(characterId))
+            is CharacterCustomRollModifier -> deleteCharacterCustomRollModifier(modifier.toDbCharacterCustomModifier(characterId))
+            is CharacterCustomDamageModifier -> deleteCharacterCustomDamageModifier(modifier.toDbCharacterCustomModifier(characterId))
+        }
     }
 }
