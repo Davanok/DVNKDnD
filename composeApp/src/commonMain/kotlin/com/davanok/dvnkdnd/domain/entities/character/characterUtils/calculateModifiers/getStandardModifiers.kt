@@ -13,8 +13,10 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import kotlin.uuid.Uuid
 
 fun CharacterFull.getBaseValueModifiers(): List<RawModifierWrapper> = buildList {
+    // base
     addAll(Attributes.entries) { attribute ->
         createBaseRawWrapper(
+            operation = ValueOperation.SET,
             targetScope = ModifierValueTarget.ATTRIBUTE,
             targetKey = attribute.name,
             sourceType = ValueSourceType.FLAT,
@@ -23,33 +25,38 @@ fun CharacterFull.getBaseValueModifiers(): List<RawModifierWrapper> = buildList 
         )
     }
 
+    // throws
     addAll(Attributes.entries) { attribute ->
         createBaseRawWrapper(
+            operation = ValueOperation.ADD,
             targetScope = ModifierValueTarget.ATTRIBUTE_THROW,
             targetKey = attribute.name,
             sourceType = ValueSourceType.ATTRIBUTE_MODIFIER,
             sourceKey = attribute.name
         )
     }
-
     addAll(Attributes.entries) { attribute ->
         createBaseRawWrapper(
+            operation = ValueOperation.ADD,
             targetScope = ModifierValueTarget.SAVING_THROW,
             targetKey = attribute.name,
             sourceType = ValueSourceType.ATTRIBUTE_MODIFIER,
             sourceKey = attribute.name
         )
     }
-
     addAll(Skills.entries) { skill ->
         createBaseRawWrapper(
+            operation = ValueOperation.ADD,
             targetScope = ModifierValueTarget.SKILL,
             targetKey = skill.name,
             sourceType = ValueSourceType.ATTRIBUTE_MODIFIER,
             sourceKey = skill.attribute.name
         )
     }
+
+    // values
     add(createBaseRawWrapper(
+        operation = ValueOperation.SET,
         targetScope = ModifierValueTarget.DERIVED_STAT,
         targetKey = DnDModifierDerivedValuesTargets.ARMOR_CLASS.name,
         sourceType = ValueSourceType.ATTRIBUTE_MODIFIER,
@@ -59,6 +66,7 @@ fun CharacterFull.getBaseValueModifiers(): List<RawModifierWrapper> = buildList 
 
     // 2. Base Initiative: Dexterity Modifier
     add(createBaseRawWrapper(
+        operation = ValueOperation.SET,
         targetScope = ModifierValueTarget.DERIVED_STAT,
         targetKey = DnDModifierDerivedValuesTargets.INITIATIVE.name,
         sourceType = ValueSourceType.ATTRIBUTE_MODIFIER,
@@ -67,6 +75,7 @@ fun CharacterFull.getBaseValueModifiers(): List<RawModifierWrapper> = buildList 
 
     // 3. Base Passive Perception: 10 + Perception Skill
     add(createBaseRawWrapper(
+        operation = ValueOperation.SET,
         targetScope = ModifierValueTarget.DERIVED_STAT,
         targetKey = DnDModifierDerivedValuesTargets.PASSIVE_PERCEPTION.name,
         sourceType = ValueSourceType.SKILL_MODIFIER,
@@ -77,6 +86,7 @@ fun CharacterFull.getBaseValueModifiers(): List<RawModifierWrapper> = buildList 
     // 4. Base Speed (from Race)
     val baseSpeed = calculateBaseSpeed() // Utility in utils.kt
     add(createBaseRawWrapper(
+        operation = ValueOperation.SET,
         targetScope = ModifierValueTarget.SPEED,
         targetKey = CharacterMovementType.WALK.name,
         sourceType = ValueSourceType.FLAT,
@@ -86,6 +96,7 @@ fun CharacterFull.getBaseValueModifiers(): List<RawModifierWrapper> = buildList 
 }
 
 private fun createBaseRawWrapper(
+    operation: ValueOperation,
     targetScope: ModifierValueTarget,
     targetKey: String?,
     sourceType: ValueSourceType,
@@ -95,10 +106,10 @@ private fun createBaseRawWrapper(
     isCustom = false,
     modifier = DnDValueModifier(
         id = Uuid.NIL,
-        priority = Int.MIN_VALUE,
+        priority = if (operation == ValueOperation.ADD) 0 else Int.MIN_VALUE,
         targetScope = targetScope,
         targetKey = targetKey,
-        operation = ValueOperation.SET,
+        operation = operation,
         sourceType = sourceType,
         sourceKey = sourceKey,
         multiplier = 1.0,
