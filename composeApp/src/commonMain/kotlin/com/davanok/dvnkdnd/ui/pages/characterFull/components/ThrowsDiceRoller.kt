@@ -36,24 +36,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.davanok.dvnkdnd.domain.dnd.calculateModifier
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDValueModifier
-import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroupInfo
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
-import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueOperation
-import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import com.davanok.dvnkdnd.ui.components.diceRoller.AnimationState
 import com.davanok.dvnkdnd.ui.components.diceRoller.DiceRollerDialog
 import com.davanok.dvnkdnd.ui.components.diceRoller.DiceRollerState
 import com.davanok.dvnkdnd.ui.components.text.modifiersText.buildPreview
-import com.davanok.dvnkdnd.ui.model.UiSelectableState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.uuid.Uuid
 
 sealed interface ThrowsDiceRollerModifier {
     data class AttributesModifier(val attribute: Attributes) : ThrowsDiceRollerModifier
@@ -61,71 +53,31 @@ sealed interface ThrowsDiceRollerModifier {
     data class SkillsModifier(val skill: Skills) : ThrowsDiceRollerModifier
 }
 
-private fun ThrowsDiceRollerModifier.toModifierTarget(): Triple<ModifierValueTarget, String, Attributes> =
+private fun ThrowsDiceRollerModifier.toModifierTarget(): Pair<ModifierValueTarget, String> =
     when (this) {
         is ThrowsDiceRollerModifier.AttributesModifier ->
-            Triple(ModifierValueTarget.ATTRIBUTE, attribute.name, attribute)
+            Pair(ModifierValueTarget.ATTRIBUTE_THROW, attribute.name)
 
         is ThrowsDiceRollerModifier.SavingThrowsModifier ->
-            Triple(ModifierValueTarget.SAVING_THROW, attribute.name, attribute)
+            Pair(ModifierValueTarget.SAVING_THROW, attribute.name)
 
         is ThrowsDiceRollerModifier.SkillsModifier ->
-            Triple(ModifierValueTarget.SKILL, skill.name, skill.attribute)
+            Pair(ModifierValueTarget.SKILL, skill.name)
     }
 
 private fun resolveModifiers(
     throwType: ThrowsDiceRollerModifier,
-    characterModifiedAttributes: AttributesGroup,
-    characterModifiers: List<ValueModifierInfo>
+    characterModifiers: Map<ModifierValueTarget, List<ValueModifierInfo>>
 ): List<ValueModifierInfo> {
-    val (targetType, targetName, attribute) = throwType.toModifierTarget()
+    val (targetType, targetName) = throwType.toModifierTarget()
 
-    // Create Base Ability Modifier
-    val baseModValue = calculateModifier(characterModifiedAttributes[attribute])
-
-    val baseModifier = ValueModifierInfo(
-        isCustom = false,
-        modifier = DnDValueModifier(
-            id = Uuid.NIL,
-            priority = 0,
-            targetScope = targetType,
-            targetKey = targetName,
-            operation = ValueOperation.ADD,
-            sourceType = ValueSourceType.FLAT,
-            sourceKey = null,
-            multiplier = 1.0,
-            flatValue = baseModValue,
-            condition = null
-        ),
-        group = ModifiersGroupInfo(
-            id = Uuid.NIL,
-            name = "",
-            description = null,
-            selectionLimit = 0
-        ),
-        resolvedValue = baseModValue,
-        state = UiSelectableState(selectable = false, selected = true)
-    )
-
-    // Collect external modifiers
-    val appliedModifiers = if (targetType == ModifierValueTarget.ATTRIBUTE) {
-        emptyList()
-    } else {
-        characterModifiers.filter {
-            it.modifier.targetScope == targetType && it.modifier.targetKey == targetName
-        }
-    }
-
-    return (listOf(baseModifier) + appliedModifiers)
-        .filter { it.haveEffect() }
-        .sortedBy { it.modifier.priority }
+    return characterModifiers[targetType]?.filter { it.modifier.targetKey == targetName }.orEmpty()
 }
 
 
 @Composable
 fun CharacterThrowsDiceRoller(
-    characterModifiedAttributes: AttributesGroup,
-    characterModifiers: List<ValueModifierInfo>,
+    characterModifiers: Map<ModifierValueTarget, List<ValueModifierInfo>>,
     state: DiceRollerState
 ) {
     DiceRollerDialog(
@@ -137,8 +89,8 @@ fun CharacterThrowsDiceRoller(
                 throwSpec.modifier as? ThrowsDiceRollerModifier ?: return@DiceRollerDialog
 
             // Resolve Data
-            val modifiers = remember(throwType, characterModifiedAttributes, characterModifiers) {
-                resolveModifiers(throwType, characterModifiedAttributes, characterModifiers)
+            val modifiers = remember(throwType, characterModifiers) {
+                resolveModifiers(throwType, characterModifiers)
             }
 
             Column(

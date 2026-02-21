@@ -247,9 +247,7 @@ private fun Content(
                         )
                         CharacterFullAttributesScreen(
                             modifier = Modifier.weight(1f),
-                            attributes = character.appliedValues.attributes,
-                            savingThrows = character.appliedValues.savingThrowModifiers,
-                            skills = character.appliedValues.skillModifiers,
+                            calculationsResult = character.calculatedModifiersResult,
                             onAttributeClick = onAttributeClick,
                             onSavingThrowClick = onSavingThrowClick,
                             onSkillClick = onSkillClick
@@ -339,9 +337,7 @@ private fun CharacterPages(
         ) { index ->
             when (pages[index]) {
                 CharacterFullUiState.Page.ATTRIBUTES -> CharacterFullAttributesScreen(
-                    attributes = character.appliedValues.attributes,
-                    savingThrows = character.appliedValues.savingThrowModifiers,
-                    skills = character.appliedValues.skillModifiers,
+                    calculationsResult = character.calculatedModifiersResult,
                     modifier = Modifier.fillMaxSize(),
                     onAttributeClick = onAttributeClick,
                     onSavingThrowClick = onSavingThrowClick,
@@ -419,13 +415,10 @@ private fun rememberAdaptiveCharacterContentState(
         CharacterFullUiState.Dialog.HEALTH -> SupportEntry(
             titleGetter = { stringResource(entry.titleStringRes) }
         ) {
-            val healthModifiers = remember(character) {
-                character.calculatedValueModifiers.filter { it.modifier.targetScope == ModifierValueTarget.HEALTH }
-            }
             CharacterHealthDialogContent(
                 baseHealth = character.health,
                 updateHealth = { action(CharacterFullScreenContract.SetHealth(it)) },
-                healthModifiers = healthModifiers
+                healthModifiers = character.calculatedValueModifiers[ModifierValueTarget.HEALTH].orEmpty()
             )
         }
         CharacterFullUiState.Dialog.MAIN_ENTITIES -> SupportEntry(

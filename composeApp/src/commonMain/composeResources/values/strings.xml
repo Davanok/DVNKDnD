@@ -540,4 +540,7 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="value_operation_set_max">Set max</string>
 
     <string name="value_modifiers_priority_hint_text">Negative values apply the modifier before the attribute modifier. Positive values apply it after.</string>
+
+    <string name="attribute">Attribute</string>
+    <string name="throw_name">Throw</string>
 </resources>

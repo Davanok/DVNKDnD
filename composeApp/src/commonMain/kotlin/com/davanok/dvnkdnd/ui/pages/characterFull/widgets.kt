@@ -101,8 +101,8 @@ fun CharacterMainValuesWidget(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalArrangement = Arrangement.Center
             ) {
-                InitiativeWidget(values.derivedStats.initiative, onClick = onInitiativeClick)
-                ArmorClassWidget(values.derivedStats.armorClass, onClick = onArmorClassClick)
+                InitiativeWidget(values.derivedValues.initiative, onClick = onInitiativeClick)
+                ArmorClassWidget(values.derivedValues.armorClass, onClick = onArmorClassClick)
                 HealthWidget(values.health, onClick = onHealthClick)
                 SpeedWidget(values.speed, onClick = onSpeedClick)
             }
