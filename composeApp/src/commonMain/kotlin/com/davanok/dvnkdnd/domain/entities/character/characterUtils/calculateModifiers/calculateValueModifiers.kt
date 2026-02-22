@@ -30,7 +30,10 @@ fun CharacterFull.calculateValueModifiers(): CalculatedModifiersResult {
         .groupBy { it.modifier.targetScope }
         .mapValues { it.value.sortedWith(comparator) }
 
-    val resultValues: MutableMap<ModifierValueTarget, MutableMap<String?, Int>> = mutableMapOf()
+    val attributeValues: MutableMap<String?, Int> = attributes.toMap().mapKeys { it.key.name }.toMutableMap()
+    val resultValues: MutableMap<ModifierValueTarget, MutableMap<String?, Int>> = mutableMapOf(
+        ModifierValueTarget.ATTRIBUTE to attributeValues
+    )
 
     // This call now resolves Attributes -> then Skills -> then AC/Speed
     // because of the Enum order and priorities.

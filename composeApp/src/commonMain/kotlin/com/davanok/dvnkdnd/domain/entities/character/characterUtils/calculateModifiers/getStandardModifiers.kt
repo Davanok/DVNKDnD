@@ -13,18 +13,6 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import kotlin.uuid.Uuid
 
 fun CharacterFull.getBaseValueModifiers(): List<RawModifierWrapper> = buildList {
-    // base
-    addAll(Attributes.entries) { attribute ->
-        createBaseRawWrapper(
-            operation = ValueOperation.SET,
-            targetScope = ModifierValueTarget.ATTRIBUTE,
-            targetKey = attribute.name,
-            sourceType = ValueSourceType.FLAT,
-            sourceKey = null,
-            flatValue = attributes[attribute],
-        )
-    }
-
     // throws
     addAll(Attributes.entries) { attribute ->
         createBaseRawWrapper(
