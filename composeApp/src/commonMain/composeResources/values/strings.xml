@@ -553,4 +553,11 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="source_key">Source key</string>
     <string name="multiplier">Multiplier</string>
     <string name="flat_bonus_base">Flat bonus/base</string>
+
+    <string name="increase_value">Increase %1$s</string>
+    <string name="decrease_value">Decrease %1$s</string>
+    <string name="total_value">Total: %1$s</string>
+
+    <string name="overrides">Overrides</string>
+    <string name="proficiency_bonus">Proficiency bonus</string>
 </resources>

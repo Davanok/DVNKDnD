@@ -3,6 +3,7 @@ package com.davanok.dvnkdnd.ui.pages.editCharacter
 import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterCustomModifier
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityLink
+import com.davanok.dvnkdnd.domain.entities.character.CharacterOptionalValues
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
@@ -21,4 +22,6 @@ sealed interface EditCharacterScreenEvent {
 
     data class SetCharacterCustomModifier(val modifier: CharacterCustomModifier) : EditCharacterScreenEvent
     data class DeleteCharacterCustomModifier(val modifier: CharacterCustomModifier) : EditCharacterScreenEvent
+
+    data class UpdateOptionalValues(val values: CharacterOptionalValues) : EditCharacterScreenEvent
 }

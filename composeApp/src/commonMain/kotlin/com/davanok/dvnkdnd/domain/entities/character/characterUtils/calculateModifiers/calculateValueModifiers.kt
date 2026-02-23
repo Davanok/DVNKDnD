@@ -6,12 +6,12 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.domain.entities.character.toCharacterDerivedValues
 import com.davanok.dvnkdnd.domain.entities.character.toCharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.toMap
-import com.davanok.dvnkdnd.domain.entities.toSpeedValues
-import com.davanok.dvnkdnd.domain.entities.toMap
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.mapValues
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toAttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toSkillsGroup
+import com.davanok.dvnkdnd.domain.entities.toMap
+import com.davanok.dvnkdnd.domain.entities.toSpeedValues
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.CharacterMovementType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierDerivedValuesTargets
@@ -31,10 +31,7 @@ fun CharacterFull.calculateValueModifiers(): CalculatedModifiersResult {
         .groupBy { it.modifier.targetScope }
         .mapValues { it.value.sortedWith(comparator) }
 
-    val attributeValues: MutableMap<String?, Int> = attributes.toMap().mapKeys { it.key.name }.toMutableMap()
-    val resultValues: MutableMap<ModifierValueTarget, MutableMap<String?, Int>> = mutableMapOf(
-        ModifierValueTarget.ATTRIBUTE to attributeValues
-    )
+    val resultValues = buildBaseMap()
 
     // This call now resolves Attributes -> then Skills -> then AC/Speed
     // because of the Enum order and priorities.
@@ -46,6 +43,16 @@ fun CharacterFull.calculateValueModifiers(): CalculatedModifiersResult {
     return CalculatedModifiersResult(
         values = resultValues.toCharacterModifiedValues(defaultValues),
         modifiers = resolvedModifiers
+    )
+}
+
+private fun CharacterFull.buildBaseMap(): MutableMap<ModifierValueTarget, MutableMap<String?, Int>> {
+    val attributeValues: MutableMap<String?, Int> = attributes.toMap().mapKeys { it.key.name }.toMutableMap()
+    val speedValues: MutableMap<String?, Int> = calculateSpeedValues().toMap().mapKeys { it.key.name }.toMutableMap()
+
+    return mutableMapOf(
+        ModifierValueTarget.ATTRIBUTE to attributeValues,
+        ModifierValueTarget.SPEED to speedValues
     )
 }
 
@@ -74,54 +81,46 @@ private fun CharacterFull.buildDefaultValues(): CharacterModifiedValues {
 private fun Map<ModifierValueTarget, Map<String?, Int>>.toCharacterModifiedValues(
     defaultValues: CharacterModifiedValues
 ) = CharacterModifiedValues(
-    attributes = merge(
-        ModifierValueTarget.ATTRIBUTE,
+    attributes = get(ModifierValueTarget.ATTRIBUTE).merge(
         defaultValues.attributes.toMap(),
         Map<Attributes, Int>::toAttributesGroup
     ),
 
-    attributeThrows = merge(
-        ModifierValueTarget.ATTRIBUTE_THROW,
+    attributeThrows = get(ModifierValueTarget.ATTRIBUTE_THROW).merge(
         defaultValues.attributeThrows.toMap(),
         Map<Attributes, Int>::toAttributesGroup
     ),
 
-    savingThrowModifiers = merge(
-        ModifierValueTarget.SAVING_THROW,
+    savingThrowModifiers = get(ModifierValueTarget.SAVING_THROW).merge(
         defaultValues.savingThrowModifiers.toMap(),
         Map<Attributes, Int>::toAttributesGroup
     ),
 
-    skillModifiers = merge(
-        ModifierValueTarget.SKILL,
+    skillModifiers = get(ModifierValueTarget.SKILL).merge(
         defaultValues.skillModifiers.toMap(),
         Map<Skills, Int>::toSkillsGroup
     ),
 
-    health = merge(
-        ModifierValueTarget.HEALTH,
+    health = get(ModifierValueTarget.HEALTH).merge(
         defaultValues.health.toMap(),
         Map<DnDModifierHealthTargets, Int>::toCharacterHealth
     ),
 
-    derivedValues = merge(
-        ModifierValueTarget.DERIVED_STAT,
+    derivedValues = get(ModifierValueTarget.DERIVED_STAT).merge(
         defaultValues.derivedValues.toMap(),
         Map<DnDModifierDerivedValuesTargets, Int>::toCharacterDerivedValues
     ),
 
-    speed = merge(
-        ModifierValueTarget.SPEED,
+    speed = get(ModifierValueTarget.SPEED).merge(
         defaultValues.speed.toMap(),
         Map<CharacterMovementType, Int>::toSpeedValues
     )
 )
 
-private inline fun <K : Enum<K>, V, R> Map<ModifierValueTarget, Map<String?, V>>.merge(
-    target: ModifierValueTarget,
+private inline fun <K : Enum<K>, V, R> Map<String?, V>?.merge(
     defaults: Map<K, V>,
     crossinline toResult: Map<K, V>.() -> R
-): R = get(target)
+): R = this
     ?.let { overrides ->
         defaults.mapValues { (key, value) ->
             overrides[key.name] ?: value

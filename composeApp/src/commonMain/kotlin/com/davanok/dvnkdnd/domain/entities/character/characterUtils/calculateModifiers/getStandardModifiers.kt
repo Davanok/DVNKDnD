@@ -4,7 +4,6 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDValueModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroupInfo
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
-import com.davanok.dvnkdnd.domain.enums.dndEnums.CharacterMovementType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDModifierDerivedValuesTargets
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
@@ -69,17 +68,6 @@ fun CharacterFull.getBaseValueModifiers(): List<RawModifierWrapper> = buildList 
         sourceType = ValueSourceType.SKILL_MODIFIER,
         sourceKey = Skills.PERCEPTION.name,
         flatValue = 10
-    ))
-
-    // 4. Base Speed (from Race)
-    val baseSpeed = calculateBaseSpeed() // Utility in utils.kt
-    add(createBaseRawWrapper(
-        operation = ValueOperation.SET,
-        targetScope = ModifierValueTarget.SPEED,
-        targetKey = CharacterMovementType.WALK.name,
-        sourceType = ValueSourceType.FLAT,
-        sourceKey = null,
-        flatValue = baseSpeed
     ))
 }
 

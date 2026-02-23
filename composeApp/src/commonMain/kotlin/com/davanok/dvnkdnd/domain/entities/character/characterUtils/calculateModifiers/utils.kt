@@ -20,12 +20,7 @@ fun CharacterFull.calculateSpeedValues(): SpeedValues {
         .filter { it.entity.entity.type == DnDEntityTypes.RACE }
         .mapNotNull { it.entity.race?.speedValues }
         .maxByOrNull { it.walk }
-        ?: SpeedValues(
-            walk = 0,
-            swim = 0,
-            fly = 0,
-            climb = 0
-        )
+        ?: SpeedValues.Default
 }
 
 fun CharacterFull.calculateBaseArmorClass(dexterityModifier: Int): Int {

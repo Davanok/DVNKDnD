@@ -78,7 +78,7 @@ class EditCharacterViewModel(
         TODO()
     }
     fun updateAttributes(attributes: AttributesGroup) = viewModelScope.launch {
-        TODO()
+        repository.setCharacterAttributes(characterId, attributes)
     }
     fun setModifierSelection(modifier: DnDModifier, selected: Boolean) = viewModelScope.launch {
         repository.setModifierSelection(characterId, modifier, selected)

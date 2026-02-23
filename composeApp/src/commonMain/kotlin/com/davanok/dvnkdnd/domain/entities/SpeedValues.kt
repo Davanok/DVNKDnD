@@ -9,7 +9,11 @@ data class SpeedValues(
     val swim: Int,
     val fly: Int,
     val climb: Int
-)
+) {
+    companion object {
+        val Default = SpeedValues(0, 0, 0, 0)
+    }
+}
 
 fun SpeedValues.toMap() = mapOf(
     CharacterMovementType.WALK to walk,
