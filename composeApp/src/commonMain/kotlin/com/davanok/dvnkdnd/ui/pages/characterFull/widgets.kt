@@ -33,9 +33,9 @@ import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityInfo
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
-import com.davanok.dvnkdnd.domain.entities.character.CharacterSpeed
+import com.davanok.dvnkdnd.domain.entities.SpeedValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterState
-import com.davanok.dvnkdnd.domain.entities.character.toMap
+import com.davanok.dvnkdnd.domain.entities.toMap
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.text.MeasurementConverter
 import com.davanok.dvnkdnd.ui.components.toSignedString
@@ -196,7 +196,7 @@ private fun HealthWidget(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SpeedWidget(
-    speedValues: CharacterSpeed,
+    speedValues: SpeedValues,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

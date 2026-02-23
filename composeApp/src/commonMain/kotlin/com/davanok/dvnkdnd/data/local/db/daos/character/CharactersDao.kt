@@ -17,7 +17,6 @@ import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterImage
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterMainEntity
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterNote
-import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterOptionalValues
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterSettings
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
@@ -30,6 +29,7 @@ import kotlin.uuid.Uuid
 interface CharactersDao: CharacterMainDao,
         CharacterSelectedModifiersDao,
         CharacterCustomModifiersDao,
+        CharacterOptionalValuesDao,
         CharacterSelectableEntitiesDao,
         CharacterSpellsDao,
         CharacterItemsDao,
@@ -53,9 +53,7 @@ interface CharactersDao: CharacterMainDao,
 
         insertCharacter(character.character.toDbCharacter())
 
-        character.optionalValues
-            .toDbCharacterOptionalValues(characterId)
-            .let { insertOptionalValues(it) }
+        insertFullOptionalValues(characterId, character.optionalValues)
 
         character.images
             .map { it.toDbCharacterImage(characterId) }

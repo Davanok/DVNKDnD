@@ -128,8 +128,21 @@ data class DbCharacterOptionalValues( // if value is null: calculate
     @PrimaryKey val id: Uuid,
     @ColumnInfo("proficiency_bonus") val proficiencyBonus: Int?,
     val initiative: Int?,
-    @ColumnInfo("armor_class") val armorClass: Int?,
-    val speed: Int?
+    @ColumnInfo("armor_class") val armorClass: Int?
+)
+
+@Entity(
+    tableName = "character_optional_speed_values",
+    foreignKeys = [
+        ForeignKey(DbCharacterOptionalValues::class, ["id"], ["id"], onDelete = ForeignKey.CASCADE)
+    ]
+)
+data class DbCharacterOptionalSpeedValues(
+    @PrimaryKey val id: Uuid,
+    val walk: Int,
+    val swim: Int,
+    val fly: Int,
+    val climb: Int
 )
 
 @Entity(

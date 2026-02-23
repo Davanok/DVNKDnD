@@ -8,16 +8,12 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterAttribute
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterHealth
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterImage
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterMainEntity
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterOptionalValues
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSettings
 
 @Dao
 interface CharacterMainDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacter(character: DbCharacter)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOptionalValues(optionalValues: DbCharacterOptionalValues)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterImages(images: List<DbCharacterImage>)

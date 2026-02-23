@@ -16,6 +16,5 @@ import kotlin.uuid.Uuid
 data class DbRace(
     // also subrace
     @PrimaryKey val id: Uuid,
-    val speed: Int,
     val size: Size,
 )

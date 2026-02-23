@@ -22,7 +22,7 @@ data class DnDFullEntity(
     val features: List<FeatureLink>,
 
     val cls: ClassWithSpells? = null,
-    val race: RaceInfo? = null,
+    val race: FullRace? = null,
     val background: Unit? = null,
     val feat: FeatInfo? = null,
     val feature: FullFeature? = null,

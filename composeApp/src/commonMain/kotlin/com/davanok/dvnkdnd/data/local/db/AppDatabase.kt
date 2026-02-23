@@ -25,6 +25,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterMainEntity
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSettings
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterNote
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterOptionalSpeedValues
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterOptionalValues
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficiency
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedRollModifier
@@ -42,6 +43,7 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityImage
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityProficiency
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityRollModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityValueModifier
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbRaceSpeedValues
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpell
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellArea
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellAttack
@@ -93,6 +95,7 @@ import kotlinx.coroutines.IO
         DbCharacterMainEntity::class,
         DbCharacterNote::class,
         DbCharacterOptionalValues::class,
+        DbCharacterOptionalSpeedValues::class,
         DbCharacterProficiency::class,
         DbCharacterSelectedValueModifier::class,
         DbCharacterSelectedRollModifier::class,
@@ -115,6 +118,7 @@ import kotlinx.coroutines.IO
         DbItemProperty::class,
         DbItemPropertyLink::class,
         DbRace::class,
+        DbRaceSpeedValues::class,
         DbProficiency::class,
         DbState::class,
         DbSpell::class,

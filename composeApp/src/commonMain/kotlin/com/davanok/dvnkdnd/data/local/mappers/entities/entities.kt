@@ -3,7 +3,6 @@ package com.davanok.dvnkdnd.data.local.mappers.entities
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityFeature
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityImage
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeat
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbRace
 import com.davanok.dvnkdnd.data.local.db.model.DbEntityFullModifiersGroup
 import com.davanok.dvnkdnd.data.local.db.model.DbEntityWithImages
 import com.davanok.dvnkdnd.data.local.db.model.DbEntityWithSub
@@ -13,7 +12,6 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FeatInfo
-import com.davanok.dvnkdnd.domain.entities.dndEntities.RaceInfo
 import kotlin.uuid.Uuid
 
 fun DbFeat.toFeatInfo() = FeatInfo(
@@ -22,16 +20,6 @@ fun DbFeat.toFeatInfo() = FeatInfo(
 fun FeatInfo.toDbFeat(entityId: Uuid) = DbFeat(
     id = entityId,
     repeatable = repeatable
-)
-
-fun DbRace.toRaceInfo() = RaceInfo(
-    speed = speed,
-    size = size
-)
-fun RaceInfo.toDbRace(entityId: Uuid) = DbRace(
-    id = entityId,
-    speed = speed,
-    size = size
 )
 
 fun List<DbEntityImage>.mainImage(): DbEntityImage? =
@@ -62,7 +50,7 @@ fun DbFullEntity.toDnDFullEntity(): DnDFullEntity = DnDFullEntity(
     proficiencies = proficiencies.map(DbJoinProficiency::toJoinProficiency),
     features = features.map(DbEntityFeature::toFeatureLink),
     cls = cls?.toClassWithSpells(),
-    race = race?.toRaceInfo(),
+    race = race?.toFullRace(),
     background = null,
     feat = feat?.toFeatInfo(),
     feature = feature?.toFullFeature(),

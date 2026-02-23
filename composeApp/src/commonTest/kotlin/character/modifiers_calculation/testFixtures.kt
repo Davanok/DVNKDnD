@@ -11,7 +11,7 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.entities.dndEntities.EntityBase
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItem
 import com.davanok.dvnkdnd.domain.entities.dndEntities.Item
-import com.davanok.dvnkdnd.domain.entities.dndEntities.RaceInfo
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullRace
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDValueModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ModifiersGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toAttributesGroup
@@ -82,7 +82,7 @@ internal fun testEntity(
     type: DnDEntityTypes,
     modifiersGroups: List<ModifiersGroup>,
     item: FullItem? = null,
-    race: RaceInfo? = null
+    race: FullRace? = null
 ) = DnDFullEntity(
     entity = EntityBase(
         id = Uuid.NIL,

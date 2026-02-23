@@ -11,7 +11,6 @@ import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityImage
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityProficiency
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbFeat
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbProficiency
-import com.davanok.dvnkdnd.data.local.mappers.entities.toDbRace
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
@@ -48,7 +47,7 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
         fullEntity.modifiersGroups.forEach { insertModifiersGroup(entityId, it) }
 
         fullEntity.cls?.let { insertClassWithSpells(entityId, it) }
-        fullEntity.race?.let { insertRace(it.toDbRace(entityId)) }
+        fullEntity.race?.let { insertFullRace(entityId, it) }
         fullEntity.background?.let { insertBackground(DbBackground(entityId)) }
         fullEntity.feat?.let { insertFeat(it.toDbFeat(entityId)) }
         fullEntity.feature?.let { insertFullFeature(entityId, it) }

@@ -5,8 +5,9 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.domain.entities.character.toCharacterDerivedValues
 import com.davanok.dvnkdnd.domain.entities.character.toCharacterHealth
-import com.davanok.dvnkdnd.domain.entities.character.toCharacterSpeed
 import com.davanok.dvnkdnd.domain.entities.character.toMap
+import com.davanok.dvnkdnd.domain.entities.toSpeedValues
+import com.davanok.dvnkdnd.domain.entities.toMap
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.mapValues
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.toAttributesGroup
@@ -112,7 +113,7 @@ private fun Map<ModifierValueTarget, Map<String?, Int>>.toCharacterModifiedValue
     speed = merge(
         ModifierValueTarget.SPEED,
         defaultValues.speed.toMap(),
-        Map<CharacterMovementType, Int>::toCharacterSpeed
+        Map<CharacterMovementType, Int>::toSpeedValues
     )
 )
 

@@ -3,7 +3,7 @@ package com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateMo
 import com.davanok.dvnkdnd.domain.dnd.calculateArmorClass
 import com.davanok.dvnkdnd.domain.entities.character.CharacterDerivedValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
-import com.davanok.dvnkdnd.domain.entities.character.CharacterSpeed
+import com.davanok.dvnkdnd.domain.entities.SpeedValues
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 
 fun CharacterFull.calculateDerivedValues(
@@ -15,20 +15,17 @@ fun CharacterFull.calculateDerivedValues(
     passivePerception = 10 + perceptionSkill
 )
 
-fun CharacterFull.calculateSpeedValues(): CharacterSpeed {
-    val baseSpeed = calculateBaseSpeed()
-    return CharacterSpeed(
-        walk = baseSpeed,
-        swim = baseSpeed / 2,
-        fly = 0,
-        climb = 0
-    )
-}
-
-fun CharacterFull.calculateBaseSpeed(): Int {
+fun CharacterFull.calculateSpeedValues(): SpeedValues {
     return mainEntities
         .filter { it.entity.entity.type == DnDEntityTypes.RACE }
-        .maxOfOrNull { it.entity.race?.speed ?: 0 } ?: 0
+        .mapNotNull { it.entity.race?.speedValues }
+        .maxByOrNull { it.walk }
+        ?: SpeedValues(
+            walk = 0,
+            swim = 0,
+            fly = 0,
+            climb = 0
+        )
 }
 
 fun CharacterFull.calculateBaseArmorClass(dexterityModifier: Int): Int {

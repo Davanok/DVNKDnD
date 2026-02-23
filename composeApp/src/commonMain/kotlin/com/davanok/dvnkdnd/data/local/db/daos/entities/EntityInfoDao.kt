@@ -5,13 +5,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeat
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbBackground
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbRace
 
 @Dao
-interface EntityInfoDao: FeatureDao, ClassDao, ItemDao, SpellDao, StateDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRace(race: DbRace)
-
+interface EntityInfoDao: FeatureDao, ClassDao, RaceDao, ItemDao, SpellDao, StateDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBackground(background: DbBackground)
 

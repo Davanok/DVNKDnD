@@ -39,10 +39,11 @@ data class DbFullEntity(
     )
     val cls: DbClassWithSpells?,
     @Relation(
+        entity = DbRace::class,
         parentColumn = "id",
         entityColumn = "id"
     )
-    val race: DbRace?,
+    val race: DbFullRace?,
     @Relation(
         parentColumn = "id",
         entityColumn = "id"

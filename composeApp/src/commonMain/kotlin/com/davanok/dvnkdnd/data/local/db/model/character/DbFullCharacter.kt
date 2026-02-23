@@ -27,12 +27,13 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.data.local.db.model.DbFullEntity
+import com.davanok.dvnkdnd.data.local.mappers.character.DbCharacterFullOptionalValues
 
 data class DbFullCharacter(
     @Embedded val character: DbCharacter,
 
-    @Relation(parentColumn = "id", entityColumn = "id")
-    val optionalValues: DbCharacterOptionalValues?,
+    @Relation(DbCharacterOptionalValues::class, parentColumn = "id", entityColumn = "id")
+    val optionalValues: DbCharacterFullOptionalValues?,
 
     @Relation(parentColumn = "id", entityColumn = "character_id")
     val images: List<DbCharacterImage>,

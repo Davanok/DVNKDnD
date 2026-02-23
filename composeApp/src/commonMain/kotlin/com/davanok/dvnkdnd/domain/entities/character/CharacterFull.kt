@@ -5,6 +5,7 @@ import com.davanok.dvnkdnd.core.utils.enumValueOfOrNull
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.domain.dnd.calculateSpellDifficultyClass
 import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
+import com.davanok.dvnkdnd.domain.entities.SpeedValues
 import com.davanok.dvnkdnd.domain.entities.DatabaseImage
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateModifiers.calculateValueModifiers
 import com.davanok.dvnkdnd.domain.entities.character.characterUtils.calculateSpellSlots
@@ -131,7 +132,7 @@ data class CharacterModifiedValues(
     val skillModifiers: SkillsGroup,
     val health: CharacterHealth,
     val derivedValues: CharacterDerivedValues,
-    val speed: CharacterSpeed,
+    val speed: SpeedValues,
     // TODO: implement other modifier value targets
 )
 

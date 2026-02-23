@@ -6,8 +6,10 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedD
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedRollModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedValueModifier
 import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterFull
+import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterAttributes
 import com.davanok.dvnkdnd.domain.entities.character.CharacterCustomModifier
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDDamageModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDRollModifier
@@ -59,5 +61,12 @@ class EditCharacterRepositoryImpl(
         modifier: CharacterCustomModifier
     ): Result<Unit> = runLogging("setCustomModifier") {
         dao.deleteCharacterCustomModifier(characterId, modifier)
+    }
+
+    override suspend fun setCharacterAttributes(
+        characterId: Uuid,
+        attributes: AttributesGroup
+    ): Result<Unit> = runLogging("setCharacterAttributes") {
+        dao.insertCharacterAttributes(attributes.toDbCharacterAttributes(characterId))
     }
 }
