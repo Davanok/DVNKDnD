@@ -12,5 +12,5 @@ data class DbCharacterFullOptionalValues(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val speedValues: DbCharacterOptionalSpeedValues
+    val speedValues: DbCharacterOptionalSpeedValues?
 )

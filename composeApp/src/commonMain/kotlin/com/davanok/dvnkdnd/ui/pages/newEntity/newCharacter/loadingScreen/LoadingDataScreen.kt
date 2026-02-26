@@ -3,8 +3,8 @@ package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.loadingScreen
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SignalWifiConnectedNoInternet4
-import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -47,7 +47,7 @@ fun LoadingDataScreen(
                 )
                 else {
                     val stateValues = LoadingDataUiState.entries
-                    CircularWavyProgressIndicator(
+                    LoadingIndicator(
                         progress = { stateValues.indexOf(uiState) / stateValues.size.toFloat() }
                     )
                 }

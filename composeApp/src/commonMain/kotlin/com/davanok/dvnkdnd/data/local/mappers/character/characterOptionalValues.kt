@@ -8,7 +8,7 @@ fun DbCharacterFullOptionalValues.toCharacterOptionalValues() = CharacterOptiona
     proficiencyBonus = base.proficiencyBonus,
     initiative = base.initiative,
     armorClass = base.armorClass,
-    speedValues = speedValues.toSpeedValues()
+    speedValues = speedValues?.toSpeedValues()
 )
 fun CharacterOptionalValues.toDbCharacterOptionalValues(characterId: Uuid) = DbCharacterOptionalValues(
     id = characterId,

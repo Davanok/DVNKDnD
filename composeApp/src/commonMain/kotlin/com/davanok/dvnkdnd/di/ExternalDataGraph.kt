@@ -15,6 +15,7 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
+import kotlin.time.Duration.Companion.seconds
 
 interface ExternalDataGraph {
     @Provides
@@ -23,6 +24,7 @@ interface ExternalDataGraph {
         supabaseUrl = BuildConfig.SUPABASE_URL,
         supabaseKey = BuildConfig.SUPABASE_KEY
     ) {
+        requestTimeout = 30.seconds
         install(Postgrest)
         install(Storage)
     }
