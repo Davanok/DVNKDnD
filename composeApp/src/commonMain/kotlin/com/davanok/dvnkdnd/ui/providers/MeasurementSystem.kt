@@ -9,10 +9,10 @@ data class MeasurementSystemConfig(
     val length: MeasurementSystem
 )
 
-val LocalMeasurementSystem = staticCompositionLocalOf<MeasurementSystemConfig> {
-    Napier.w { "CompositionLocal MeasurementSystemConfig not provided - using metric" }
+val LocalMeasurementSystem = staticCompositionLocalOf {
+    Napier.w { "CompositionLocal MeasurementSystemConfig not provided - using imperial" }
     MeasurementSystemConfig(
-        weight = MeasurementSystem.METRIC,
-        length = MeasurementSystem.METRIC
+        weight = MeasurementSystem.IMPERIAL,
+        length = MeasurementSystem.IMPERIAL
     )
 }

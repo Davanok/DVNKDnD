@@ -5,10 +5,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import com.davanok.dvnkdnd.domain.enums.configs.MeasurementSystem
 import com.davanok.dvnkdnd.ui.navigation.NavigationHost
-import com.davanok.dvnkdnd.ui.providers.LocalMeasurementSystem
-import com.davanok.dvnkdnd.ui.providers.MeasurementSystemConfig
 import com.davanok.dvnkdnd.ui.theme.DVNKDnDAppTheme
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
@@ -34,7 +31,6 @@ private fun AppUi(
 ) {
     DVNKDnDAppTheme(onThemeChanged = onThemeChanged) {
         CompositionLocalProvider(
-            LocalMeasurementSystem provides MeasurementSystemConfig(MeasurementSystem.METRIC, MeasurementSystem.METRIC),
             LocalMetroViewModelFactory provides metroVmf
         ) {
             Surface {

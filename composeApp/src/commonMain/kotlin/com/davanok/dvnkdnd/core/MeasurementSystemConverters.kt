@@ -2,15 +2,17 @@ package com.davanok.dvnkdnd.core
 
 object MeasurementSystemConverters {
     object Length {
-        fun centimeterToInch(cm: Int): Float = cm * 0.393701f
+        fun inchToCentimeter(inch: Double): Double = inch * 2.54
+        fun centimeterToInch(cm: Double): Double = cm / 2.54
 
-        fun inchToFoot(inch: Float): Float = inch * 0.0833333f
-        fun footToInch(foot: Float): Float = foot * 12
+        fun inchToFoot(inch: Double): Double = inch / 12
+        fun footToInch(foot: Double): Double = foot * 12
     }
     object Weight {
-        fun gramToOunce(g: Int): Float = g * 0.035274f
+        fun ounceToGram(oz: Double): Double = oz * 28.3459
+        fun gramToOunce(g: Double): Double = g / 28.3459
 
-        fun ounceToFount(oz: Float): Float = oz * 0.0625f
-        fun fountToOunce(ft: Float): Float = ft * 16
+        fun ounceToPound(oz: Double): Double = oz / 16
+        fun fountToOunce(ft: Double): Double = ft * 16
     }
 }
