@@ -7,6 +7,10 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.rpc
 import io.github.jan.supabase.storage.Storage
@@ -15,6 +19,9 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.uuid.Uuid
 
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(scope = AppScope::class)
 class BrowseRepositoryImpl(
     private val postgrest: Postgrest,
     private val storage: Storage,

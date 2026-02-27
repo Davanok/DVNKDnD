@@ -8,10 +8,15 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
 import com.davanok.dvnkdnd.domain.usecases.entities.BrowseEntitiesUseCase
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 
 @Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(scope = AppScope::class)
 class BrowseEntitiesUseCaseImpl(
     val browseRepository: BrowseRepository
 ): BrowseEntitiesUseCase {

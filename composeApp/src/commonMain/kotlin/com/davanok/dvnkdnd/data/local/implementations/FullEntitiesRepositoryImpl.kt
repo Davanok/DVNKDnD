@@ -5,10 +5,15 @@ import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.entities.FullEntitiesDao
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDnDFullEntity
 import com.davanok.dvnkdnd.domain.repositories.local.FullEntitiesRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.uuid.Uuid
 
 @Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(scope = AppScope::class)
 class FullEntitiesRepositoryImpl(
     private val dao: FullEntitiesDao
 ) : FullEntitiesRepository {

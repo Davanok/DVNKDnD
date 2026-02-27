@@ -3,7 +3,10 @@ package com.davanok.dvnkdnd.data.local.implementations
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.domain.DataDirectories
 import com.davanok.dvnkdnd.domain.repositories.local.FilesRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import okio.FileSystem
 import okio.IOException
 import okio.Path
@@ -12,6 +15,8 @@ import okio.SYSTEM
 import kotlin.uuid.Uuid
 
 @Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(scope = AppScope::class)
 class FilesRepositoryImpl(
     private val directories: DataDirectories
 ): FilesRepository {

@@ -6,13 +6,18 @@ import com.davanok.dvnkdnd.domain.repositories.local.EntitiesRepository
 import com.davanok.dvnkdnd.domain.repositories.local.FullEntitiesRepository
 import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
 import com.davanok.dvnkdnd.domain.usecases.entities.EntitiesBootstrapper
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.uuid.Uuid
 
 @Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(scope = AppScope::class)
 class EntitiesBootstrapperImpl(
     private val browseRepository: BrowseRepository,
     private val entitiesRepository: EntitiesRepository,

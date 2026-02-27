@@ -1,12 +1,7 @@
 package com.davanok.dvnkdnd.di
 
 import com.davanok.dvnkdnd.BuildConfig
-import com.davanok.dvnkdnd.data.remote.implementations.BrowseRepositoryImpl
-import com.davanok.dvnkdnd.data.remote.implementations.ExternalKeyValueRepositoryImpl
-import com.davanok.dvnkdnd.domain.repositories.remote.BrowseRepository
-import com.davanok.dvnkdnd.domain.repositories.remote.ExternalKeyValueRepository
 import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.Binds
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import io.github.jan.supabase.SupabaseClient
@@ -30,10 +25,7 @@ interface ExternalDataGraph {
     }
 
     @Provides
-    @SingleIn(AppScope::class)
-    fun provideBrowseRepository(supabase: SupabaseClient): BrowseRepository =
-        BrowseRepositoryImpl(supabase.postgrest, supabase.storage)
-
-    val externalKeyValueRepository: ExternalKeyValueRepository
-    @Binds val ExternalKeyValueRepositoryImpl.bind: ExternalKeyValueRepository
+    fun provideSupabasePostgrest(supabase: SupabaseClient): Postgrest = supabase.postgrest
+    @Provides
+    fun provideSupabaseStorage(supabase: SupabaseClient): Storage = supabase.storage
 }

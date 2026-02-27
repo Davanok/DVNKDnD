@@ -15,7 +15,10 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDRollModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDValueModifier
 import com.davanok.dvnkdnd.domain.repositories.local.EditCharacterRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -23,6 +26,8 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlin.uuid.Uuid
 
 @Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(scope = AppScope::class)
 class EditCharacterRepositoryImpl(
     private val dao: CharactersDao
 ) : EditCharacterRepository {
