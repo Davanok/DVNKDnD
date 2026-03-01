@@ -1,10 +1,9 @@
-package com.davanok.dvnkdnd.ui.components
+package com.davanok.dvnkdnd.ui.components.textFields
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
@@ -16,7 +15,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 
 
 @Composable
-fun NullableOutlinedIntTextField(
+fun OutlinedNullableIntTextField(
     value: Int?,
     onValueChange: (Int?) -> Unit,
     modifier: Modifier = Modifier,
@@ -40,7 +39,7 @@ fun NullableOutlinedIntTextField(
     minLines: Int = 1,
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
-) = OutlinedTextField(
+) = HoldCursorInEndOutlinedTextField(
     value = value?.toString() ?: "",
     onValueChange = {
         if (it.isEmpty()) onValueChange(null)
@@ -70,7 +69,7 @@ fun NullableOutlinedIntTextField(
 )
 
 @Composable
-fun NullableOutlinedFloatTextField(
+fun OutlinedNullableFloatTextField(
     value: Float?,
     onValueChange: (Float?) -> Unit,
     modifier: Modifier = Modifier,
@@ -94,7 +93,7 @@ fun NullableOutlinedFloatTextField(
     minLines: Int = 1,
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
-) = OutlinedTextField(
+) = HoldCursorInEndOutlinedTextField(
     value = value?.toString() ?: "",
     onValueChange = {
         if (it.isEmpty()) onValueChange(null)
@@ -124,7 +123,7 @@ fun NullableOutlinedFloatTextField(
 )
 
 @Composable
-fun NullableOutlinedDoubleTextField(
+fun OutlinedNullableDoubleTextField(
     value: Double?,
     onValueChange: (Double?) -> Unit,
     modifier: Modifier = Modifier,
@@ -148,7 +147,7 @@ fun NullableOutlinedDoubleTextField(
     minLines: Int = 1,
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
-) = OutlinedTextField(
+) = HoldCursorInEndOutlinedTextField(
     value = value?.toString() ?: "",
     onValueChange = {
         if (it.isEmpty()) onValueChange(null)

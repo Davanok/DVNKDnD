@@ -67,6 +67,7 @@ import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
+import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityAdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterMain
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
@@ -163,10 +164,10 @@ fun NewCharacterMainScreen(
     }
 
     if (uiState.showSearchSheet != null)
-        SearchSheet(
+        SearchEntityAdaptiveModalSheet(
             entityType = uiState.showSearchSheet!!,
-            onSelectEntity = { viewModel.selectSearchSheetEntity(it.parentEntity, it.childEntity) },
-            onEntityInfo = navigateToEntityInfo,
+            onEntityClick = { viewModel.selectSearchSheetEntity(it.parentEntity, it.childEntity) },
+            onEntityInfoClick = navigateToEntityInfo,
             onDismissRequest = viewModel::hideSearchSheet
         )
 }

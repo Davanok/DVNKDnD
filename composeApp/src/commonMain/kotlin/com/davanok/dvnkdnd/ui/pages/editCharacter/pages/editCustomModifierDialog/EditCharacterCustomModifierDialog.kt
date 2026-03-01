@@ -42,8 +42,8 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueOperation
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ValueSourceType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.targetKeys
 import com.davanok.dvnkdnd.ui.components.EntriesDropdown
-import com.davanok.dvnkdnd.ui.components.OutlinedDoubleTextField
-import com.davanok.dvnkdnd.ui.components.OutlinedIntTextField
+import com.davanok.dvnkdnd.ui.components.textFields.OutlinedDoubleTextField
+import com.davanok.dvnkdnd.ui.components.textFields.OutlinedIntTextField
 import com.davanok.dvnkdnd.ui.components.UiEntriesDropdown
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import dvnkdnd.composeapp.generated.resources.Res

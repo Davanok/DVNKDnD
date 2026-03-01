@@ -36,9 +36,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiToaster
+import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityAdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.pages.editCharacter.pages.EditCharacterAttributesPage
 import com.davanok.dvnkdnd.ui.pages.editCharacter.pages.EditCharacterHealthPage
@@ -83,6 +85,7 @@ fun EditCharacterScreen(
                     onBack = navigateBack,
                     navigateToEntityInfo = navigateToEntityInfo,
                     character = character,
+                    addEntityDialog = uiState.addEntityDialog,
                     currentPage = uiState.currentPage,
                     onPageChanged = viewModel::setPage,
                     eventSink = viewModel::eventSink,
@@ -98,6 +101,7 @@ private fun Content(
     onBack: () -> Unit,
     navigateToEntityInfo: (DnDEntityMin) -> Unit,
     character: CharacterFull,
+    addEntityDialog: DnDEntityTypes?,
     currentPage: EditCharacterUiState.Page,
     onPageChanged: (EditCharacterUiState.Page) -> Unit,
     eventSink: (EditCharacterScreenEvent) -> Unit,
@@ -156,6 +160,15 @@ private fun Content(
                 )
             }
         }
+    }
+
+    if (addEntityDialog != null) {
+        SearchEntityAdaptiveModalSheet(
+            entityType = addEntityDialog,
+            onEntityClick = { eventSink(EditCharacterScreenEvent.AddCharacterEntity(it.parentEntity.toDnDEntityMin(), it.childEntity)) },
+            onEntityInfoClick = navigateToEntityInfo,
+            onDismissRequest = { eventSink(EditCharacterScreenEvent.HideAddEntityDialog) }
+        )
     }
 }
 

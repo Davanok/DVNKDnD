@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterCustomModifier
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterOptionalValues
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
+import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.repositories.local.EditCharacterRepository
 import com.davanok.dvnkdnd.domain.usecases.entities.EntitiesBootstrapper
 import com.davanok.dvnkdnd.ui.components.UiMessage
@@ -39,7 +42,7 @@ class EditCharacterViewModel(
     @Assisted private val characterId: Uuid,
     private val bootstrapper: EntitiesBootstrapper,
     private val repository: EditCharacterRepository
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(EditCharacterUiState(isLoading = true))
     private val _character = repository.getFullCharacterFlow(characterId)
 
@@ -67,9 +70,22 @@ class EditCharacterViewModel(
         initialValue = EditCharacterUiState(isLoading = true)
     )
 
+    fun showAddEntityDialog(entityType: DnDEntityTypes) = _uiState.update {
+        it.copy(addEntityDialog = entityType)
+    }
+
+    fun hideAddEntityDialog() = _uiState.update {
+        it.copy(addEntityDialog = null)
+    }
+
+    fun addEntity(entity: DnDEntityMin, subEntity: DnDEntityMin?) = viewModelScope.launch {
+        TODO()
+    }
+
     fun removeMessage(messageId: Uuid) = _uiState.update { state ->
         state.copy(messages = state.messages.filter { it.id != messageId })
     }
+
     fun setPage(page: EditCharacterUiState.Page) = _uiState.update {
         it.copy(currentPage = page)
     }
@@ -77,27 +93,44 @@ class EditCharacterViewModel(
     fun updateCharacterBase(character: CharacterBase) = viewModelScope.launch {
         TODO()
     }
+
     fun updateAttributes(attributes: AttributesGroup) = viewModelScope.launch {
         repository.setCharacterAttributes(characterId, attributes)
     }
+
     fun setModifierSelection(modifier: DnDModifier, selected: Boolean) = viewModelScope.launch {
         repository.setModifierSelection(characterId, modifier, selected)
     }
+
     fun setCharacterCustomModifier(modifier: CharacterCustomModifier) = viewModelScope.launch {
         repository.setCustomModifier(characterId, modifier)
     }
+
     fun deleteCharacterCustomModifier(modifier: CharacterCustomModifier) = viewModelScope.launch {
         repository.deleteCustomModifier(characterId, modifier)
     }
 
+    fun setOptionalValues(values: CharacterOptionalValues) = viewModelScope.launch {
+        repository.setCharacterOptionalValues(characterId, values)
+    }
+
     fun eventSink(event: EditCharacterScreenEvent) {
         when (event) {
+            is EditCharacterScreenEvent.ShowAddEntityDialog -> showAddEntityDialog(event.entityType)
+            EditCharacterScreenEvent.HideAddEntityDialog -> hideAddEntityDialog()
+            is EditCharacterScreenEvent.AddCharacterEntity -> addEntity(event.entity, event.subEntity)
+
             is EditCharacterScreenEvent.UpdateCharacterBase -> updateCharacterBase(event.character)
             is EditCharacterScreenEvent.UpdateAttributes -> updateAttributes(event.attributes)
             is EditCharacterScreenEvent.SetModifierSelection -> setModifierSelection(event.modifier, event.selected)
+
             is EditCharacterScreenEvent.SetCharacterCustomModifier -> setCharacterCustomModifier(event.modifier)
+
             is EditCharacterScreenEvent.DeleteCharacterCustomModifier -> deleteCharacterCustomModifier(event.modifier)
-            else -> { TODO() }
+
+            is EditCharacterScreenEvent.UpdateOptionalValues -> setOptionalValues(event.values)
+            is EditCharacterScreenEvent.RemoveCharacterEntity -> TODO()
+            is EditCharacterScreenEvent.SetCharacterEntityLevel -> TODO()
         }
     }
 
@@ -113,6 +146,7 @@ data class EditCharacterUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
     val character: CharacterFull? = null,
+    val addEntityDialog: DnDEntityTypes? = null,
     val messages: List<UiMessage> = emptyList(),
     val currentPage: Page = Page.entries.first()
 ) {

@@ -1,10 +1,9 @@
-package com.davanok.dvnkdnd.ui.components
+package com.davanok.dvnkdnd.ui.components.textFields
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
@@ -39,7 +38,7 @@ fun OutlinedIntTextField(
     minLines: Int = 1,
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
-) = OutlinedTextField(
+) = HoldCursorInEndOutlinedTextField(
     value = value.toString(),
     onValueChange = { it.toIntOrNull()?.let(onValueChange) },
     modifier = modifier,
@@ -90,7 +89,7 @@ fun OutlinedFloatTextField(
     minLines: Int = 1,
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
-) = OutlinedTextField(
+) = HoldCursorInEndOutlinedTextField(
     value = value.toString(),
     onValueChange = { it.toFloatOrNull()?.let(onValueChange) },
     modifier = modifier,
@@ -141,7 +140,7 @@ fun OutlinedDoubleTextField(
     minLines: Int = 1,
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
-) = OutlinedTextField(
+) = HoldCursorInEndOutlinedTextField(
     value = value.toString(),
     onValueChange = { it.toDoubleOrNull()?.let(onValueChange) },
     modifier = modifier,

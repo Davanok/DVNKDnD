@@ -1,59 +1,100 @@
 package com.davanok.dvnkdnd.ui.pages.editCharacter.pages
 
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.davanok.dvnkdnd.core.utils.groupByNotNull
+import com.davanok.dvnkdnd.domain.dnd.proficiencyBonusByLevel
 import com.davanok.dvnkdnd.domain.entities.SpeedValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterModifiedValues
 import com.davanok.dvnkdnd.domain.entities.character.CharacterOptionalValues
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
+import com.davanok.dvnkdnd.domain.entities.toMap
+import com.davanok.dvnkdnd.domain.entities.update
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Attributes
+import com.davanok.dvnkdnd.domain.enums.dndEnums.CharacterMovementType
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
-import com.davanok.dvnkdnd.ui.components.NullableOutlinedIntTextField
-import com.davanok.dvnkdnd.ui.components.OutlinedIntTextField
 import com.davanok.dvnkdnd.ui.components.text.modifiersText.buildPreview
+import com.davanok.dvnkdnd.ui.components.textFields.OutlinedNullableIntTextField
 import com.davanok.dvnkdnd.ui.pages.editCharacter.EditCharacterScreenEvent
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.character_armor_class
-import dvnkdnd.composeapp.generated.resources.character_initiative
-import dvnkdnd.composeapp.generated.resources.character_movement_type_climb
-import dvnkdnd.composeapp.generated.resources.character_movement_type_fly
-import dvnkdnd.composeapp.generated.resources.character_movement_type_swim
-import dvnkdnd.composeapp.generated.resources.character_movement_type_walk
+import dvnkdnd.composeapp.generated.resources.armor_class
+import dvnkdnd.composeapp.generated.resources.attributes_header
 import dvnkdnd.composeapp.generated.resources.decrease_value
 import dvnkdnd.composeapp.generated.resources.increase_value
+import dvnkdnd.composeapp.generated.resources.movement_speed
 import dvnkdnd.composeapp.generated.resources.overrides
 import dvnkdnd.composeapp.generated.resources.proficiency_bonus
-import dvnkdnd.composeapp.generated.resources.total_value
+import dvnkdnd.composeapp.generated.resources.remove_speed_overrides
+import dvnkdnd.composeapp.generated.resources.reset_value
+import dvnkdnd.composeapp.generated.resources.value_by_default
 import org.jetbrains.compose.resources.stringResource
+
+@Immutable
+data class UiState(
+    val baseAttributes: AttributesGroup,
+    val attributeModifiers: Map<Attributes, List<ValueModifierInfo>>,
+    val optionalValues: CharacterOptionalValues,
+    val resolvedValues: CharacterModifiedValues,
+    val characterBaseProficiencyBonus: Int
+)
+
+private fun CharacterFull.toUiState() = UiState(
+    baseAttributes = attributes,
+    attributeModifiers = calculatedValueModifiers[ModifierValueTarget.ATTRIBUTE]
+        ?.groupByNotNull { it.targetAs<Attributes>() }
+        .orEmpty(),
+    optionalValues = optionalValues,
+    resolvedValues = appliedValues,
+    characterBaseProficiencyBonus = proficiencyBonusByLevel(character.level)
+)
 
 @Composable
 fun EditCharacterAttributesPage(
@@ -61,147 +102,188 @@ fun EditCharacterAttributesPage(
     eventSink: (EditCharacterScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val uiState = remember(character) { character.toUiState() }
     Content(
-        optionalValues = character.optionalValues,
-        attributes = character.attributes,
+        uiState = uiState, // Pass character or specific properties for better stability
         onAttributeChange = { attribute, value ->
-            // Update the specific attribute and send the event
             val updatedAttributes = character.attributes.set(attribute, value)
             eventSink(EditCharacterScreenEvent.UpdateAttributes(updatedAttributes))
         },
-        modifiedValues = character.appliedValues.attributes,
-        modifiers = character.calculatedValueModifiers[ModifierValueTarget.ATTRIBUTE].orEmpty(),
-        modifier = modifier,
-        proficiencyBonus = character.proficiencyBonus,
-        resolvedValues = character.appliedValues,
-        onOptionalValuesChange = { eventSink(EditCharacterScreenEvent.UpdateOptionalValues(it)) }
+        onOptionalValuesChange = { eventSink(EditCharacterScreenEvent.UpdateOptionalValues(it)) },
+        modifier = modifier
     )
 }
 
 @Composable
 private fun Content(
-    proficiencyBonus: Int,
-    optionalValues: CharacterOptionalValues,
-    resolvedValues: CharacterModifiedValues,
-    attributes: AttributesGroup,
+    uiState: UiState,
     onAttributeChange: (Attributes, Int) -> Unit,
-    modifiedValues: AttributesGroup,
-    modifiers: List<ValueModifierInfo>,
     onOptionalValuesChange: (CharacterOptionalValues) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    var itemsMaxHeight by remember { mutableIntStateOf(0) }
+    val density = LocalDensity.current
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Attributes.entries.forEach { attribute ->
-            val targetModifiers = remember(modifiers) {
-                modifiers.filter { it.modifier.targetKey == attribute.name }
+        // --- Attributes Section ---
+        Text(
+            text = stringResource(Res.string.attributes_header), // Use a header
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            maxItemsInEachRow = 3,
+            maxLines = 3
+        ) {
+            Attributes.entries.forEach { attribute ->
+                AttributeCard(
+                    attribute = attribute,
+                    baseValue = uiState.baseAttributes[attribute],
+                    modifiedValue = uiState.resolvedValues.attributes[attribute],
+                    modifiers = uiState.attributeModifiers[attribute].orEmpty(),
+                    onValueChange = { onAttributeChange(attribute, it) },
+                    modifier = Modifier.weight(1f)
+                        .then(
+                            if (itemsMaxHeight > 0) Modifier.height(density.run { itemsMaxHeight.toDp() })
+                            else Modifier
+                        )
+                        .onGloballyPositioned {
+                            val h = it.size.height
+                            if (h > itemsMaxHeight) itemsMaxHeight = h
+                        }
+                )
             }
-            AttributeStepperRow(
-                attributeName = stringResource(attribute.stringRes),
-                baseValue = attributes[attribute],
-                modifiedValue = modifiedValues[attribute],
-                onValueChange = { newValue -> onAttributeChange(attribute, newValue) },
-                modifiers = targetModifiers
-            )
         }
 
-        OptionalValues(
-            optionalValues = optionalValues,
-            onChange = onOptionalValuesChange,
-            resolvedValues = resolvedValues,
-            proficiencyBonus = proficiencyBonus
+        Text(
+            text = stringResource(Res.string.overrides),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        // --- Overrides / Optional Values Section ---
+        OptionalValuesSection(
+            optionalValues = uiState.optionalValues,
+            resolvedValues = uiState.resolvedValues,
+            proficiencyBonus = uiState.characterBaseProficiencyBonus,
+            onChange = onOptionalValuesChange
         )
     }
 }
 
 @Composable
-private fun AttributeStepperRow(
-    attributeName: String,
+private fun AttributeCard(
+    attribute: Attributes,
     baseValue: Int,
     modifiedValue: Int,
-    onValueChange: (Int) -> Unit,
     modifiers: List<ValueModifierInfo>,
+    onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+    val currentValue by rememberUpdatedState(baseValue)
+    val attributeName = stringResource(attribute.stringRes)
+    val interactionSource = remember { MutableInteractionSource() }
+
+    OutlinedCard(modifier = modifier) {
+        Column(
+            modifier = Modifier.padding(12.dp).align(Alignment.CenterHorizontally),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = attributeName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+            Text(
+                text = attributeName,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary
+            )
 
-                    if (modifiedValue != baseValue) {
-                        Text(
-                            text = stringResource(Res.string.total_value, modifiedValue),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
+            Spacer(Modifier.height(8.dp))
 
-                if (modifiers.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Column(
-                        modifier = Modifier.padding(start = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        modifiers.forEach { modifierInfo ->
-                            Text(
-                                text = "• ${modifierInfo.buildPreview()}",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
+            Text(
+                text = modifiedValue.toString(),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
 
+            // Stepper Control
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(CircleShape)
+                    .indication(interactionSource, ripple())
+                    .hoverable(interactionSource)
+                    .pointerHoverIcon(PointerIcon.Hand)
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            var accumulator = 0f
+
+                            while (true) {
+                                val event = awaitPointerEvent()
+
+                                if (event.type == PointerEventType.Scroll) {
+                                    event.changes.forEach { change ->
+                                        accumulator += change.scrollDelta.y
+
+                                        if (accumulator <= -1f) {
+                                            onValueChange(currentValue + 1)
+                                            accumulator = 0f
+                                        } else if (accumulator >= 1f) {
+                                            onValueChange(currentValue - 1)
+                                            accumulator = 0f
+                                        }
+
+                                        change.consume()
+                                    }
+                                }
+                            }
+                        }
+                    },
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 IconButton(onClick = { onValueChange(baseValue - 1) }) {
                     Icon(
                         imageVector = Icons.Default.Remove,
-                        contentDescription = stringResource(Res.string.decrease_value, attributeName)
+                        contentDescription = stringResource(
+                            Res.string.decrease_value,
+                            attributeName
+                        )
                     )
                 }
-
                 Text(
                     text = baseValue.toString(),
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.defaultMinSize(minWidth = 32.dp),
-                    textAlign = TextAlign.Center
+                    fontWeight = FontWeight.Bold,
                 )
-
                 IconButton(onClick = { onValueChange(baseValue + 1) }) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(Res.string.increase_value, attributeName)
+                        contentDescription = stringResource(
+                            Res.string.increase_value,
+                            attributeName
+                        )
+                    )
+                }
+            }
+
+            // Show active modifiers as small badges
+            if (modifiers.isNotEmpty()) {
+                HorizontalDivider()
+                modifiers.forEach { info ->
+                    Text(
+                        text = info.buildPreview(),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
@@ -210,70 +292,41 @@ private fun AttributeStepperRow(
 }
 
 @Composable
-private fun OptionalValues(
+private fun OptionalValuesSection(
     optionalValues: CharacterOptionalValues,
-    onChange: (CharacterOptionalValues) -> Unit,
     resolvedValues: CharacterModifiedValues,
     proficiencyBonus: Int,
-    modifier: Modifier = Modifier
+    onChange: (CharacterOptionalValues) -> Unit
 ) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceContainer,
-        shape = MaterialTheme.shapes.extraLarge,
-        modifier = modifier
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                text = stringResource(Res.string.overrides),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
+            // Core Overrides in a Row
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedOverridableIntTextField(
+                    baseValue = proficiencyBonus,
+                    overriddenValue = optionalValues.proficiencyBonus,
+                    onValueChange = { onChange(optionalValues.copy(proficiencyBonus = it)) },
+                    label = { Text(stringResource(Res.string.proficiency_bonus), maxLines = 1) },
+                    modifier = Modifier.weight(1f)
+                )
+                OutlinedOverridableIntTextField(
+                    baseValue = resolvedValues.derivedValues.armorClass,
+                    overriddenValue = optionalValues.armorClass,
+                    onValueChange = { onChange(optionalValues.copy(armorClass = it)) },
+                    label = { Text(stringResource(Res.string.armor_class), maxLines = 1) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Spacer(Modifier.height(8.dp))
 
-            NullableOutlinedIntTextField(
-                value = optionalValues.proficiencyBonus,
-                onValueChange = { onChange(optionalValues.copy(proficiencyBonus = it)) },
-                label = {
-                    Text(text = stringResource(Res.string.proficiency_bonus))
-                },
-                placeholder = {
-                    Text(text = proficiencyBonus.toString())
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            NullableOutlinedIntTextField(
-                value = optionalValues.initiative,
-                onValueChange = { onChange(optionalValues.copy(initiative = it)) },
-                label = {
-                    Text(text = stringResource(Res.string.character_initiative))
-                },
-                placeholder = {
-                    Text(text = resolvedValues.derivedValues.initiative.toString())
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            NullableOutlinedIntTextField(
-                value = optionalValues.armorClass,
-                onValueChange = { onChange(optionalValues.copy(armorClass = it)) },
-                label = {
-                    Text(text = stringResource(Res.string.character_armor_class))
-                },
-                placeholder = {
-                    Text(text = resolvedValues.derivedValues.armorClass.toString())
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            HorizontalDivider()
-
-            SpeedSegment(
-                speedValues = optionalValues.speedValues ?: SpeedValues.Default,
-                resolvedSpeedValues = resolvedValues.speed,
-                onSpeedChange = {
+            MovementSpeedSection(
+                resolvedSpeed = resolvedValues.speed,
+                overriddenSpeed = optionalValues.speedValues,
+                onOverriddenSpeedChange = {
                     onChange(optionalValues.copy(speedValues = it))
                 }
             )
@@ -282,63 +335,91 @@ private fun OptionalValues(
 }
 
 @Composable
-private fun SpeedSegment(
-    speedValues: SpeedValues,
-    resolvedSpeedValues: SpeedValues,
-    onSpeedChange: (SpeedValues) -> Unit,
+private fun MovementSpeedSection(
+    resolvedSpeed: SpeedValues,
+    overriddenSpeed: SpeedValues?,
+    onOverriddenSpeedChange: (SpeedValues?) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        OutlinedIntTextField(
-            value = speedValues.walk,
-            onValueChange = { onSpeedChange(speedValues.copy(walk = it)) },
-            label = {
-                Text(text = stringResource(Res.string.character_movement_type_walk))
-            },
-            placeholder = {
-                Text(text = resolvedSpeedValues.walk.toString())
-            },
-            modifier = Modifier.weight(1f)
-        )
-        OutlinedIntTextField(
-            value = speedValues.swim,
-            onValueChange = { onSpeedChange(speedValues.copy(swim = it)) },
-            label = {
-                Text(text = stringResource(Res.string.character_movement_type_swim))
-            },
-            placeholder = {
-                Text(text = resolvedSpeedValues.swim.toString())
-            },
-            modifier = Modifier.weight(1f)
-        )
+    val resolvedSpeedMap = resolvedSpeed.toMap()
+    val overriddenSpeedMap = overriddenSpeed?.toMap()
+
+    Column(modifier = modifier) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(Res.string.movement_speed),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
+            )
+
+            IconButton(
+                onClick = { onOverriddenSpeedChange(null) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Restore,
+                    contentDescription = stringResource(Res.string.remove_speed_overrides)
+                )
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+        // Using a FlowRow (from Foundation) allows these to wrap on small screens
+        FlowRow(
+            maxItemsInEachRow = 2,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            CharacterMovementType.entries.forEach { type ->
+                OutlinedOverridableIntTextField(
+                    baseValue = resolvedSpeedMap[type] ?: 0,
+                    overriddenValue = overriddenSpeedMap?.get(type),
+                    onValueChange = {
+                        val base = overriddenSpeed ?: SpeedValues.Default
+                        onOverriddenSpeedChange(base.update(type, it ?: 0))
+                    },
+                    label = { Text(stringResource(type.stringRes), maxLines = 1) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
     }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        OutlinedIntTextField(
-            value = speedValues.climb,
-            onValueChange = { onSpeedChange(speedValues.copy(climb = it)) },
-            label = {
-                Text(text = stringResource(Res.string.character_movement_type_climb))
-            },
-            placeholder = {
-                Text(text = resolvedSpeedValues.climb.toString())
-            },
-            modifier = Modifier.weight(1f)
-        )
-        OutlinedIntTextField(
-            value = speedValues.fly,
-            onValueChange = { onSpeedChange(speedValues.copy(fly = it)) },
-            label = {
-                Text(text = stringResource(Res.string.character_movement_type_fly))
-            },
-            placeholder = {
-                Text(text = resolvedSpeedValues.fly.toString())
-            },
-            modifier = Modifier.weight(1f)
-        )
-    }
+}
+
+@Composable
+private fun OutlinedOverridableIntTextField(
+    baseValue: Int,
+    overriddenValue: Int?,
+    onValueChange: (Int?) -> Unit,
+    label: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isOverridden = overriddenValue != null
+
+    OutlinedNullableIntTextField(
+        value = overriddenValue,
+        onValueChange = onValueChange,
+        label = label,
+        placeholder = if (isOverridden) null else {
+            { Text(baseValue.toString()) }
+        },
+        supportingText = {
+            Text(stringResource(Res.string.value_by_default, baseValue))
+        },
+        trailingIcon = if (!isOverridden) null else {
+            {
+                IconButton(
+                    onClick = { onValueChange(null) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = stringResource(Res.string.reset_value)
+                    )
+                }
+            }
+        },
+        modifier = modifier
+    )
 }

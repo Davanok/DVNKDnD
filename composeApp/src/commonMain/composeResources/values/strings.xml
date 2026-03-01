@@ -560,4 +560,11 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
 
     <string name="overrides">Overrides</string>
     <string name="proficiency_bonus">Proficiency bonus</string>
+    <string name="armor_class">Armor class</string>
+    <string name="movement_speed">Movement speed</string>
+    <string name="remove_speed_overrides">Remove speed overrides</string>
+    <string name="reset_value">Reset value</string>
+    <string name="value_by_default">Default: %1$s</string>
+
+    <string name="attributes_header">Attributes</string>
 </resources>

@@ -1,26 +1,24 @@
-package com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.newCharacterMain
+package com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
-import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityResult
-import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityScaffold
 
 @Composable
-fun SearchSheet(
+fun SearchEntityAdaptiveModalSheet(
     entityType: DnDEntityTypes,
-    onSelectEntity: (SearchEntityResult) -> Unit,
-    onEntityInfo: (DnDEntityMin) -> Unit,
+    onEntityClick: (SearchEntityResult) -> Unit,
+    onEntityInfoClick: (DnDEntityMin) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AdaptiveModalSheet(onDismissRequest = onDismissRequest) {
         SearchEntityScaffold(
             entityType = entityType,
-            onEntityClick = onSelectEntity,
-            onEntityInfoClick = onEntityInfo,
+            onEntityClick = onEntityClick,
+            onEntityInfoClick = onEntityInfoClick,
             modifier = modifier
         )
     }

@@ -18,8 +18,8 @@ data class SpeedValues(
 fun SpeedValues.toMap() = mapOf(
     CharacterMovementType.WALK to walk,
     CharacterMovementType.SWIM to swim,
-    CharacterMovementType.FLY to fly,
     CharacterMovementType.CLIMB to climb,
+    CharacterMovementType.FLY to fly
 )
 
 fun Map<CharacterMovementType, Int>.toSpeedValues() = SpeedValues(
@@ -28,3 +28,10 @@ fun Map<CharacterMovementType, Int>.toSpeedValues() = SpeedValues(
     fly = get(CharacterMovementType.FLY) ?: 0,
     climb = get(CharacterMovementType.CLIMB) ?: 0
 )
+
+fun SpeedValues.update(type: CharacterMovementType, value: Int) = when (type) {
+    CharacterMovementType.WALK -> copy(walk = value)
+    CharacterMovementType.SWIM -> copy(swim = value)
+    CharacterMovementType.CLIMB -> copy(climb = value)
+    CharacterMovementType.FLY -> copy(fly = value)
+}

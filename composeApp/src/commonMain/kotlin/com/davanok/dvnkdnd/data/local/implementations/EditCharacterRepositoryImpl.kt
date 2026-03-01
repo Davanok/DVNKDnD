@@ -9,6 +9,7 @@ import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterFull
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterAttributes
 import com.davanok.dvnkdnd.domain.entities.character.CharacterCustomModifier
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterOptionalValues
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDDamageModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
@@ -73,5 +74,12 @@ class EditCharacterRepositoryImpl(
         attributes: AttributesGroup
     ): Result<Unit> = runLogging("setCharacterAttributes") {
         dao.insertCharacterAttributes(attributes.toDbCharacterAttributes(characterId))
+    }
+
+    override suspend fun setCharacterOptionalValues(
+        characterId: Uuid,
+        values: CharacterOptionalValues
+    ): Result<Unit> = runLogging("setCharacterOptionalValues") {
+        dao.insertFullOptionalValues(characterId, values)
     }
 }
