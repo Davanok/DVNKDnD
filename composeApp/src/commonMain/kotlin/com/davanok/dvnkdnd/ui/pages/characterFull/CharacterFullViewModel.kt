@@ -12,7 +12,7 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterSpellLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
-import com.davanok.dvnkdnd.domain.usecases.entities.EntitiesBootstrapper
+import com.davanok.dvnkdnd.domain.usecases.entities.bootstrap.EntitiesBootstrapper
 import com.davanok.dvnkdnd.ui.components.UiMessage
 import com.davanok.dvnkdnd.ui.model.UiError
 import dev.zacsweers.metro.AppScope

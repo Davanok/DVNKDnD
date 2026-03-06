@@ -8,8 +8,10 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficien
 
 @Dao
 interface CharacterSelectableEntitiesDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCharacterFeats(feats: List<DbCharacterFeat>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun setCharacterFeat(feat: DbCharacterFeat)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacterSelectedProficiencies(proficiencies: List<DbCharacterProficiency>)

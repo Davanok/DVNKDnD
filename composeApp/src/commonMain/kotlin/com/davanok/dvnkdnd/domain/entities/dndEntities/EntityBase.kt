@@ -19,6 +19,7 @@ data class EntityBase(
 ) {
     fun toEntityMin(image: String? = null) = DnDEntityMin(
         id = id,
+        parentId = parentId,
         type = type,
         name = name,
         description = description,

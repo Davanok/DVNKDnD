@@ -27,6 +27,7 @@ fun List<DbEntityImage>.mainImage(): DbEntityImage? =
 
 fun DbEntityWithImages.toDnDEntityMin() = DnDEntityMin(
     id = entity.id,
+    parentId = entity.parentId,
     type = entity.type,
     name = entity.name,
     description = entity.description,
@@ -35,6 +36,7 @@ fun DbEntityWithImages.toDnDEntityMin() = DnDEntityMin(
 )
 fun DbEntityWithSub.toEntityWithSubEntities() = DnDEntityWithSubEntities(
     id = entity.entity.id,
+    parentId = entity.entity.parentId,
     type = entity.entity.type,
     name = entity.entity.name,
     description = entity.entity.description,

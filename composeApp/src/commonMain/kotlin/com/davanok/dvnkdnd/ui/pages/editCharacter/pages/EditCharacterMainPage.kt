@@ -47,8 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityInfo
-import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityLink
-import com.davanok.dvnkdnd.domain.entities.character.toCharacterMainEntityLink
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.DefaultFloatingActionMenu
 import com.davanok.dvnkdnd.ui.components.NavigationEventHandler
@@ -72,7 +71,6 @@ import dvnkdnd.composeapp.generated.resources.no_races_added_yet
 import dvnkdnd.composeapp.generated.resources.races
 import dvnkdnd.composeapp.generated.resources.remove
 import org.jetbrains.compose.resources.stringResource
-import kotlin.uuid.Uuid
 
 @Immutable
 data class EditCharacterMainPageUiState(
@@ -116,7 +114,7 @@ fun EditCharacterMainPage(
         uiState = uiState,
         onUpdateCharacterBase = { eventSink(EditCharacterScreenEvent.UpdateCharacterBase(it)) },
         setEntityLevel = { entityId, level ->
-            eventSink(EditCharacterScreenEvent.SetCharacterEntityLevel(entityId, level))
+            eventSink(EditCharacterScreenEvent.SetCharacterMainEntityLevel(entityId, level))
         },
         showAddEntityDialog = { eventSink(EditCharacterScreenEvent.ShowAddEntityDialog(it)) },
         removeEntity = { eventSink(EditCharacterScreenEvent.RemoveCharacterEntity(it)) },
@@ -129,9 +127,9 @@ fun EditCharacterMainPage(
 private fun Content(
     uiState: EditCharacterMainPageUiState,
     onUpdateCharacterBase: (CharacterBase) -> Unit,
-    setEntityLevel: (entityId: Uuid, level: Int) -> Unit,
+    setEntityLevel: (entity: DnDEntityMin, level: Int) -> Unit,
     showAddEntityDialog: (DnDEntityTypes) -> Unit,
-    removeEntity: (CharacterMainEntityLink) -> Unit,
+    removeEntity: (DnDEntityMin) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var fabVisible by remember { mutableStateOf(true) }
@@ -205,8 +203,8 @@ private fun Content(
 private fun LazyListScope.entitiesSection(
     entityType: DnDEntityTypes,
     entities: List<CharacterMainEntityInfo>,
-    setEntityLevel: (Uuid, Int) -> Unit,
-    removeEntity: (CharacterMainEntityLink) -> Unit
+    setEntityLevel: (DnDEntityMin, Int) -> Unit,
+    removeEntity: (DnDEntityMin) -> Unit
 ) {
     stickyHeader {
         Surface(modifier = Modifier.fillMaxWidth()) {
@@ -252,8 +250,8 @@ private fun LazyListScope.entitiesSection(
         ) { entity ->
             EntityCard(
                 entity = entity,
-                onLevelChange = { setEntityLevel(entity.entity.entity.id, it) },
-                onRemove = { removeEntity(entity.toCharacterMainEntityLink()) },
+                onLevelChange = { setEntityLevel(entity.entity.entity.toEntityMin(), it) },
+                onRemove = { removeEntity(entity.entity.toDnDEntityMin()) },
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         }

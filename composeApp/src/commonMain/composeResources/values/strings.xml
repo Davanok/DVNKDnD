@@ -567,4 +567,5 @@ Use **Point Buy** when you want balanced power and optimization, **Standard Arra
     <string name="value_by_default">Default: %1$s</string>
 
     <string name="attributes_header">Attributes</string>
+    <string name="failed_to_add_character_entity">Failed to add entity</string>
 </resources>

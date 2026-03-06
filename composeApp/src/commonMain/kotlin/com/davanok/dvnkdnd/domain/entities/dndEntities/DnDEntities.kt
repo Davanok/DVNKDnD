@@ -10,6 +10,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class DnDEntityMin(
     val id: Uuid,
+    val parentId: Uuid?,
     val type: DnDEntityTypes,
     val name: String,
     val description: String,
@@ -21,6 +22,7 @@ data class DnDEntityMin(
 @Serializable
 data class DnDEntityWithSubEntities(
     val id: Uuid,
+    val parentId: Uuid?,
     val type: DnDEntityTypes,
     val name: String,
     val description: String,
@@ -29,5 +31,13 @@ data class DnDEntityWithSubEntities(
     @SerialName("sub_entities")
     val subEntities: List<DnDEntityMin>,
 ) {
-    fun toDnDEntityMin() = DnDEntityMin(id, type, name, description, source, image)
+    fun toDnDEntityMin() = DnDEntityMin(
+        id = id,
+        parentId = parentId,
+        type = type,
+        name = name,
+        description = description,
+        source = source,
+        image = image
+    )
 }

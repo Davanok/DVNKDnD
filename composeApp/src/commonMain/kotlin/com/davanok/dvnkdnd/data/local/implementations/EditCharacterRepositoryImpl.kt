@@ -2,14 +2,23 @@ package com.davanok.dvnkdnd.data.local.implementations
 
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterFeat
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedDamageModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedRollModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedValueModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSpellLink
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterFull
+import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacter
 import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterAttributes
+import com.davanok.dvnkdnd.data.local.mappers.character.toDbCharacterMainEntity
+import com.davanok.dvnkdnd.domain.entities.character.CharacterBase
 import com.davanok.dvnkdnd.domain.entities.character.CharacterCustomModifier
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityLink
 import com.davanok.dvnkdnd.domain.entities.character.CharacterOptionalValues
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDDamageModifier
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
@@ -37,6 +46,12 @@ class EditCharacterRepositoryImpl(
         dao.getFullCharacterFlow(characterId).mapLatest {
             Result.success(it.toCharacterFull())
         }.catch { thr -> emit(Result.failure(thr)) }
+
+    override suspend fun setCharacterBase(
+        characterBase: CharacterBase
+    ): Result<Unit> = runLogging("setCharacterBase") {
+        dao.insertCharacter(characterBase.toDbCharacter())
+    }
 
     override suspend fun setModifierSelection(
         characterId: Uuid,
@@ -81,5 +96,69 @@ class EditCharacterRepositoryImpl(
         values: CharacterOptionalValues
     ): Result<Unit> = runLogging("setCharacterOptionalValues") {
         dao.insertFullOptionalValues(characterId, values)
+    }
+
+    override suspend fun setCharacterMainEntity(
+        characterId: Uuid,
+        entityLink: CharacterMainEntityLink
+    ): Result<Unit> = runLogging("setCharacterMainEntity") {
+        dao.setCharacterMainEntity(entityLink.toDbCharacterMainEntity(characterId))
+    }
+
+    override suspend fun setCharacterMainEntityLevel(
+        characterId: Uuid,
+        entity: DnDEntityMin,
+        level: Int
+    ): Result<Unit> = runLogging("setCharacterMainEntityLevel") {
+        dao.setCharacterMainEntityLevel(characterId, entity.id, level)
+    }
+
+    override suspend fun setCharacterFeat(
+        characterId: Uuid,
+        feat: DnDEntityMin
+    ): Result<Unit> = runLogging("setCharacterFeat") {
+        dao.setCharacterFeat(DbCharacterFeat(characterId, feat.id))
+    }
+
+    override suspend fun setCharacterSpell(
+        characterId: Uuid,
+        spell: DnDEntityMin,
+        ready: Boolean
+    ): Result<Unit> = runLogging("setCharacterSpell") {
+        dao.setCharacterSpell(DbCharacterSpellLink(characterId, spell.id, ready))
+    }
+
+    override suspend fun setCharacterItem(
+        characterId: Uuid,
+        item: DnDEntityMin,
+        equipped: Boolean,
+        attuned: Boolean,
+        count: Int?
+    ): Result<Unit> = runLogging("setCharacterItem") {
+        dao.setCharacterItemLink(
+            DbCharacterItemLink(
+                characterId = characterId,
+                itemId = item.id,
+                equipped = equipped,
+                attuned = attuned,
+                count = count,
+            )
+        )
+    }
+
+    override suspend fun setCharacterState(
+        characterId: Uuid,
+        state: DnDEntityMin,
+        source: DnDEntityMin?,
+        deletable: Boolean
+    ): Result<Unit> = runLogging("setCharacterState") {
+        dao.setCharacterState(
+            DbCharacterStateLink(
+                characterId = characterId,
+                stateId = state.id,
+                sourceId = source?.id,
+                deletable = deletable
+            )
+        )
     }
 }

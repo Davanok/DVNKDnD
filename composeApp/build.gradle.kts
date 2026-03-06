@@ -58,7 +58,7 @@ kotlin {
             implementation(libs.metrox.viewmodel)
             implementation(libs.metrox.viewmodel.compose)
 
-            implementation(libs.supabase.gotrue)
+            implementation(libs.supabase.auth)
             implementation(libs.supabase.postgrest)
             implementation(libs.supabase.storage)
 

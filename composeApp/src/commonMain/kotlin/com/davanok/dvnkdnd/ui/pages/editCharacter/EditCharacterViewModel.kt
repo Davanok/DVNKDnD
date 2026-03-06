@@ -11,7 +11,7 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.repositories.local.EditCharacterRepository
-import com.davanok.dvnkdnd.domain.usecases.entities.EntitiesBootstrapper
+import com.davanok.dvnkdnd.domain.usecases.character.characterEntities.CharacterEntitiesUseCase
 import com.davanok.dvnkdnd.ui.components.UiMessage
 import com.davanok.dvnkdnd.ui.model.UiError
 import dev.zacsweers.metro.AppScope
@@ -26,7 +26,9 @@ import dvnkdnd.composeapp.generated.resources.edit_character_attributes_pane_tit
 import dvnkdnd.composeapp.generated.resources.edit_character_health_pane_title
 import dvnkdnd.composeapp.generated.resources.edit_character_main_pane_title
 import dvnkdnd.composeapp.generated.resources.edit_character_modifiers_pane_title
+import dvnkdnd.composeapp.generated.resources.failed_to_add_character_entity
 import dvnkdnd.composeapp.generated.resources.loading_character_error
+import dvnkdnd.composeapp.generated.resources.saving_data_error
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -40,7 +42,7 @@ import kotlin.uuid.Uuid
 @AssistedInject
 class EditCharacterViewModel(
     @Assisted private val characterId: Uuid,
-    private val bootstrapper: EntitiesBootstrapper,
+    private val characterEntitiesUseCase: CharacterEntitiesUseCase,
     private val repository: EditCharacterRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(EditCharacterUiState(isLoading = true))
@@ -70,6 +72,20 @@ class EditCharacterViewModel(
         initialValue = EditCharacterUiState(isLoading = true)
     )
 
+
+    private suspend inline fun <T> Result<T>.handleFailure(
+        errorMessage: suspend (Throwable) -> String?
+    ) = onFailure { thr ->
+        errorMessage(thr)?.let { message ->
+            _uiState.update { state ->
+                state.copy(
+                    messages = _uiState.value.messages + UiMessage.Warning(message)
+                )
+            }
+        }
+    }
+
+
     fun showAddEntityDialog(entityType: DnDEntityTypes) = _uiState.update {
         it.copy(addEntityDialog = entityType)
     }
@@ -79,7 +95,9 @@ class EditCharacterViewModel(
     }
 
     fun addEntity(entity: DnDEntityMin, subEntity: DnDEntityMin?) = viewModelScope.launch {
-        TODO()
+        characterEntitiesUseCase
+            .addCharacterEntity(characterId, entity, subEntity)
+            .handleFailure { getString(Res.string.failed_to_add_character_entity) }
     }
 
     fun removeMessage(messageId: Uuid) = _uiState.update { state ->
@@ -91,27 +109,40 @@ class EditCharacterViewModel(
     }
 
     fun updateCharacterBase(character: CharacterBase) = viewModelScope.launch {
-        TODO()
+        repository
+            .setCharacterBase(character)
+            .handleFailure { getString(Res.string.saving_data_error) }
     }
 
     fun updateAttributes(attributes: AttributesGroup) = viewModelScope.launch {
         repository.setCharacterAttributes(characterId, attributes)
+            .handleFailure { getString(Res.string.saving_data_error) }
     }
 
     fun setModifierSelection(modifier: DnDModifier, selected: Boolean) = viewModelScope.launch {
         repository.setModifierSelection(characterId, modifier, selected)
+            .handleFailure { getString(Res.string.saving_data_error) }
     }
 
     fun setCharacterCustomModifier(modifier: CharacterCustomModifier) = viewModelScope.launch {
         repository.setCustomModifier(characterId, modifier)
+            .handleFailure { getString(Res.string.saving_data_error) }
     }
 
     fun deleteCharacterCustomModifier(modifier: CharacterCustomModifier) = viewModelScope.launch {
         repository.deleteCustomModifier(characterId, modifier)
+            .handleFailure { getString(Res.string.saving_data_error) }
     }
 
     fun setOptionalValues(values: CharacterOptionalValues) = viewModelScope.launch {
         repository.setCharacterOptionalValues(characterId, values)
+            .handleFailure { getString(Res.string.saving_data_error) }
+    }
+    fun removeCharacterEntity(entity: DnDEntityMin) = viewModelScope.launch {
+        characterEntitiesUseCase.removeCharacterEntity(characterId, entity)
+    }
+    fun setCharacterMainEntityLevel(entity: DnDEntityMin, level: Int) = viewModelScope.launch {
+        repository.setCharacterMainEntityLevel(characterId, entity, level)
     }
 
     fun eventSink(event: EditCharacterScreenEvent) {
@@ -129,8 +160,8 @@ class EditCharacterViewModel(
             is EditCharacterScreenEvent.DeleteCharacterCustomModifier -> deleteCharacterCustomModifier(event.modifier)
 
             is EditCharacterScreenEvent.UpdateOptionalValues -> setOptionalValues(event.values)
-            is EditCharacterScreenEvent.RemoveCharacterEntity -> TODO()
-            is EditCharacterScreenEvent.SetCharacterEntityLevel -> TODO()
+            is EditCharacterScreenEvent.RemoveCharacterEntity -> removeCharacterEntity(event.entity)
+            is EditCharacterScreenEvent.SetCharacterMainEntityLevel -> setCharacterMainEntityLevel(event.entity, event.level)
         }
     }
 
