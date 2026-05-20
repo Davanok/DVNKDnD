@@ -10,8 +10,6 @@ plugins {
 
 dependencies {
     implementation(project(":composeApp"))
-
-    implementation(libs.metrox.viewmodel)
 }
 
 compose.desktop {

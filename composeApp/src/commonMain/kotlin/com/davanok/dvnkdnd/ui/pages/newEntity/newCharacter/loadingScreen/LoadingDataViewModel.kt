@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.Uuid
 
 @Inject
-@ViewModelKey(LoadingDataViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class LoadingDataViewModel(
     private val entitiesBootstrapper: EntitiesBootstrapper,

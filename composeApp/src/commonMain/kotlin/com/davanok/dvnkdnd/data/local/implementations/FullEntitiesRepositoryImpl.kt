@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.local.implementations
 
+import co.touchlab.kermit.Logger
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.entities.FullEntitiesDao
@@ -15,8 +16,11 @@ import kotlin.uuid.Uuid
 @SingleIn(AppScope::class)
 @ContributesBinding(scope = AppScope::class)
 class FullEntitiesRepositoryImpl(
-    private val dao: FullEntitiesDao
+    private val dao: FullEntitiesDao,
+    logger: Logger
 ) : FullEntitiesRepository {
+    private val logger = logger.withTag(TAG)
+    
     override suspend fun getFullEntity(entityId: Uuid): Result<DnDFullEntity?> =
         getFullEntityRecursive(entityId, currentDepth = 0)
 
@@ -24,7 +28,7 @@ class FullEntitiesRepositoryImpl(
         getFullEntitiesRecursive(entityIds, currentDepth = 0)
 
     private suspend fun getFullEntityRecursive(entityId: Uuid, currentDepth: Int): Result<DnDFullEntity?> =
-        runLogging("getFullEntityWithCompanion") {
+        logger.runLogging("getFullEntityWithCompanion") {
             // 1. Fetch the root entity
             val entity = dao.getFullEntity(entityId)?.toDnDFullEntity() ?: return@runLogging null
 
@@ -47,7 +51,7 @@ class FullEntitiesRepositoryImpl(
         }
 
     private suspend fun getFullEntitiesRecursive(entityIds: List<Uuid>, currentDepth: Int): Result<List<DnDFullEntity>> =
-        runLogging("getFullEntitiesWithCompanion") {
+        logger.runLogging("getFullEntitiesWithCompanion") {
             // 1. Batch fetch current level
             val entities = dao.getFullEntities(entityIds).map { it.toDnDFullEntity() }
 
@@ -84,12 +88,12 @@ class FullEntitiesRepositoryImpl(
         }
 
     override suspend fun insertFullEntity(fullEntity: DnDFullEntity): Result<Unit> =
-        runLogging("insertFullEntity") {
+        logger.runLogging("insertFullEntity") {
             dao.insertFullEntity(fullEntity)
         }
 
     override suspend fun insertFullEntities(fullEntities: List<DnDFullEntity>): Result<Unit> =
-        runLogging("insertFullEntities") {
+        logger.runLogging("insertFullEntities") {
             fullEntities.partition { it.entity.parentId == null }.let { (withoutParent, withParent) ->
                 withoutParent.forEach { insertFullEntity(it).getOrThrow() }
                 withParent.forEach { insertFullEntity(it).getOrThrow() }
@@ -99,5 +103,6 @@ class FullEntitiesRepositoryImpl(
 
     companion object {
         private const val MAX_RECURSION_DEPTH = 3
+        private const val TAG = "FullEntitiesRepository"
     }
 }

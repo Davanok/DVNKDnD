@@ -12,7 +12,6 @@ import com.davanok.dvnkdnd.data.local.mappers.entities.toDbEntityProficiency
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbFeat
 import com.davanok.dvnkdnd.data.local.mappers.entities.toDbProficiency
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDFullEntity
-import io.github.aakira.napier.Napier
 import kotlin.uuid.Uuid
 
 @Dao
@@ -27,8 +26,6 @@ interface FullEntitiesDao: EntityInfoDao, EntityAttributesDao {
 
     @Transaction
     suspend fun insertFullEntity(fullEntity: DnDFullEntity) {
-        Napier.i { "insert full entity (${fullEntity.entity.type}) with id: ${fullEntity.entity.id}" }
-
         fullEntity.companionEntities.forEach {
             insertFullEntity(it)
         }

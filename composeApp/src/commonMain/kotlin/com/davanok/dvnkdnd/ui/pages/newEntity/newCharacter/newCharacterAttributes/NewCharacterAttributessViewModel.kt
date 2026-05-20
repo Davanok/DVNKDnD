@@ -176,7 +176,7 @@ class NewCharacterAttributesViewModel(
     )
 
     @AssistedFactory
-    @ManualViewModelAssistedFactoryKey(Factory::class)
+    @ManualViewModelAssistedFactoryKey
     @ContributesIntoMap(AppScope::class)
     fun interface Factory : ManualViewModelAssistedFactory {
         fun create(@Assisted newCharacterViewModel: NewCharacterViewModel): NewCharacterAttributesViewModel

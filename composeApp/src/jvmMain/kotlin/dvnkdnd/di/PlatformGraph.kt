@@ -16,6 +16,7 @@ import okio.Path.Companion.toPath
 import org.jetbrains.skiko.OS
 import org.jetbrains.skiko.hostOs
 
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual interface PlatformGraph {
     actual val dataDirectories: DataDirectories
 

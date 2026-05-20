@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.compose.resources.getString
 
 @Inject
-@ViewModelKey(CharactersListViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class CharactersListViewModel(
     repository: CharactersRepository

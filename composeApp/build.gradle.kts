@@ -37,17 +37,14 @@ kotlin {
             languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
         }
         commonMain.dependencies {
-            implementation(libs.androidx.nav3.ui)
-            implementation(libs.androidx.nav3.runtime)
-            implementation(libs.androidx.material3.adaptive.nav3)
-            implementation(libs.androidx.lifecycle.viewmodel.nav3)
+            implementation(libs.bundles.navigation)
 
             implementation(libs.markdown.parser.core)
             implementation(libs.markdown.parser.m3)
 
             implementation(libs.toaster)
 
-            implementation(libs.napier)
+            implementation(libs.kermit)
 
             implementation(libs.androidx.datastore.datastore)
             implementation(libs.androidx.datastore.preferences)
@@ -55,35 +52,22 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
 
-            implementation(libs.metrox.viewmodel)
-            implementation(libs.metrox.viewmodel.compose)
+            api(libs.metrox.viewmodel)
+            api(libs.metrox.viewmodel.compose)
 
-            implementation(libs.supabase.auth)
-            implementation(libs.supabase.postgrest)
-            implementation(libs.supabase.storage)
-
-            implementation(libs.slf4j)
+            implementation(libs.bundles.supabase)
 
             implementation(libs.serialization.json)
 
             implementation(libs.ktor.core)
             implementation(libs.ktor.cio)
 
-            implementation(libs.filekit.core)
-            implementation(libs.filekit.compose)
-
-            implementation(libs.material3.adaptive.navigation.suite)
+            implementation(libs.bundles.filekit)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
 
-            api(libs.compose.runtime)
-            api(libs.compose.foundation)
-            implementation(libs.compose.material.icons.extended)
-            api(libs.compose.material3)
-            api(libs.compose.ui)
-            api(libs.compose.components.resources)
-            api(libs.compose.ui.tooling.preview)
+            api(libs.bundles.compose)
 
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
@@ -150,5 +134,11 @@ buildConfig {
     }
     properties.forEach { property ->
         buildConfigField(property.key.toString(), property.value.toString())
+    }
+}
+
+compose {
+    resources {
+        generateResClass = always
     }
 }

@@ -5,14 +5,13 @@ val projectVersion = libs.versions.project.get()
 
 plugins {
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.android.application)
     alias(libs.plugins.metro)
 }
 
 android {
     namespace = "com.davanok.dvnkdnd.androidApp"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = libs.versions.android.targetSdk.get().toInt()
 
     val versionCodeValue = projectVersion
         .split('.')
@@ -51,6 +50,4 @@ kotlin {
 dependencies {
     implementation(project(":composeApp"))
     implementation(libs.androidx.activity.compose)
-    implementation(libs.compose.ui.tooling)
-    implementation(libs.metrox.viewmodel)
 }

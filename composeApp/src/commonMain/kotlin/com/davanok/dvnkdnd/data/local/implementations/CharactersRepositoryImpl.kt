@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.local.implementations
 
+import co.touchlab.kermit.Logger
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
@@ -33,10 +34,13 @@ import kotlin.uuid.Uuid
 @SingleIn(AppScope::class)
 @ContributesBinding(scope = AppScope::class)
 class CharactersRepositoryImpl(
-    private val dao: CharactersDao
+    private val dao: CharactersDao,
+    logger: Logger
 ) : CharactersRepository {
+    val logger = logger.withTag(TAG)
+    
     override suspend fun getFullCharacter(characterId: Uuid): Result<CharacterFull> =
-        runLogging("getFullCharacter") {
+        logger.runLogging("getFullCharacter") {
             dao.getFullCharacter(characterId).toCharacterFull()
         }
 
@@ -53,27 +57,27 @@ class CharactersRepositoryImpl(
         }.catch { thr -> emit(Result.failure(thr)) }
 
     override suspend fun saveCharacter(character: CharacterFull) =
-        runLogging("saveCharacter") {
+        logger.runLogging("saveCharacter") {
             dao.saveCharacter(character)
         }
 
     override suspend fun setCharacterHealth(characterId: Uuid, health: CharacterHealth) =
-        runLogging("setCharacterHealth") {
+        logger.runLogging("setCharacterHealth") {
             dao.insertCharacterHealth(health.toDbCharacterHealth(characterId))
         }
 
     override suspend fun setCharacterNote(characterId: Uuid, note: CharacterNote) =
-        runLogging("setCharacterNote") {
+        logger.runLogging("setCharacterNote") {
             dao.insertCharacterNotes(listOf(note.toDbCharacterNote(characterId)))
         }
 
     override suspend fun deleteCharacterNote(noteId: Uuid) =
-        runLogging("setCharacterNote") {
+        logger.runLogging("setCharacterNote") {
             dao.deleteCharacterNote(noteId)
         }
 
     override suspend fun setCharacterUsedSpells(characterId: Uuid, typeId: Uuid?, usedSpells: IntArray) =
-        runLogging("setCharacterUsedSpells") {
+        logger.runLogging("setCharacterUsedSpells") {
             dao.setCharacterUsedSpells(
                 DbCharacterUsedSpellSlots(
                     characterId = characterId,
@@ -84,28 +88,28 @@ class CharactersRepositoryImpl(
         }
 
     override suspend fun setCharacterItem(characterId: Uuid, item: CharacterItemLink) =
-        runLogging("setCharacterItem") {
+        logger.runLogging("setCharacterItem") {
             dao.setCharacterItemLink(item.toDbCharacterItemLink(characterId))
         }
 
     override suspend fun setCharacterState(
         characterId: Uuid,
         state: CharacterStateLink
-    ): Result<Unit> = runLogging("setCharacterState") {
+    ): Result<Unit> = logger.runLogging("setCharacterState") {
         dao.setCharacterState(state.toDbCharacterStateLink(characterId))
     }
 
     override suspend fun deleteCharacterState(
         characterId: Uuid,
         state: CharacterStateLink
-    ): Result<Unit> = runLogging("deleteCharacterState") {
+    ): Result<Unit> = logger.runLogging("deleteCharacterState") {
         dao.deleteCharacterState(state.toDbCharacterStateLink(characterId))
     }
 
     override suspend fun setCharacterSpell(
         characterId: Uuid,
         spell: CharacterSpellLink
-    ): Result<Unit> = runLogging("setCharacterSpell") {
+    ): Result<Unit> = logger.runLogging("setCharacterSpell") {
         dao.setCharacterSpell(spell.toDbCharacterSpell(characterId))
     }
 
@@ -113,7 +117,11 @@ class CharactersRepositoryImpl(
         characterId: Uuid,
         item: CharacterItemLink,
         activation: FullItemActivation
-    ): Result<Unit> = runLogging("activateCharacterItem") {
+    ): Result<Unit> = logger.runLogging("activateCharacterItem") {
         dao.activateCharacterItem(characterId, item, activation)
+    }
+    
+    companion object {
+        private const val TAG = "CharacterRepository"
     }
 }

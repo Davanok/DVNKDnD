@@ -166,7 +166,7 @@ class EditCharacterViewModel(
     }
 
     @AssistedFactory
-    @ManualViewModelAssistedFactoryKey(Factory::class)
+    @ManualViewModelAssistedFactoryKey
     @ContributesIntoMap(AppScope::class)
     fun interface Factory : ManualViewModelAssistedFactory {
         fun create(@Assisted characterId: Uuid): EditCharacterViewModel

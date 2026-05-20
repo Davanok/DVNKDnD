@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.remote.implementations
 
+import co.touchlab.kermit.Logger
 import com.davanok.dvnkdnd.core.InternetConnectionException
 import com.davanok.dvnkdnd.core.PagedResult
 import com.davanok.dvnkdnd.core.utils.runLogging
@@ -25,7 +26,10 @@ import kotlin.uuid.Uuid
 class BrowseRepositoryImpl(
     private val postgrest: Postgrest,
     private val storage: Storage,
+    logger: Logger
 ) : BrowseRepository {
+    private val logger = logger.withTag(TAG)
+    
     private fun <T> Result<T>.handleFailure() = recoverCatching { exception ->
         throw InternetConnectionException(exception.message, exception.cause)
     }
@@ -41,7 +45,7 @@ class BrowseRepositoryImpl(
     )
 
     override suspend fun loadEntityFullInfo(entityId: Uuid): Result<DnDFullEntity?> =
-        runLogging("loadEntityFullInfo") {
+        logger.runLogging("loadEntityFullInfo") {
             postgrest.rpc(
                 "get_full_entity_with_companion",
                 mapOf("entity_id" to entityId)
@@ -49,7 +53,7 @@ class BrowseRepositoryImpl(
         }.handleFailure()
 
     override suspend fun loadEntitiesFullInfo(entityIds: List<Uuid>): Result<List<DnDFullEntity>> =
-        runLogging("loadEntitiesFullInfo") {
+        logger.runLogging("loadEntitiesFullInfo") {
             postgrest.rpc(
                 "get_full_entities_with_companion",
                 mapOf("entity_ids" to entityIds)
@@ -62,7 +66,7 @@ class BrowseRepositoryImpl(
         pageSize: Int,
         searchQuery: String?
     ): Result<PagedResult<DnDEntityWithSubEntities>> =
-        runLogging("loadEntitiesWithSubPaged") {
+        logger.runLogging("loadEntitiesWithSubPaged") {
             val offset = (page * pageSize)
 
             val fetched = postgrest.rpc(
@@ -89,11 +93,15 @@ class BrowseRepositoryImpl(
         }.handleFailure()
 
     override suspend fun getPropertyValue(key: String): Result<String> =
-        runLogging("getPropertyValue") {
+        logger.runLogging("getPropertyValue") {
             val raw = postgrest.rpc(
                 "get_property",
                 mapOf("field" to key)
             ).data
             Json.decodeFromString<String>(raw)
         }.handleFailure()
+    
+    companion object {
+        private const val TAG = "BrowseRepository"
+    }
 }

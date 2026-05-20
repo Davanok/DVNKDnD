@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import com.davanok.dvnkdnd.ui.navigation.navEntryDecorators.rememberLoggerNavEntryDecorator
 import kotlinx.serialization.json.Json
 
 
@@ -31,5 +32,6 @@ fun rememberBackStack(startDestination: Route) = rememberSaveable(saver = backSt
 @Composable
 fun <T : Any> navEntryDecorators(): List<NavEntryDecorator<T>> = listOf(
     rememberSaveableStateHolderNavEntryDecorator(),
-    rememberViewModelStoreNavEntryDecorator()
+    rememberViewModelStoreNavEntryDecorator(),
+    rememberLoggerNavEntryDecorator()
 )

@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.local.implementations
 
+import co.touchlab.kermit.Logger
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterFeat
@@ -39,8 +40,11 @@ import kotlin.uuid.Uuid
 @SingleIn(AppScope::class)
 @ContributesBinding(scope = AppScope::class)
 class EditCharacterRepositoryImpl(
-    private val dao: CharactersDao
+    private val dao: CharactersDao,
+    logger: Logger
 ) : EditCharacterRepository {
+    val logger = logger.withTag(TAG)
+    
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFullCharacterFlow(characterId: Uuid): Flow<Result<CharacterFull>> =
         dao.getFullCharacterFlow(characterId).mapLatest {
@@ -49,7 +53,7 @@ class EditCharacterRepositoryImpl(
 
     override suspend fun setCharacterBase(
         characterBase: CharacterBase
-    ): Result<Unit> = runLogging("setCharacterBase") {
+    ): Result<Unit> = logger.runLogging("setCharacterBase") {
         dao.insertCharacter(characterBase.toDbCharacter())
     }
 
@@ -57,7 +61,7 @@ class EditCharacterRepositoryImpl(
         characterId: Uuid,
         modifier: DnDModifier,
         selected: Boolean
-    ): Result<Unit> = runLogging("setModifierSelection") {
+    ): Result<Unit> = logger.runLogging("setModifierSelection") {
         val selectedModifier = when (modifier) {
             is DnDValueModifier -> DbCharacterSelectedValueModifier(characterId, modifier.id)
             is DnDRollModifier -> DbCharacterSelectedRollModifier(characterId, modifier.id)
@@ -73,35 +77,35 @@ class EditCharacterRepositoryImpl(
     override suspend fun setCustomModifier(
         characterId: Uuid,
         modifier: CharacterCustomModifier
-    ): Result<Unit> = runLogging("setCustomModifier") {
+    ): Result<Unit> = logger.runLogging("setCustomModifier") {
         dao.setCharacterCustomModifier(characterId, modifier)
     }
 
     override suspend fun deleteCustomModifier(
         characterId: Uuid,
         modifier: CharacterCustomModifier
-    ): Result<Unit> = runLogging("setCustomModifier") {
+    ): Result<Unit> = logger.runLogging("setCustomModifier") {
         dao.deleteCharacterCustomModifier(characterId, modifier)
     }
 
     override suspend fun setCharacterAttributes(
         characterId: Uuid,
         attributes: AttributesGroup
-    ): Result<Unit> = runLogging("setCharacterAttributes") {
+    ): Result<Unit> = logger.runLogging("setCharacterAttributes") {
         dao.insertCharacterAttributes(attributes.toDbCharacterAttributes(characterId))
     }
 
     override suspend fun setCharacterOptionalValues(
         characterId: Uuid,
         values: CharacterOptionalValues
-    ): Result<Unit> = runLogging("setCharacterOptionalValues") {
+    ): Result<Unit> = logger.runLogging("setCharacterOptionalValues") {
         dao.insertFullOptionalValues(characterId, values)
     }
 
     override suspend fun setCharacterMainEntity(
         characterId: Uuid,
         entityLink: CharacterMainEntityLink
-    ): Result<Unit> = runLogging("setCharacterMainEntity") {
+    ): Result<Unit> = logger.runLogging("setCharacterMainEntity") {
         dao.setCharacterMainEntity(entityLink.toDbCharacterMainEntity(characterId))
     }
 
@@ -109,14 +113,14 @@ class EditCharacterRepositoryImpl(
         characterId: Uuid,
         entity: DnDEntityMin,
         level: Int
-    ): Result<Unit> = runLogging("setCharacterMainEntityLevel") {
+    ): Result<Unit> = logger.runLogging("setCharacterMainEntityLevel") {
         dao.setCharacterMainEntityLevel(characterId, entity.id, level)
     }
 
     override suspend fun setCharacterFeat(
         characterId: Uuid,
         feat: DnDEntityMin
-    ): Result<Unit> = runLogging("setCharacterFeat") {
+    ): Result<Unit> = logger.runLogging("setCharacterFeat") {
         dao.setCharacterFeat(DbCharacterFeat(characterId, feat.id))
     }
 
@@ -124,7 +128,7 @@ class EditCharacterRepositoryImpl(
         characterId: Uuid,
         spell: DnDEntityMin,
         ready: Boolean
-    ): Result<Unit> = runLogging("setCharacterSpell") {
+    ): Result<Unit> = logger.runLogging("setCharacterSpell") {
         dao.setCharacterSpell(DbCharacterSpellLink(characterId, spell.id, ready))
     }
 
@@ -134,7 +138,7 @@ class EditCharacterRepositoryImpl(
         equipped: Boolean,
         attuned: Boolean,
         count: Int?
-    ): Result<Unit> = runLogging("setCharacterItem") {
+    ): Result<Unit> = logger.runLogging("setCharacterItem") {
         dao.setCharacterItemLink(
             DbCharacterItemLink(
                 characterId = characterId,
@@ -151,7 +155,7 @@ class EditCharacterRepositoryImpl(
         state: DnDEntityMin,
         source: DnDEntityMin?,
         deletable: Boolean
-    ): Result<Unit> = runLogging("setCharacterState") {
+    ): Result<Unit> = logger.runLogging("setCharacterState") {
         dao.setCharacterState(
             DbCharacterStateLink(
                 characterId = characterId,
@@ -160,5 +164,9 @@ class EditCharacterRepositoryImpl(
                 deletable = deletable
             )
         )
+    }
+    
+    companion object {
+        private const val TAG = "EditCharacterRepository"
     }
 }

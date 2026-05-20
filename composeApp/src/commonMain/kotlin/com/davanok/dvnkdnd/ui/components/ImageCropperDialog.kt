@@ -174,7 +174,7 @@ private fun ImageCropDialogContent(
             initialScale = boxSizePx / min(imageBitmap.width, imageBitmap.height)
         )
     }
-    val state = rememberTransformableState { zoomChange, offsetChange, _ ->
+    val state = rememberTransformableState { centroid, zoomChange, offsetChange, _ ->
         cropState.updateZoom(zoomChange)
         cropState.updateOffset(offsetChange)
     }

@@ -68,7 +68,6 @@ import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.edit_character
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -129,7 +128,7 @@ private fun Content(
     )
 
     val diceRollerState = rememberDiceRollerState {
-        Napier.d { it.toString() }
+
     }
 
     val appBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()

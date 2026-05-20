@@ -4,15 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.characterFull.characterFullDestinations
-import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.entityInfo.entityInfoDestinations
-import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.newEntity.newEntityDestinations
-import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import com.davanok.dvnkdnd.ui.navigation.components.DefaultNavigationWrapper
 import com.davanok.dvnkdnd.ui.navigation.components.NotImplementedYetScreen
+import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.characterFull.characterFullDestinations
 import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.charactersList.charactersListDestinations
+import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.entityInfo.entityInfoDestinations
+import com.davanok.dvnkdnd.ui.navigation.nestedGraphs.newEntity.newEntityDestinations
 
 @Composable
 fun NavigationHost(
@@ -31,10 +29,7 @@ fun NavigationHost(
         modifier = modifier,
         backStack = backStack,
         onBack = onBack,
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
+        entryDecorators = navEntryDecorators(),
         entryProvider = entryProvider(
             fallback = { NavEntry(Route.Unknown) { NotImplementedYetScreen(onBack) } }
         ) {

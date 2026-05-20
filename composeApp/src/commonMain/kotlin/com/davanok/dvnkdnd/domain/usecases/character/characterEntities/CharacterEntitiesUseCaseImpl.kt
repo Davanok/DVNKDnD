@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.usecases.character.characterEntities
 
+import co.touchlab.kermit.Logger
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMainEntityLink
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
@@ -17,14 +18,16 @@ import kotlin.uuid.Uuid
 @ContributesBinding(scope = AppScope::class)
 class CharacterEntitiesUseCaseImpl(
     private val characterRepository: EditCharacterRepository,
-    private val entitiesBootstrapper: EntitiesBootstrapper
+    private val entitiesBootstrapper: EntitiesBootstrapper,
+    logger: Logger
 ) : CharacterEntitiesUseCase {
+    private val logger = logger.withTag(TAG)
 
     override suspend fun addCharacterEntity(
         characterId: Uuid,
         entity: DnDEntityMin,
         subEntity: DnDEntityMin?
-    ) = runLogging("addCharacterEntity") {
+    ) = logger.runLogging("addCharacterEntity") {
         when (entity.type) {
             DnDEntityTypes.CLASS,
             DnDEntityTypes.RACE,
@@ -121,5 +124,9 @@ class CharacterEntitiesUseCaseImpl(
 
         check(sub.type == expectedSubType) { "Invalid sub-entity type: ${sub.type} for parent ${parent.type}" }
         check(sub.parentId == parent.id) { "Sub-entity does not belong to the provided parent entity" }
+    }
+
+    companion object {
+        private const val TAG = "CharacterEntitiesUseCase"
     }
 }

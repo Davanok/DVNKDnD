@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.data.local.implementations
 
+import co.touchlab.kermit.Logger
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.data.local.db.daos.entities.BaseEntityDao
 import com.davanok.dvnkdnd.data.local.mappers.entities.toEntityWithSubEntities
@@ -17,33 +18,40 @@ import kotlin.uuid.Uuid
 @ContributesBinding(scope = AppScope::class)
 class EntitiesRepositoryImpl(
     private val dao: BaseEntityDao,
+    logger: Logger
 ) : EntitiesRepository {
+    private val logger = logger.withTag(TAG)
+    
     override suspend fun getExistingEntities(entityIds: List<Uuid>): Result<List<Uuid>> =
-        runLogging("getExistingEntities") {
+        logger.runLogging("getExistingEntities") {
             dao.getExistingEntities(entityIds)
         }
 
     override suspend fun getExistsEntity(entityId: Uuid): Result<Boolean> =
-        runLogging("getExistsEntity") {
+        logger.runLogging("getExistsEntity") {
             dao.getExistsEntity(entityId)
         }
 
     override suspend fun getEntitiesWithSubList(entityIds: List<Uuid>) =
-        runLogging("getEntitiesWithSubList by ids") {
+        logger.runLogging("getEntitiesWithSubList by ids") {
             dao.getEntitiesWithSubList(entityIds).map { it.toEntityWithSubEntities() }
         }
 
     override suspend fun getEntitiesWithSubList(type: DnDEntityTypes) =
-        runLogging("getEntitiesWithSubList by type") {
+        logger.runLogging("getEntitiesWithSubList by type") {
             dao.getEntitiesWithSubList(type).map { it.toEntityWithSubEntities() }
         }
 
     override suspend fun getEntitiesWithSubList(
         vararg types: DnDEntityTypes
     ): Result<Map<DnDEntityTypes, List<DnDEntityWithSubEntities>>> =
-        runLogging("getEntitiesWithSubList by types") {
+        logger.runLogging("getEntitiesWithSubList by types") {
             dao.getEntitiesWithSubList(*types)
                 .map { it.toEntityWithSubEntities() }
                 .groupBy { it.type }
         }
+    
+    companion object {
+        private const val TAG = "EntitiesRepository"
+    }
 }

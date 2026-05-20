@@ -43,7 +43,7 @@ class SearchEntityViewModel(
     fun setSearchQuery(query: String) = _searchQuery.update { query }
 
     @AssistedFactory
-    @ManualViewModelAssistedFactoryKey(Factory::class)
+    @ManualViewModelAssistedFactoryKey
     @ContributesIntoMap(AppScope::class)
     fun interface Factory : ManualViewModelAssistedFactory {
         fun create(@Assisted entitiesType: DnDEntityTypes): SearchEntityViewModel

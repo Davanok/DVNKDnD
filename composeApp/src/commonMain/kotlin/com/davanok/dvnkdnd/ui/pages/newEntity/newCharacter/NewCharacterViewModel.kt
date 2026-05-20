@@ -43,7 +43,7 @@ import okio.Path
 import kotlin.uuid.Uuid
 
 @Inject
-@ViewModelKey(NewCharacterViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class NewCharacterViewModel(
     private val fullEntitiesRepository: FullEntitiesRepository,
@@ -236,6 +236,7 @@ private data class NewCharacterWithFullEntities(
         private fun EntityBase.toEntityWithSubEntities(subEntities: List<DnDEntityMin>) =
             DnDEntityWithSubEntities(
                 id = id,
+                parentId = parentId,
                 type = type,
                 name = name,
                 description = description,

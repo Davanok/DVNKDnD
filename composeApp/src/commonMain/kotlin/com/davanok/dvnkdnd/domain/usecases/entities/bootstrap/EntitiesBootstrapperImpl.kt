@@ -1,5 +1,6 @@
 package com.davanok.dvnkdnd.domain.usecases.entities.bootstrap
 
+import co.touchlab.kermit.Logger
 import com.davanok.dvnkdnd.core.utils.runLogging
 import com.davanok.dvnkdnd.domain.repositories.local.EntitiesRepository
 import com.davanok.dvnkdnd.domain.repositories.local.FullEntitiesRepository
@@ -18,8 +19,11 @@ import kotlin.uuid.Uuid
 class EntitiesBootstrapperImpl(
     private val browseRepository: BrowseRepository,
     private val entitiesRepository: EntitiesRepository,
-    private val fullEntitiesRepository: FullEntitiesRepository
+    private val fullEntitiesRepository: FullEntitiesRepository,
+    logger: Logger
 ) : EntitiesBootstrapper {
+    private val logger = logger.withTag(TAG)
+
     override fun checkAndLoadEntities(entitiesIds: List<Uuid>): Flow<EntitiesBootstrapEvent> =
         flow {
             emit(EntitiesBootstrapEvent.Started)
@@ -54,7 +58,7 @@ class EntitiesBootstrapperImpl(
         }
 
     override suspend fun checkAndLoadEntity(entityId: Uuid): Result<Boolean> =
-        runLogging("checkAndLoadEntity (entityId: $entityId)") {
+        logger.runLogging("checkAndLoadEntity (entityId: $entityId)") {
             if (entitiesRepository.getExistsEntity(entityId).getOrThrow())
                 return@runLogging false
 
@@ -65,4 +69,8 @@ class EntitiesBootstrapperImpl(
 
             true
         }
+
+    companion object {
+        private const val TAG = "EntitiesBootstrapper"
+    }
 }
