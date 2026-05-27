@@ -47,10 +47,6 @@ class NewCharacterThrowsViewModel(
     private val _uiState = MutableStateFlow(NewCharacterThrowsUiState())
     val uiState: StateFlow<NewCharacterThrowsUiState> = _uiState
 
-    fun removeError() = _uiState.update { it.copy(error = null) }
-
-    // backing caches populated on load
-
     private var attributeModifiers: AttributesGroup = AttributesGroup.Default
         .mapValues(::calculateModifier)
     var modifierGroups = emptyList<ValueModifiersGroupWithResolvedValues>()

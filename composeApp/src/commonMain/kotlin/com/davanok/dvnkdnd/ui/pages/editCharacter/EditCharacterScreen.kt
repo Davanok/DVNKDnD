@@ -20,7 +20,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -39,7 +39,6 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
-import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityAdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.pages.editCharacter.pages.EditCharacterAttributesPage
@@ -59,11 +58,6 @@ fun EditCharacterScreen(
     viewModel: EditCharacterViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    UiToaster(
-        messages = uiState.messages,
-        onRemoveMessage = viewModel::removeMessage
-    )
 
     when {
         uiState.isLoading -> LoadingCard()
@@ -107,7 +101,7 @@ private fun Content(
     eventSink: (EditCharacterScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
     val expandedView by remember(windowSizeClass) {
         derivedStateOf {
             windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)

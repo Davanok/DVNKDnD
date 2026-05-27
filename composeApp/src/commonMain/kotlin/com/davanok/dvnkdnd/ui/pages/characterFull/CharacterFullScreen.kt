@@ -46,7 +46,6 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
-import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveContent
 import com.davanok.dvnkdnd.ui.components.adaptive.SupportEntry
 import com.davanok.dvnkdnd.ui.components.adaptive.rememberAdaptiveContentState
@@ -79,11 +78,6 @@ fun CharacterFullScreen(
     viewModel: CharacterFullViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    UiToaster(
-        messages = uiState.messages,
-        onRemoveMessage = viewModel::removeMessage
-    )
 
     when {
         uiState.isLoading -> LoadingCard()

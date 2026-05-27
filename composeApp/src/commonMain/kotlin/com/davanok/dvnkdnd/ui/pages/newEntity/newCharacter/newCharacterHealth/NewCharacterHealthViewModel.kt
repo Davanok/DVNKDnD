@@ -28,8 +28,6 @@ class NewCharacterHealthViewModel(
     private val _uiState = MutableStateFlow(NewCharacterHealthUiState())
     val uiState: StateFlow<NewCharacterHealthUiState> = _uiState
 
-    fun removeError() = _uiState.update { it.copy(error = null) }
-
     fun loadCharacter() {
         val character = newCharacterViewModel.getCharacterWithHealth()
         _uiState.update {

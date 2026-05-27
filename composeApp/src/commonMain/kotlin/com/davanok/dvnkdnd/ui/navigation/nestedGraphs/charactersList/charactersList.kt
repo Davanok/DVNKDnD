@@ -26,7 +26,7 @@ fun RouterEntryProvider.charactersListDestinations(
     DefaultNavigationWrapper(Route.Main.CharactersList, navigate) {
         NavDisplay(
             backStack = backStack,
-            sceneStrategy = rememberListDetailSceneStrategy(),
+            sceneStrategies = listOf(rememberListDetailSceneStrategy()),
             entryDecorators = navEntryDecorators(),
             entryProvider = entryProvider {
                 entry<Route.Main.CharactersList.CharactersList>(
@@ -49,7 +49,9 @@ fun RouterEntryProvider.charactersListDestinations(
                     CharacterShortInfoScreen(
                         navigateToCharacter = { navigate(Route.CharacterFull(route.characterId)) },
                         navigateBack = nestedBack,
-                        viewModel = assistedMetroViewModel< CharacterShortInfoViewModel,   CharacterShortInfoViewModel.Factory> { create(route.characterId) }
+                        viewModel = assistedMetroViewModel<CharacterShortInfoViewModel, CharacterShortInfoViewModel.Factory> {
+                            create(route.characterId)
+                        }
                     )
                 }
             }

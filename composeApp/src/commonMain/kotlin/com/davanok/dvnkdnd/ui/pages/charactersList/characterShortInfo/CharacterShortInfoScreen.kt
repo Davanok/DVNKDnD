@@ -41,7 +41,7 @@ fun CharacterShortInfoScreen(
                     Text(text = uiState.character?.character?.name ?: stringResource(Res.string.app_name))
                 },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack,) {
+                    IconButton(onClick = navigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,
                             contentDescription = stringResource(Res.string.back)

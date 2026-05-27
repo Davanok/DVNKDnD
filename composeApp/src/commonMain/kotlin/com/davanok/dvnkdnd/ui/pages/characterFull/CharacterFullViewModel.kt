@@ -13,6 +13,7 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterStateLink
 import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
 import com.davanok.dvnkdnd.domain.repositories.local.CharactersRepository
 import com.davanok.dvnkdnd.domain.usecases.entities.bootstrap.EntitiesBootstrapper
+import com.davanok.dvnkdnd.ui.components.ToasterState
 import com.davanok.dvnkdnd.ui.components.UiMessage
 import com.davanok.dvnkdnd.ui.model.UiError
 import dev.zacsweers.metro.AppScope
@@ -57,7 +58,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
@@ -67,7 +67,8 @@ import kotlin.uuid.Uuid
 class CharacterFullViewModel(
     @Assisted private val characterId: Uuid,
     private val bootstrapper: EntitiesBootstrapper,
-    private val repository: CharactersRepository
+    private val repository: CharactersRepository,
+    private val toasterState: ToasterState
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CharacterFullUiState(isLoading = true))
     private val _character = repository.getFullCharacterFlow(characterId)
@@ -96,12 +97,8 @@ class CharacterFullViewModel(
         initialValue = CharacterFullUiState(isLoading = true)
     )
 
-    private fun addMessage(message: UiMessage) =
-        _uiState.update { it.copy(messages = it.messages + message) }
-
-    fun removeMessage(messageId: Uuid) = _uiState.update { state ->
-        state.copy(messages = state.messages.filter { it.id != messageId })
-    }
+    private fun showMessage(message: UiMessage) =
+        toasterState.showMessage(message)
 
     private suspend fun <T> Result<T>.handleResult(
         successMessage: (suspend (T) -> String?)?,
@@ -111,14 +108,14 @@ class CharacterFullViewModel(
             onSuccess {
                 successMessage(it)?.let { text ->
                     val message = UiMessage.Success(message = text)
-                    addMessage(message)
+                    showMessage(message)
                 }
             }
         if (failureMessage != null)
             onFailure {
                 failureMessage(it)?.let { text ->
                     val message = UiMessage.Error(message = text, error = it)
-                    addMessage(message)
+                    showMessage(message)
                 }
             }
         return this
@@ -253,7 +250,7 @@ class CharacterFullViewModel(
                     failureMessage = { getString(Res.string.failed_to_activate_character_item) }
                 )
         else
-            addMessage(
+            showMessage(
                 UiMessage.Info(
                     getString(Res.string.item_require_attunement_to_activate)
                 )
@@ -269,7 +266,7 @@ class CharacterFullViewModel(
                     failureMessage = { getString(Res.string.failed_to_delete_character_state) }
                 )
         else
-            addMessage(UiMessage.Info(getString(Res.string.character_state_not_deletable)))
+            showMessage(UiMessage.Info(getString(Res.string.character_state_not_deletable)))
     }
 
     fun action(action: CharacterFullScreenContract) = when (action) {
@@ -296,8 +293,7 @@ class CharacterFullViewModel(
 data class CharacterFullUiState(
     val isLoading: Boolean = false,
     val error: UiError? = null,
-    val character: CharacterFull? = null,
-    val messages: List<UiMessage> = emptyList()
+    val character: CharacterFull? = null
 ) {
     enum class Page(val stringRes: StringResource) {
         ATTRIBUTES(Res.string.character_full_attributes_page_title),

@@ -26,7 +26,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -41,10 +41,10 @@ import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxBy
 import androidx.window.core.layout.WindowSizeClass
 import com.davanok.dvnkdnd.ui.navigation.Route
-import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Feature
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Background
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Character
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Class
+import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Feature
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Item
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Race
 import com.davanok.dvnkdnd.ui.pages.newEntity.EntityItem.Spell
@@ -79,7 +79,7 @@ fun NewEntityScreen(
     onNavigateBack: () -> Unit,
     onNavigate: (Route) -> Unit
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
     val isCompact = !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 
     Scaffold(

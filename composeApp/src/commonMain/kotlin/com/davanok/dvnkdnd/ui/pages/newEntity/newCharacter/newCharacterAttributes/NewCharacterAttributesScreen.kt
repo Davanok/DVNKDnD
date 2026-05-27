@@ -22,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,10 +35,10 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
-import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.model.toUiMessage
+import com.davanok.dvnkdnd.ui.theme.LocalToasterState
 import com.mikepenz.markdown.m3.Markdown
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.about_modifiers_selectors
@@ -57,10 +58,14 @@ fun NewCharacterAttributesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    UiToaster(
-        message = uiState.error?.toUiMessage(),
-        onRemoveMessage = viewModel::removeWarning
-    )
+    val toasterState = LocalToasterState.current
+    LaunchedEffect(uiState.error) {
+        if (!uiState.error.isCritical()) {
+            uiState.error?.let {
+                toasterState.showMessage(it.toUiMessage())
+            }
+        }
+    }
 
     when {
         uiState.isLoading -> LoadingCard()

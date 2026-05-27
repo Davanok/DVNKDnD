@@ -42,6 +42,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,9 +67,9 @@ import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.LoadingCard
-import com.davanok.dvnkdnd.ui.components.UiToaster
 import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityAdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterMain
+import com.davanok.dvnkdnd.ui.theme.LocalToasterState
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.add_image
 import dvnkdnd.composeapp.generated.resources.background
@@ -109,10 +110,15 @@ fun NewCharacterMainScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    UiToaster(
-        message = uiState.error?.toUiMessage(),
-        onRemoveMessage = viewModel::removeWarning
-    )
+    val toasterState = LocalToasterState.current
+    LaunchedEffect(uiState.error) {
+        if (!uiState.error.isCritical()) {
+            uiState.error?.let {
+                toasterState.showMessage(it.toUiMessage())
+            }
+        }
+    }
+
     when {
         uiState.isLoading -> LoadingCard()
         uiState.error.isCritical() -> uiState.error?.let {

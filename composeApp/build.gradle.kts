@@ -28,7 +28,6 @@ kotlin {
 
     jvm()
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -41,8 +40,6 @@ kotlin {
 
             implementation(libs.markdown.parser.core)
             implementation(libs.markdown.parser.m3)
-
-            implementation(libs.toaster)
 
             implementation(libs.kermit)
 
@@ -111,7 +108,6 @@ dependencies {
         "kspAndroid",
         "kspJvm",
         "kspIosSimulatorArm64",
-        "kspIosX64",
         "kspIosArm64"
     ).forEach {
         add(it, libs.androidx.room.compiler)

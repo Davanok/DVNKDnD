@@ -13,7 +13,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.allVerticalHingeBounds
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
@@ -44,7 +44,7 @@ fun AdaptiveWidth(
     supportPaneTitle: @Composable () -> Unit = {},
     onHideSupportPane: () -> Unit = {},
     panesSpacing: Dp = 0.dp,
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2(),
     modifier: Modifier = Modifier
 ) {
     val movableSingle = rememberMovableContentOf(singlePaneContent)

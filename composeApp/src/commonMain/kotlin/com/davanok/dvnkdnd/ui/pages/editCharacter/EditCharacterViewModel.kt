@@ -12,7 +12,7 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.repositories.local.EditCharacterRepository
 import com.davanok.dvnkdnd.domain.usecases.character.characterEntities.CharacterEntitiesUseCase
-import com.davanok.dvnkdnd.ui.components.UiMessage
+import com.davanok.dvnkdnd.ui.components.ToasterState
 import com.davanok.dvnkdnd.ui.model.UiError
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
@@ -43,7 +43,8 @@ import kotlin.uuid.Uuid
 class EditCharacterViewModel(
     @Assisted private val characterId: Uuid,
     private val characterEntitiesUseCase: CharacterEntitiesUseCase,
-    private val repository: EditCharacterRepository
+    private val repository: EditCharacterRepository,
+    private val toasterState: ToasterState
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(EditCharacterUiState(isLoading = true))
     private val _character = repository.getFullCharacterFlow(characterId)
@@ -77,11 +78,7 @@ class EditCharacterViewModel(
         errorMessage: suspend (Throwable) -> String?
     ) = onFailure { thr ->
         errorMessage(thr)?.let { message ->
-            _uiState.update { state ->
-                state.copy(
-                    messages = _uiState.value.messages + UiMessage.Warning(message)
-                )
-            }
+            toasterState.showWarning(message)
         }
     }
 
@@ -98,10 +95,6 @@ class EditCharacterViewModel(
         characterEntitiesUseCase
             .addCharacterEntity(characterId, entity, subEntity)
             .handleFailure { getString(Res.string.failed_to_add_character_entity) }
-    }
-
-    fun removeMessage(messageId: Uuid) = _uiState.update { state ->
-        state.copy(messages = state.messages.filter { it.id != messageId })
     }
 
     fun setPage(page: EditCharacterUiState.Page) = _uiState.update {
@@ -178,7 +171,6 @@ data class EditCharacterUiState(
     val error: UiError? = null,
     val character: CharacterFull? = null,
     val addEntityDialog: DnDEntityTypes? = null,
-    val messages: List<UiMessage> = emptyList(),
     val currentPage: Page = Page.entries.first()
 ) {
     enum class Page(val stringRes: StringResource) {

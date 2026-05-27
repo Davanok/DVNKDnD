@@ -7,7 +7,7 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metrox.viewmodel.ViewModelGraph
 
-interface AppGraph : LocalDataGraph, ExternalDataGraph, PlatformGraph, ViewModelGraph {
+interface AppGraph : UiGraph, LocalDataGraph, ExternalDataGraph, PlatformGraph, ViewModelGraph {
     val app: AppClass
 
     @Provides

@@ -1,184 +1,228 @@
 package com.davanok.dvnkdnd.ui.components
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarVisuals
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastMap
-import com.dokar.sonner.Toast
-import com.dokar.sonner.ToastType
-import com.dokar.sonner.Toaster
-import com.dokar.sonner.ToasterDefaults
-import com.dokar.sonner.ToasterState
-import com.dokar.sonner.listenMany
-import com.dokar.sonner.rememberToasterState
 import dvnkdnd.composeapp.generated.resources.Res
-import dvnkdnd.composeapp.generated.resources.error_info
+import dvnkdnd.composeapp.generated.resources.dismiss_snackbar
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Duration
-import kotlin.uuid.Uuid
 
+interface ToasterState {
+    val snackbarHostState: SnackbarHostState
+    fun showMessage(message: UiMessage)
 
-private data class ErrorInfoAction(val exceptionInfo: Throwable)
+    fun showInfo(message: String, action: MessageAction? = null) =
+        showMessage(UiMessage.Info(message, action = action))
 
-@Composable
-fun UiToaster(
-    messages: List<UiMessage>,
-    onRemoveMessage: (id: Uuid) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val toaster = rememberToasterState(
-        onToastDismissed = { onRemoveMessage(it.id as Uuid) },
-    )
-    val currentMessages by rememberUpdatedState(messages)
+    fun showSuccess(message: String, action: MessageAction? = null) =
+        showMessage(UiMessage.Success(message, action = action))
 
-    LaunchedEffect(toaster) {
-        // Listen to State<List<UiMessage>> changes and map to toasts
-        toaster.listenMany {
-            currentMessages.fastMap(UiMessage::toToast)
-        }
-    }
-    CommonToaster(toaster, modifier)
+    fun showWarning(message: String, error: Throwable? = null, action: MessageAction? = null) =
+        showMessage(UiMessage.Warning(message, error, action = action))
+
+    fun showError(message: String, error: Throwable? = null, action: MessageAction? = null) =
+        showMessage(UiMessage.Error(message, error, action = action))
+
+    fun showLoading(message: String, action: MessageAction? = null) =
+        showMessage(UiMessage.Loading(message, action = action))
 }
-@Composable
-fun UiToaster(
-    message: UiMessage?,
-    onRemoveMessage: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val toaster = rememberToasterState(
-        onToastDismissed = { onRemoveMessage() }
-    )
-    LaunchedEffect(message) {
-        if (message != null)
-            toaster.show(message.toToast())
-    }
-    CommonToaster(toaster, modifier)
+
+data class MessageAction(
+    val label: String,
+    val action: () -> Unit
+)
+
+sealed class UiMessage(
+    override val message: String,
+    val action: MessageAction? = null,
+    override val withDismissAction: Boolean = true,
+    override val duration: SnackbarDuration = if (action == null) SnackbarDuration.Short else SnackbarDuration.Indefinite
+) : SnackbarVisuals {
+    override val actionLabel: String?
+        get() = action?.label
+
+    class Info(
+        message: String,
+        action: MessageAction? = null,
+        withDismissAction: Boolean = true
+    ) : UiMessage(message, action, withDismissAction)
+
+    class Success(
+        message: String,
+        action: MessageAction? = null,
+        withDismissAction: Boolean = true
+    ) : UiMessage(message, action, withDismissAction)
+
+    class Warning(
+        message: String,
+        val error: Throwable? = null,
+        action: MessageAction? = null,
+        withDismissAction: Boolean = true
+    ) : UiMessage(message, action, withDismissAction)
+
+    class Error(
+        message: String,
+        val error: Throwable? = null,
+        action: MessageAction? = null,
+        withDismissAction: Boolean = true
+    ) : UiMessage(message, action, withDismissAction)
+
+    class Loading(
+        message: String,
+        action: MessageAction? = null,
+        withDismissAction: Boolean = true
+    ) : UiMessage(message, action, withDismissAction)
 }
+
 @Composable
-private fun CommonToaster(
-    state: ToasterState,
-    modifier: Modifier
+fun UiToasterSnackbar(
+    snackbarData: SnackbarData,
+    modifier: Modifier = Modifier,
+    actionOnNewLine: Boolean = false,
+    shape: Shape = SnackbarDefaults.shape,
+    containerColor: Color = SnackbarDefaults.color,
+    contentColor: Color = SnackbarDefaults.contentColor,
+    actionColor: Color = SnackbarDefaults.actionColor,
+    actionContentColor: Color = SnackbarDefaults.actionContentColor,
+    dismissActionContentColor: Color = SnackbarDefaults.dismissActionContentColor,
 ) {
-    var exceptionInfo by remember { mutableStateOf<Throwable?>(null) }
-    Toaster(
-        state = state,
-        modifier = modifier,
-        darkTheme = LocalColorScheme.current.darkTheme,
-        iconSlot = { toast ->
-            if (toast.icon == "loading") LoadingIcon()
-            else ToasterDefaults.iconSlot(toast)
-        },
-        actionSlot = { toast ->
-            when(val action = toast.action) {
-                is ErrorInfoAction -> {
-                    IconButton(
-                        onClick = { exceptionInfo = action.exceptionInfo }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = stringResource(Res.string.error_info)
-                        )
-                    }
-                }
-                else -> ToasterDefaults.actionSlot(toast)
+    if (snackbarData.visuals is UiMessage) {
+        UiMessageSnackbar(
+            snackbarData = snackbarData,
+            modifier = modifier,
+            actionOnNewLine = actionOnNewLine,
+            shape = shape,
+            containerColor = containerColor,
+            contentColor = contentColor,
+            actionColor = actionColor,
+            actionContentColor = actionContentColor,
+            dismissActionContentColor = dismissActionContentColor
+        )
+    } else {
+        Snackbar(
+            snackbarData = snackbarData,
+            modifier = modifier,
+            actionOnNewLine = actionOnNewLine,
+            shape = shape,
+            containerColor = containerColor,
+            contentColor = contentColor,
+            actionColor = actionColor,
+            actionContentColor = actionContentColor,
+            dismissActionContentColor = dismissActionContentColor
+        )
+    }
+}
+
+@Composable
+private fun UiMessageSnackbar(
+    snackbarData: SnackbarData,
+    modifier: Modifier = Modifier,
+    actionOnNewLine: Boolean = false,
+    shape: Shape = SnackbarDefaults.shape,
+    containerColor: Color = SnackbarDefaults.color,
+    contentColor: Color = SnackbarDefaults.contentColor,
+    actionColor: Color = SnackbarDefaults.actionColor,
+    actionContentColor: Color = SnackbarDefaults.actionContentColor,
+    dismissActionContentColor: Color = SnackbarDefaults.dismissActionContentColor,
+) {
+    val actionLabel = snackbarData.visuals.actionLabel
+    val actionComposable: (@Composable () -> Unit)? =
+        actionLabel?.let {
+            {
+                TextButton(
+                    colors = ButtonDefaults.textButtonColors(contentColor = actionColor),
+                    onClick = { snackbarData.performAction() },
+                    content = { Text(actionLabel) },
+                )
             }
         }
-    )
-    if (exceptionInfo != null)
-        AlertDialog(
-            onDismissRequest = { exceptionInfo = null },
-            confirmButton = { exceptionInfo = null }
-        )
-}
-sealed interface UiMessage {
-    val id: Uuid
 
-    data class Info(
-        val message: String,
-        override val id: Uuid = Uuid.random(),
-    ) : UiMessage
+    val dismissActionComposable: (@Composable () -> Unit)? =
+        if (snackbarData.visuals.withDismissAction) {
+            {
+                DescriptionIconButton(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = stringResource(Res.string.dismiss_snackbar),
+                    onClick = { snackbarData.dismiss() }
+                )
+            }
+        } else null
 
-    data class Success(
-        val message: String,
-        override val id: Uuid = Uuid.random(),
-    ) : UiMessage
-
-    data class Error(
-        val message: String,
-        override val id: Uuid = Uuid.random(),
-        val error: Throwable? = null,
-    ) : UiMessage
-
-    data class Warning(
-        val message: String,
-        override val id: Uuid = Uuid.random(),
-        val error: Throwable? = null,
-    ) : UiMessage
-
-    data class Loading(
-        val message: String,
-        override val id: Uuid = Uuid.random(),
-    ) : UiMessage
-}
-private fun UiMessage.toToast(): Toast = when (this) {
-    is UiMessage.Info -> Toast(
-        id = id,
-        message = message,
-        type = ToastType.Info,
-        duration = Duration.INFINITE
-    )
-
-    is UiMessage.Error -> Toast(
-        id = id,
-        message = message,
-        type = ToastType.Error,
-        duration = Duration.INFINITE,
-        action = error?.let { ErrorInfoAction(it) }
-    )
-    is UiMessage.Warning -> Toast(
-        id = id,
-        message = message,
-        type = ToastType.Error,
-        duration = Duration.INFINITE,
-        action = error?.let { ErrorInfoAction(it) }
-    )
-
-    is UiMessage.Success -> Toast(
-        id = id,
-        message = message,
-        type = ToastType.Success,
-    )
-
-    is UiMessage.Loading -> Toast(
-        id = id,
-        message = message,
-        type = ToastType.Normal,
-        icon = "loading"
+    Snackbar(
+        modifier = modifier,
+        action = actionComposable,
+        dismissAction = dismissActionComposable,
+        actionOnNewLine = actionOnNewLine,
+        shape = shape,
+        containerColor = containerColor,
+        contentColor = contentColor,
+        actionContentColor = actionContentColor,
+        dismissActionContentColor = dismissActionContentColor,
+        content = {
+            UiMessageSnackbarContent(
+                message = snackbarData.visuals as UiMessage
+            )
+        }
     )
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun LoadingIcon(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.padding(end = 16.dp)) {
-        LoadingIndicator(
-            modifier = Modifier.size(18.dp)
-        )
+private fun UiMessageSnackbarContent(
+    message: UiMessage,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        when (message) {
+            is UiMessage.Error -> Icon(
+                imageVector = Icons.Default.Error,
+                contentDescription = null
+            )
+            is UiMessage.Info -> Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = null
+            )
+            is UiMessage.Loading -> LoadingIndicator(Modifier.size(24.dp))
+            is UiMessage.Success -> Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null
+            )
+            is UiMessage.Warning -> Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = null
+            )
+        }
+
+        Spacer(Modifier.width(12.dp))
+
+        Text(text = message.message)
     }
 }
