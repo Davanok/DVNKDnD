@@ -15,7 +15,7 @@ supabase = "3.6.0"
 ktor = "3.5.0"
 serialization = "1.11.0"
 filekit = "0.14.1"
-room = "2.8.4"
+room = "2.8.3"
 datastore = "1.2.1"
 sqlite = "2.6.2"
 ksp = "2.3.4"
@@ -75,6 +75,7 @@ filekit-compose = { group = "io.github.vinceglb", name = "filekit-dialogs-compos
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
+androidx-room-sqlite-wrapper = { module = "androidx.room:room-sqlite-wrapper", version.ref = "room" }
 
 #datastore - room
 androidx-datastore-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }

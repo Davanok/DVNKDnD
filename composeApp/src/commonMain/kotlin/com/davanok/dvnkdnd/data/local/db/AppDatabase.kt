@@ -23,23 +23,23 @@ import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterImage
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemActivationsCount
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterMainEntity
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSettings
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterNote
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterOptionalSpeedValues
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterOptionalValues
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterProficiency
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedDamageModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedRollModifier
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedValueModifier
-import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSelectedDamageModifier
+import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSettings
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterSpellLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterStateLink
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbBaseEntity
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityDamageModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityFeature
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifiersGroup
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityFullDescription
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityImage
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityModifiersGroup
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityProficiency
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityRollModifier
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbEntityValueModifier
@@ -51,9 +51,9 @@ import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellAttackLevel
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbSpellAttackSave
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbState
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.DbStateDuration
+import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeat
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeature
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeatureRegain
-import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbFeat
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.companion.DbProficiency
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbBackground
 import com.davanok.dvnkdnd.data.local.db.entities.dndEntities.concept.DbClass
@@ -163,9 +163,7 @@ abstract class AppDatabase: RoomDatabase() {
                 override fun onCreate(connection: SQLiteConnection) {
                     super.onCreate(connection)
 
-                    initialExecs.forEach {
-                        connection.execSQL(it)
-                    }
+                    initialExecs.forEach(connection::execSQL)
                 }
             })
             .build()

@@ -77,6 +77,7 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.room.sqlite.wrapper)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)

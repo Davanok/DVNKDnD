@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.data.local.implementations
 
 import co.touchlab.kermit.Logger
 import com.davanok.dvnkdnd.core.utils.runLogging
+import com.davanok.dvnkdnd.core.utils.toResultFlow
 import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterUsedSpellSlots
 import com.davanok.dvnkdnd.data.local.mappers.character.toCharacterFull
@@ -26,8 +27,8 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlin.uuid.Uuid
 
 @Inject
@@ -46,15 +47,15 @@ class CharactersRepositoryImpl(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFullCharacterFlow(characterId: Uuid): Flow<Result<CharacterFull>> =
-        dao.getFullCharacterFlow(characterId).mapLatest {
-            Result.success(it.toCharacterFull())
-        }.catch { thr -> emit(Result.failure(thr)) }
+        dao.getFullCharacterFlow(characterId)
+            .mapNotNull { it.toCharacterFull() }
+            .toResultFlow("getFullCharacterFlow", logger)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getCharactersWithImagesListFlow(): Flow<Result<List<CharacterMin>>> =
-        dao.getCharactersWithImageListFlow().mapLatest { characters ->
-            Result.success(characters.map { it.toCharacterMin() })
-        }.catch { thr -> emit(Result.failure(thr)) }
+        dao.getCharactersWithImageListFlow()
+            .map { it.map { c -> c.toCharacterMin() } }
+            .toResultFlow("getCharactersWithImagesListFlow", logger)
 
     override suspend fun saveCharacter(character: CharacterFull) =
         logger.runLogging("saveCharacter") {

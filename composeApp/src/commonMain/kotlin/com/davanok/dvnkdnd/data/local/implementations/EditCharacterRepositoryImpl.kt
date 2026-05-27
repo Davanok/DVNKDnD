@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.data.local.implementations
 
 import co.touchlab.kermit.Logger
 import com.davanok.dvnkdnd.core.utils.runLogging
+import com.davanok.dvnkdnd.core.utils.toResultFlow
 import com.davanok.dvnkdnd.data.local.db.daos.character.CharactersDao
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterFeat
 import com.davanok.dvnkdnd.data.local.db.entities.character.DbCharacterItemLink
@@ -32,8 +33,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlin.uuid.Uuid
 
 @Inject
@@ -47,9 +47,9 @@ class EditCharacterRepositoryImpl(
     
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFullCharacterFlow(characterId: Uuid): Flow<Result<CharacterFull>> =
-        dao.getFullCharacterFlow(characterId).mapLatest {
-            Result.success(it.toCharacterFull())
-        }.catch { thr -> emit(Result.failure(thr)) }
+        dao.getFullCharacterFlow(characterId)
+            .mapNotNull { it.toCharacterFull() }
+            .toResultFlow("getFullCharacterFlow", logger)
 
     override suspend fun setCharacterBase(
         characterBase: CharacterBase
