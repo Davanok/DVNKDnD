@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
@@ -28,6 +26,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.close_side_sheet
 import org.jetbrains.compose.resources.stringResource
@@ -131,12 +130,11 @@ private fun SupportPane(
             TopAppBar(
                 title = title,
                 actions = {
-                    IconButton(onClick = onHideSupportPane) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = stringResource(Res.string.close_side_sheet)
-                        )
-                    }
+                    DescriptionIconButton(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(Res.string.close_side_sheet),
+                        onClick = onHideSupportPane
+                    )
                 }
             )
             content()

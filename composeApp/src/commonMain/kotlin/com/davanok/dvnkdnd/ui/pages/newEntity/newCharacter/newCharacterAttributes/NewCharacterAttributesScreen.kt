@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.domain.entities.character.ValueModifiersGroupWithResolvedValues
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
+import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
@@ -76,6 +77,7 @@ fun NewCharacterAttributesScreen(
                 onBack = onBack
             )
         }
+
         else -> Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
@@ -92,14 +94,11 @@ fun NewCharacterAttributesScreen(
                         }
                     },
                     actions = {
-                        IconButton(
+                        DescriptionIconButton(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(Res.string.continue_str),
                             onClick = { viewModel.commit(onContinue) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = stringResource(Res.string.continue_str)
-                            )
-                        }
+                        )
                     }
                 )
             }
@@ -222,6 +221,7 @@ private fun AboutModifiersSelectorsDialog(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(12.dp),
-            content = markdownString)
+            content = markdownString
+        )
     }
 }

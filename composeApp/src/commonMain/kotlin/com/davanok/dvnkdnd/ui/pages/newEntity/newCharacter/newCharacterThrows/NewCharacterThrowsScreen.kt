@@ -48,6 +48,7 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.ValueModifierInfo
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.model.toUiMessage
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
+import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.text.modifiersText.buildPreview
@@ -110,14 +111,11 @@ fun NewCharacterThrowsScreen(
                         }
                     },
                     actions = {
-                        IconButton(
+                        DescriptionIconButton(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(Res.string.continue_str),
                             onClick = { viewModel.commit(onContinue) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = stringResource(Res.string.continue_str)
-                            )
-                        }
+                        )
                     }
                 )
             }

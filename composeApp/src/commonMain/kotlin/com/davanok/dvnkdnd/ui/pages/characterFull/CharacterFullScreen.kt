@@ -44,6 +44,7 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
+import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveContent
@@ -168,12 +169,11 @@ private fun Content(
                     }
                 },
                 actions = {
-                    IconButton(onClick = navigateToEditCharacter) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = stringResource(Res.string.edit_character)
-                        )
-                    }
+                    DescriptionIconButton(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = stringResource(Res.string.edit_character),
+                        onClick = navigateToEditCharacter
+                    )
                 },
                 scrollBehavior = appBarScrollBehavior
             )

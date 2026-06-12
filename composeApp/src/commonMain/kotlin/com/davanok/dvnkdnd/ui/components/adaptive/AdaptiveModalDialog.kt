@@ -3,8 +3,6 @@ package com.davanok.dvnkdnd.ui.components.adaptive
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
@@ -12,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.window.core.layout.WindowSizeClass
+import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.components.sideSheet.ModalSideSheet
 import com.davanok.dvnkdnd.ui.components.sideSheet.rememberModalSideSheetState
 import dvnkdnd.composeapp.generated.resources.Res
@@ -33,6 +32,12 @@ fun AdaptiveModalSheet(
 
     if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)) {
         val state = rememberModalSideSheetState()
+        val hideSheet: () -> Unit = {
+            scope
+                .launch { state.hide() }
+                .invokeOnCompletion { onDismissRequest() }
+        }
+
         ModalSideSheet(
             sheetState = state,
             modifier = modifier,
@@ -41,14 +46,11 @@ fun AdaptiveModalSheet(
                 TopAppBar(
                     title = title,
                     actions = {
-                        IconButton(
-                            onClick = { scope.launch { state.hide() }.invokeOnCompletion { onDismissRequest() } }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(Res.string.close_side_sheet)
-                            )
-                        }
+                        DescriptionIconButton(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(Res.string.close_side_sheet),
+                            onClick = hideSheet
+                        )
                     }
                 )
                 content()

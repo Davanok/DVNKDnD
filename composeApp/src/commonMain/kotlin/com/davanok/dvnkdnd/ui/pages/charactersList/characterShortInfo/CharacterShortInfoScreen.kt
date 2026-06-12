@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
+import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.model.isCritical
@@ -49,14 +50,11 @@ fun CharacterShortInfoScreen(
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = navigateToCharacter,
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowForward,
-                            contentDescription = stringResource(Res.string.back)
-                        )
-                    }
+                    DescriptionIconButton(
+                        imageVector = Icons.AutoMirrored.Default.ArrowForward,
+                        contentDescription = stringResource(Res.string.back),
+                        onClick = navigateToCharacter
+                    )
                 }
             )
         }

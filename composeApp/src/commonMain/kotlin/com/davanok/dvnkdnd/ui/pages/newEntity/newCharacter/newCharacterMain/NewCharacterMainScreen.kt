@@ -61,6 +61,7 @@ import coil3.compose.AsyncImage
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityWithSubEntities
+import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.model.toUiMessage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
@@ -146,15 +147,11 @@ fun NewCharacterMainScreen(
                     },
                     actions = {
                         if (uiState.isNextButtonLoading) LoadingIndicator()
-                        else
-                            IconButton(
-                                onClick = { viewModel.commit(onContinue) }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = stringResource(Res.string.continue_str)
-                                )
-                            }
+                        else DescriptionIconButton(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(Res.string.continue_str),
+                            onClick = { viewModel.commit(onContinue) }
+                        )
                     }
                 )
             }
