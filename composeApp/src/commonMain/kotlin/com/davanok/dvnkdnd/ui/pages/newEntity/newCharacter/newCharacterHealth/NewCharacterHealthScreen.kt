@@ -55,6 +55,7 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.components.diceRoller.AnimationState
 import com.davanok.dvnkdnd.ui.components.diceRoller.DiceRollerDialog
 import com.davanok.dvnkdnd.ui.components.diceRoller.rememberDiceRollerState
@@ -90,43 +91,38 @@ fun NewCharacterHealthScreen(
         }
     }
 
-    when {
-        uiState.isLoading -> LoadingCard()
-        uiState.error.isCritical() -> uiState.error?.let {
-            ErrorCard(
-                text = it.message,
-                exception = it.exception,
-                onBack = onBack
-            )
-        }
-
-        else -> Scaffold (
-            modifier = Modifier.imePadding().fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(stringResource(Res.string.new_character_health_screen_title))
-                    },
-                    navigationIcon = {
-                        IconButton(onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(Res.string.back)
-                            )
-                        }
-                    },
-                    actions = {
-                        DescriptionIconButton(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(Res.string.continue_str),
-                            onClick = { viewModel.commit(onContinue) }
+    Scaffold (
+        modifier = Modifier.imePadding().fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(stringResource(Res.string.new_character_health_screen_title))
+                },
+                navigationIcon = {
+                    IconButton(onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(Res.string.back)
                         )
                     }
-                )
-            }
-        ) { paddingValues ->
+                },
+                actions = {
+                    DescriptionIconButton(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = stringResource(Res.string.continue_str),
+                        onClick = { viewModel.commit(onContinue) }
+                    )
+                }
+            )
+        }
+    ) { paddingValues ->
+        UiStateHandler(
+            isLoading = uiState.isLoading,
+            error = uiState.error,
+            modifier = Modifier.padding(paddingValues)
+        ) {
             Content(
-                modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp).fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 health = uiState.baseHealth,
                 onHealthChange = viewModel::setHealth,
                 constitutionModifier = calculateModifier(uiState.characterConstitution),

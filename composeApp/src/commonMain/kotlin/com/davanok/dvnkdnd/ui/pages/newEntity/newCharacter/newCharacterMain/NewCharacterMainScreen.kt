@@ -68,6 +68,7 @@ import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FiniteTextField
 import com.davanok.dvnkdnd.ui.components.ImageCropDialog
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityAdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.pages.newEntity.newCharacter.NewCharacterMain
 import com.davanok.dvnkdnd.ui.theme.LocalToasterState
@@ -120,44 +121,39 @@ fun NewCharacterMainScreen(
         }
     }
 
-    when {
-        uiState.isLoading -> LoadingCard()
-        uiState.error.isCritical() -> uiState.error?.let {
-            ErrorCard(
-                text = it.message,
-                exception = it.exception,
-                onBack = onBack
-            )
-        }
-
-        else -> Scaffold(
-            modifier = Modifier.imePadding().fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(stringResource(Res.string.new_character))
-                    },
-                    navigationIcon = {
-                        IconButton(onBack) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(Res.string.cancel)
-                            )
-                        }
-                    },
-                    actions = {
-                        if (uiState.isNextButtonLoading) LoadingIndicator()
-                        else DescriptionIconButton(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(Res.string.continue_str),
-                            onClick = { viewModel.commit(onContinue) }
+    Scaffold(
+        modifier = Modifier.imePadding().fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(stringResource(Res.string.new_character))
+                },
+                navigationIcon = {
+                    IconButton(onBack) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(Res.string.cancel)
                         )
                     }
-                )
-            }
-        ) { paddingValues ->
+                },
+                actions = {
+                    if (uiState.isNextButtonLoading) LoadingIndicator()
+                    else DescriptionIconButton(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = stringResource(Res.string.continue_str),
+                        onClick = { viewModel.commit(onContinue) }
+                    )
+                }
+            )
+        }
+    ) { paddingValues ->
+        UiStateHandler(
+            isLoading = uiState.isLoading,
+            error = uiState.error,
+            modifier = Modifier.padding(paddingValues)
+        ) {
             Content(
-                modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp).fillMaxWidth(),
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                 character = uiState.character,
                 entities = uiState.entities,
                 empties = uiState.emptyFields,

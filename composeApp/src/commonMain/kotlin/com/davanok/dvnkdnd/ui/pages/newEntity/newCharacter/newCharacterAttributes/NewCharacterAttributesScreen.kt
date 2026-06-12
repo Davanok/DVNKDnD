@@ -36,6 +36,7 @@ import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.model.toUiMessage
@@ -68,44 +69,38 @@ fun NewCharacterAttributesScreen(
         }
     }
 
-    when {
-        uiState.isLoading -> LoadingCard()
-        uiState.error.isCritical() -> uiState.error?.let {
-            ErrorCard(
-                text = it.message,
-                exception = it.exception,
-                onBack = onBack
-            )
-        }
-
-        else -> Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(stringResource(Res.string.new_character_attributes_screen_title))
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(Res.string.back)
-                            )
-                        }
-                    },
-                    actions = {
-                        DescriptionIconButton(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(Res.string.continue_str),
-                            onClick = { viewModel.commit(onContinue) }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(stringResource(Res.string.new_character_attributes_screen_title))
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(Res.string.back)
                         )
                     }
-                )
-            }
-        ) { paddingValues ->
+                },
+                actions = {
+                    DescriptionIconButton(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = stringResource(Res.string.continue_str),
+                        onClick = { viewModel.commit(onContinue) }
+                    )
+                }
+            )
+        }
+    ) { paddingValues ->
+        UiStateHandler(
+            isLoading = uiState.isLoading,
+            error = uiState.error,
+            modifier = Modifier.padding(paddingValues).fillMaxSize()
+        ) {
             Content(
                 modifier = Modifier
-                    .padding(paddingValues)
                     .fillMaxSize(),
                 selectedCreationOption = uiState.attributesSelectorType,
                 onOptionSelected = viewModel::selectAttributeSelectorType,
@@ -116,6 +111,7 @@ fun NewCharacterAttributesScreen(
                 onSelectModifier = viewModel::selectModifier
             )
         }
+
     }
 }
 

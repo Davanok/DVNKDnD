@@ -19,6 +19,7 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.model.isCritical
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.app_name
@@ -59,20 +60,13 @@ fun CharacterShortInfoScreen(
             )
         }
     ) { paddingValues ->
-        when {
-            uiState.isLoading -> LoadingCard(modifier = Modifier.padding(paddingValues))
-            uiState.error.isCritical() -> uiState.error?.let { error ->
-                ErrorCard(
-                    text = error.message,
-                    exception = error.exception,
-                    modifier = Modifier.padding(paddingValues)
-                )
-            }
-            else -> uiState.character?.let { character ->
-                Content(
-                    character = character,
-                    modifier = Modifier.padding(paddingValues)
-                )
+        UiStateHandler(
+            isLoading = uiState.isLoading,
+            error = uiState.error,
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            uiState.character?.let { character ->
+                Content(character = character)
             }
         }
     }

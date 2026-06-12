@@ -46,13 +46,12 @@ import com.davanok.dvnkdnd.domain.enums.dndEnums.ModifierValueTarget
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Skills
 import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
 import com.davanok.dvnkdnd.ui.components.ErrorCard
-import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveContent
 import com.davanok.dvnkdnd.ui.components.adaptive.SupportEntry
 import com.davanok.dvnkdnd.ui.components.adaptive.rememberAdaptiveContentState
 import com.davanok.dvnkdnd.ui.components.diceRoller.rememberDiceRollerState
 import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityScaffold
-import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.pages.characterFull.components.CharacterThrowsDiceRoller
 import com.davanok.dvnkdnd.ui.pages.characterFull.components.ThrowsDiceRollerModifier
 import com.davanok.dvnkdnd.ui.pages.characterFull.dialogs.CharacterHealthDialogContent
@@ -80,22 +79,21 @@ fun CharacterFullScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    when {
-        uiState.isLoading -> LoadingCard()
-        uiState.error.isCritical() -> uiState.error?.let {
-            ErrorCard(
-                text = it.message,
-                exception = it.exception,
-                onBack = navigateBack
-            )
-        }
-        else -> uiState.character.let { character ->
-            if (character == null)
+    // TODO: make scaffold top level
+
+    UiStateHandler(
+        isLoading = uiState.isLoading,
+        error = uiState.error,
+        errorOnBack = navigateBack
+    ) {
+        uiState.character.let { character ->
+            if (character == null) {
                 ErrorCard(
                     text = stringResource(Res.string.no_such_character_error),
                     onBack = navigateBack
                 )
-            else
+            }
+            else {
                 Content(
                     navigateBack = navigateBack,
                     navigateToEditCharacter = navigateToEditCharacter,
@@ -103,6 +101,7 @@ fun CharacterFullScreen(
                     character = character,
                     action = viewModel::action
                 )
+            }
         }
     }
 }

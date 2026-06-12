@@ -8,10 +8,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davanok.dvnkdnd.ui.model.isCritical
-import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
-import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back_to_characters_list
 import dvnkdnd.composeapp.generated.resources.go_to_character
@@ -27,16 +25,11 @@ fun SavingNewCharacterScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    when {
-        uiState.isLoading -> LoadingCard()
-        uiState.error.isCritical() -> uiState.error?.let {
-            ErrorCard(
-                text = it.message,
-                exception = it.exception,
-                onBack = onBack
-            )
-        }
-        else -> FullScreenCard(
+    UiStateHandler(
+        isLoading = uiState.isLoading,
+        error = uiState.error
+    ) {
+        FullScreenCard(
             heroIcon = {
                 Icon(
                     imageVector = Icons.Default.Check,

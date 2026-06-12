@@ -39,6 +39,7 @@ import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityAdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.pages.editCharacter.pages.EditCharacterAttributesPage
@@ -47,6 +48,7 @@ import com.davanok.dvnkdnd.ui.pages.editCharacter.pages.EditCharacterMainPage
 import com.davanok.dvnkdnd.ui.pages.editCharacter.pages.EditCharacterModifiersPage
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
+import dvnkdnd.composeapp.generated.resources.character
 import dvnkdnd.composeapp.generated.resources.no_such_character_error
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -59,24 +61,33 @@ fun EditCharacterScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    when {
-        uiState.isLoading -> LoadingCard()
-        uiState.error.isCritical() -> uiState.error?.let {
-            ErrorCard(
-                text = it.message,
-                exception = it.exception,
-                onBack = navigateBack
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = navigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(Res.string.back)
+                        )
+                    }
+                },
+                title = { Text(text = uiState.character?.character?.name ?: stringResource(Res.string.character)) }
             )
         }
-        else -> uiState.character.let { character ->
+    ) { paddingValues ->
+        UiStateHandler(
+            isLoading = uiState.isLoading,
+            error = uiState.error,
+            modifier = Modifier.padding(paddingValues).fillMaxSize()
+        ) {
+            val character = uiState.character
+
             if (character == null)
-                ErrorCard(
-                    text = stringResource(Res.string.no_such_character_error),
-                    onBack = navigateBack
-                )
+                ErrorCard(text = stringResource(Res.string.no_such_character_error))
             else
                 Content(
-                    onBack = navigateBack,
                     navigateToEntityInfo = navigateToEntityInfo,
                     character = character,
                     addEntityDialog = uiState.addEntityDialog,
@@ -92,7 +103,6 @@ fun EditCharacterScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
-    onBack: () -> Unit,
     navigateToEntityInfo: (DnDEntityMin) -> Unit,
     character: CharacterFull,
     addEntityDialog: DnDEntityTypes?,
@@ -108,51 +118,34 @@ private fun Content(
         }
     }
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(Res.string.back)
-                        )
-                    }
-                },
-                title = { Text(text = character.character.name) }
+    ContentNavigationWrapper(
+        currentPage = currentPage,
+        onPageChanged = onPageChanged,
+        expandedView = expandedView,
+        modifier = modifier
+    ) { page ->
+        val modifier = Modifier.fillMaxSize()
+        when (page) {
+            EditCharacterUiState.Page.MAIN -> EditCharacterMainPage(
+                character = character,
+                eventSink = eventSink,
+                modifier = modifier
             )
-        }
-    ) { paddingValues ->
-        ContentNavigationWrapper(
-            currentPage = currentPage,
-            onPageChanged = onPageChanged,
-            expandedView = expandedView,
-            modifier = Modifier.padding(paddingValues)
-        ) { page ->
-            val modifier = Modifier.fillMaxSize()
-            when (page) {
-                EditCharacterUiState.Page.MAIN -> EditCharacterMainPage(
-                    character = character,
-                    eventSink = eventSink,
-                    modifier = modifier
-                )
-                EditCharacterUiState.Page.ATTRIBUTES -> EditCharacterAttributesPage(
-                    character = character,
-                    eventSink = eventSink,
-                    modifier = modifier
-                )
-                EditCharacterUiState.Page.MODIFIERS -> EditCharacterModifiersPage(
-                    character = character,
-                    eventSink = eventSink,
-                    modifier = modifier
-                )
-                EditCharacterUiState.Page.HEALTH -> EditCharacterHealthPage(
-                    character = character,
-                    eventSink = eventSink,
-                    modifier = modifier
-                )
-            }
+            EditCharacterUiState.Page.ATTRIBUTES -> EditCharacterAttributesPage(
+                character = character,
+                eventSink = eventSink,
+                modifier = modifier
+            )
+            EditCharacterUiState.Page.MODIFIERS -> EditCharacterModifiersPage(
+                character = character,
+                eventSink = eventSink,
+                modifier = modifier
+            )
+            EditCharacterUiState.Page.HEALTH -> EditCharacterHealthPage(
+                character = character,
+                eventSink = eventSink,
+                modifier = modifier
+            )
         }
     }
 

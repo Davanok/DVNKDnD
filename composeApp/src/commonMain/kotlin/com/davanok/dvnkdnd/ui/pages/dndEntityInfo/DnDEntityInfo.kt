@@ -1,6 +1,7 @@
 package com.davanok.dvnkdnd.ui.pages.dndEntityInfo
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import dvnkdnd.composeapp.generated.resources.Res
 import dvnkdnd.composeapp.generated.resources.back
 import dvnkdnd.composeapp.generated.resources.error
@@ -31,6 +33,7 @@ fun DnDEntityInfo(
     viewModel: DnDEntityInfoViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -58,19 +61,18 @@ fun DnDEntityInfo(
                 scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
             )
         }
-    ) {
-        when {
-            uiState.isLoading -> LoadingCard()
-            uiState.error.isCritical() -> uiState.error?.let {
-                ErrorCard(
-                    text = it.message,
-                    exception = it.exception
-                )
+    ) { paddingValues ->
+        UiStateHandler(
+            isLoading = uiState.isLoading,
+            error = uiState.error,
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            if (uiState.entity == null) {
+                ErrorCard(text = stringResource(Res.string.loading_entity_error))
             }
-            uiState.entity == null -> ErrorCard(
-                text = stringResource(Res.string.loading_entity_error)
-            )
-            else -> Content()
+            else {
+                Content()
+            }
         }
     }
 }

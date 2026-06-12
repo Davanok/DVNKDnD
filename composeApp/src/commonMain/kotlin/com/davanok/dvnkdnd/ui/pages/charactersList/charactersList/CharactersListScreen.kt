@@ -20,6 +20,7 @@ import com.davanok.dvnkdnd.ui.components.BaseEntityImage
 import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
 import com.davanok.dvnkdnd.ui.components.LoadingCard
+import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.components.adaptive.alternativeClickable
 import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.navigation.components.NavigationFABScaffold
@@ -52,37 +53,32 @@ fun CharactersListScreen(
         },
         onFABClick = onNewCharacter
     ) { paddingValues ->
-        when {
-            uiState.isLoading -> LoadingCard(modifier = Modifier.padding(paddingValues))
-            uiState.error.isCritical() -> uiState.error?.let {
-                ErrorCard(
-                    text = it.message,
-                    exception = it.exception,
-                    modifier = Modifier.padding(paddingValues)
-                )
-            }
-
-            uiState.characters.isEmpty() ->
+        UiStateHandler(
+            isLoading = uiState.isLoading,
+            error = uiState.error,
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            if (uiState.characters.isEmpty()) {
                 FullScreenCard(
                     heroIcon = {
                         Icon(
                             painter = painterResource(Res.drawable.sentiment_dissatisfied),
                             contentDescription = stringResource(Res.string.no_characters_yet)
                         )
-                    },
-                    content = {
-                        Text(
-                            text = stringResource(Res.string.no_characters_yet)
-                        )
                     }
+                ) {
+                    Text(
+                        text = stringResource(Res.string.no_characters_yet)
+                    )
+                }
+            }
+            else {
+                Content(
+                    characters = uiState.characters,
+                    navigateToCharacter = navigateToCharacterFull,
+                    onClickCharacter = navigateToCharacter
                 )
-
-            else -> Content(
-                characters = uiState.characters,
-                navigateToCharacter = navigateToCharacterFull,
-                onClickCharacter = navigateToCharacter,
-                modifier = Modifier.padding(paddingValues)
-            )
+            }
         }
     }
 }
