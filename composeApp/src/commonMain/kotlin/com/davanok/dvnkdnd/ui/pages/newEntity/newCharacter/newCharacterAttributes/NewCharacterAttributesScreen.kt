@@ -34,8 +34,6 @@ import com.davanok.dvnkdnd.domain.entities.character.ValueModifiersGroupWithReso
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.AttributesGroup
 import com.davanok.dvnkdnd.domain.entities.dndModifiers.DnDModifier
 import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
-import com.davanok.dvnkdnd.ui.components.ErrorCard
-import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.components.adaptive.AdaptiveModalSheet
 import com.davanok.dvnkdnd.ui.model.isCritical

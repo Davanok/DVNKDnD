@@ -53,8 +53,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.domain.dnd.calculateModifier
 import com.davanok.dvnkdnd.domain.enums.dndEnums.Dices
 import com.davanok.dvnkdnd.ui.components.DescriptionIconButton
-import com.davanok.dvnkdnd.ui.components.ErrorCard
-import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.components.diceRoller.AnimationState
 import com.davanok.dvnkdnd.ui.components.diceRoller.DiceRollerDialog

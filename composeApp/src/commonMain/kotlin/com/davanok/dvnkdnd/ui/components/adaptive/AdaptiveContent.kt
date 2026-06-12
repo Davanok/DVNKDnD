@@ -2,6 +2,7 @@ package com.davanok.dvnkdnd.ui.components.adaptive
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateSet
@@ -28,6 +29,7 @@ data class SupportEntry(
  * The decision to show as a window or in-pane
  * and platform capability (supportsWindows()).
  */
+@Stable
 class AdaptiveContentState<T>(
     val useWindows: Boolean = supportsWindows(),
     private val contentProvider: (T) -> SupportEntry? = { null }

@@ -1,0 +1,26 @@
+package com.davanok.dvnkdnd.ui.pages.characterFull
+
+import com.davanok.dvnkdnd.domain.entities.character.CharacterHealth
+import com.davanok.dvnkdnd.domain.entities.character.CharacterItem
+import com.davanok.dvnkdnd.domain.entities.character.CharacterNote
+import com.davanok.dvnkdnd.domain.entities.character.CharacterStateLink
+import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
+import com.davanok.dvnkdnd.domain.entities.dndEntities.FullItemActivation
+import kotlin.uuid.Uuid
+
+sealed interface CharacterFullScreenUiEvent {
+    data class SetHealth(val health: CharacterHealth) : CharacterFullScreenUiEvent
+
+    data class UpdateOrNewNote(val note: CharacterNote) : CharacterFullScreenUiEvent
+    data class DeleteNote(val note: CharacterNote) : CharacterFullScreenUiEvent
+
+    data class SetUsedSpellsCount(val typeId: Uuid?, val level: Int, val count: Int) : CharacterFullScreenUiEvent
+
+    data class UpdateCharacterItem(val item: CharacterItem) : CharacterFullScreenUiEvent
+    data class ActivateCharacterItem(val item: CharacterItem, val activation: FullItemActivation) : CharacterFullScreenUiEvent
+
+    data class DeleteCharacterState(val state: CharacterStateLink) : CharacterFullScreenUiEvent
+    data class AddState(val state: DnDEntityMin) : CharacterFullScreenUiEvent
+    data class AddItem(val item: DnDEntityMin) : CharacterFullScreenUiEvent
+    data class AddSpell(val spell: DnDEntityMin) : CharacterFullScreenUiEvent
+}

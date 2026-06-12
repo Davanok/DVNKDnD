@@ -269,17 +269,17 @@ class CharacterFullViewModel(
             showMessage(UiMessage.Info(getString(Res.string.character_state_not_deletable)))
     }
 
-    fun action(action: CharacterFullScreenContract) = when (action) {
-        is CharacterFullScreenContract.DeleteNote -> deleteNote(action.note)
-        is CharacterFullScreenContract.SetHealth -> updateHealth(action.health)
-        is CharacterFullScreenContract.SetUsedSpellsCount -> setUsedSpellsCount(action.typeId, action.level, action.count)
-        is CharacterFullScreenContract.UpdateCharacterItem -> updateCharacterItem(action.item)
-        is CharacterFullScreenContract.UpdateOrNewNote -> updateOrNewNote(action.note)
-        is CharacterFullScreenContract.ActivateCharacterItem -> activateCharacterItem(action.item, action.activation)
-        is CharacterFullScreenContract.DeleteCharacterState -> deleteCharacterState(action.state)
-        is CharacterFullScreenContract.AddItem -> newCharacterItem(action.item.id)
-        is CharacterFullScreenContract.AddSpell -> newCharacterSpell(action.spell.id)
-        is CharacterFullScreenContract.AddState -> newCharacterState(action.state.id, null)
+    fun eventSink(action: CharacterFullScreenUiEvent) = when (action) {
+        is CharacterFullScreenUiEvent.DeleteNote -> deleteNote(action.note)
+        is CharacterFullScreenUiEvent.SetHealth -> updateHealth(action.health)
+        is CharacterFullScreenUiEvent.SetUsedSpellsCount -> setUsedSpellsCount(action.typeId, action.level, action.count)
+        is CharacterFullScreenUiEvent.UpdateCharacterItem -> updateCharacterItem(action.item)
+        is CharacterFullScreenUiEvent.UpdateOrNewNote -> updateOrNewNote(action.note)
+        is CharacterFullScreenUiEvent.ActivateCharacterItem -> activateCharacterItem(action.item, action.activation)
+        is CharacterFullScreenUiEvent.DeleteCharacterState -> deleteCharacterState(action.state)
+        is CharacterFullScreenUiEvent.AddItem -> newCharacterItem(action.item.id)
+        is CharacterFullScreenUiEvent.AddSpell -> newCharacterSpell(action.spell.id)
+        is CharacterFullScreenUiEvent.AddState -> newCharacterState(action.state.id, null)
     }
 
     @AssistedFactory

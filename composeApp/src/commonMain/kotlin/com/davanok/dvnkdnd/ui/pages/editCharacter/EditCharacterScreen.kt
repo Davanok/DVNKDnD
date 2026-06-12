@@ -38,10 +38,8 @@ import com.davanok.dvnkdnd.domain.entities.character.CharacterFull
 import com.davanok.dvnkdnd.domain.entities.dndEntities.DnDEntityMin
 import com.davanok.dvnkdnd.domain.enums.dndEnums.DnDEntityTypes
 import com.davanok.dvnkdnd.ui.components.ErrorCard
-import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.fragments.searchEntityScaffold.SearchEntityAdaptiveModalSheet
-import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.pages.editCharacter.pages.EditCharacterAttributesPage
 import com.davanok.dvnkdnd.ui.pages.editCharacter.pages.EditCharacterHealthPage
 import com.davanok.dvnkdnd.ui.pages.editCharacter.pages.EditCharacterMainPage

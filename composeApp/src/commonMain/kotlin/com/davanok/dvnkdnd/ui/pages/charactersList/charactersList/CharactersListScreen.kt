@@ -17,12 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davanok.dvnkdnd.domain.entities.character.CharacterMin
 import com.davanok.dvnkdnd.ui.components.BaseEntityImage
-import com.davanok.dvnkdnd.ui.components.ErrorCard
 import com.davanok.dvnkdnd.ui.components.FullScreenCard
-import com.davanok.dvnkdnd.ui.components.LoadingCard
 import com.davanok.dvnkdnd.ui.components.UiStateHandler
 import com.davanok.dvnkdnd.ui.components.adaptive.alternativeClickable
-import com.davanok.dvnkdnd.ui.model.isCritical
 import com.davanok.dvnkdnd.ui.navigation.components.NavigationFABScaffold
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import dvnkdnd.composeapp.generated.resources.Res
